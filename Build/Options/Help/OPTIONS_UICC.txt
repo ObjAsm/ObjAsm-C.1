@@ -1,0 +1,24 @@
+Microsoft (R) Ribbon Markup Compiler Version 6.3.9600.17298 for x86, Retail Build
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+Usage: UICC <ribbonFile> <binaryFile> [options]
+
+    - OPTIONS -
+
+  /header:<headerFile>
+    Emit header file named <headerFile>. If omitted, a header file will not be
+    generated.
+
+  /res:<resourceFile>
+    Emit resource file named <resourceFile>.
+
+  /name:<ribbonName>
+    Resource name for the ribbon binary.  The default is APPLICATION_RIBBON.
+
+  /W{0|1|2}
+    Specify warning level 0-2. The default is 2.
+
+    - EXAMPLE -
+
+  UICC.exe MyApp.ribbon MyApp.bin /header:MyRibbon.h /res:MyRibbon.rc
+

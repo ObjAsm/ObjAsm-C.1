@@ -1,0 +1,8 @@
+-coff
+-c
+-q
+-less
+-nomlib
+-FwNUL
+-Zd
+-Zi

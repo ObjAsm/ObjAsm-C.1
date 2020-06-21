@@ -1,0 +1,56 @@
+; ==================================================================================================
+; Title:      TextViewDemo.rc
+; Author:     G. Friedrich
+; Version:    C.1.1
+; Purpose:    ObjAsm resource file.
+; Notes:      Version C.1.1, April 2020
+;               - First release.
+; ==================================================================================================
+
+
+#include "Resource.h"               //Windows resource definitions
+#include "TextViewDemo_Shared.rc"   //Application shared definitions
+#include "VER\Version.rc"           //Application version definition
+#include "MFT\Manifest_Invoker.rc"  //Application manifest definition
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+
+// Icons ------------------------------------------------------------------------------------------
+ICON_APP  ICON DISCARDABLE "ICO\OA.ico"
+
+
+// Bitmaps ----------------------------------------------------------------------------------------
+BMP_BACKGROUND  BITMAP "BMP\WndBkgnd.bmp"
+
+
+// Dialogs ----------------------------------------------------------------------------------------
+#include "DLG\DialogAbout.rc"
+
+// Images -----------------------------------------------------------------------------------------
+OA  IMAGE   DISCARDABLE   "res\OA_100x100.png"
+
+
+// Menus ------------------------------------------------------------------------------------------
+MENU_APP MENUEX DISCARDABLE
+BEGIN
+  POPUP "&File", 0, MFT_STRING,   MFS_ENABLED
+  BEGIN
+    MENUITEM "&Exit", IDM_EXIT,   MFT_STRING, MFS_ENABLED
+  END
+  POPUP "&Help", 0, MFT_STRING,   MFS_ENABLED
+  BEGIN
+    MENUITEM "&Help",  IDM_HELP,  MFT_STRING, MFS_ENABLED
+    MENUITEM "&About", IDM_ABOUT, MFT_STRING, MFS_ENABLED
+  END
+END
+
+DIALOGSETUP DIALOGEX DISCARDABLE  0, 0, 200, 140
+STYLE DS_MODALFRAME | DS_3DLOOK | DS_CENTER | DS_CENTERMOUSE | WS_CAPTION | WS_SYSMENU | WS_POPUP
+EXSTYLE WS_EX_DLGMODALFRAME
+CAPTION "Application Setup"
+FONT 8, "MS Sans Serif"
+BEGIN
+  CONTROL "ICON_OK|&OK",         IDOK    , "TextViewClass64W", WS_TABSTOP | BS_DEFPUSHBUTTON, 140, 119, 50, 16
+  CONTROL "ICON_CANCEL|&Cancel", IDCANCEL, "TextViewClass64W", WS_TABSTOP | BS_PUSHBUTTON,    080, 119, 50, 16
+END

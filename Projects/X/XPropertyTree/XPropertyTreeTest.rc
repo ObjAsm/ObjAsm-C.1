@@ -1,0 +1,86 @@
+; ==================================================================================================
+; Title:      XPropertyTreeTest.rc
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Purpose:    ObjAsm XTreeView Demo Application resource file.
+; Notes:      Version C.1.0, October 2017
+;               - First release.
+; ==================================================================================================
+
+
+#include "Resource.h"                   //Windows resource definitions
+#include "XPropertyTreeTest_Shared.rc"  //Application shared definitions
+#include "VER\Version.rc"               //Application version definition
+#include "MFT\Manifest_Invoker.rc"      //Application manifest definition
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+
+// Icons ------------------------------------------------------------------------------------------
+ICON_APP_32     ICON DISCARDABLE "ICO\OA.ico"
+ICON_STR_MAIN   ICON DISCARDABLE "ICO\Var_16x16_04.ico"
+ICON_STR_ITEM   ICON DISCARDABLE "ICO\Var_Redef_16x16_04.ico"
+
+ICON_SIZE       ICON DISCARDABLE "ICO\Program_16x16_04.ico"
+ICON_WIDTH      ICON DISCARDABLE "ICO\Width_16x16_04.ico"
+ICON_HEIGHT     ICON DISCARDABLE "ICO\Height_16x16_04.ico"
+ICON_AVERAGE    ICON DISCARDABLE "ICO\CalcAverage_16x16_04.ico"
+
+ICON_STYLE      ICON DISCARDABLE "ICO\Check_16x16_04.ico"
+ICON_COLOR      ICON DISCARDABLE "ICO\Blot_16x16_04.ico"
+ICON_BORDER     ICON DISCARDABLE "ICO\Border_16x16_04.ico"
+ICON_MODE       ICON DISCARDABLE "ICO\Gear_16x16_04.ico"
+
+ICON_BEHAVIOR   ICON DISCARDABLE "ICO\Execute_16x16_04.ico"
+ICON_REDRAW     ICON DISCARDABLE "ICO\Brush_16x16_04.ico"
+ICON_CLIP       ICON DISCARDABLE "ICO\Cut_16x16_04.ico"
+ICON_DRAWSTYLE  ICON DISCARDABLE "ICO\Pencil_16x16_04.ico"
+
+ICON_PATH       ICON DISCARDABLE "ICO\Path_16x16_04.ico"
+ICON_MAIN       ICON DISCARDABLE "ICO\FolderOpen_16x16_04.ico"
+ICON_CONFIG     ICON DISCARDABLE "ICO\Setup_16x16_04.ico"
+
+
+// Cursors ----------------------------------------------------------------------------------------
+CURSOR_XTV_ARROW        CURSOR DISCARDABLE "CUR\\Arrow.cur"
+
+
+// Dialogs ----------------------------------------------------------------------------------------
+#include "DLG\DialogAbout.rc"
+
+
+// Menus ------------------------------------------------------------------------------------------
+MENU_APP MENUEX DISCARDABLE
+BEGIN
+  POPUP "&File", 0, MFT_STRING,   MFS_ENABLED
+  BEGIN
+    MENUITEM "&Exit", IDM_EXIT,   MFT_STRING, MFS_ENABLED
+  END
+  POPUP "&Help", 0, MFT_STRING,   MFS_ENABLED
+  BEGIN
+    MENUITEM "&Help",  IDM_HELP,  MFT_STRING, MFS_ENABLED
+    MENUITEM "&About", IDM_ABOUT, MFT_STRING, MFS_ENABLED
+  END
+END
+
+MENU_CUSTOM_NODE MENUEX DISCARDABLE
+BEGIN
+  POPUP "CONTEXT",     IDM_CONTEXT, MFT_STRING, MFS_ENABLED
+  BEGIN
+    MENUITEM "&Help",  IDM_HELP,    MFT_STRING, MFS_ENABLED
+    MENUITEM "&About", IDM_ABOUT,   MFT_STRING, MFS_ENABLED
+  END
+END
+
+#define IDC_DAB_ICON        100
+#define IDC_DAB_TEXT        101
+
+DIALOGTEST DIALOG DISCARDABLE  0,0,195,95
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_CAPTION | WS_SYSMENU | WS_POPUP
+;EXSTYLE WS_EX_LAYERED
+CAPTION "XTV resource test"
+FONT 8, "MS Sans Serif"
+BEGIN
+  DEFPUSHBUTTON  "Close", IDOK, 139,74,50,16, WS_TABSTOP
+  CONTROL        "", 1234, "XCustomTreeView", WS_TABSTOP, 45,10,140,55
+END

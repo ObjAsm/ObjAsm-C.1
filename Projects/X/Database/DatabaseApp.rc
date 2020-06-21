@@ -1,0 +1,134 @@
+; ==================================================================================================
+; Title:      DatabaseApp.rc
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Purpose:    ObjAsm Database program.
+; Notes:      Version C.1.0, October 2017
+;               - First release.
+; ==================================================================================================
+
+
+#include "Resource.h"               //Windows resource definitions
+#include "DatabaseApp_Shared.rc"    //Application shared definitions
+#include "VER\Version.rc"           //Application version definition
+#include "MFT\Manifest_Invoker.rc"  //Application manifest definition
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+
+// Icons -------------------------------------------------------------------------------------------
+// App icons
+ICON_APP              ICON DISCARDABLE "Res\DatabaseExplorer.ico"
+ICON_MUTATION         ICON DISCARDABLE "Res\DatabaseMutation.ico"
+
+// DialogAboutEx icons
+ICON_LINK             ICON DISCARDABLE "ICO\Link_16x16_04.ico"
+ICON_MAIL             ICON DISCARDABLE "ICO\Mail_16x16_04.ico"
+
+// DB_StructEditor icons
+ICON_SEL              ICON DISCARDABLE "Res\Selected.ico"
+ICON_SEL_GREEN        ICON DISCARDABLE "Res\SelectedGreen.ico"
+ICON_SEL_YELLOW       ICON DISCARDABLE "Res\SelectedYellow.ico"
+ICON_SEL_RED          ICON DISCARDABLE "Res\SelectedRed.ico"
+ICON_USEL             ICON DISCARDABLE "Res\Unselected.ico"
+ICON_USEL_GREEN       ICON DISCARDABLE "Res\UnselectedGreen.ico"
+ICON_USEL_YELLOW      ICON DISCARDABLE "Res\UnselectedYellow.ico"
+ICON_USEL_RED         ICON DISCARDABLE "Res\UnselectedRed.ico"
+
+
+// Cursors -----------------------------------------------------------------------------------------
+CURSOR_HAND           CURSOR DISCARDABLE "CUR\Hand.cur"
+
+
+// Bitmaps -----------------------------------------------------------------------------------------
+BMP_BACKGROUND    BITMAP "BMP\WndBkgnd.bmp"
+
+
+
+// Dialogs ----------------------------------------------------------------------------------------
+
+#include "DLG\DialogAboutEx.rc"
+#include "Res\NewTableDlg.rc"
+#include "Res\IndexDlg.rc"
+#include "Res\SeekDlg.rc"
+#include "Res\RecordEditorDlg.rc"
+#include "Res\StructEditorDlg.rc"
+#include "Res\ProgressSingleTaskDlg.rc"
+#include "Res\ProgressMultiTaskDlg.rc"
+
+
+// Menus ------------------------------------------------------------------------------------------
+
+MENU_APP MENUEX DISCARDABLE
+BEGIN
+  POPUP "&File", IDM_FILE, MFT_STRING, MFS_ENABLED
+  BEGIN
+    MENUITEM "&New...\tCtrl+W",               IDM_NEW,       MFT_STRING, MFS_ENABLED
+    MENUITEM "&Open...\tCtrl+O",              IDM_OPEN,      MFT_STRING, MFS_ENABLED
+    MENUITEM "&Close",                        IDM_CLOSE,     MFT_STRING, MFS_ENABLED
+    MENUITEM "", , MFT_SEPARATOR
+    MENUITEM "&Design structure...\tCtrl+D",  IDM_STRUCDSGN, MFT_STRING, MFS_ENABLED
+    MENUITEM "&Indexing...\tCtrl+I",          IDM_INDEXING,  MFT_STRING, MFS_ENABLED
+    MENUITEM "&Pack",                         IDM_PACK,      MFT_STRING, MFS_ENABLED
+    MENUITEM "&Zap...",                       IDM_ZAP,       MFT_STRING, MFS_ENABLED
+    MENUITEM "",                              ,              MFT_SEPARATOR
+    MENUITEM "E&xit\tAlt+F4",                 IDM_EXIT,      MFT_STRING, MFS_ENABLED
+  END
+
+  POPUP "&Record", IDM_RECORD, MFT_STRING, MFS_ENABLED
+  BEGIN
+    POPUP "&Navigation", IDM_NAVIGATION, MFT_STRING, MFS_ENABLED
+    BEGIN
+      MENUITEM "&Prev\tCtrl+P",               IDM_REC_PREV,   MFT_STRING, MFS_ENABLED
+      MENUITEM "&Next\tCtrl+N",               IDM_REC_NEXT,   MFT_STRING, MFS_ENABLED
+      MENUITEM "&Top\tCtrl+T",                IDM_REC_TOP,    MFT_STRING, MFS_ENABLED
+      MENUITEM "&Bottom\tCtrl+B",             IDM_REC_BOTT,   MFT_STRING, MFS_ENABLED
+    END
+    MENUITEM "&Seek...\tCtrl+S",              IDM_REC_SEEK,   MFT_STRING, MFS_ENABLED
+    MENUITEM "&Edit...\tCtrl+E",              IDM_REC_EDIT,   MFT_STRING, MFS_ENABLED
+  END
+
+;  POPUP "&Query", IDM_QUERY, MFT_STRING, MFS_ENABLED
+;  BEGIN
+;    MENUITEM "Start on field &1...", IDM_QRY_START1, MFT_STRING, MFS_ENABLED
+;    MENUITEM "Start on field &2...", IDM_QRY_START2, MFT_STRING, MFS_ENABLED
+;    MENUITEM "",                     ,              MFT_SEPARATOR
+;    MENUITEM "&Clear",               IDM_QRY_CLEAR,  MFT_STRING, MFS_ENABLED
+;    MENUITEM "&View...",             IDM_QRY_VIEW,   MFT_STRING, MFS_ENABLED
+;    MENUITEM "",                     ,              MFT_SEPARATOR
+;    MENUITEM "&Store",               IDM_QRY_STORE,  MFT_STRING, MFS_ENABLED
+;    MENUITEM "&Recall",              IDM_QRY_RECALL, MFT_STRING, MFS_ENABLED
+;  END
+
+  POPUP "&Help", IDM_HELP, MFT_STRING, MFS_ENABLED
+  BEGIN
+    MENUITEM "&About",                        IDM_ABOUT,     MFT_STRING, MFS_ENABLED
+  END
+END
+
+
+// Accelerators -----------------------------------------------------------------------------------
+
+ACCEL_APP ACCELERATORS DISCARDABLE
+BEGIN
+  "W",   IDM_NEW,       VIRTKEY, CONTROL, NOINVERT
+  "O",   IDM_OPEN,      VIRTKEY, CONTROL, NOINVERT
+  "D",   IDM_STRUCDSGN, VIRTKEY, CONTROL, NOINVERT
+  "I",   IDM_INDEXING,  VIRTKEY, CONTROL, NOINVERT
+  "P",   IDM_REC_PREV,  VIRTKEY, CONTROL, NOINVERT
+  "N",   IDM_REC_NEXT,  VIRTKEY, CONTROL, NOINVERT
+  "T",   IDM_REC_TOP,   VIRTKEY, CONTROL, NOINVERT
+  "B",   IDM_REC_BOTT,  VIRTKEY, CONTROL, NOINVERT
+  "S",   IDM_REC_SEEK,  VIRTKEY, CONTROL, NOINVERT
+  "E",   IDM_REC_EDIT,  VIRTKEY, CONTROL, NOINVERT
+;  "1",   IDM_CHECK1,    VIRTKEY, CONTROL, NOINVERT
+;  "2",   IDM_CHECK2,    VIRTKEY, CONTROL, NOINVERT
+;  "3",   IDM_CHECK3,    VIRTKEY, CONTROL, NOINVERT
+;  "4",   IDM_CHECK4,    VIRTKEY, CONTROL, NOINVERT
+;  "5",   IDM_CHECK5,    VIRTKEY, CONTROL, NOINVERT
+;  "6",   IDM_CHECK6,    VIRTKEY, CONTROL, NOINVERT
+;  "7",   IDM_CHECK7,    VIRTKEY, CONTROL, NOINVERT
+;  "8",   IDM_CHECK8,    VIRTKEY, CONTROL, NOINVERT
+;  "9",   IDM_CHECK9,    VIRTKEY, CONTROL, NOINVERT
+;  "L",   IDM_LIST_NDX,  VIRTKEY, CONTROL, NOINVERT
+END

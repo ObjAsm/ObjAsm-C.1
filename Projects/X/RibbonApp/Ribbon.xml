@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Application xmlns="http://schemas.microsoft.com/windows/2009/Ribbon">
+
+  <Application.Commands>
+    <!-- Tabs -->
+    <Command Name="tabHome" LabelTitle="Start" Keytip="S" />
+    <Command Name="tabView" LabelTitle="View" Keytip="V" />
+    <Command Name="tabHelp" LabelTitle="Help" Keytip="H" />
+
+    <!-- Groups -->
+    <Command Name="grpClipboard" LabelTitle="Clipboard" />
+    <Command Name="grpEdit"      LabelTitle="Edit" />
+    <Command Name="grpZoom"      LabelTitle="Zoom" />
+    <Command Name="grpHelp"      LabelTitle="Help" />
+    <Command Name="grpFont"      LabelTitle="Font" />
+
+    <!-- Misc -->
+    <Command Name="cmdFileMenu" />
+    <Command Name="cmdQAT" />
+
+
+    <!-- App menu commands -->
+    <Command Name="cmdNew"    Id="1000" Symbol="ID_CMD_NEW"     LabelTitle="New document" Keytip="N" >
+      <Command.TooltipTitle>New (Ctrl+N)</Command.TooltipTitle>
+      <Command.TooltipDescription>Create a new document.</Command.TooltipDescription>
+      <Command.LargeImages>
+        <Image Source="Res\NewL.bmp" />
+      </Command.LargeImages>
+    </Command>
+
+    <Command Name="cmdOpen"   Id="1001" Symbol="ID_CMD_OPEN"    LabelTitle="Open" Keytip="O">
+      <Command.TooltipTitle>Open (Ctrl+O)</Command.TooltipTitle>
+      <Command.TooltipDescription>Open a document.</Command.TooltipDescription>
+      <Command.LargeImages>
+        <Image Source="Res\OpenL.bmp" />
+      </Command.LargeImages>
+    </Command>
+
+    <Command Name="cmdSave"   Id="1002" Symbol="ID_CMD_SAVE"    LabelTitle="Save" Keytip="S">
+      <Command.TooltipTitle>Save (Ctrl+S)</Command.TooltipTitle>
+      <Command.TooltipDescription>Save the current document.</Command.TooltipDescription>
+      <Command.LargeImages>
+        <Image Source="Res\SaveL.bmp" MinDPI="96" />
+      </Command.LargeImages>
+    </Command>
+
+    <Command Name="cmdSaveAs" Id="1003" Symbol="ID_CMD_SAVEAS"  LabelTitle="Save As" Keytip="A">
+      <Command.TooltipTitle>Save As (Ctrl+A)</Command.TooltipTitle>
+      <Command.TooltipDescription>Save the current document with a new name.</Command.TooltipDescription>
+      <Command.LargeImages>
+        <Image Source="Res\SaveAsL.bmp" />
+      </Command.LargeImages>
+    </Command>
+
+    <Command Name="cmdSaveAll" Id="1004" Symbol="ID_CMD_SAVEALL"  LabelTitle="Save All" Keytip="A">
+      <Command.TooltipTitle>Save All</Command.TooltipTitle>
+      <Command.TooltipDescription>Save the current document with a new name.</Command.TooltipDescription>
+      <Command.LargeImages>
+        <Image Source="Res\SaveAllL.bmp" />
+      </Command.LargeImages>
+    </Command>
+
+    <Command Name="cmdExit"   Id="1100" Symbol="ID_CMD_EXIT"    LabelTitle="Exit" Keytip="X">
+      <Command.TooltipTitle>Exit (Ctrl+X)</Command.TooltipTitle>
+      <Command.TooltipDescription>Exit the application.</Command.TooltipDescription>
+      <Command.LargeImages>
+        <Image Source="Res\ExitL.bmp" />
+      </Command.LargeImages>
+    </Command>
+
+
+    <Command Name="cmdCut"    Id="2000" Symbol="ID_CMD_CUT"     LabelTitle="Cut" Keytip="X" >
+      <Command.TooltipDescription>Cut selection to system clipboard.</Command.TooltipDescription>
+
+      <Command.LargeImages>
+        <Image Source="Res\EditCutL.bmp" />
+      </Command.LargeImages>
+    </Command>
+
+    <Command Name="cmdCopy"   Id="2001" Symbol="ID_CMD_COPY"    LabelTitle="Copy" Keytip="C">
+      <Command.TooltipDescription>Copy selection to system clipboard.</Command.TooltipDescription>
+      <Command.LargeImages>
+        <Image Source="Res\EditCopyL.bmp" />
+      </Command.LargeImages>
+    </Command>
+
+    <Command Name="cmdPaste"  Id="2002" Symbol="ID_CMD_PASTE"   LabelTitle="Paste" Keytip="V">
+      <Command.TooltipDescription>Paste from system clipboard.</Command.TooltipDescription>
+      <Command.LargeImages>
+        <Image Source="Res\EditPasteL.bmp" />
+      </Command.LargeImages>
+    </Command>
+
+
+    <Command Name="cmdDelete" Id="3000" Symbol="ID_CMD_DELETE"  LabelTitle="Delete" Keytip="D">
+      <Command.TooltipDescription>Delete selection.</Command.TooltipDescription>
+      <Command.LargeImages>
+        <Image Source="Res\EditDeleteL.bmp" />
+      </Command.LargeImages>
+    </Command>
+
+    <Command Name="cmdUndo"   Id="3001"   Symbol="ID_CMD_UNDO"  LabelTitle="Undo" Keytip="U">
+      <Command.TooltipDescription>Undo last action.</Command.TooltipDescription>
+      <Command.LargeImages>
+        <Image Source="Res\UndoL.bmp" />
+      </Command.LargeImages>
+    </Command>
+
+    <Command Name="cmdRedo"   Id="3002"   Symbol="ID_CMD_REDO"  LabelTitle="Redo" Keytip="R">
+      <Command.TooltipDescription>Redo last undone action.</Command.TooltipDescription>
+      <Command.LargeImages>
+        <Image Source="Res\RedoL.bmp" />
+      </Command.LargeImages>
+    </Command>
+
+
+    <Command Name="cmdFont"     Id="4000"   Symbol="ID_CMD_FONT"    LabelTitle="Font" Keytip="F"/>
+
+
+    <Command Name="cmdZoomIn"   Id="5000"   Symbol="ID_CMD_ZOOM_IN"    LabelTitle="Zoom In" Keytip="+">
+      <Command.TooltipDescription>Zoom In.</Command.TooltipDescription>
+      <Command.LargeImages>
+        <Image Source="Res\ZoomInL.bmp" />
+      </Command.LargeImages>
+    </Command>
+
+    <Command Name="cmdZoomOut"   Id="5001"   Symbol="ID_CMD_ZOOM_OUT"  LabelTitle="Zoom Out" Keytip="-">
+      <Command.TooltipDescription>Zoom out.</Command.TooltipDescription>
+      <Command.LargeImages>
+        <Image Source="Res\ZoomOutL.bmp" />
+      </Command.LargeImages>
+    </Command>
+
+    <Command Name="cmdHelpHelp"   Id="6000"   Symbol="ID_CMD_HELP_HELP"  LabelTitle="Help" Keytip="H">
+      <Command.TooltipDescription>Shows help.</Command.TooltipDescription>
+      <Command.LargeImages>
+        <Image Source="Res\HelpL.bmp" />
+      </Command.LargeImages>
+    </Command>
+
+    <Command Name="cmdHelpAbout"   Id="6001"   Symbol="ID_CMD_HELP_ABOUT"  LabelTitle="About" Keytip="A">
+      <Command.TooltipDescription>Displays a dialog showing information about this application.</Command.TooltipDescription>
+      <Command.LargeImages>
+        <Image Source="Res\InfoL.bmp" />
+      </Command.LargeImages>
+    </Command>
+
+    <Command Name="cmdHelpHome"   Id="6002"   Symbol="ID_CMD_HELP_HOME"  LabelTitle="Home" Keytip="N">
+      <Command.TooltipDescription>Navigates to Homepage.</Command.TooltipDescription>
+      <Command.LargeImages>
+        <Image Source="Res\HomeL.bmp" />
+      </Command.LargeImages>
+    </Command>
+  </Application.Commands>
+
+  <Application.Views>
+    <Ribbon>
+      <Ribbon.ApplicationMenu>
+        <ApplicationMenu CommandName="cmdFileMenu">
+          <MenuGroup>
+            <Button CommandName="cmdNew" />
+            <Button CommandName="cmdOpen" />
+            <Button CommandName="cmdSave" />
+            <Button CommandName="cmdSaveAs" />
+            <Button CommandName="cmdSaveAll" />
+          </MenuGroup>
+          <MenuGroup>
+            <Button CommandName="cmdExit" />
+          </MenuGroup>
+        </ApplicationMenu>
+      </Ribbon.ApplicationMenu>
+
+      <Ribbon.QuickAccessToolbar>
+        <QuickAccessToolbar CommandName="cmdQAT">
+          <QuickAccessToolbar.ApplicationDefaults>
+            <Button CommandName="cmdSave" />
+            <Button CommandName="cmdUndo" />
+          </QuickAccessToolbar.ApplicationDefaults>
+        </QuickAccessToolbar>
+      </Ribbon.QuickAccessToolbar>
+
+      <Ribbon.Tabs>
+        <Tab CommandName="tabHome">
+          <Tab.ScalingPolicy>
+            <ScalingPolicy>
+              <ScalingPolicy.IdealSizes>
+                <!-- This describes the maximum size of each group in the tab. -->
+                <Scale Group="grpClipboard" Size="Large" />
+              </ScalingPolicy.IdealSizes>
+              <!-- This describes the order and how the groups shrink when the window is
+              resized. -->
+              <Scale Group="grpClipboard" Size="Medium" />
+              <Scale Group="grpEdit" Size="Medium" />
+              <Scale Group="grpFont" Size="Medium" />
+            </ScalingPolicy>
+          </Tab.ScalingPolicy>
+
+          <Group CommandName="grpClipboard" SizeDefinition="ThreeButtons">
+            <Button CommandName="cmdPaste" />
+            <Button CommandName="cmdCut" />
+            <Button CommandName="cmdCopy" />
+          </Group>
+          <Group CommandName="grpEdit" SizeDefinition="ThreeButtons">
+            <Button CommandName="cmdDelete" />
+            <Button CommandName="cmdUndo" />
+            <Button CommandName="cmdRedo" />
+          </Group>
+          <Group CommandName="grpFont" >
+            <FontControl CommandName="cmdFont" ShowVerticalFonts = "true" ShowTrueTypeOnly = "true" />
+          </Group>
+        </Tab>
+        <Tab CommandName="tabView">
+          <Group CommandName="grpZoom" SizeDefinition="TwoButtons">
+            <Button CommandName="cmdZoomIn" />
+            <Button CommandName="cmdZoomOut" />
+          </Group>
+        </Tab>
+        <Tab CommandName="tabHelp">
+          <Group CommandName="grpHelp" SizeDefinition="ThreeButtons">
+            <Button CommandName="cmdHelpHelp" />
+            <Button CommandName="cmdHelpAbout" />
+            <Button CommandName="cmdHelpHome" />
+          </Group>
+        </Tab>
+      </Ribbon.Tabs>
+
+    </Ribbon>
+  </Application.Views>
+
+</Application>

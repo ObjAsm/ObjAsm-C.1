@@ -1,0 +1,34 @@
+// ScriptHost.idl : IDL source for ScriptOutput
+//
+import "OAIDL.IDL";
+import "OCIDL.IDL";
+[
+  uuid(BB69A4F3-5A9B-4026-9AA5-15EA3B42C361),
+  helpstring("ScriptOutput Type Library"),
+  version(1.0)
+]
+library ScriptOutput
+{
+  importlib("stdole32.tlb");
+  [
+    uuid(AB0B8860-62D3-4f17-A875-37CDA03229B8),
+    dual,
+    helpstring("ScriptOutput Dispatch Interface")
+  ]
+  interface IScriptOutput : IDispatch
+  {
+    [id(0), helpstring("Clears the output window")] HRESULT Clear();
+    [id(1), helpstring("Writes a string on the output window")] HRESULT Write([in] BSTR);
+    [id(2), helpstring("Sets the text color of the output window")] HRESULT Color([in] dword);
+    [id(3), helpstring("Sets the text font of the output window")] HRESULT Font([in] BSTR, [in] dword, [in] dword);
+  }
+
+  [
+    uuid(2B5DF56D-C8D8-4098-9A73-F8337166F767),
+    helpstring("ScriptOutput Class")
+  ]
+  coclass Output
+  {
+    [default] interface IScriptOutput;
+  }
+}

@@ -1,0 +1,480 @@
+MemFillB, pMem, dCount, bByte
+MemClone, pDstMem, pSrcMem, dSize
+MemComp, pMem1, pMem2, dCount
+MemShift, pDstMem, pSrcMem, dSize
+MemSwap, pDstMem, pSrcMem, dSize
+MemZero, pMem, dSize
+
+StrAlloc, dChars
+StrAllocA, dChars
+StrAllocW, dChars
+BStrAlloc, dChars
+
+StrNew, pString
+StrNewA, pStringW
+StrNewW, pStringA
+BStrNew, pBStr
+
+StrCNew, pString, dChars
+StrCNewA, pStringA, dChars
+StrCNewW, pStringW, dChars
+BStrCNew, pBStr, dChars
+
+StrDispose, pString
+StrDisposeA, pStringA
+StrDisposeW, pStringW
+BStrDispose, pBStr
+
+StrLength, pString
+StrLengthA, pStringA
+StrLengthW, pStringW
+BStrLength, pBStr
+
+StrSize, pString
+StrSizeA, pStringA
+StrSizeW, pStringW
+BStrSize, pBStr
+
+StrCLength, pString
+StrCLengthA, pStringA
+StrCLengthW, pStringW
+
+StrLimLen, pString, dMaxLength
+StrLimLenA, pStringA, dMaxLength
+StrLimLenW, pStringW, dMaxLength
+
+StrEnd, pString
+StrEndA, pStringA
+StrEndW, pStringW
+BStrEnd, pBStr
+
+StrMove, pDstString, pSrcString, dChars
+StrMoveA, pDstStringA, pSrcStringA, dChars
+StrMoveW, pDstStringW, pSrcStringW, dChars
+BStrMove, pDstBStr, pSrcBStr, dChars
+
+StrCopy, pDstString, pSrcString
+StrCopyA, pDstStringA, pSrcStringA
+StrCopyW, pDstStringW, pSrcStringW
+BStrCopy, pDstBStr, pSrcBStr
+
+StrECopy, pDstString, pSrcString
+StrECopyA, pDstStringA, pSrcStringA
+StrECopyW, pDstStringW, pSrcStringW
+BStrECopy, pDstBStr, pSrcBStr
+
+StrCECopy, pDstString, pSrcString, dChars
+StrCECopyA, pDstStringA, pSrcStringA, dChars
+StrCECopyW, pDstStringW, pSrcStringW, dChars
+BStrCECopy, pDstBStr, pSrcBStr, dChars
+
+StrCCopy, pDstString, pSrcString, dChars
+StrCCopyA, pDstStringA, pSrcStringA, dChars
+StrCCopyW, pDstStringW, pSrcStringW, dChars
+BStrCCopy, pDstBStr, pSrcBStr, dChars
+
+StrCat, pDstString, pCatString
+StrCatA, pDstStringA, pCatStringA
+StrCatW, pDstStringW, pCatStringW
+BStrCat, pDstBStr, pBCatString
+
+StrCatChar, pDstString, Char
+StrCatCharA, pDstStringA, bChar
+StrCatCharW, pDstStringW, wChar
+BStrCatChar, pDstBStr, wChar
+
+StrECatChar, pDstString, Char
+StrECatCharA, pDstStringA, bChar
+StrECatCharW, pDstStringW, wChar
+BStrECatChar, pDstBStr, wChar
+
+StrCCatChar, pDstString, Char, dMaxChars
+StrCCatCharA, pDstStringA, bChar, dMaxChars
+StrCCatCharW, pDstStringW, wChar, dMaxChars
+BStrCCatChar, pDstBStr, wChar, dMaxChars
+
+StrECat, pDstString, pCatString
+StrECatA, pDstStringA, pCatStringA
+StrECatW, pDstStringW, pCatStringW
+BStrECat, pDstBStr, pBCatString
+
+StrCECat, pDstString, pCatString, dMaxChars
+StrCECatA, pDstStringA, pCatStringA, dMaxChars
+StrCECatW, pDstStringW, pCatStringW, dMaxChars
+BStrCECat, pDstBStr, pCatBStr, dMaxChars
+
+StrCCat, pDstString, pCatString, dMaxChars
+StrCCatA, pDstStringA, pCatStringA, dMaxChars
+StrCCatW, pDstStringW, pCatStringW, dMaxChars
+BStrCCat, pDstBStr, pBCatString, dMaxChars
+
+StrComp, pString1, pString2
+StrCompA, pStringA1, pStringA2
+StrCompW, pStringW1, pStringW2
+BStrComp, pBStr1, pBStr2
+
+StrCComp, pString1, pString2, dChars
+StrCCompA, pStringA1, pStringA2, dChars
+StrCCompW, pStringW1, pStringW2, dChars
+BStrCComp, pBStr1, pBStr2, dChars
+
+StrIComp, pString1, pString2
+StrICompA, pStringA1, pStringA2
+StrICompW, pStringW1, pStringW2
+BStrIComp, pBStr1, pBStr2
+
+StrCIComp, pString1, pString2, dChars
+StrCICompA, pStringA1, pStringA2, dChars
+StrCICompW, pStringW1, pStringW2, dChars
+BStrCIComp, pBStr1, pBStr2, dChars
+
+StrLScan, pString, Char
+StrLScanA, pStringA, bChar
+StrLScanW, pStringW, wChar
+BStrLScan, pBStr, wChar
+
+StrRScan, pString, Char
+StrRScanA, pStringA, bChar
+StrRScanW, pStringW, wChar
+BStrRScan, pBStr, wChar
+
+StrCScan, pString, dMaxCount, Char
+StrCScanA, pStringA, dMaxCount, bChar
+StrCScanW, pStringW, dMaxCount, wChar
+BStrCScan, pString, dMaxCount, wChar
+
+StrPos, pSrcString, pSearchString
+StrPosA, pSrcStringA, pSearchStringA
+StrPosW, pSrcStringW, pSearchStringW
+BStrPos, pSrcBStr, pBSearchString
+
+StrCPos, pSrcString, pSearchString, dMaxchars
+StrCPosA, pSrcStringA, pSearchStringA, dMaxchars
+StrCPosW, pSrcStringW, pSearchStringW, dMaxchars
+BStrCPos, pSrcBStr, pSearchBStr, dMaxchars
+
+StrLRTrim, pDstString, pSrcString
+StrLRTrimA, pDstStringA, pSrcStringA
+StrLRTrimW, pDstStringW, pSrcStringW
+BStrLRTrim, pDstBStr, pSrcBStr
+
+StrLTrim, pDstString, pSrcString
+StrLTrimA, pDstStringA, pSrcStringA
+StrLTrimW, pDstStringW, pSrcStringW
+BStrLTrim, pDstBStr, pSrcBStr
+
+StrRTrim, pDstString, pSrcString
+StrRTrimA, pDstStringA, pSrcStringA
+StrRTrimW, pDstStringW, pSrcStringW
+BStrRTrim, pDstBStr, pSrcBStr
+
+StrUpper, pString
+StrUpperA, pStringA
+StrUpperW, pStringW
+BStrUpper, pBStr
+
+StrLower, pString
+StrLowerA, pStringA
+StrLowerW, pStringW
+BStrLower, pBStr
+
+StrFilter, pString, pPattern
+StrFilterA, pStringA, pPatternA
+StrFilterW, pStringW, pPatternW
+BStrFilter, pBStr, pBPattern
+
+StrIFilter, pString, pPattern
+StrIFilterA, pStringA, pPatternA
+StrIFilterW, pStringW, pPatternW
+BStrIFilter, pBStr, pBPattern
+
+StrMid, pDstString, pSrcString, dCharFrom, dCharCount
+StrMidA, pDstStringA, pSrcStringA, dCharFrom, dCharCount
+StrMidW, pDstStringW, pSrcStringW, dCharFrom, dCharCount
+BStrMid, pDstBStr, pSrcBStr, dCharFrom, dCharCount
+
+StrLeft, pDstString, pSrcString, dCharCount
+StrLeftA, pDstStringA, pSrcStringA, dCharCount
+StrLeftW, pDstStringW, pSrcStringW, dCharCount
+BStrLeft, pDstBStr, pSrcBStr, dCharCount
+
+StrRight, pDstString, pSrcString, dCharCount
+StrRightA, pDstStringA, pSrcStringA, dCharCount
+StrRightW, pDstStringB, pSrcStringB, dCharCount
+BStrRight, pDstBStr, pSrcBStr, dCharCount
+
+StrStartsWith, pString, pPrefix
+StrStartsWithA, pStringA, pPrefix
+StrStartsWithW, pStringB, pPrefix
+BStrStartsWith, pBStr, pPrefix
+
+StrEndsWith, pString, pSuffix
+StrEndsWithA, pStringA, pSuffix
+StrEndsWithW, pStringB, pSuffix
+BStrEndsWith, pBStr, pSuffix
+
+StrRepChr, Character, dCount
+StrRepChrA, CharacterA, dCount
+StrRepChrW, CharacterW, dCount
+BStrRepChr, CharacterW, dCount
+
+StrA2StrW, pDstStringW, pSrcStringA
+StrW2StrA, pDstStringA, pSrcStringW
+BStr2StrA, pDstStringA, pSrcBStr
+BStr2StrW, pDstStringW, pSrcBStr
+BStr2Str, pDstString, pSrcBStr
+
+Str2BStrA, pDstBStr, pSrcStringA
+Str2BStrW, pDstBStr, pSrcStringW
+Str2BStr, pDstBStr, pSrcString
+
+St0ToStr, pDstString, dPadding, dDecimals, dFlags
+St0ToStrA, pDstStringA, dPadding, dDecimals, dFlags
+St0ToStrW, pDstStringW, dPadding, dDecimals, dFlags
+St0ToBStr, pDstBString, dPadding, dDecimals, dFlags
+
+StrToSt0, pString
+StrToSt0A, pStringA
+StrToSt0W, pStringW
+BStrToSt0, pStringB
+
+GetObjectID, pInstance
+GetObjectTemplate, dObjectID
+GetAncestorID, dObjectID
+
+GUID2Str, pString, pGUID
+GUID2StrA, pStringA, pGUID
+GUID2StrW, pStringW, pGUID
+GUID2BStr, pBStr, pGUID
+
+dword2bin, pBinString, dword
+dword2binA, pBinStringA, dword
+dword2binW, pBinStringW, dword
+
+dword2dec, pDecString, dword
+dword2decA, pDecStringA, dword
+dword2decW, pDecStringW, dword
+
+dword2hex, pHexString, dword
+dword2hexA, pHexStringA, dword
+dword2hexW, pHexStringW, dword
+
+bin2dword, pBinString
+bin2dwordA, pBinStringA
+bin2dwordW, pBinStringW
+
+bin2qword, pBinString
+bin2qwordA, pBinStringA
+bin2qwordW, pBinStringW
+
+dec2dword, pDecString
+dec2dwordA, pDecStringA
+dec2dwordW, pDecStringW
+
+qword2bin, pBinString, qword
+qword2binA, pBinStringA, qword
+qword2binW, pBinStringW, qword
+
+qword2dec, pDecString, qword
+qword2decA, pDecStringA, qword
+qword2decW, pDecStringW, qword
+
+sqword2dec, pHexString, sqword
+sqword2decA, pDecStringA, sqword
+sqword2decW, pDecStringW, sqword
+
+qword2hex, pHexString, qword
+qword2hexA, pHexStringA, qword
+qword2hexW, pHexStringW, qword
+
+sdword2dec, pDecString, dword
+sdword2decA, pDecStringA, dword
+sdword2decW, pDecStringW, dword
+
+hex2dword, pHexString
+hex2dwordA, pHexStringA
+hex2dwordW, pHexStringW
+
+hex2qword, pHexString
+hex2qwordA, pHexStringA
+hex2qwordW, pHexStringW
+
+xword2hex, xword
+hex2xword, pString
+bin2xword, pString
+xword2bin, xword
+sxword2dec, sxword
+
+xword2hexA, xword
+hex2xwordA, pStringA
+bin2xwordA, pStringA
+xword2binA, xword
+sxword2decA, sxword
+
+xword2hexW, xword  
+hex2xwordW, pStringW
+bin2xwordW, pStringW
+xword2binW, xword  
+sxword2decW, sxword
+
+ActivatePrevInstance, pStringID, pClassName
+ActivatePrevInstanceA, pStringIDA, pClassNameA
+ActivatePrevInstanceW, pStringIDW, pClassNameW
+
+GetPrevInstance, pStringID, pClassName
+GetPrevInstanceA, pStringIDA, pClassNameA
+GetPrevInstanceW, pStringIDW, pClassNameW
+
+FileExist, pFileNameString
+FileExistA, pFileNameStringA
+FileExistW, pFileNameStringW
+
+FindFile, pFileName, pPaths, pRetBuffer
+FindFileA, pFileNameA, pPathsA, pRetBufferA
+FindFileW, pFileNameW, pPathsW, pRetBufferW
+
+CreatePath, pFilePathString
+CreatePathA, pFilePathStringA
+CreatePathW, pFilePathStringW
+
+ShortToLongPathName, pShortFileNameString
+ShortToLongPathNameA, pShortFileNameStringA
+ShortToLongPathNameW, pShortFileNameStringW
+
+NetErr2Str, dError, pString, dMaxStrChars
+NetErr2StrA, dError, pStringA, dMaxStrChars
+NetErr2StrW, dError, pStringA, dMaxStrChars
+
+DllErr2Str, dError, pString, dMaxStrChars, pDllName
+DllErr2StrA, dError, pStringA, dMaxStrChars, pDllName
+DllErr2StrW, dError, pStringW, dMaxStrChars, pDllName
+
+Err2Str, dError, pString, dMaxStrChars
+Err2StrA, dError, pStringA, dMaxStrChars
+Err2StrW, dError, pStringW, dMaxStrChars
+
+FindModuleByAddrNT, pAddress, pModuleName
+FindModuleByAddrNTA, pAddress, pModuleNameA
+FindModuleByAddrNTW, pAddress, pModuleNameW
+
+FindModuleByAddr9x, pAddress, pModuleName
+FindModuleByAddr9xA, pAddress, pModuleNameA
+FindModuleByAddr9xW, pAddress, pModuleNameW
+
+SetExceptionMessage, pMessage, pTitle, pCallbackFunc
+SetExceptionMessageA, pMessageA, pTitleA, pCallbackFunc
+SetExceptionMessageW, pMessageW, pTitleW, pCallbackFunc
+
+GetExceptionStr, dExceptionCode
+GetExceptionStrA, dExceptionCode
+GetExceptionStrW, dExceptionCode
+
+Mem2Hex, pHexString, pMemory, dCount
+Mem2HexA, pHexStringA, pMemory, dCount
+Mem2HexW, pHexStringW, pMemory, dCount
+
+GetFileLines, hFile
+GetFileLinesA, hFile
+
+SetPrivilegeToken, hProcess, pPrivilegeName, dEnable
+SetPrivilegeTokenA, hProcess, pPrivilegeNameA, dEnable
+SetPrivilegeTokenW, hProcess, pPrivilegeNameW, dEnable
+
+ErrorMessageBox, hWnd, pUserMessage, dLangID, dErrorCode
+ErrorMessageBoxA, hWnd, pUserMessageA, dLangID, dErrorCode
+ErrorMessageBoxW, hWnd, pUserMessageW, dLangID, dErrorCode
+
+GetFileHash, pHash, pFileName, dHashType
+GetFileHashA, pHash, pFileNameA, dHashType
+GetFileHashW, pHash, pFileNameW, dHashType
+
+AreVisualStylesEnabled
+Random32, dRangeLimit
+GetOS
+ComEventsAdvice, pISrcAny, pISinkUnk, pIID, ppICP, pCookie
+ComEventsUnadvice, pICP, dPrvCookie
+ComPtrAssign, ppOldInterface, pNewInterface
+CenterForm, dWindowSize, dScreenSize
+MoveWindowVisible, hWnd, sdXPos, sdYPos
+GetBottomWindow, hWnd
+WndFadeIn, hWnd, dStart, dStop, dStep, dSleep
+WndFadeOut, hWnd, dStart, dStop, dStep, dSleep
+Parse, pDstString, pSrcString, dArgumentIndex
+ParseA, pDstStringA, pSrcStringA, dArgumentIndex
+ParseW, pDstStringW, pSrcStringW, dArgumentIndex
+IsWinNT
+IsAdmin
+LoadCommonControls, dFlags
+DrawTransparentBitmap, hDC, hBitmap, dXStart, dYStart, dTransparentColor
+Bmp2Rgn, hDC, hRegion, dCombineMode, dTransparentColor
+SysShutdown, dType, dReason
+SysStandby
+IsHardwareFeaturePresent, dFeature
+IsCPUFeaturePresent, dFeature
+WaitForProcess, dProcessID, dTimeout
+IsPntInRect, pPoint, pRect
+IsGUIDEqual, pGUID1, pGUID2
+DisableCPUSerialNumber
+GetLogProcCount, pAffinityMaskTable
+SetClientSize, hWnd, X_Size, Y_Size
+RadixSortI32, pArray, dCount, pWorkArea
+RadixSortPtrI32, pArray, dCount, dOffset, pWorkArea
+RadixSortUI32, pArray, dCount, pWorkArea
+RadixSortPtrUI32, pArray, dCount, dOffset, pWorkArea
+RadixSortF32, pArray, dCount, pWorkArea
+RadixSortPtrF32, pArray, dCount, dOffset, pWorkArea
+RadixSortF64, pArray, dCount, pWorkArea
+RadixSortPtrF64, pArray, dCount, dOffset, pWorkArea
+NewObjInst, dObjID
+IsScrollbarVisible, hWnd, dScrollbarType
+GetDlgBaseUnits, hDC
+SendChildrenMessage, hWnd, MsgID, wParam, lParam
+UTF8ToWide, pDestination, pSource, dBufferSize
+WideToUTF8, pDestination, pSource, dBufferSize
+Real4ToHalf, real4
+FindModuleByAddr, pAddress, pModuleName
+FindModuleByAddrA, pAddress, pModuleNameA
+FindModuleByAddrW, pAddress, pModuleNameW
+PdfView, hParent, pFileName, pDestination
+PdfViewA, hParent, pFileNameA, pDestinationA
+PdfViewW, hParent, pFileNameW, pDestinationW
+SetShellAssociation, dGlobal, pExtension, pVerb, pApplication, pArguments
+SetShellAssociationA, dGlobal, pExtensionA, pVerbA, pApplicationA, pArgumentsA
+SetShellAssociationW, dGlobal, pExtensionW, pVerbW, pApplicationW, pArgumentsW
+SetShellPerceivedType, dGlobal, pExtension, pPerceivedType
+SetShellPerceivedTypeA, dGlobal, pExtensionA, pPerceivedTypeA
+SetShellPerceivedTypeW, dGlobal, pExtensionW, pPerceivedTypeW
+MsgBox, hParent, pText, pCaption, dOptions
+MsgBoxA, hParent, pTextA, pCaptionA, dOptions
+MsgBoxW, hParent, pTextW, pCaptionW, dOptions
+_chkstk
+_alloca_probe_8
+_alloca_probe_16
+_alloca_8
+_alloca_16
+
+EHandler, pExceptionRecord, pEstablisherFrame, pContextRecord, pDispatcherContext
+
+DbgWndOpen
+DbgConOpen
+DbgLogOpen
+DbgClose
+DbgOutCmd, bCommand, pData
+DbgOutText, pString
+DbgOutTextA, pStringA
+DbgOutTextW, pStringW
+DbgOutTextC, pString, dCount
+DbgOutTextCA, pStringA, dCount
+DbgOutTextCW, pStringW, dCount
+DbgOutBitmap, hBitmap, pDestWndName
+DbgOutMem, pMemory, dCount, dType, pDestWndName
+DbgOutFPU, pDestWndName
+DbgOutMsg, dMsgID, dColor, pDestWndName
+DbgOutApiErr, dError, pDestWndName
+DbgOutComErr, dError, pDestWndName
+DbgOutInterface, pGUID, dCplor, pDestWndName
+DbgOutInterfaceName, pGUID, dCplor, pDestWndName
+DbgOutComponent, pGUID, dCplor, pDestWndName
+DbgOutComponentName, pGUID, dCplor, pDestWndName
+DbgShowObjectHeader, pObjectName, pInstance, pDestWndName
+DbgShowTraceMethod, pMName, dCount, pTicks, pDestWndName

@@ -1,0 +1,122 @@
+; ==================================================================================================
+; Title:      Api3DEng.rc
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Purpose:    ObjAsm API 3D Engine demonstration program.
+; Notes:      Version C.1.0, October 2017
+;               - First release.
+; ==================================================================================================
+
+
+#include "Resource.h"               //Windows resource definitions
+#include "Api3DEng_Shared.rc"       //Application shared definitions
+#include "VER\Version.rc"           //Application version definition
+#include "MFT\Manifest_Invoker.rc"  //Application manifest definition
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+
+// Icons -------------------------------------------------------------------------------------------
+// App icons
+ICON_APP              ICON DISCARDABLE "ICO\OA.ico"
+
+// Menu icons
+ICON_FILE_OPEN        ICON DISCARDABLE "ICO\Open_16x16_04.ico"
+ICON_FILE_SAVE        ICON DISCARDABLE "ICO\Save_16x16_04.ico"
+ICON_FILE_EXIT        ICON DISCARDABLE "ICO\Exit_16x16_04.ico"
+ICON_SCENE_ANIMATE    ICON DISCARDABLE "ICO\\ActionStart_16x16_04.ico"
+ICON_SCENE_WIREFRAME  ICON DISCARDABLE "ICO\Wireframe_16x16_04.ico"
+ICON_HELP_HELP        ICON DISCARDABLE "ICO\Help_Red_16x16_04.ico"
+ICON_HELP_ABOUT       ICON DISCARDABLE "ICO\Info_Blue_16x16_04.ico"
+
+// DialogAboutEx icons
+ICON_LINK             ICON DISCARDABLE "ICO\Link_16x16_04.ico"
+ICON_MAIL             ICON DISCARDABLE "ICO\Mail_16x16_04.ico"
+
+
+// Cursors -----------------------------------------------------------------------------------------
+CURSOR_HAND           CURSOR DISCARDABLE "CUR\Hand.cur"
+
+
+// Bitmaps -----------------------------------------------------------------------------------------
+BMP_BACKGROUND    BITMAP "BMP\WndBkgnd.bmp"
+
+
+// Dialogs -----------------------------------------------------------------------------------------
+#include "DLG\DialogAboutEx.rc"
+
+
+// Menus -------------------------------------------------------------------------------------------
+MENUINIT MENUEX DISCARDABLE
+BEGIN
+  POPUP "$00",          IDM_FILE,               MFT_STRING, MFS_ENABLED
+  BEGIN
+    MENUITEM "01$01",   IDM_FILE_OPEN,          MFT_STRING, MFS_ENABLED
+    MENUITEM "02$02",   IDM_FILE_SAVE,          MFT_STRING, MFS_ENABLED
+    MENUITEM "-$03",    1000,                   MFT_STRING, MFS_ENABLED
+    MENUITEM "03$04",   IDM_FILE_EXIT,          MFT_STRING, MFS_ENABLED
+  END
+  POPUP "$10",          IDM_HELP,               MFT_STRING, MFS_ENABLED
+  BEGIN
+    MENUITEM "-$11",    2000,                   MFT_STRING, MFS_ENABLED
+    MENUITEM "$12",     IDM_SCENE_CAM1,         MFT_STRING, MFS_ENABLED
+    MENUITEM "$13",     IDM_SCENE_CAM2,         MFT_STRING, MFS_ENABLED
+    MENUITEM "-$14",    2001,                   MFT_STRING, MFS_ENABLED
+    MENUITEM "$15",     IDM_SCENE_X1,           MFT_STRING, MFS_ENABLED
+    MENUITEM "$16",     IDM_SCENE_X2,           MFT_STRING, MFS_ENABLED
+    MENUITEM "$17",     IDM_SCENE_Y1,           MFT_STRING, MFS_ENABLED
+    MENUITEM "$18",     IDM_SCENE_Y2,           MFT_STRING, MFS_ENABLED
+    MENUITEM "$19",     IDM_SCENE_Z1,           MFT_STRING, MFS_ENABLED
+    MENUITEM "$20",     IDM_SCENE_Z2,           MFT_STRING, MFS_ENABLED
+    MENUITEM "-$21",    2002,                   MFT_STRING, MFS_ENABLED
+    MENUITEM "04$22",   IDM_SCENE_ANIMATE,      MFT_STRING, MFS_ENABLED
+    MENUITEM "05$23",   IDM_SCENE_DRAWWIRE,     MFT_STRING, MFS_ENABLED
+  END
+  POPUP "$30",          IDM_HELP,               MFT_STRING, MFS_ENABLED
+  BEGIN
+    MENUITEM "06$31",   IDM_HELP_HELP,          MFT_STRING, MFS_ENABLED
+    MENUITEM "07$32",   IDM_HELP_ABOUT,         MFT_STRING, MFS_ENABLED
+  END
+END
+
+
+// Stringtable -------------------------------------------------------------------------------------
+#define IDLANG_ENGLISH 000
+
+STRINGTABLE
+MOVEABLE PURE LOADONCALL DISCARDABLE
+BEGIN
+  IDLANG_ENGLISH + 00, "&File|File commands"
+  IDLANG_ENGLISH + 01, "&Open~Ctrl+O|Opens a new Scene"
+  IDLANG_ENGLISH + 02, "&Save~Ctrl+S|Saves the active Scene"
+  IDLANG_ENGLISH + 03, "Application"
+  IDLANG_ENGLISH + 04, "E&xit...~Alt+F4|Exits application"
+
+  IDLANG_ENGLISH + 10 "&Scene|Scene movements"
+  IDLANG_ENGLISH + 11 "Camera"
+  IDLANG_ENGLISH + 12, "Rotate up~Num 1|Rotates the camera up"
+  IDLANG_ENGLISH + 13, "Rotate down~Num 3|Rotates the camera down"
+  IDLANG_ENGLISH + 14, "Blue Sphere"
+  IDLANG_ENGLISH + 15, "Rotate +X~Num 7|Rotates blue sphere +X"
+  IDLANG_ENGLISH + 16, "Rotate -X~Num 4|Rotates blue sphere -X"
+  IDLANG_ENGLISH + 17, "Rotate +Y~Num 8|Rotates blue sphere +Y"
+  IDLANG_ENGLISH + 18, "Rotate -Y~Num 5|Rotates blue sphere -Y"
+  IDLANG_ENGLISH + 19, "Rotate +Z~Num 9|Rotates blue sphere +Z"
+  IDLANG_ENGLISH + 20, "Rotate -Z~Num 6|Rotates blue sphere -Z"
+  IDLANG_ENGLISH + 21, "Special"
+  IDLANG_ENGLISH + 22, "Animate the scene    ~Space|Animates the scene"
+  IDLANG_ENGLISH + 23, "Wire draw~T|Draws the scene using wires"
+  
+  IDLANG_ENGLISH + 30, "&Help|Invokes help"
+  IDLANG_ENGLISH + 31, "Application help~F1|Launches help system"
+  IDLANG_ENGLISH + 32, "&About...|Displays information about this application"
+END
+
+
+// Accelerators ------------------------------------------------------------------------------------
+MDIACCEL ACCELERATORS DISCARDABLE
+BEGIN
+  VK_F1, IDM_HELP_HELP,       VIRTKEY, SHIFT,   NOINVERT
+  "O",   IDM_FILE_OPEN,       VIRTKEY, CONTROL, NOINVERT
+  "S",   IDM_FILE_SAVE,       VIRTKEY, CONTROL, NOINVERT
+END

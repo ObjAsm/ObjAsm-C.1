@@ -1,0 +1,17 @@
+; ==================================================================================================
+; Title:      XMenu.rc
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Purpose:    Resource Compiler macros to help defining XMenu items.
+; Notes:      Version C.1.0, October 2017
+;               - First release.
+; ==================================================================================================
+
+
+#define STRINGIZE(text) #text
+#define XMENU_CAT_RES(a, b) STRINGIZE(a\x24b)
+#define XMENU_POPUP(a, b, c) POPUP STRINGIZE(a\x24b), c, MFT_STRING
+#define XMENU_ITEM(a, b, c) MENUITEM STRINGIZE(a\x24b), c, MFT_STRING
+#define XMENU_LINE(a) MENUITEM "-|", a, MFT_STRING, MFS_ENABLED
+#define IDB_NONE
+#define IDS_NONE

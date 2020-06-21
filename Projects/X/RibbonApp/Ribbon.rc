@@ -1,0 +1,375 @@
+// ******************************************************************************
+// * This is an automatically generated file containing the ribbon resource for *
+// * your application.                                                          *
+// ******************************************************************************
+
+#include ".\Ribbon.h"
+
+STRINGTABLE 
+BEGIN
+    tabHome_LabelTitle_RESID L"Start" /* LabelTitle tabHome_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    tabHome_Keytip_RESID L"S" /* Keytip tabHome_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    tabView_LabelTitle_RESID L"View" /* LabelTitle tabView_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    tabView_Keytip_RESID L"V" /* Keytip tabView_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    tabHelp_LabelTitle_RESID L"Help" /* LabelTitle tabHelp_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    tabHelp_Keytip_RESID L"H" /* Keytip tabHelp_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    grpClipboard_LabelTitle_RESID L"Clipboard" /* LabelTitle grpClipboard_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    grpEdit_LabelTitle_RESID L"Edit" /* LabelTitle grpEdit_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    grpZoom_LabelTitle_RESID L"Zoom" /* LabelTitle grpZoom_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    grpHelp_LabelTitle_RESID L"Help" /* LabelTitle grpHelp_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    grpFont_LabelTitle_RESID L"Font" /* LabelTitle grpFont_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_NEW_LabelTitle_RESID L"New document" /* LabelTitle ID_CMD_NEW_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_NEW_Keytip_RESID L"N" /* Keytip ID_CMD_NEW_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_NEW_TooltipTitle_RESID L"New (Ctrl+N)" /* TooltipTitle ID_CMD_NEW_TooltipTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_NEW_TooltipDescription_RESID L"Create a new document." /* TooltipDescription ID_CMD_NEW_TooltipDescription_RESID: (null) */
+END
+
+ID_CMD_NEW_LargeImages_RESID    BITMAP    "Res\NewL.bmp" /* LargeImages ID_CMD_NEW_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_OPEN_LabelTitle_RESID L"Open" /* LabelTitle ID_CMD_OPEN_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_OPEN_Keytip_RESID L"O" /* Keytip ID_CMD_OPEN_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_OPEN_TooltipTitle_RESID L"Open (Ctrl+O)" /* TooltipTitle ID_CMD_OPEN_TooltipTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_OPEN_TooltipDescription_RESID L"Open a document." /* TooltipDescription ID_CMD_OPEN_TooltipDescription_RESID: (null) */
+END
+
+ID_CMD_OPEN_LargeImages_RESID    BITMAP    "Res\OpenL.bmp" /* LargeImages ID_CMD_OPEN_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_SAVE_LabelTitle_RESID L"Save" /* LabelTitle ID_CMD_SAVE_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_SAVE_Keytip_RESID L"S" /* Keytip ID_CMD_SAVE_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_SAVE_TooltipTitle_RESID L"Save (Ctrl+S)" /* TooltipTitle ID_CMD_SAVE_TooltipTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_SAVE_TooltipDescription_RESID L"Save the current document." /* TooltipDescription ID_CMD_SAVE_TooltipDescription_RESID: (null) */
+END
+
+ID_CMD_SAVE_LargeImages_96__RESID    BITMAP    "Res\SaveL.bmp" /* LargeImages ID_CMD_SAVE_LargeImages_96__RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_SAVEAS_LabelTitle_RESID L"Save As" /* LabelTitle ID_CMD_SAVEAS_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_SAVEAS_Keytip_RESID L"A" /* Keytip ID_CMD_SAVEAS_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_SAVEAS_TooltipTitle_RESID L"Save As (Ctrl+A)" /* TooltipTitle ID_CMD_SAVEAS_TooltipTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_SAVEAS_TooltipDescription_RESID L"Save the current document with a new name." /* TooltipDescription ID_CMD_SAVEAS_TooltipDescription_RESID: (null) */
+END
+
+ID_CMD_SAVEAS_LargeImages_RESID    BITMAP    "Res\SaveAsL.bmp" /* LargeImages ID_CMD_SAVEAS_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_SAVEALL_LabelTitle_RESID L"Save All" /* LabelTitle ID_CMD_SAVEALL_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_SAVEALL_Keytip_RESID L"A" /* Keytip ID_CMD_SAVEALL_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_SAVEALL_TooltipTitle_RESID L"Save All" /* TooltipTitle ID_CMD_SAVEALL_TooltipTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_SAVEALL_TooltipDescription_RESID L"Save the current document with a new name." /* TooltipDescription ID_CMD_SAVEALL_TooltipDescription_RESID: (null) */
+END
+
+ID_CMD_SAVEALL_LargeImages_RESID    BITMAP    "Res\SaveAllL.bmp" /* LargeImages ID_CMD_SAVEALL_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_EXIT_LabelTitle_RESID L"Exit" /* LabelTitle ID_CMD_EXIT_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_EXIT_Keytip_RESID L"X" /* Keytip ID_CMD_EXIT_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_EXIT_TooltipTitle_RESID L"Exit (Ctrl+X)" /* TooltipTitle ID_CMD_EXIT_TooltipTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_EXIT_TooltipDescription_RESID L"Exit the application." /* TooltipDescription ID_CMD_EXIT_TooltipDescription_RESID: (null) */
+END
+
+ID_CMD_EXIT_LargeImages_RESID    BITMAP    "Res\ExitL.bmp" /* LargeImages ID_CMD_EXIT_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_CUT_LabelTitle_RESID L"Cut" /* LabelTitle ID_CMD_CUT_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_CUT_Keytip_RESID L"X" /* Keytip ID_CMD_CUT_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_CUT_TooltipDescription_RESID L"Cut selection to system clipboard." /* TooltipDescription ID_CMD_CUT_TooltipDescription_RESID: (null) */
+END
+
+ID_CMD_CUT_LargeImages_RESID    BITMAP    "Res\EditCutL.bmp" /* LargeImages ID_CMD_CUT_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_COPY_LabelTitle_RESID L"Copy" /* LabelTitle ID_CMD_COPY_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_COPY_Keytip_RESID L"C" /* Keytip ID_CMD_COPY_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_COPY_TooltipDescription_RESID L"Copy selection to system clipboard." /* TooltipDescription ID_CMD_COPY_TooltipDescription_RESID: (null) */
+END
+
+ID_CMD_COPY_LargeImages_RESID    BITMAP    "Res\EditCopyL.bmp" /* LargeImages ID_CMD_COPY_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_PASTE_LabelTitle_RESID L"Paste" /* LabelTitle ID_CMD_PASTE_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_PASTE_Keytip_RESID L"V" /* Keytip ID_CMD_PASTE_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_PASTE_TooltipDescription_RESID L"Paste from system clipboard." /* TooltipDescription ID_CMD_PASTE_TooltipDescription_RESID: (null) */
+END
+
+ID_CMD_PASTE_LargeImages_RESID    BITMAP    "Res\EditPasteL.bmp" /* LargeImages ID_CMD_PASTE_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_DELETE_LabelTitle_RESID L"Delete" /* LabelTitle ID_CMD_DELETE_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_DELETE_Keytip_RESID L"D" /* Keytip ID_CMD_DELETE_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_DELETE_TooltipDescription_RESID L"Delete selection." /* TooltipDescription ID_CMD_DELETE_TooltipDescription_RESID: (null) */
+END
+
+ID_CMD_DELETE_LargeImages_RESID    BITMAP    "Res\EditDeleteL.bmp" /* LargeImages ID_CMD_DELETE_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_UNDO_LabelTitle_RESID L"Undo" /* LabelTitle ID_CMD_UNDO_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_UNDO_Keytip_RESID L"U" /* Keytip ID_CMD_UNDO_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_UNDO_TooltipDescription_RESID L"Undo last action." /* TooltipDescription ID_CMD_UNDO_TooltipDescription_RESID: (null) */
+END
+
+ID_CMD_UNDO_LargeImages_RESID    BITMAP    "Res\UndoL.bmp" /* LargeImages ID_CMD_UNDO_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_REDO_LabelTitle_RESID L"Redo" /* LabelTitle ID_CMD_REDO_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_REDO_Keytip_RESID L"R" /* Keytip ID_CMD_REDO_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_REDO_TooltipDescription_RESID L"Redo last undone action." /* TooltipDescription ID_CMD_REDO_TooltipDescription_RESID: (null) */
+END
+
+ID_CMD_REDO_LargeImages_RESID    BITMAP    "Res\RedoL.bmp" /* LargeImages ID_CMD_REDO_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_FONT_LabelTitle_RESID L"Font" /* LabelTitle ID_CMD_FONT_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_FONT_Keytip_RESID L"F" /* Keytip ID_CMD_FONT_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_ZOOM_IN_LabelTitle_RESID L"Zoom In" /* LabelTitle ID_CMD_ZOOM_IN_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_ZOOM_IN_Keytip_RESID L"+" /* Keytip ID_CMD_ZOOM_IN_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_ZOOM_IN_TooltipDescription_RESID L"Zoom In." /* TooltipDescription ID_CMD_ZOOM_IN_TooltipDescription_RESID: (null) */
+END
+
+ID_CMD_ZOOM_IN_LargeImages_RESID    BITMAP    "Res\ZoomInL.bmp" /* LargeImages ID_CMD_ZOOM_IN_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_ZOOM_OUT_LabelTitle_RESID L"Zoom Out" /* LabelTitle ID_CMD_ZOOM_OUT_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_ZOOM_OUT_Keytip_RESID L"-" /* Keytip ID_CMD_ZOOM_OUT_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_ZOOM_OUT_TooltipDescription_RESID L"Zoom out." /* TooltipDescription ID_CMD_ZOOM_OUT_TooltipDescription_RESID: (null) */
+END
+
+ID_CMD_ZOOM_OUT_LargeImages_RESID    BITMAP    "Res\ZoomOutL.bmp" /* LargeImages ID_CMD_ZOOM_OUT_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_HELP_HELP_LabelTitle_RESID L"Help" /* LabelTitle ID_CMD_HELP_HELP_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_HELP_HELP_Keytip_RESID L"H" /* Keytip ID_CMD_HELP_HELP_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_HELP_HELP_TooltipDescription_RESID L"Shows help." /* TooltipDescription ID_CMD_HELP_HELP_TooltipDescription_RESID: (null) */
+END
+
+ID_CMD_HELP_HELP_LargeImages_RESID    BITMAP    "Res\HelpL.bmp" /* LargeImages ID_CMD_HELP_HELP_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_HELP_ABOUT_LabelTitle_RESID L"About" /* LabelTitle ID_CMD_HELP_ABOUT_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_HELP_ABOUT_Keytip_RESID L"A" /* Keytip ID_CMD_HELP_ABOUT_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_HELP_ABOUT_TooltipDescription_RESID L"Displays a dialog showing information about this application." /* TooltipDescription ID_CMD_HELP_ABOUT_TooltipDescription_RESID: (null) */
+END
+
+ID_CMD_HELP_ABOUT_LargeImages_RESID    BITMAP    "Res\InfoL.bmp" /* LargeImages ID_CMD_HELP_ABOUT_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_HELP_HOME_LabelTitle_RESID L"Home" /* LabelTitle ID_CMD_HELP_HOME_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_HELP_HOME_Keytip_RESID L"N" /* Keytip ID_CMD_HELP_HOME_Keytip_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_HELP_HOME_TooltipDescription_RESID L"Navigates to Homepage." /* TooltipDescription ID_CMD_HELP_HOME_TooltipDescription_RESID: (null) */
+END
+
+ID_CMD_HELP_HOME_LargeImages_RESID    BITMAP    "Res\HomeL.bmp" /* LargeImages ID_CMD_HELP_HOME_LargeImages_RESID: (null) */
+APPLICATION_RIBBON    UIFILE    "Ribbon.bml"
