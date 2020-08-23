@@ -1,9 +1,9 @@
 ; ==================================================================================================
-; Title:   ISupportErrorInfo.inc
-; Author:  Kai Liebenau.
-; Purpose: ObjAsm32 support of ISupportErrorInfo interfaces.
-; Version: Version 1.0.0, September 2006
-;            - First release.
+; Title:      ISupportErrorInfo.inc
+; Author:     Kai Liebenau.
+; Purpose:    ObjAsm support of ISupportErrorInfo interfaces.
+; Version:    Version 1.0.0, September 2006
+;               - First release.
 ; ==================================================================================================
 
 
@@ -33,66 +33,65 @@ ObjectEnd
 if IMPLEMENT
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:      ISupportErrorInfo.Done
-; Purpose:     Finalize the interface object.
-; Arguments:   None.
-; Return:      Nothing.
+; Method:     ISupportErrorInfo.Done
+; Purpose:    Finalize the interface object.
+; Arguments:  None.
+; Return:     Nothing.
 
-Method ISupportErrorInfo.Done, 
-    DbgText "ISupportErrorInfo.Done", "ISupportErrorInfo"
-    SetObject xcx
-    Destroy [xcx].pSupportedIIDs                        ;Destroy DataCollection
-    ACall pSelf::ISupportErrorInfo.Done
+Method ISupportErrorInfo.Done,
+  DbgText "ISupportErrorInfo.Done", "ISupportErrorInfo"
+  SetObject xcx
+  Destroy [xcx].pSupportedIIDs                          ;Destroy DataCollection
+  ACall pSelf::ISupportErrorInfo.Done
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:      ISupportErrorInfo.Init
-; Purpose:     Initialize the interface object.
-; Arguments:   -> Owner object.
-; Return:      Nothing.
+; Method:     ISupportErrorInfo.Init
+; Purpose:    Initialize the interface object.
+; Arguments:  Arg1: -> Owner object.
+; Return:     Nothing.
 
-Method ISupportErrorInfo.Init, , pOwner:POINTER
-    DbgText "ISupportErrorInfo.Init", "ISupportErrorInfo"
-    New XWCollection
-    push xax
-	OCall xax::XWCollection.Init, pOwner, 0, 1, COL_MAX_CAPACITY
-    SetObject xcx;,, [xsp + 4]
-    pop [xcx].pSupportedIIDs;, xax
-    ACall xcx.Init, pOwner
+Method ISupportErrorInfo.Init, uses xbx, pOwner:POINTER
+  DbgText "ISupportErrorInfo.Init", "ISupportErrorInfo"
+  mov xbx, $New(XWCollection)
+  OCall xbx::XWCollection.Init, pOwner, 0, 1, COL_MAX_CAPACITY
+  SetObject xcx
+  mov [xcx].pSupportedIIDs, xbx
+  ACall xcx.Init, pOwner
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:      ISupportErrorInfo.InterfaceSupportsErrorInfo
-; Purpose:     Query if the interface identified with RefIID supports the IErrorInfo interface.
-; Arguments:   Arg1: -> RefIID of the queried interface.
-; Return:      eax = HRESULT (S_OK, S_FALSE or E_POINTER).
+; Method:     ISupportErrorInfo.InterfaceSupportsErrorInfo
+; Purpose:    Query if the interface identified with RefIID supports the IErrorInfo interface.
+; Arguments:  Arg1: -> RefIID of the queried interface.
+; Return:     xax = HRESULT (S_OK, S_FALSE or E_POINTER).
 
-Method ISupportErrorInfo.InterfaceSupportsErrorInfo, , pRefIID:POINTER
-    DbgText "ISupportErrorInfo.InterfaceSupportsErrorInfo", "ISupportErrorInfo"
-    SetObject xcx
-    .if pRefIID != NULL
-      OCall [ecx].pSupportedIIDs::Collection.FirstThat, \
-                                  offset MemComp, pRefIID, sizeof(GUID)  ;pRefIID
-      .if xax == NULL
-        mov xax, S_FALSE
-      .else
-        xor xax, xax                                    ;S_OK
-      .endif
+Method ISupportErrorInfo.InterfaceSupportsErrorInfo,, pRefIID:POINTER
+  DbgText "ISupportErrorInfo.InterfaceSupportsErrorInfo", "ISupportErrorInfo"
+  SetObject xcx
+  .if pRefIID != NULL
+    OCall [xcx].pSupportedIIDs::Collection.FirstThat, \
+                                offset MemComp, pRefIID, sizeof(GUID)  ;pRefIID
+    .if xax == NULL
+      mov xax, S_FALSE
     .else
-      mov xax, E_POINTER
+      xor xax, xax                                      ;S_OK
     .endif
+  .else
+    mov xax, E_POINTER
+  .endif
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:      ISupportErrorInfo.InsertIID
-; Purpose:     Insert a GUID in the Collection.
-; Arguments:   Arg1: -> GUID.
-; Return:      eax -> inserted GUID.
+; Method:     ISupportErrorInfo.InsertIID
+; Purpose:    Insert a GUID in the Collection.
+; Arguments:  Arg1: -> GUID.
+; Return:     xax -> inserted GUID.
 
-Method ISupportErrorInfo.InsertIID, , pRefIID:POINTER
-    DbgText "ISupportErrorInfo.InsertIID", "ISupportErrorInfo"
-    SetObject xcx
-    OCall [ecx].pSupportedIIDs::Collection.Insert, pRefIID
+Method ISupportErrorInfo.InsertIID,, pRefIID:POINTER
+   DbgText "ISupportErrorInfo.InsertIID", "ISupportErrorInfo"
+   SetObject xcx
+   OCall [xcx].pSupportedIIDs::Collection.Insert, pRefIID
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -105,17 +104,17 @@ MethodEnd
 ; Return:      Nothing.
 
 SetErrorFromID proc dErrID:DWORD, pSrcStr:POINTER, pIID:POINTER, dLCID:DWORD
-    local pErrorStr:POINTER
+  local pErrorStr:POINTER
 
-    .if dErrID != 0
-      invoke FormatMessage, FORMAT_MESSAGE_FROM_SYSTEM or FORMAT_MESSAGE_ALLOCATE_BUFFER,
-                             NULL, dErrID, dLCID, addr pErrorStr, 0, NULL
-      .if pErrorStr != NULL
-        invoke SetErrorFromStr, pErrorStr, pSrcStr, pIID
-        invoke LocalFree, pErrorStr
-      .endif
+  .if dErrID != 0
+    invoke FormatMessage, FORMAT_MESSAGE_FROM_SYSTEM or FORMAT_MESSAGE_ALLOCATE_BUFFER,
+                          NULL, dErrID, dLCID, addr pErrorStr, 0, NULL
+    .if pErrorStr != NULL
+      invoke SetErrorFromStr, pErrorStr, pSrcStr, pIID
+      invoke LocalFree, pErrorStr
     .endif
-    ret
+  .endif
+  ret
 SetErrorFromID endp
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -127,23 +126,23 @@ SetErrorFromID endp
 ; Return:      Nothing.
 
 SetErrorFromStr proc pErrorStr:POINTER, pSrcStr:POINTER, pIID:POINTER
-    local pErrorInfo:POINTER
+  local pErrorInfo:POINTER
 
-    .if pErrorStr != NULL
-      invoke CreateErrorInfo, addr pErrorInfo
-      .if pErrorInfo != NULL
-        ICall pErrorInfo::ICreateErrorInfo.SetDescription, pErrorStr
-        .if pSrcStr != NULL
-          ICall pErrorInfo::ICreateErrorInfo.SetSource, pSrcStr
-        .endif
-        .if pIID != NULL
-          ICall pErrorInfo::ICreateErrorInfo.SetGUID, pIID
-        .endif
-        invoke SetErrorInfo, NULL, pErrorInfo
-        ICall pErrorInfo::IUnknown.Release
+  .if pErrorStr != NULL
+    invoke CreateErrorInfo, addr pErrorInfo
+    .if pErrorInfo != NULL
+      ICall pErrorInfo::ICreateErrorInfo.SetDescription, pErrorStr
+      .if pSrcStr != NULL
+        ICall pErrorInfo::ICreateErrorInfo.SetSource, pSrcStr
       .endif
+      .if pIID != NULL
+        ICall pErrorInfo::ICreateErrorInfo.SetGUID, pIID
+      .endif
+      invoke SetErrorInfo, NULL, pErrorInfo
+      ICall pErrorInfo::IUnknown.Release
     .endif
-    ret
+  .endif
+  ret
 SetErrorFromStr endp
 
 endif
