@@ -1,10 +1,12 @@
 ; ==================================================================================================
 ; Title:      SortedCollection.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Purpose:    ObjAsm support of SortedCollection objects.
 ; Notes:      Version C.1.0, September 2017
 ;               - First release.
+;             Version C.1.1, September 2021
+;               - Sort bugs corrected: edi -> xdi, insertion indirection.
 ; ==================================================================================================
 
 
@@ -169,12 +171,12 @@ MethodEnd
 Method SortedCollection.Sort, uses xbx xdi xsi
   SetObject xsi
   mov ebx, [xsi].dCount
-  m2z [xsi].dCount
   mov xdi, [xsi].pItems
+  m2z [xsi].dCount                                      ;Reset list count to start it from zero
   test ebx, ebx
   .while !ZERO?
-    OCall xsi.Insert, xdi
-    add edi, sizeof(POINTER)
+    OCall xsi.Insert, POINTER ptr [xdi]                 ;Insert item from that position in the list 
+    add xdi, sizeof(POINTER)                            ;Move to next item
     dec ebx
   .endw
 MethodEnd

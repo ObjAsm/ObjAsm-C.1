@@ -3404,5 +3404,5 @@ endif
   endif  
   ;Xn = (aXn-1 + b) mod m
   @RandSeed = ((@RandSeed*0A126CDF1h) + 0CA379C13h) mod 024DC5A39h
-	exitm %@CatStr(%(@RandSeed mod (Range))) 
+  exitm %@CatStr(%(@RandSeed mod (Range))) 
 endm

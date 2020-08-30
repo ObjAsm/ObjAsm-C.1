@@ -357,7 +357,7 @@ Pxm_ClipRect macro DstRct:req, SrcRct1:req, SrcRct2:req
     .endif
   endif
   cmp eax, ecx
-  jle @@EOM                                	            ;Early method exit
+  jle @@EOM                                              ;Early method exit
   mov DstRct.left, ecx
   mov DstRct.right, eax
   mov ecx, SrcRct1.top
