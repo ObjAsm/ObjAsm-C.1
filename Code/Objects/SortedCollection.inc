@@ -7,6 +7,7 @@
 ;               - First release.
 ;             Version C.1.1, September 2021
 ;               - Sort bugs corrected: edi -> xdi, insertion indirection.
+;               - Sort method optimized: first item is skiped on first iteration.
 ; ==================================================================================================
 
 
@@ -171,14 +172,19 @@ MethodEnd
 Method SortedCollection.Sort, uses xbx xdi xsi
   SetObject xsi
   mov ebx, [xsi].dCount
-  mov xdi, [xsi].pItems
-  m2z [xsi].dCount                                      ;Reset list count to start it from zero
+  xor eax, eax
   test ebx, ebx
-  .while !ZERO?
-    OCall xsi.Insert, POINTER ptr [xdi]                 ;Insert item from that position in the list 
-    add xdi, sizeof(POINTER)                            ;Move to next item
-    dec ebx
-  .endw
+  setnz al                                                ;If exists, skip first item
+  mov [xsi].dCount, eax                                   ;Set list new initial count
+  .if !ZERO?
+    mov xdi, [xsi].pItems
+    .while TRUE
+      dec ebx
+      .break .if ZERO?
+      add xdi, sizeof(POINTER)                            ;Move to next item
+      OCall xsi.Insert, POINTER ptr [xdi]                 ;Insert item from that position in the list
+    .endw
+  .endif
 MethodEnd
 
 endif
