@@ -14,7 +14,7 @@
 ;       else
 ;         DEFINE_GUID macro GUID_Name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8
 ;          externdef GUID_Name:GUID
-;          %s&GUID_Name textequ <GUID {l, w1, w2, {b1, b2, b3, b4, b5, b6, b7, b8}}>
+;          s&GUID_Name textequ <GUID {l, w1, w2, {b1, b2, b3, b4, b5, b6, b7, b8}}>
 ;         endm
 ;       endif
 ;
@@ -316,6 +316,7 @@ ifndef _INC_WINASM
         ProcName&NameSuffix proto ??CallConv Params     ;;Call thunk (jmp [IAT])
       endif
     endm
+
   else
     WIN_STD_CALL_CONV equ <stdcall>
     @DefProto macro ApiQual, ProcName, CallConv, NameSuffix, Params, DecorSuffix

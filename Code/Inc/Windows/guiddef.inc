@@ -42,18 +42,17 @@ endif
 ifdef DEFINE_GUID
 endif
 ifdef INITGUID
-  DEFINE_GUID macro name_, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8
-    externdef name_:GUID
-    name_ GUID { l, w1, w2, { b1, b2, b3, b4, b5, b6, b7, b8 } }
-  endm
+ DEFINE_GUID macro GUID_Name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8
+  GUID_Name GUID { l, w1, w2, { b1, b2, b3, b4, b5, b6, b7, b8}}
+ endm
 else
-  DEFINE_GUID macro name_, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8
-    externdef name_:GUID
-    @CatStr(<s>,name_,< textequ !<>,sGUIDf(l,8),<->,sGUIDf(w1,4),<->,sGUIDf(w2,4),<->,sGUIDf(b1,2),sGUIDf(b2,2),<->,sGUIDf(b3,2),sGUIDf(b4,2),sGUIDf(b5,2),sGUIDf(b6,2),sGUIDf(b7,2),sGUIDf(b8,2),<!>>) 
-  endm
+ DEFINE_GUID macro GUID_Name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8
+  externdef GUID_Name:GUID
+  s&GUID_Name textequ <{l, w1, w2, {b1, b2, b3, b4, b5, b6, b7, b8}}>
+ endm
 endif
 DEFINE_OLEGUID macro GUID_Name, l, w1, w2
-  DEFINE_GUID GUID_Name, l, w1, w2, 0C0h, 0, 0, 0, 0, 0, 0, 46h
+ DEFINE_GUID GUID_Name, l, w1, w2, 0C0h, 0, 0, 0, 0, 0, 0, 46h
 endm
 ifndef _GUIDDEF_H_
   _GUIDDEF_H_ equ <>
