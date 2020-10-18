@@ -52,6 +52,12 @@ Method DialogModal.Show, uses xsi
   mov xax, $MethodAddr(Dialog.DlgProc)
   invoke DialogBoxParam, hInstance, [xsi].pTemplate, [xsi].hParent, \
                          xax, xsi                       ;lParam in WM_INITDIALOG
+  if DEBUGGING
+    .if eax == -1
+      DbgWarning "DialogModal.Show failed"
+      DbgApiError
+    .endif
+  endif
 MethodEnd
 
 endif

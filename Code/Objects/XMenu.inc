@@ -229,7 +229,7 @@ XMF_FLASHING  equ   BIT00
 DIALOGEX XMENUSELECTION, 0, 0, 250, 250, 0, 2, \
               WS_CHILD or DS_MODALFRAME or DS_3DLOOK or DS_CENTER or DS_CENTERMOUSE or \
               WS_CAPTION or WS_SYSMENU or WS_POPUP or DS_SETFONT, 0, 0, \
-              NULL, "Select a Window", "Tahoma", 10
+              NULL, "Select a Window", "Segoe UI", 9
 
 DEFPUSHBUTTON "OK", IDOK, 195,232,50,14, WS_TABSTOP
 CONTROL       NULL, XMENU_SELECTLISTBOX_ID, "ListBox", \

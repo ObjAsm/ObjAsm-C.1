@@ -1,10 +1,10 @@
 ; ==================================================================================================
-; Title:    Demo10.rc
-; Author:   G. Friedrich
-; Version:  C.1.0
-; Purpose:  ObjAsm resource file.
-; Notes:    Version C.1.0, October 2017
-;             - First release.
+; Title:      Demo10.rc
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Purpose:    ObjAsm resource file.
+; Notes:      Version C.1.0, October 2017
+;               - First release.
 ; ==================================================================================================
 
 
@@ -73,7 +73,7 @@ DIALOGSETUP DIALOGEX DISCARDABLE  0, 0, 200, 140
 STYLE DS_MODALFRAME | DS_3DLOOK | DS_CENTER | DS_CENTERMOUSE | WS_CAPTION | WS_SYSMENU | WS_POPUP
 EXSTYLE WS_EX_DLGMODALFRAME
 CAPTION "Application Setup"
-FONT 8, "MS Sans Serif"
+FONT 9, "Segoe UI"
 BEGIN
   CONTROL "ICON_OK|&OK",         IDOK    , "IconButton", WS_TABSTOP | BS_DEFPUSHBUTTON, 140, 119, 50, 16
   CONTROL "ICON_CANCEL|&Cancel", IDCANCEL, "IconButton", WS_TABSTOP | BS_PUSHBUTTON,    080, 119, 50, 16
@@ -81,7 +81,7 @@ END
 
 SETUPTAB1 DIALOGEX DISCARDABLE 1, 13, 193, 88
 STYLE WS_CHILD
-FONT 8, "Arial"
+FONT 9, "Segoe UI"
 BEGIN
   GROUPBOX  "Group 1", -1, 3, 3, 185, 80
   CONTROL   "", IDC_CONTROL, "STATIC", 0, 9, 15, 172, 62, WS_EX_CLIENTEDGE
@@ -89,7 +89,7 @@ END
 
 SETUPTAB2 DIALOGEX DISCARDABLE 1, 13, 193, 88
 STYLE WS_CHILD
-FONT 8, "Arial"
+FONT 9, "Segoe UI"
 BEGIN
   AUTORADIOBUTTON   "Choice &1", IDC_CHOICE1, 9, 12, 40, 14, WS_GROUP
   AUTORADIOBUTTON   "Choice &2", IDC_CHOICE2, 9, 24, 40, 14

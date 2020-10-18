@@ -165,7 +165,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=12
+MilestoneOnDateDate=18
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -388,7 +388,7 @@ ProductVer4Range=0
 9="IActiveScriptSite.GetItemInfo"
 10="IActiveScriptSiteDebug.GetRootApplicationNode"
 [AutoLoad]
-AutoLoad=1,2,16
+AutoLoad=1,2,16,30
 [RADebugBP]
 36=
 1=
@@ -409,6 +409,6 @@ AutoLoad=1,2,16
 37=
 33=
 [PTimer]
-PTimer=477292725
+PTimer=477330506
 [GroupExpand]
 GroupExpand=1,1,0,1,0,0,1,1,1,1,0

@@ -259,7 +259,7 @@ ifndef _WINBASE_
     COMMPROP_INITIALIZED equ (0E73CF52Eh)
     COMSTAT struct
       COMSTAT_??39 record fCtsHold_??39:1, fDsrHold_??39:1, fRlsdHold_??39:1, fXoffHold_??39:1, fXoffSent_??39:1, fEof_??39:1, fTxim_??39:1, fReserved_??39:25
-      COMSTAT_??39 <>
+      fBits COMSTAT_??39 <>
       cbInQue DWORD ?
       cbOutQue DWORD ?
     COMSTAT ends
@@ -276,8 +276,9 @@ ifndef _WINBASE_
     DCB struct
       DCBlength DWORD ?
       BaudRate DWORD ?
-      DCB_??40 record fBinary_??40:1, fParity_??40:1, fOutxCtsFlow_??40:1, fOutxDsrFlow_??40:1, fDtrControl_??40:2, fDsrSensitivity_??40:1, fTXContinueOnXoff_??40:1, fOutX_??40:1, fInX_??40:1, fErrorChar_??40:1, fNull_??40:1, fRtsControl_??40:2, fAbortOnError_??40:1, fDummy2_??40:17
-      DCB_??40 <>
+;      DCB_??40 record fBinary_??40:1, fParity_??40:1, fOutxCtsFlow_??40:1, fOutxDsrFlow_??40:1, fDtrControl_??40:2, fDsrSensitivity_??40:1, fTXContinueOnXoff_??40:1, fOutX_??40:1, fInX_??40:1, fErrorChar_??40:1, fNull_??40:1, fRtsControl_??40:2, fAbortOnError_??40:1, fDummy2_??40:17
+      DCB??1 record DCB??1_fDummy2:17, DCB??1_fAbortOnError:1, DCB??1_fRtsControl:2, DCB??1_fNull:1, DCB??1_fErrorChar:1, DCB??1_fInX:1, DCB??1_fOutX:1, DCB??1_fTXContinueOnXoff:1, DCB??1_fDsrSensitivity:1, DCB??1_fDtrControl:2, DCB??1_fOutxDsrFlow:1, DCB??1_fOutxCtsFlow:1, DCB??1_fParity:1, DCB??1_fBinary:1     
+      fBits DCB??1 <>
       wReserved WORD ?
       XonLim WORD ?
       XoffLim WORD ?
@@ -304,7 +305,7 @@ ifndef _WINBASE_
     _COMMTIMEOUTS typedef COMMTIMEOUTS
     LPCOMMTIMEOUTS typedef ptr COMMTIMEOUTS
     
-    COMMCONFIG struct
+    COMMCONFIG struct 4
       dwSize DWORD ?
       wVersion WORD ?
       wReserved WORD ?

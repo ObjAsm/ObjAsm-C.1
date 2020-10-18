@@ -1,10 +1,10 @@
 ; ==================================================================================================
-; Title:    DLApp.rc
-; Author:   G. Friedrich
-; Version:  C.1.0
-; Purpose:  ObjAsm Dynamic Window Layout Application resource file.
-; Notes:    Version C.1.0, October 2017
-;             - First release.
+; Title:      DLApp.rc
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Purpose:    ObjAsm Dynamic Window Layout Application resource file.
+; Notes:      Version C.1.0, October 2017
+;               - First release.
 ; ==================================================================================================
 
 

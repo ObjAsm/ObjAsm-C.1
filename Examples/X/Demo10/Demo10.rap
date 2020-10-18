@@ -152,7 +152,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=2
+MilestoneOnDateDate=18
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -187,10 +187,10 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,1909,599,15553
+2=0,0,1909,599,39325
 3=0,0,0,0,269
 1=453,0,453,706,1222
-4=1098,0,1098,443,2397
+4=1098,0,1098,443,3846
 1001=0,0,0,0,460
 5=0,0,0,0,577
 6=0,0,0,0,6508
@@ -284,9 +284,9 @@ ProductVer4Range=0
 38=,
 33=,
 [AutoLoad]
-AutoLoad=1,2,4,33
+AutoLoad=1,2,4
 [PTimer]
-PTimer=1030059754
+PTimer=1030360411
 [GroupExpand]
 GroupExpand=1,1,1,0,0,1,1,0
 [RADebugBP]
@@ -317,4 +317,5 @@ GroupExpand=1,1,1,0,0,1,1,0
 20=
 35=
 [Find]
-1="ICON_MAIL"
+1="DialogSetup"
+2="ICON_MAIL"

@@ -1,10 +1,10 @@
 ; ==================================================================================================
-; Title:    Demo03.rc
-; Author:   G. Friedrich
-; Version:  C.1.0
-; Purpose:  ObjAsm resource file.
-; Notes:    Version C.1.0, October 2017
-;             - First release.
+; Title:      Demo03.rc
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Purpose:    ObjAsm resource file.
+; Notes:      Version C.1.0, October 2017
+;               - First release.
 ; ==================================================================================================
 
 
@@ -38,7 +38,7 @@ BMP_BACKGROUND  BITMAP "BMP\WndBkgnd.bmp"
 DIALOG1 DIALOG DISCARDABLE  0, 0, 190, 95
 STYLE DS_MODALFRAME | DS_3DLOOK | DS_CENTER | DS_CENTERMOUSE | DS_CONTEXTHELP | WS_CAPTION | WS_SYSMENU | WS_POPUP
 CAPTION "Modeless Dialog"
-FONT 8, "MS Sans Serif"
+FONT 9, "Segoe UI"
 BEGIN
   DEFPUSHBUTTON "OK", IDOK, 129, 7, 50, 14, WS_TABSTOP | BS_PUSHBUTTON
   PUSHBUTTON    "Cancel", IDCANCEL, 129, 24, 50, 14, WS_TABSTOP

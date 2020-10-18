@@ -1,10 +1,10 @@
 ; ==================================================================================================
-; Title:    CudaApp.rc
-; Author:   G. Friedrich
-; Version:  C.1.0
-; Purpose:  ObjAsm CUDA demo application resource file.
-; Notes:    Version C.1.0, October 2017
-;             - First release.
+; Title:      CudaApp.rc
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Purpose:    ObjAsm CUDA demo application resource file.
+; Notes:      Version C.1.0, October 2017
+;               - First release.
 ; ==================================================================================================
 
 

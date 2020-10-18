@@ -7,9 +7,8 @@
 ;               - First release.
 ;             Version C.1.1, September 2019
 ;               - Method "uses": skip 64 bit registers in 32 bit mode.
+;               - Undefined symbol warning added in $PushMethodArgs.
 ; ==================================================================================================
-
-; OCall has problems with word arguments in 32 bit.
 
 
 ; Object metadata (OMD) chain and layout:
@@ -2453,7 +2452,7 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
   $$EaxUsed = FALSE
   $$ArgPushed = FALSE
   $$ErrFlag = FALSE
-
+  
   ;Reverse arguments and store them in ??Params
   ??Params textequ <>
   ifnb <Args>
@@ -2602,7 +2601,7 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
                 exitm
               endif
             else
-              if (opattr($$Arg)) and 00000100b          ;;Immediate expression
+              if (opattr($$Arg) and OAT_IMMEDIATE)      ;;Immediate expression
                 $$ArgSize = type($$Arg)
                 if $$ArgSize eq 8                       ;;In case that the argument is a QWORD
                   push DWORD ptr ($$Arg and 0FFFFFFFFh)
@@ -2614,10 +2613,15 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
               else
                 $$ArgSize = type($$Arg)
                 ??Count = (($$ArgSize + 3)/4)*4
-                repeat ($$ArgSize + 3)/4
-                  ??Count = ??Count - 4
-                  push DWORD ptr [$$Arg + ??Count]
-                endm
+                if ??Count eq 0
+                  %echo @CatStr(<Error on line >, %@Line, < of >, @FileCur)
+                  .err <$PushMethodArgs - undefined symbol ($$Arg).>
+                else
+                  repeat ($$ArgSize + 3)/4
+                    ??Count = ??Count - 4
+                    push DWORD ptr [$$Arg + ??Count]
+                  endm
+                endif
                 ??ParamCount = ??ParamCount + 1
               endif
             endif
