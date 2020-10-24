@@ -91,7 +91,7 @@ Method DialogComPortSelection.CtlsSet, uses xbx xdi xsi
   SetObject xsi
   invoke GetDlgItem, [xsi].hWnd, IDC_CBO_PORT_NAME
   mov hCombo, xax
-  ;CB_SETCUEBANNER
+  invoke SendMessage, hCombo, CB_SETCUEBANNER, 0, $OfsCStr("Click here to select a COM Port")
   mov dSelIndex, CB_ERR
   mov ebx, [xsi].dNameCount
   mov xdi, [xsi].pNames

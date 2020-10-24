@@ -38,13 +38,14 @@ Debug=0
 27=..\..\..\Code\Inc\Windows\winioctl.inc
 28=Res\ComPortSelection.dlg
 29=..\..\..\Code\Inc\Windows\winbase.inc
-30=ComPortNames.inc
+30=..\..\..\Code\Inc\ObjAsm\ComPortNames.inc
 31=..\..\..\Code\Macros\Memory.inc
 32=..\..\..\Code\Macros\Strings.inc
 33=DialogComPortSelection.inc
 34=..\..\..\Code\Macros\AStrings.inc
 35=..\..\..\Code\Macros\WStrings.inc
 36=..\..\..\Code\Macros\fMath.inc
+37=ArduinoComTest\ArduinoComTest.ino
 
 
 [MakeFiles]
@@ -124,6 +125,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Objects,Macros
 34=7
 35=7
 36=7
+37=4
 
 [VerInf]
 FV=1.0.0.0
@@ -154,7 +156,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=18
+MilestoneOnDateDate=24
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -189,8 +191,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,0,0,5267
-1=0,0,0,0,724
+2=0,0,0,0,0
+1=0,0,0,0,1076
 6=0,0,1456,414,587
 4=0,0,0,0,1138
 31=0,0,1213,691,11371
@@ -219,11 +221,12 @@ ProductVer4Range=0
 27=0,0,0,0,1242
 28=0,0,0,0
 29=0,0,0,0,10419
-30=0,0,0,0,491
+30=
 32=0,0,0,0,0
-33=0,0,0,0,5025
+33=0,0,0,0,8559
 36=0,0,0,0,0
 35=0,0,0,0,7581
+37=0,0,0,0,343
 
 [BookMark]
 0=
@@ -364,12 +367,13 @@ ProductVer4Range=0
 25=
 27=,,,,,,,,,,,,,,,
 32=
+37=
 [AutoLoad]
-AutoLoad=1,33,29
+AutoLoad=1,2,33,37
 [PTimer]
-PTimer=1136370245
+PTimer=1137658418
 [GroupExpand]
-GroupExpand=1,1,1,0,0,1,1,0
+GroupExpand=1,1,1,1,0,1,1,0
 [RADebugBP]
 2=
 0=
