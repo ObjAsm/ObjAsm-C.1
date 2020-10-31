@@ -162,7 +162,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=14
+MilestoneOnDateDate=31
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -198,7 +198,7 @@ ProductVer4Range=0
 
 [Size]
 2=1045,608,1045,304,2501
-1=1045,304,1045,304,1448
+1=1045,304,1045,304,490
 6=0,0,1456,414,100143
 4=0,0,0,0,1983
 31=0,0,1213,691,1416
@@ -207,7 +207,7 @@ ProductVer4Range=0
 9=0,0,0,0,108577
 10=0,0,0,0,8243
 5=0,0,0,0,4378
-3=1045,0,1045,304,557
+3=1045,0,1045,304,1239
 11=0,0,1783,588,115
 15=0,0,0,0,5955
 14=0,0,0,0,814
@@ -223,7 +223,7 @@ ProductVer4Range=0
 25=0,0,0,0,1955
 21=0,0,0,0,575
 22=0,0,0,0,13883
-26=0,0,0,0,80467
+26=0,0,0,0,72395
 27=0,0,0,0,9336
 32=0,0,0,0,4726
 28=0,0,0,0,2959
@@ -253,16 +253,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="cTextViewClass"
-2="szTextViewClass"
-3="64W"
-4="MsgBoxProp"
-5="ARGET_SUFFIX"
-6="szTextViewClassTARGET_SUFFIX"
-7="echo"
-8="Filler"
-9="next"
-10="xbx"
+1="dHangingFlag"
+2="dHanging"
+3="HANGING"
+4="TVSTYLE.dIndent"
+5="Indent"
+6="cTextViewClass"
+7="szTextViewClass"
+8="64W"
+9="MsgBoxProp"
+10="ARGET_SUFFIX"
 [Collapse]
 1=
 2=
@@ -357,7 +357,7 @@ ProductVer4Range=0
 33=,
 29=
 28=
-26=,536870914,33216,966953540,452177759,1,
+26=,2,33216,966822468,452177747,1,
 24=
 22=
 21=
@@ -378,9 +378,9 @@ ProductVer4Range=0
 37=
 38=,
 [AutoLoad]
-AutoLoad=2,3,26,4,1
+AutoLoad=1,2,3,26,4
 [PTimer]
-PTimer=1839255104
+PTimer=1842151073
 [GroupExpand]
 GroupExpand=0,1,1,0,0,1,1,0
 [RADebugBP]

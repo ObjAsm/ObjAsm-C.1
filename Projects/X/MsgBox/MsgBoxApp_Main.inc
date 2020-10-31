@@ -97,7 +97,7 @@ Method Application.Init, uses xsi
   invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL          ;Show the window
   invoke UpdateWindow, [xsi].hWnd                       ;Update if necessary
   
-  invoke MsgBoxX, [xsi].hWnd, offset cErrMsg, offset cAppMsg, \
+  invoke MsgBox, [xsi].hWnd, offset cErrMsg, offset cAppMsg, \
                  MB_ABORTRETRYIGNORE or MB_HELP or MB_ICONERROR
 
   invoke wsprintf, addr cBuffer, $OfsCStr("You pressed the button with an ID = %u"), eax
@@ -183,7 +183,7 @@ Method Application.OnHelp, uses xsi, wParam:WPARAM, lParam:LPARAM
   mov xax, lParam
   mov xcx, [xax].HELPINFO.hItemHandle
   DbgHex xcx
-  invoke MsgBoxX, xcx, offset cHlpMsg, offset cAppHlp, MB_OK
+  invoke MsgBox, xcx, offset cHlpMsg, offset cAppHlp, MB_OK
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -197,7 +197,7 @@ Method Application.OnNotify, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
   local Img:$Obj(Image), DstRect:RECT
 
   SetObject xsi
-  DbgText "Application.OnNotify"
+;  DbgText "Application.OnNotify"
   mov xax, wParam
   .if xax == 0FFFFh
     mov xdi, lParam

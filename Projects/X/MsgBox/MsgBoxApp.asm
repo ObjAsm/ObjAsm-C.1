@@ -27,15 +27,13 @@ MakeObjects Window, Dialog, DialogModal, DialogAbout, Image
 MakeObjects WinApp, SdiApp
 MakeObjects TextView
 
-include MsgBoxX.inc
-
 include MsgBoxApp_Globals.inc
 include MsgBoxApp_Main.inc
 
 .code
 start proc
   SysInit
-  DbgClearAll
+;  DbgClearAll
 
   invoke CoInitialize, 0
   OCall $ObjTmpl(Application)::Application.Init

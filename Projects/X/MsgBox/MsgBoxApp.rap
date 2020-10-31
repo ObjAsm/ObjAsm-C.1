@@ -166,7 +166,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=14
+MilestoneOnDateDate=31
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -201,8 +201,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=1045,608,1045,304,7276
-1=1045,304,1045,304,1284
+2=1045,608,1045,304,7717
+1=1045,304,1045,304,1175
 6=0,0,1456,414,66847
 4=0,0,0,0,1256
 31=0,0,1213,691,1416
@@ -211,7 +211,7 @@ ProductVer4Range=0
 9=0,0,0,0,108577
 10=0,0,0,0,8243
 5=0,0,0,0,34320
-3=1045,0,1045,304,2008
+3=1045,0,1045,304,988
 11=0,0,1783,588,1219
 15=0,0,0,0,3609
 14=0,0,0,0,814
@@ -227,7 +227,7 @@ ProductVer4Range=0
 25=0,0,0,0,1955
 21=0,0,0,0,575
 22=0,0,0,0,14555
-26=0,0,0,0,85453
+26=0,0,0,0,21776
 27=0,0,0,0,9336
 32=0,0,0,0,6558
 28=0,0,0,0,2959
@@ -235,12 +235,12 @@ ProductVer4Range=0
 37=0,0,0,0,6526
 34=0,0,0,0,1874
 38=0,0,0,0,4007
-39=0,0,0,0,3007
+39=0,0,0,0,4706
 40=0,0,0,0,2476
 35=0,0,0,0,421
 30=0,0,0,0,0
 41=
-42=0,0,0,0,0
+42=0,0,0,0,667
 
 [BookMark]
 0=
@@ -259,16 +259,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="cHlpMsg"
-2="ProcName"
-3="[xsi].Extent.x "
-4="GetExtent"
-5="TVCH_SIZE_Y"
-6="S.Y"
-7="cAppMsg"
-8="MsgBoxProp&TARGET_SUFFIX"
-9="MsgBoxBtn"
-10="EnumDlgItems"
+1="AVERSION"
+2="szBuildInfo"
+3="MsgBoxX"
+4="TVALIGN_"
+5="dLineAlignment"
+6="cHlpMsg"
+7="ProcName"
+8="[xsi].Extent.x "
+9="GetExtent"
+10="TVCH_SIZE_Y"
 [Collapse]
 1=
 2=40973
@@ -363,7 +363,7 @@ ProductVer4Range=0
 33=,
 29=
 28=
-26=1140850688,671088646,32896,972140236,545191935,687,
+26=1677721600,134217798,32768,972140236,973010943,1711,
 24=
 22=
 21=
@@ -384,9 +384,9 @@ ProductVer4Range=0
 37=
 38=,
 [AutoLoad]
-AutoLoad=1,2,26,3
+AutoLoad=1,2,3,26
 [PTimer]
-PTimer=2031027138
+PTimer=2050296701
 [GroupExpand]
 GroupExpand=1,1,1,0,0,1,1,0
 [RADebugBP]
