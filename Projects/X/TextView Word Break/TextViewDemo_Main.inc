@@ -16,10 +16,12 @@ CStr szApplication, "Application"
 Object Application, MySdiAppID, SdiApp
   RedefineMethod    Init
   StaticMethod      Startup
+  RedefineMethod    OnSize,           WPARAM, LPARAM
+  RedefineMethod    OnGetMinMaxInfo,  WPARAM, LPARAM
 
   VirtualEvent      OnCommand,        WM_COMMAND
   VirtualEvent      OnClose,          WM_CLOSE, WM_QUERYENDSESSION
-;  VirtualEvent      OnCtlColorStatic, WM_CTLCOLORSTATIC
+  VirtualEvent      OnCtlColorStatic, WM_CTLCOLORSTATIC
   VirtualEvent      OnNotify,         WM_NOTIFY
 
   DefineVariable    pTextView,  $ObjPtr(TextView)
@@ -31,7 +33,9 @@ ObjectEnd
 ;    Application implementation
 ; ==================================================================================================
 
-VIEW_CTRL_ID  equ 165874
+VIEW_CTRL_ID    equ 165874
+WND_MAX_HEIGHT  equ 840
+
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Application.Init
@@ -45,27 +49,28 @@ Method Application.Init, uses xsi
 
   SetObject xsi
   ACall xsi.Init
-  mov dWndWidth, 480                                    ;Default creation width
-  mov dWndHeight, 350                                   ;Default creation height
+  mov dWndWidth, 640                                    ;Default creation width
+  mov dWndHeight, WND_MAX_HEIGHT                        ;Default creation height
   
   mov dWndPosX, $32($invoke(CenterForm, dWndWidth,  $32($invoke(GetSystemMetrics, SM_CXSCREEN))))
   mov dWndPosY, $32($invoke(CenterForm, dWndHeight, $32($invoke(GetSystemMetrics, SM_CYSCREEN))))
 
   invoke CreateWindowEx, WS_EX_LEFT or WS_EX_APPWINDOW, \
                          offset szApplication, offset szAppTitle, \
-                         WS_CAPTION or WS_SYSMENU or WS_MINIMIZEBOX, \
+                         WS_OVERLAPPEDWINDOW, \
                          dWndPosX, dWndPosY, dWndWidth, dWndHeight, \
                          NULL, NULL, hInstance, pSelf
   invoke GetClientRect, [xsi].hWnd, addr CRect
 
   %invoke CreateWindowEx, 0, offset cTextViewClass&TARGET_STR_AFFIX, offset szMarkupText, \
-                          WS_CHILD or WS_VISIBLE, \
-                          CRect.left, CRect.top, CRect.right, CRect.bottom, \
-                          [xsi].hWnd, VIEW_CTRL_ID, hInstance, 0
+                         WS_CHILD or WS_VISIBLE, \
+                         CRect.left, CRect.top, CRect.right, CRect.bottom, \
+                         [xsi].hWnd, VIEW_CTRL_ID, hInstance, 0
   .if xax != 0
     invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0
     mov [xsi].pTextView, xax
-    OCall [xsi].pTextView::TextView.Show
+    mov [xax].$Obj(TextView).dFormatFlags, TV_WORDBREAK
+    OCall [xsi].pTextView::TextView.Parse
   .endif
 
   invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL          ;Show the window
@@ -134,7 +139,20 @@ MethodEnd
 
 Method Application.OnCtlColorStatic, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
-  invoke SetBkColor, wParam, $RGB(140,140,255)
+  invoke SetBkColor, wParam, $RGB(240,240,240)
+  xor eax, eax
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     Application.OnGetMinMaxInfo
+; Purpose:    Event procedure for WM_GETMINMAXINFO message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = Zero if handled.
+
+Method Application.OnGetMinMaxInfo,, wParam:WPARAM, lParam:LPARAM
+  mov xcx, lParam
+  mov [xcx].MINMAXINFO.ptMaxTrackSize.y, WND_MAX_HEIGHT
   xor eax, eax
 MethodEnd
 
@@ -155,40 +173,53 @@ Method Application.OnNotify, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
     .if [xdi].NMHDR.code == TVNMC_APP_MOUSEUP
       .if [xdi].TVNM_APP.dID == APP_VISIT
         invoke ShellExecute, [xsi].hWnd, $OfsCStr("open"), \
-                             $OfsCStr("http:/objasm.x10host.com/index.htm"), \
-                             NULL, NULL, SW_SHOW
-      .elseif [xdi].TVNM_APP.dID == APP_EMAIL
-        invoke ShellExecute, [xsi].hWnd, $OfsCStr("open"), \
-                             $OfsCStr("mailto:objasm@gmx.net"), \
+                             $OfsCStr("http:/www.google.com"), \
                              NULL, NULL, SW_SHOW
       .elseif [xdi].TVNM_APP.dID == APP_CHECK
-        invoke MessageBox, [xsi].hWnd, $OfsCStr("No update available."), \
+        invoke MessageBox, [xsi].hWnd, $OfsCStr("This is a notification message."), \
                                        $OfsCStr("Information"), \
                                        MB_ICONINFORMATION or MB_OK
       .endif
 
-    .elseif [xdi].NMHDR.code == TVNMC_INFO
-      .if [xdi].TVNM_INFO.dID == INFO_BUILD
-        c2m [xdi].TVNM_INFO.pText, offset szBuildInfo, xax
-
-      .elseif [xdi].TVNM_INFO.dID == INFO_UPDATE
-        c2m [xdi].TVNM_INFO.pText, offset szUpdateInfo, xax
-      .endif
-
-    .elseif [xdi].NMHDR.code == TVNMC_DRAW
-      .if [xdi].TVNM_DRAW.dID == 0
-        New Img::Image
-        OCall Img::Image.Init, xsi
-        OCall Img::Image.%LoadFromRes, $OfsCStr("OA")
-        mov DstRect.left, 35
-        mov DstRect.top, 35
-        mov DstRect.right, 100
-        mov DstRect.bottom, 100
-        OCall Img::Image.AlphaDraw, [xdi].TVNM_DRAW.hDC, 255, addr DstRect
-        OCall Img::Image.Done
-      .endif
     .endif
   .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     Application.OnSize
+; Purpose:    Event procedure for WM_SIZE message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = Zero if handled.
+
+Method Application.OnSize, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+  local CRect:RECT
+
+  SetObject xsi
+  .if wParam != SIZE_MINIMIZED
+    invoke GetClientRect, [xsi].hWnd, addr CRect
+    mov xbx, [xsi].pTextView
+    .if xbx != NULL
+      invoke SetWindowPos, [xbx].$Obj(TextView).hWnd, HWND_BOTTOM, \
+                           CRect.left, CRect.top, CRect.right, CRect.bottom, SWP_NOZORDER
+      mov eax, CRect.right
+      .if eax != 0
+        mov [xbx].$Obj(TextView).Extent.x, eax
+        mov ecx, CRect.bottom
+        .if ecx < [xbx].$Obj(TextView).Extent.y
+          ;Scrollbar is visible
+          invoke GetSystemMetrics, SM_CXVSCROLL
+          sub [xbx].$Obj(TextView).Extent.x, eax
+        .endif
+        invoke CreateCompatibleBitmap, [xbx].$Obj(TextView).hMemDC, \
+                                       [xbx].$Obj(TextView).Extent.x, [xbx].$Obj(TextView).Extent.y
+        mov [xbx].$Obj(TextView).hMemBmp, xax
+        invoke DeleteObject, $invoke(SelectObject, [xbx].$Obj(TextView).hMemDC, xax)
+        OCall xbx::TextView.Render
+      .endif
+    .endif  
+  .endif
+  xor eax, eax
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

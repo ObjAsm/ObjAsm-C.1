@@ -36,6 +36,10 @@ start proc
   DbgClearAll
   xor eax, eax
   DbgStr xax ;offset szMyStr
+  mov xax, offset szMyStr
+  DbgStr xax
+  DbgStr szMyStr
+  
   DbgText "aaa", "bbb"
 ;  DbgComError 08007000Eh, "COM error"
 ;  DbgComError 000000000h, "COM error"

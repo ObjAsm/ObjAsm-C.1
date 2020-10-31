@@ -1,16 +1,16 @@
 ; ==================================================================================================
-; Title:      MsgBoxApp_Shared.inc
+; Title:      TextViewDemo_Shared.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.1
-; Purpose:    ObjAsm MsgBox Application.
+; Purpose:    ObjAsm TextView demonstration program.
 ; Notes:      Version C.1.1, April 2020
 ;               - First release.
 ; ==================================================================================================
 
 
 ;General information
-APP_TITLE                     textequ   <MsgBox Application>
-ABOUT_TEXT                    textequ   <MsgBox Application>
+APP_TITLE                     textequ   <TextView Demo>
+ABOUT_TEXT                    textequ   <TextView Demo>
 COPYRIGHT                     textequ   <G. Friedrich,  April 2020> 
 VER_FILEVERSION               equ       2,0,0,0
 VER_FILEVERSION_STR           textequ   <2.0>
@@ -18,9 +18,9 @@ VER_PRODUCTVERSION            equ       2,0,0,0
 VER_PRODUCTVERSION_STR        equ       <2.0>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       24
+BUILD_NUMBER                  equ       84
 BUILD_DATE_STR                textequ   <31.10.2020>
-BUILD_BITNESS                 equ       32
+BUILD_BITNESS                 equ       64
 BUILD_MODE                    equ       RLS
 
 ;Menu IDs

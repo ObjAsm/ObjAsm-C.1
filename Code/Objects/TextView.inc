@@ -1,12 +1,14 @@
 ; ==================================================================================================
 ; Title:      TextView.inc
 ; Author:     G. Friedrich
-; Version:    C.1.1
+; Version:    C.1.2
 ; Purpose:    ObjAsm support of TextView objects.
 ;             It displays formatted text using styles like font, color, background, etc. and
 ;             control commands using a MASM friendly markup string.
-; Notes:      Version C.1.1, April 2020
+; Notes:      Version C.1.2, April 2020
 ;               - First release.
+;             Version C.1.2, October 2020
+;               - {TAB} calculation corrected.
 ; Links:      https://docs.microsoft.com/en-us/windows/win32/gdi/string-widths-and-heights
 ;             https://codepundit.wordpress.com/2012/04/14/text-metrics-wow/
 ;             https://docs.microsoft.com/de-ch/windows/win32/gdi/drawing-text-from-different-fonts-on-the-same-line
@@ -24,18 +26,18 @@
 ;
 ;     Style identifier: (00 stands for a number)
 ;         Verbose           Short   Description
-;         ALIGN XXX           A     Left, Center, Right
-;         APP 00                    Active area: notifies the control parent on mouse events.
+;         ALIGN XXX           A     Left, Center, Right.
+;         APP 00                    Active area: notifies the parent on mouse events.
 ;         BGCOLOR #000000     G     Text background color as a RGB hex value.
 ;         BOLD                B     Bold style.
-;         BOX #000000         X     Box with background color as RGB hex value.
-;         COLOR #000000       C     Text foreground color as a RGB hex value.
+;         BOX #000000         X     Box with background color indicated by the RGB hex value.
+;         COLOR #000000       C     Text foreground color indicated by the RGB hex value.
 ;         FONT 'Font Name'    F     Font face.
 ;         HANGING 000         HI    Set hanging text indentation.
 ;         HEIGHT 00           H     Font size in logical units. If + or - is prepended, then the
 ;                                   value is relative to the previous setting.
 ;         INDENT 000          FI    Set first text indentation.
-;         INFO 000                  Request text information from
+;         INFO 000                  Request text information from the parent window.
 ;         ITALIC              I     Italic style.
 ;         STRIKEOUT           O     Strike out style.
 ;         SUB                       Subscript.
@@ -51,15 +53,17 @@
 ;
 ;     Command identifier:
 ;         Verbose           Short   Description
-;         #00                       Insert a (unicode) character in hex. E.g.: {#5B} displays a [.
+;         #00                       Insert a (unicode) character indicated by the hex.
+;                                   E.g.: {#5B} displays a [.
 ;         BREAK               B     Line break.
-;         COVER               C     Perfom an action by the parent at the end of the rendering process.
-;         DRAW                D     Perfom an action by the parent window.
-;         PADDING 000        P.A    Set all padding values
-;         PADDING.BOTTOM 000 P.B    Set bottom marign
-;         PADDING.LEFT 000   P.L    Set left margin
-;         PADDING.RIGHT 000  P.R    Set right margin
-;         PADDING.TOP 000    P.T    Set top margin
+;         COVER               C     Perfom a drawing action by the parent at the end of the
+;                                   rendering process, covering previous drawings.
+;         DRAW                D     Perfom a drawing action by the parent when it appears on the markup.
+;         PADDING 000        P.A    Set all padding values.
+;         PADDING.BOTTOM 000 P.B    Set bottom marign.
+;         PADDING.LEFT 000   P.L    Set left margin.
+;         PADDING.RIGHT 000  P.R    Set right margin.
+;         PADDING.TOP 000    P.T    Set top margin.
 ;         PARA                P     Paragraph.
 ;         TAB                 T     Perform a tab.
 ;         TABL 00            T.L    Set a left tabstop.
@@ -1939,7 +1943,7 @@ MethodEnd
 
 Method TextView.Render, uses xbx xdi xsi
   local xCtrlID:XWORD, dLineLength:DWORD, dLineAlignment:DWORD
-  local dHanging:DWORD, dLineIndent:DWORD, dAdjacentTextItems:DWORD
+  local dHangingFlag:DWORD, dLineIndent:DWORD, dAdjacentTextItems:DWORD
   local dBoxed:DWORD, BoxRect:RECT, BoxColor:RGBQUAD
   local CurLinePos:POINT, NewLinePos:POINT, DrawExtent:POINT, DrawRect:RECT, OutRect:RECT
   local dMaxAscent:DWORD, dMaxDescent:DWORD, dMaxHeight:DWORD, dMaxExtLeading:DWORD
@@ -2005,22 +2009,23 @@ Method TextView.Render, uses xbx xdi xsi
     .endif
   .endfor
 
-;  DbgClearTxt
   ;Master loop ===============================================================================
   m2z dCurEntryIndex
-  m2z dHanging
+  m2z dLineIndent
+  mov dLineAlignment, TVALIGN_LEFT
+  mov dHangingFlag, FALSE
   .while TRUE
+;    DbgLine
     mov edx, dCurEntryIndex
     .break .if edx >= [xsi].Entries.dCount
 
     ;Start a new line
-    m2z dBoxed
+    mov dBoxed, FALSE
     m2z dLineLength
     m2z dMaxAscent
     m2z dLastAscent
     m2z dMaxDescent
     m2z dMaxExtLeading
-    m2z dLineIndent
     m2m CurLinePos.x, [xsi].Padding.left, eax
 
     ;Get the metric of the current line ———————————————————————————————————————
@@ -2088,7 +2093,7 @@ Method TextView.Render, uses xbx xdi xsi
       mov xax, [xdi].TVENTRY.pStyle
       mov ecx, [xax].TVSTYLE.TextMetric.tmOverhang
       sub [xdi].TVENTRY.Extent.right, ecx
-      mov [xdi].TVENTRY.dType, TVET_TEXT                 ;Mutate from TVET_CMD to TVET_TEXT
+      mov [xdi].TVENTRY.dType, TVET_TEXT                ;Mutate from TVET_CMD to TVET_TEXT
       mov [xdi].TVENTRY.pHandler, NULL
       jmp @@EndHandler
 
@@ -2127,7 +2132,7 @@ Method TextView.Render, uses xbx xdi xsi
       .else
         ;Get the size of dTab2Spaces spaces
         mov xax, [xdi].TVENTRY.pStyle
-        invoke SelectObject, [xsi].hMemDC,  [xax].TVSTYLE.hFont
+        invoke SelectObject, [xsi].hMemDC, [xax].TVSTYLE.hFont
         invoke DrawText, [xsi].hMemDC, $OfsCStr(" "), -1, addr [xdi].TVENTRY.Extent, \
                          DT_CALCRECT or DT_NOPREFIX or DT_SINGLELINE
         mov xax, [xdi].TVENTRY.pStyle
@@ -2199,7 +2204,7 @@ Method TextView.Render, uses xbx xdi xsi
       mov dMaxDescent, $uMax(dMaxDescent, [xcx].TVSTYLE.TextMetric.tmDescent, eax)
       mov dMaxExtLeading, $uMax(dMaxExtLeading, [xcx].TVSTYLE.TextMetric.tmExternalLeading, eax)
       add dCurEntryIndex, 1
-      m2z dHanging
+      mov dHangingFlag, FALSE
       .break
 
     TVCH_TABL::
@@ -2234,7 +2239,7 @@ Method TextView.Render, uses xbx xdi xsi
       mov dMaxDescent, $uMax(dMaxDescent, [xcx].TVSTYLE.TextMetric.tmDescent, eax)
       mov dMaxExtLeading, $uMax(dMaxExtLeading, [xcx].TVSTYLE.TextMetric.tmExternalLeading, eax)
       add dCurEntryIndex, 1
-      m2z dHanging
+      mov dHangingFlag, FALSE
       .break
 
 
@@ -2346,12 +2351,12 @@ Method TextView.Render, uses xbx xdi xsi
         m2m dLineAlignment, [xcx].TVSTYLE.dAlignment, eax
       .endif
 
-      .if dHanging
+      .if dHangingFlag != FALSE
         mov edx, [xcx].TVSTYLE.dHanging
       .else
         mov edx, [xcx].TVSTYLE.dIndent
       .endif
-      mov dLineIndent, $uMax(dLineIndent, edx)
+      mov dLineIndent, edx
       mov eax, [xdi].TVENTRY.Extent.right               ;Entry length
 
       .ifBitSet [xsi].dFormatFlags, TV_WORDBREAK
@@ -2362,7 +2367,7 @@ Method TextView.Render, uses xbx xdi xsi
             add edx, eax
             add edx, [xcx].TVSTYLE.TextMetric.tmOverhang  ;Overhang of the last TVArea
             .if edx > DrawExtent.x
-              add dHanging, 1                           ;Activate Hanging
+              mov dHangingFlag, TRUE                    ;Activate Hanging of a line with activated WORDBREAK
               .if [xdi].TVENTRY.dType == TVET_TEXT
                 mov ecx, dAdjacentTextItems
                 mov edx, dLineLastEntryIndex
@@ -2497,7 +2502,6 @@ Method TextView.Render, uses xbx xdi xsi
         .endif
         invoke DrawText, [xsi].hMemDC, [xdi].TVENTRY.pString, -1, addr OutRect, \
                          DT_NOPREFIX or DT_SINGLELINE
-
         .ifBitSet [xbx].TVSTYLE.dFlags, TVSF_ACTIVE
           OCall [xsi].ActiveAreas::DataCollection.Insert, xdi
           m2m [xdi].TVENTRY.dValue, [xbx].TVSTYLE.dID, eax
