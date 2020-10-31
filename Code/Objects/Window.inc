@@ -1,9 +1,13 @@
 ; ==================================================================================================
 ; Title:      Window.inc
 ; Author:     G. Friedrich
-; Version:    C.1.1
+; Version:    C.1.2
 ; Purpose:    ObjAsm support of Window objects.
-; Notes:      Version C.1.1, January 2020
+; Notes:      Version C.1.2, October 2020
+;               - dResizeRequest added to MoveChildWndInfo structure to hide the gripper when the
+;                 parent window is maximized.
+;               - if the window is minimized, MoveChildWnd is skipped.
+;             Version C.1.1, January 2020
 ;               - Dynamic Layout support added.
 ;             Version C.1.0, October 2017
 ;               - First release.
@@ -94,18 +98,19 @@ ObjectEnd
 if IMPLEMENT
 
 GetChildWndInfo struct
-  hParent     HWND    ?
-  pInfo       PChildWndInfo ?
-  dChildCount DWORD   ?
+  hParent         HWND    ?
+  pInfo           PChildWndInfo ?
+  dChildCount     DWORD   ?
 GetChildWndInfo ends
 PGetChildWndInfo typedef ptr GetChildWndInfo
 
 MoveChildWndInfo struct
-  hParent     HWND    ?
-  pInfo       PChildWndInfo ?
-  hDWP        HANDLE  ?               ;DeferWindowPos HANDLE
-  dDeltaX     DWORD   ?               ;Only positive values allowed
-  dDeltaY     DWORD   ?               ;Only positive values allowed
+  hParent         HWND    ?
+  pInfo           PChildWndInfo ?
+  hDWP            HANDLE  ?               ;DeferWindowPos HANDLE
+  dDeltaX         DWORD   ?               ;Only positive values allowed
+  dDeltaY         DWORD   ?               ;Only positive values allowed
+  dResizeRequest  DWORD   ?               ;SIZE_RESTORED, SIZE_MINIMIZED, SIZE_MAXIMIZED, ...
 MoveChildWndInfo ends
 PMoveChildWndInfo typedef ptr MoveChildWndInfo
 
@@ -255,18 +260,23 @@ MoveChildWnd proc uses xbx xsi hWnd:HWND, pMoveChildWndInfo:PMoveChildWndInfo
   mov xsi, [xbx].MoveChildWndInfo.pInfo
   invoke GetMenu, hWnd
   .if eax == IDC__GRIPPER_
-    invoke GetClientRect, [xbx].MoveChildWndInfo.hParent, addr WRect
-    invoke GetClientRect, hWnd, addr CRect
-    mov eax, CRect.right
-    dec eax
-    sub WRect.right, eax
-    mov eax, CRect.bottom
-    sub WRect.bottom, eax
-    invoke DeferWindowPos, [xbx].MoveChildWndInfo.hDWP, hWnd, 0, \
-                           WRect.right, WRect.bottom, 0, 0, \
-                           SWP_NOOWNERZORDER or SWP_NOZORDER or SWP_NOSIZE
-    ;In case Windows had to allocate a new memory block, update the DeferWindowPos HANDLE.
-    mov [xbx].MoveChildWndInfo.hDWP, xax
+    .if [xbx].MoveChildWndInfo.dResizeRequest == SIZE_MAXIMIZED
+      invoke ShowWindow, hWnd, SW_HIDE
+    .else
+      invoke ShowWindow, hWnd, SW_SHOW
+      invoke GetClientRect, [xbx].MoveChildWndInfo.hParent, addr WRect
+      invoke GetClientRect, hWnd, addr CRect
+      mov eax, CRect.right
+      dec eax
+      sub WRect.right, eax
+      mov eax, CRect.bottom
+      sub WRect.bottom, eax
+      invoke DeferWindowPos, [xbx].MoveChildWndInfo.hDWP, hWnd, 0, \
+                             WRect.right, WRect.bottom, 0, 0, \
+                             SWP_NOOWNERZORDER or SWP_NOZORDER or SWP_NOSIZE
+      ;In case Windows had to allocate a new memory block, update the DeferWindowPos HANDLE.
+      mov [xbx].MoveChildWndInfo.hDWP, xax
+    .endif
   .else
     invoke GetParent, hWnd
     .if xax == [xbx].MoveChildWndInfo.hParent
@@ -311,31 +321,35 @@ Method Window.OnSize, uses xsi, wParam:WPARAM, lParam:LPARAM
 
 ;  DbgText "Window.OnSize"
   SetObject xsi
-  mov xdx, [xsi].pDynamicLayout
-  .if xdx != NULL
-    mov xcx, lParam
-    movsx eax, cx                                       ;eax = new client x size
-    sub eax, [xdx].DL_HEADER.IniSize.x
-    .if SIGN?
-      xor eax, eax
-    .endif
-    mov MCWI.dDeltaX, eax
-    shr ecx, 16
-    movsx eax, cx                                       ;eax = new client y size
-    sub eax, [xdx].DL_HEADER.IniSize.y
-    .if SIGN?
-      xor eax, eax
-    .endif
-    mov MCWI.dDeltaY, eax
+  .if wParam != SIZE_MINIMIZED
+    mov xdx, [xsi].pDynamicLayout
+    .if xdx != NULL
+      mov xcx, lParam
+      movsx eax, cx                                       ;eax = new client x size
+      sub eax, [xdx].DL_HEADER.IniSize.x
+      .if SIGN?
+        xor eax, eax
+      .endif
+      mov MCWI.dDeltaX, eax
+      shr ecx, 16
+      movsx eax, cx                                       ;eax = new client y size
+      sub eax, [xdx].DL_HEADER.IniSize.y
+      .if SIGN?
+        xor eax, eax
+      .endif
+      mov MCWI.dDeltaY, eax
 
-    lea xax, [xdx + sizeof(DL_HEADER)]                  ;xax -> first DL_CHILD_INFO structure
-    mov MCWI.pInfo, xax
+      lea xax, [xdx + sizeof(DL_HEADER)]                  ;xax -> first DL_CHILD_INFO structure
+      mov MCWI.pInfo, xax
 
-    mov MCWI.hDWP, $invoke(BeginDeferWindowPos, [xdx].DL_HEADER.dChildCount)
-    mrm MCWI.hParent, [xsi].hWnd, xcx
-    invoke EnumChildWindows, xcx, offset(MoveChildWnd), addr MCWI
-    invoke EndDeferWindowPos, MCWI.hDWP
+      mov MCWI.hDWP, $invoke(BeginDeferWindowPos, [xdx].DL_HEADER.dChildCount)
+      mrm MCWI.hParent, [xsi].hWnd, xcx
+      m2m MCWI.dResizeRequest, DWORD ptr wParam, eax
+      invoke EnumChildWindows, xcx, offset(MoveChildWnd), addr MCWI
+      invoke EndDeferWindowPos, MCWI.hDWP
+    .endif
   .endif
+
   xor eax, eax
 MethodEnd
 

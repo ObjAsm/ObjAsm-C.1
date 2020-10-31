@@ -140,7 +140,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=20
+MilestoneOnDateDate=31
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -175,8 +175,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,1839,628,1584
-1=0,0,1839,628,598
+2=0,0,1839,628,275
+1=0,0,1839,628,299
 6=0,0,1456,414,19153
 4=0,0,0,0,1383
 31=0,0,1213,691,1416
@@ -185,7 +185,7 @@ ProductVer4Range=0
 9=0,0,0,0,12955
 10=0,0,0,0,18138
 5=0,0,0,0,54462
-3=0,0,0,0,440
+3=0,0,0,0,159
 11=0,0,1783,588,1295
 15=0,0,0,0,5891
 14=0,0,0,0
@@ -203,7 +203,7 @@ ProductVer4Range=0
 22=0,0,0,0,2107
 26=
 27=0,0,0,0,839
-29=0,0,0,0,2877
+29=0,0,0,0,1879
 28=
 
 [BookMark]
@@ -223,16 +223,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="szIcoName"
-2="abstract"
-3="OK"
-4="WinPrimer"
-5="WM_INITdIALOG"
-6="OnInitDialog"
-7="lParam"
-8="wParam"
-9="OnCreate"
-10="$$Offset"
+1="MoveChildWndInfo"
+2="MCWI"
+3="MCWI s"
+4="MoveChildWnd"
+5="GRIPPER"
+6="szIcoName"
+7="abstract"
+8="OK"
+9="WinPrimer"
+10="WM_INITdIALOG"
 [Collapse]
 1=
 2=4
@@ -345,9 +345,9 @@ ProductVer4Range=0
 25=
 27=
 [AutoLoad]
-AutoLoad=1,2,3,29,7,12,11
+AutoLoad=1,2,3,29
 [PTimer]
-PTimer=1297089105
+PTimer=1299594683
 [GroupExpand]
 GroupExpand=1,1,1,1,0,1,1,0
 [RADebugBP]

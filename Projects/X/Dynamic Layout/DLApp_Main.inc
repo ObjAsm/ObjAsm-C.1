@@ -2,7 +2,7 @@
 ; Title:      DLApp_Main.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:    ObjAsm demonstration program 2.
+; Purpose:    ObjAsm Dynamic Window Layout Application.
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
 ; ==================================================================================================
@@ -55,7 +55,7 @@ Method DLApp.Init, uses xsi
 
   mov dWndWidth, 500                                    ;Default creation width
   mov dWndHeight, 350                                   ;Default creation height
-  
+
   mov dWndPosX, $32($invoke(CenterForm, dWndWidth,  $32($invoke(GetSystemMetrics, SM_CXSCREEN))))
   mov dWndPosY, $32($invoke(CenterForm, dWndHeight, $32($invoke(GetSystemMetrics, SM_CYSCREEN))))
 
