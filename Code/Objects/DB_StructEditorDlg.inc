@@ -15,9 +15,11 @@ SDF_CTRL_APPEND_ENABLED   equ   BIT01
 SDF_CTRL_DELETE_ENABLED   equ   BIT02
 SDF_CTRL_UP_DOWN_ENABLED  equ   BIT03
 SDF_CTRL_APPLY_ENABLED    equ   BIT04
-SDF_CTRL_CLOSE_ENABLED    equ   BIT05
+SDF_CTRL_CANCEL_ENABLED   equ   BIT05
+SDF_CTRL_OK_ENABLED       equ   BIT06
 
-SRF_INIT                  equ   SDF_CTRL_EDITOR_ENABLED or SDF_CTRL_CLOSE_ENABLED or \
+SRF_INIT                  equ   SDF_CTRL_EDITOR_ENABLED or \
+                                SDF_CTRL_CANCEL_ENABLED or SDF_CTRL_OK_ENABLED or \
                                 SDF_CTRL_APPLY_ENABLED or SDF_CTRL_APPEND_ENABLED or \
                                 SDF_CTRL_DELETE_ENABLED or SDF_CTRL_UP_DOWN_ENABLED
 
@@ -68,7 +70,7 @@ ObjectEnd
 align ALIGN_DATA
 StrucDlgChildrenInfo label DL_HEADER
 DL_HEADER     {DLF_LOAD_MIN_INISIZE or DLF_USE_MINMAXSIZE_Y or DLF_USE_MINSIZE_X}
-DL_CHILD_INFO {{100, 100, 000, 000}}    ;Close
+DL_CHILD_INFO {{100, 100, 000, 000}}    ;OK
 DL_CHILD_INFO {{000, 000, 000, 000}}    ;Name
 DL_CHILD_INFO {{000, 000, 000, 000}}    ;Type
 DL_CHILD_INFO {{000, 000, 000, 000}}    ;Length
@@ -80,6 +82,7 @@ DL_CHILD_INFO {{100, 000, 000, 000}}    ;Delete
 DL_CHILD_INFO {{100, 000, 000, 000}}    ;UpDown scrollbar
 DL_CHILD_INFO {{100, 000, 000, 000}}    ;UpDown static
 DL_CHILD_INFO {{100, 100, 000, 000}}    ;Apply
+DL_CHILD_INFO {{100, 100, 000, 000}}    ;Cancel
 DL_CHILD_INFO {{000, 100, 100, 000}}    ;Statusbar
 
 .code
@@ -125,7 +128,8 @@ Method DB_StructEditorDlg.CtlsEnable, uses xsi
   EnableDialogControl IDC_STRUC_SCB_UP_DOWN,   SDF_CTRL_UP_DOWN_ENABLED
   EnableDialogControl IDC_STRUC_STC_FIELD_POS, SDF_CTRL_UP_DOWN_ENABLED
   EnableDialogControl IDC_STRUC_BTN_APPLY,     SDF_CTRL_APPLY_ENABLED
-  EnableDialogControl IDC_STRUC_BTN_CLOSE,     SDF_CTRL_CLOSE_ENABLED
+  EnableDialogControl IDC_STRUC_BTN_CANCEL,    SDF_CTRL_CANCEL_ENABLED
+  EnableDialogControl IDC_STRUC_BTN_OK,        SDF_CTRL_OK_ENABLED
 
   .ifBitClr [xsi].dFlags, SDF_CTRL_EDITOR_ENABLED
     m2m [xsi].dFlags, dFlags, eax
@@ -977,7 +981,7 @@ Method DB_StructEditorDlg.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPA
     OCall xsi.Mutate
     xor eax, eax
 
-  .elseif ax == IDC_STRUC_BTN_CLOSE
+  .elseif ax == IDC_STRUC_BTN_OK
     OCall xsi.Mutate
     OCall xsi.DestroyDialog, wParam
     xor eax, eax
@@ -985,7 +989,7 @@ Method DB_StructEditorDlg.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPA
   .elseif ax == IDC_STRUC_EDT                           ;Notification from DB_StructEditor.Select
     OCall xsi.CtlsEnable
 
-  .elseif ax == IDCANCEL
+  .elseif ax == IDC_STRUC_BTN_CANCEL
     OCall xsi.DestroyDialog, wParam
     xor eax, eax                                      ;Return zero
 

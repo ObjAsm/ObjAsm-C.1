@@ -232,7 +232,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=18
+MilestoneOnDateDate=1
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -269,14 +269,14 @@ ProductVer4Range=0
 [Size]
 2=0,0,1914,602,6058
 3=0,0,0,0,1683
-1=453,0,453,706,1269
+1=453,0,453,706,2884
 4=0,0,0,0,2075
 1001=0,0,0,0,460
 5=0,0,0,0,4506
 6=0,0,0,0
 7=0,0,0,0,37658
 8=0,0,0,0,265
-9=0,0,1800,599,5231
+9=0,0,1800,599,3004
 11=0,608,708,304,10712
 13=0,0,1897,628,441
 14=0,0,0,0,12133
@@ -336,7 +336,7 @@ ProductVer4Range=0
 67=0,0,0,0,318
 68=0,0,0,0,4859
 72=0,0,1839,628,1001
-70=0,0,1783,628,43210
+70=0,0,1783,628,51123
 71=0,0,0,0,30297
 69=0,0,0,0,9532
 73=0,0,0,0,14139
@@ -360,16 +360,16 @@ ProductVer4Range=0
 9=
 
 [Find]
-1="addr [xsi].AppSetup"
-2="[xsi].Table::DB_Table.Init"
-3="StdFieldLookupTable"
-4="MUT_FpuToChr8"
-5="SFF_READ_ONLY"
-6="wBlanks"
-7="GetPhysicalSectorSize"
-8="DB_GetStdFieldInfo"
-9="DB_StrToDate"
-10="DB_NowToTimestamp"
+1="IDC_STRUC_BTN_CLOSE"
+2="addr [xsi].AppSetup"
+3="[xsi].Table::DB_Table.Init"
+4="StdFieldLookupTable"
+5="MUT_FpuToChr8"
+6="SFF_READ_ONLY"
+7="wBlanks"
+8="GetPhysicalSectorSize"
+9="DB_GetStdFieldInfo"
+10="DB_StrToDate"
 [Collapse]
 2=6750208,128
 1=
@@ -438,7 +438,7 @@ ProductVer4Range=0
 67=
 68=
 72=
-70=3520,,81744
+70=3520,,78672
 71=1069547520,,,1985
 69=
 73=4194304
@@ -449,7 +449,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1
+AutoLoad=1,66,70,9
 [RADebugBP]
 2=
 50=
@@ -516,7 +516,7 @@ AutoLoad=1
 74=
 77=
 [PTimer]
-PTimer=614650363
+PTimer=615971269
 [GroupExpand]
 GroupExpand=0,1,1,1,0,1,1,0
 [TLink]

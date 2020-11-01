@@ -18,8 +18,8 @@ VER_PRODUCTVERSION            equ       0,1,0,0
 VER_PRODUCTVERSION_STR        equ       <0.1>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       22
-BUILD_DATE_STR                textequ   <18.10.2020>
+BUILD_NUMBER                  equ       25
+BUILD_DATE_STR                textequ   <01.11.2020>
 BUILD_BITNESS                 equ       64
 BUILD_MODE                    equ       RLS
 
@@ -71,8 +71,8 @@ IDC_APP_SBR                   equ       1000
 IDD_NEW_TABLE                 equ       1000
 IDC_NEWTABLE_EDT_FILE_NAME    equ       1001
 IDC_NEWTABLE_STC_FILE_NAME    equ       1000
-IDC_NEWTABLE_BTN_OK           equ       1
-IDC_NEWTABLE_BTN_CANCEL       equ       2
+IDC_NEWTABLE_BTN_OK           equ       IDOK
+IDC_NEWTABLE_BTN_CANCEL       equ       IDCANCEL
 
 ;Index.dlg
 IDD_INDEX                     equ       8000
@@ -98,7 +98,8 @@ IDC_STRUC_BTN_DELETE          equ       1007
 IDC_STRUC_SCB_UP_DOWN         equ       1008
 IDC_STRUC_STC_FIELD_POS       equ       1009
 IDC_STRUC_BTN_APPLY           equ       1010
-IDC_STRUC_BTN_CLOSE           equ       1011
+IDC_STRUC_BTN_OK              equ       IDOK
+IDC_STRUC_BTN_CANCEL          equ       IDCANCEL
 IDC_STRUC_SBR                 equ       1012
 
 ;RecordEditor.dlg
