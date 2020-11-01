@@ -41,9 +41,9 @@ start proc
   DbgStr szMyStr
   
   DbgText "aaa", "bbb"
-;  DbgComError 08007000Eh, "COM error"
-;  DbgComError 000000000h, "COM error"
-;  DbgComError 0FFFFFFFFh, "COM error"
+  DbgComError 08007000Eh, "COM error"
+  DbgComError 000000000h, "COM error"
+  DbgComError 0FFFFFFFFh, "COM error"
   DbgLine
   DbgText "Hello friends"
   DbgText
@@ -57,11 +57,11 @@ start proc
   DbgBmp xax, "BMP2"
 
 ;  DbgTraceObject $ObjTmpl(DC_Test)
-  OCall $ObjTmpl(DC_Test)::DC_Test.Init                                ;Initialize the object data
-  OCall $ObjTmpl(DC_Test)::DC_Test.ErrorSet, STM_OPEN_ERROR
-  DbgObject $ObjTmpl(DC_Test)::DC_Test
-  OCall $ObjTmpl(DC_Test)::DC_Test.Run                                 ;Execute the application
-  OCall $ObjTmpl(DC_Test)::DC_Test.Done                                ;Finalize it
+  OCall $ObjTmpl(DC_Test)::DC_Test.Init                         ;Initialize the object data
+  OCall $ObjTmpl(DC_Test)::DC_Test.ErrorSet, STM_OPEN_ERROR     ;20000014h
+  DbgObject $ObjTmpl(DC_Test)::DC_Test                          ;Check the dErrorCode value! 
+  OCall $ObjTmpl(DC_Test)::DC_Test.Run                          ;Execute the application
+  OCall $ObjTmpl(DC_Test)::DC_Test.Done                         ;Finalize it
 
   DbgHex pApp, "Here in Code"
 ;  DbgTraceShow DC_Test,, "Performance data"
@@ -105,9 +105,9 @@ start proc
   DbgLine
   xor ecx, ecx
   ASSERT ecx, "ecx should not be zero here"
-;  DbgComError 0
-;  DbgComError 08000FFFFh
-  DbgText "Bye..."
+  DbgComError 08000FFFFh
+  DbgComError 0
+  DbgText "Test ready. Bye..."
 ;  DbgClearTxt "Performance data"
 ;  DbgClearBmp "BMP1"
 

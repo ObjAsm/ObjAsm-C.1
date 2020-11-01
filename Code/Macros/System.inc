@@ -82,21 +82,21 @@ PFPU_CONTEXT typedef ptr FPU_CONTEXT
 
 FPU_CONTEXT_SIZE = sizeof(FPU_CONTEXT)
 
-XMM_CONTEXT_SIZE = 512        ;Must be a multiple of 16
+XMM_CONTEXT_SIZE = 512        ;Storage memory must be aligned to 16
 
 ??StackAlignCount = 0         ;Used with StackAlign & StackRestore
 
 
 ;OpAttr test values   '   '   '   '
 OAT_REFERENCE     equ 0000000000000001b   ;Reference to a code label
-OAT_RELOCATABLE   equ 0000000000000010b   ;Memory variable ([xyz] or xyz, can contain a reg. [eax])
+OAT_RELOCATABLE   equ 0000000000000010b   ;Memory variable ([xyz] or xyz, can contain a reg. [xax])
 OAT_IMMEDIATE     equ 0000000000000100b   ;Immediate value
 OAT_DIRECT_MEM    equ 0000000000001000b   ;Uses direct memory addressing
 
 OAT_REGISTER      equ 0000000000010000b   ;Symbol is a register
 OAT_NO_ERROR      equ 0000000000100000b   ;References not undefined and whitout error, usually 1
 OAT_SS_RELATIVE   equ 0000000001000000b   ;SS relative
-OAT_EXTERNAL      equ 0000000010000000b   ;;References to an external label
+OAT_EXTERNAL      equ 0000000010000000b   ;References to an external label
 
 OAT_LANGUAGE      equ 0000011100000000b   ;Test value
 OAT_LANG_NONE     equ 0000000000000000b

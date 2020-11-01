@@ -257,31 +257,31 @@ SysSetup macro Arguments:vararg
   endm
 
   if TARGET_BITNESS eq 32
-    % include @Environ(OBJASM_PATH)\Code\OA_Setup32.inc
+    % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
   else
-    % include @Environ(OBJASM_PATH)\Code\OA_Setup64.inc
+    % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
   endif
 
   .nolist
   .nocref
 
-  % include &IncPath&Windows\Windows.inc
+  % include &IncPath&Windows\\Windows.inc
   % include &MacPath&System.inc
   % include &MacPath&Memory.inc
   % include &MacPath&Strings.inc
   % include &MacPath&WinHelpers.inc
   % include &MacPath&ConstDiv.inc
-  % include &IncPath&ObjAsm\ObjMem.inc
+  % include &IncPath&ObjAsm\\ObjMem.inc
   
-  % includelib &LibPath&Windows\GDI32.lib
-  % includelib &LibPath&Windows\Kernel32.lib
-  % includelib &LibPath&Windows\User32.lib
-  % includelib &LibPath&Windows\Advapi32.lib
+  % includelib &LibPath&Windows\\GDI32.lib
+  % includelib &LibPath&Windows\\Kernel32.lib
+  % includelib &LibPath&Windows\\User32.lib
+  % includelib &LibPath&Windows\\Advapi32.lib
 
   if TARGET_BITNESS eq 32
-    % includelib &LibPath&ObjAsm\ObjMem32.lib
+    % includelib &LibPath&ObjAsm\\ObjMem32.lib
   else
-    % includelib &LibPath&ObjAsm\ObjMem64.lib
+    % includelib &LibPath&ObjAsm\\ObjMem64.lib
   endif
 
   .list

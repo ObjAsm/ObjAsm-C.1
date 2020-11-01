@@ -7,6 +7,10 @@
 ;               - First release.
 ;             Version C.1.1, October 2019
 ;               - Added more color and font customization by HSE.
+;             Version C.1.2, October 2020
+;               - DbgSaveContext modified to better handle references.
+;               - DbgLoadContext simplified.
+;               - DbgStr bug corrected.
 ; ==================================================================================================
 
 ;Supported debugging macros:
@@ -128,114 +132,73 @@ endif
 ; Purpose:    Save CPU & FPU registers & flags onto stack and aligns it. This way, all subsequent
 ;             invocations have an aligned stack and a cleared direction flag. Additionally, a
 ;             Critacal Section is passed to avoid racing conditions.
-; Arguments:  Arg1: Flag to inicate if the FPU state can be trashed inside the macro.
-;                   It is tipically FALSE if we want to show the FPU context.
-;             Arg2: Value (FALSE) or address (TRUE).
-;             Arg3: Var to be saved in rbx/ebx/bx/bl or the address of Var in rbx.
-;
+; Arguments:  Arg1: Handle the passed argument as a Value (FALSE) or a reference (TRUE).
+;             Arg2: Var to be saved in rbx/ebx/bx/bl or the address of Var in xbx.
 ; Returns:    Nothing.
 ; Note:       On entry, the stack doesn't need to be aligned!
 
-DbgSaveContext macro TrashFPU:=<TRUE>, Reference:=<FALSE>, Var
+DbgSaveContext macro VarIsRef:=<FALSE>, Var
   pushcontext assumes
-  if TARGET_BITNESS eq 32
-    pushfd                                              ;;Save CPU flags
-    pushad                                              ;;Save all CPU registers
-    ifnb <Var>
-      ??Attributes = opattr(Var)
-      if Reference ne FALSE
-        if ??Attributes and OAT_REGISTER                ;;Is Var a register?
-          if @InStr(1, RBX_SUBREGS, $Upper(Var)) eq 0   ;;Save Var in rbx/ebx/bx/bl
-            if type(Var) eq @WordSize                   ;;  Use rbx, because it is the only non
-              mov ebx, Var                              ;;  volatile register that can be loaded
-            else
-              .err <DbgSaveContext - register error 1.>
-              exitm
-            endif
-          endif
-        else
-          lea ebx, Var
-        endif
-        ??VarRBX textequ <ebx>
-      else
-        if @InStr(1, RBX_SUBREGS, $Upper(Var)) eq 0
-          if type(Var) eq 4
-            mov ebx, Var
-            ??VarRBX textequ <ebx>
-          elseif type(Var) eq 2
-            mov bx, Var
-            ??VarRBX textequ <bx>
-          elseif type(Var) eq 1
-            mov bl, Var
-            ??VarRBX textequ <bl>
+  pushfx                                                ;;Save CPU flags
+  pushax
+  ifnb <Var>
+    ??Attributes = opattr(Var)
+    if VarIsRef ne FALSE
+      if ??Attributes and OAT_REGISTER                  ;;Is Var a register?
+        %ifdifi Var, <xbx>                              ;;Skip if Var is xbx
+          if type(Var) eq @WordSize                     ;;  Use xbx, because it is the only non
+            mov xbx, Var                                ;;  volatile register that can be loaded
           else
-            .err <DbgSaveContext - register error 2.>
+            .err <DbgSaveContext - Reference error>
+            exitm
+          endif
+        endif
+      else
+        lea xbx, Var
+      endif
+      ??VarRBX textequ <xbx>
+    else
+      if @InStr(1, RBX_SUBREGS, $Upper(Var)) eq 0
+        if type(Var) eq 8
+          mov rbx, Var
+          ??VarRBX textequ <rbx>
+        elseif type(Var) eq 4
+          mov ebx, Var
+          ??VarRBX textequ <ebx>
+        elseif type(Var) eq 2
+          mov bx, Var
+          ??VarRBX textequ <bx>
+        elseif type(Var) eq 1
+          mov bl, Var
+          ??VarRBX textequ <bl>
+        else
+          if (opattr Var) and OAT_IMMEDIATE
+            mov ebx, Var
+            ??VarRBX textequ <rbx>
+          else
+            .err <DbgSaveContext - Value error>
             exitm
           endif
         endif
       endif
     endif
-    cld                                                 ;;Reset direction flag for API calling!
-    mov edi, esp                                        ;;Save current esp value in edi
+  endif
+
+  cld                                                   ;;Reset direction flag for API calling!
+  mov xdi, xsp                                          ;;Save current esp value in edi
+  if TARGET_BITNESS eq 32
     and esp, 0FFFFFFF0h                                 ;;Align stack on a 16 byte boundary
     invoke EnterCriticalSection, offset(DbgCritSect)    ;;This call don't change GetLastError
     sub esp, XMM_CONTEXT_SIZE
     fxsave [esp]                                        ;;This instruction reinitializes the XMM
-    if TrashFPU eq FALSE
-      fxrstor [esp]                                     ;;If we need the XMM content, then reload it
-    endif
     push esp                                            ;;Save FPU storage pointer
     push edi                                            ;;Save address to restore CPU registers
   else
-    pushfq                                              ;;Save CPU flags
-    pushaq
-    ifnb <Var>
-      ??Attributes = opattr(Var)
-      if Reference ne FALSE
-        if ??Attributes and OAT_REGISTER                ;;Is Var a register?
-          if @InStr(1, RBX_SUBREGS, $Upper(Var)) eq 0   ;;Save Var in rbx/ebx/bx/bl
-            if type(Var) eq @WordSize                   ;;  Use rbx, because it is the only non
-              mov rbx, Var                              ;;  volatile register that can be loaded
-            else
-              .err <DbgSaveContext - register error 1.>
-              exitm
-            endif
-          endif
-        else
-          lea rbx, Var
-        endif
-        ??VarRBX textequ <rbx>
-      else
-        if @InStr(1, RBX_SUBREGS, $Upper(Var)) eq 0
-          if type(Var) eq 8
-            mov rbx, Var
-            ??VarRBX textequ <rbx>
-          elseif type(Var) eq 4
-            mov ebx, Var
-            ??VarRBX textequ <ebx>
-          elseif type(Var) eq 2
-            mov bx, Var
-            ??VarRBX textequ <bx>
-          elseif type(Var) eq 1
-            mov bl, Var
-            ??VarRBX textequ <bl>
-          else
-            .err <DbgSaveContext - register error 2.>
-            exitm
-          endif
-        endif
-      endif
-    endif
-    cld                                                 ;;Reset direction flag for API calling!
-    mov rdi, rsp                                        ;;Save current esp value in rdi
     and rsp, 0FFFFFFFFFFFFFFF0h                         ;;Align stack on a 16 byte boundary
     sub rsp, 20h
     invoke EnterCriticalSection, offset(DbgCritSect)    ;;This call don't change GetLastError
     sub rsp, XMM_CONTEXT_SIZE - 20h
     fxsave [rsp]                                        ;;This instruction reinitializes the XMM
-    if TrashFPU eq FALSE
-      fxrstor [rsp]                                     ;;If we need the XMM content, then reload it
-    endif
     push rsp                                            ;;Save FPU storage pointer
     push rdi                                            ;;Save address to restore CPU registers
     sub rsp, 40h                                        ;;Add an homing area and argument space
@@ -253,21 +216,17 @@ DbgLoadContext macro
     pop ebp
     pop ebx
     fxrstor [ebx]                                       ;;Read XMM content back
-    invoke LeaveCriticalSection, offset(DbgCritSect)
-    mov esp, ebp                                        ;;Restore rsp
-    popad                                               ;;Restore all registers
-    popfd
   else
     add rsp, 40h                                        ;;Remove homing area and argument space
     pop rbp
     pop rbx
     fxrstor [rbx]                                       ;;Read XMM content back
     sub rsp, 20h
-    invoke LeaveCriticalSection, offset(DbgCritSect)
-    mov rsp, rbp                                        ;;Restore rsp
-    popaq                                               ;;Restore CPU registers
-    popfq                                               ;;Direction flag is restored here too
   endif
+  invoke LeaveCriticalSection, offset(DbgCritSect)
+  mov xsp, xbp                                          ;;Restore rsp
+  popax                                                 ;;Restore CPU registers
+  popfx                                                 ;;Direction flag is restored here too
   popcontext assumes
 endm
 
@@ -424,7 +383,7 @@ DbgOutHex macro PreText:=<>, PreColor:=<DBG_COLOR_DEFAULT_PRE>, Var:req, \
       invoke DbgOutTextA, $OfsCStrA($Esc("&PreText&")), PreColor, DBG_EFFECT_NORMAL, Dest
     endif
     if (opattr Var) and OAT_REGISTER                      ;;Is Var a register?
-      lea rsi, [rsp + 20h]                                ;;
+      lea rsi, [rsp + 20h]
       invoke qword2hexA, rsi, rbx
       mov DCHRA ptr [rsi + 16], "h"                       ;;Set "h" + ZTC
       if ??DbgDataSize lt 8
@@ -538,14 +497,21 @@ endif
 
 DbgStrA macro Var:req, InfoText, Dest
   if DEBUGGING
-    DbgSaveContext TRUE, TRUE, Var
-    DbgSetDestWnd Dest
-    if type(Var) eq @WordSize
+    if type(Var) eq @WordSize                           ;;Check if Var is a POINTER or characters
+      DbgSaveContext FALSE, Var                         ;;Pass Var as a value
+      DbgSetDestWnd Dest
       invoke DbgOutTextA, $OfsCStrA($Esc("&Var& -\] ")), DBG_COLOR_DEFAULT_PRE, \
                           DBG_EFFECT_NORMAL, ??DbgDstWnd
     else
-      invoke DbgOutTextA, $OfsCStrA("&Var& = "), DBG_COLOR_DEFAULT_PRE, \
-                          DBG_EFFECT_NORMAL, ??DbgDstWnd
+      if (opattr Var) and OAT_REGISTER                  ;;Is Var a register?
+        .err <DbgStrW - <Var> register error>
+        exitm
+      else
+        DbgSaveContext TRUE, Var                        ;;Pass Var as a reference
+        DbgSetDestWnd Dest
+        invoke DbgOutTextA, $OfsCStrA("&Var& = "), DBG_COLOR_DEFAULT_PRE, \
+                            DBG_EFFECT_NORMAL, ??DbgDstWnd
+      endif
     endif
     invoke DbgOutTextA, ??VarRBX, DBG_COLOR_STRING, DBG_EFFECT_NORMAL, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
@@ -563,14 +529,21 @@ endm
 
 DbgStrW macro Var:req, InfoText, Dest
   if DEBUGGING
-    DbgSaveContext TRUE, TRUE, Var
-    DbgSetDestWnd Dest
-    if type(Var) eq @WordSize
+    if type(Var) eq @WordSize                           ;;Check if Var is a POINTER or characters
+      DbgSaveContext FALSE, Var                         ;;Pass Var as a value
+      DbgSetDestWnd Dest
       invoke DbgOutTextA, $OfsCStrA($Esc("&Var& -\] ")), DBG_COLOR_DEFAULT_PRE, \
                           DBG_EFFECT_NORMAL, ??DbgDstWnd
     else
-      invoke DbgOutTextA, $OfsCStrA("&Var& = "), DBG_COLOR_DEFAULT_PRE, \
-                          DBG_EFFECT_NORMAL, ??DbgDstWnd
+      if (opattr Var) and OAT_REGISTER                  ;;Is Var a register?
+        .err <DbgStrW - <Var> register error>
+        exitm
+      else
+        DbgSaveContext TRUE, Var                        ;;Pass Var as a reference
+        DbgSetDestWnd Dest
+        invoke DbgOutTextA, $OfsCStrA("&Var& = "), DBG_COLOR_DEFAULT_PRE, \
+                            DBG_EFFECT_NORMAL, ??DbgDstWnd
+      endif
     endif
     invoke DbgOutTextW, ??VarRBX, DBG_COLOR_STRING, DBG_EFFECT_NORMAL, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
@@ -589,14 +562,21 @@ endm
 
 DbgStrCA macro Var:req, StrLen:req, InfoText, Dest
   if DEBUGGING
-    DbgSaveContext TRUE, TRUE, Var
-    DbgSetDestWnd Dest
-    if type(Var) eq @WordSize
-      invoke DbgOutTextA, $OfsCStrA($Esc("&Var& -\] ")), \
-                          DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    if type(Var) eq @WordSize                           ;;Check if Var is a POINTER or characters
+      DbgSaveContext FALSE, Var                         ;;Pass Var as a value
+      DbgSetDestWnd Dest
+      invoke DbgOutTextA, $OfsCStrA($Esc("&Var& -\] ")), DBG_COLOR_DEFAULT_PRE, \
+                          DBG_EFFECT_NORMAL, ??DbgDstWnd
     else
-      invoke DbgOutTextA, $OfsCStrA("&Var& = "), \
-                          DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+      if (opattr Var) and OAT_REGISTER                  ;;Is Var a register?
+        .err <DbgStrW - <Var> register error>
+        exitm
+      else
+        DbgSaveContext TRUE, Var                        ;;Pass Var as a reference
+        DbgSetDestWnd Dest
+        invoke DbgOutTextA, $OfsCStrA("&Var& = "), DBG_COLOR_DEFAULT_PRE, \
+                            DBG_EFFECT_NORMAL, ??DbgDstWnd
+      endif
     endif
     invoke DbgOutTextCA, ??VarRBX, StrLen, DBG_COLOR_STRING, DBG_EFFECT_NORMAL, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
@@ -615,14 +595,21 @@ endm
 
 DbgStrCW macro Var:req, StrLen:req, InfoText, Dest
   if DEBUGGING
-    DbgSaveContext TRUE, TRUE, Var
-    DbgSetDestWnd Dest
-    if type(Var) eq @WordSize
-      invoke DbgOutTextA, $OfsCStrA($Esc("&Var& -\] ")), \
-                          DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    if type(Var) eq @WordSize                           ;;Check if Var is a POINTER or characters
+      DbgSaveContext FALSE, Var                         ;;Pass Var as a value
+      DbgSetDestWnd Dest
+      invoke DbgOutTextA, $OfsCStrA($Esc("&Var& -\] ")), DBG_COLOR_DEFAULT_PRE, \
+                          DBG_EFFECT_NORMAL, ??DbgDstWnd
     else
-      invoke DbgOutTextA, $OfsCStrA("&Var& = "), \
-                          DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+      if (opattr Var) and OAT_REGISTER                  ;;Is Var a register?
+        .err <DbgStrW - <Var> register error>
+        exitm
+      else
+        DbgSaveContext TRUE, Var                        ;;Pass Var as a reference
+        DbgSetDestWnd Dest
+        invoke DbgOutTextA, $OfsCStrA("&Var& = "), DBG_COLOR_DEFAULT_PRE, \
+                            DBG_EFFECT_NORMAL, ??DbgDstWnd
+      endif
     endif
     invoke DbgOutTextCW, ??VarRBX, StrLen, DBG_COLOR_STRING, DBG_EFFECT_NORMAL, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
@@ -655,7 +642,7 @@ endif
 
 DbgHex macro Var:req, InfoText, Dest
   if DEBUGGING
-    DbgSaveContext TRUE, FALSE, Var
+    DbgSaveContext FALSE, Var
     DbgSetDestWnd Dest
     DbgOutHex <Var = >,, ??VarRBX,, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
@@ -675,7 +662,7 @@ endm
 
 DbgBin macro Var:req, InfoText, Dest
   if DEBUGGING
-    DbgSaveContext TRUE, FALSE, Var
+    DbgSaveContext FALSE, Var
     DbgSetDestWnd Dest
     invoke DbgOutTextA, $OfsCStrA("&Var = "), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
     if TARGET_BITNESS eq 32
@@ -718,7 +705,7 @@ endm
 
 DbgDec macro Var:req, InfoText, Dest
   if DEBUGGING
-    DbgSaveContext TRUE, FALSE, Var
+    DbgSaveContext FALSE, Var
     DbgSetDestWnd Dest
     invoke DbgOutTextA, $OfsCStrA("&Var = "), DBG_COLOR_DEFAULT_PRE, DBG_EFFECT_NORMAL, ??DbgDstWnd
     if TARGET_BITNESS eq 32
@@ -752,25 +739,29 @@ DbgFloat macro Var:req, InfoText, Dest
     if (??DbgDataSize ne 4) and (??DbgDataSize ne 8) and (??DbgDataSize ne 10)
       .err <DbgFloat - wrong argument type>
     else
-      DbgSaveContext TRUE, TRUE, Var
-      DbgSetDestWnd Dest
-      if ??DbgDataSize eq 4
-        fld REAL4 ptr [xbx]
-      elseif ??DbgDataSize eq 8
-        fld REAL8 ptr [xbx]
+      if (opattr Var) and OAT_REGISTER                  ;;Is Var a register?
+        .err <DbgFloat - invalid parameter>
       else
-        fld REAL10 ptr [xbx]
+        DbgSaveContext TRUE, Var
+        DbgSetDestWnd Dest
+        if ??DbgDataSize eq 4
+          fld REAL4 ptr [xbx]
+        elseif ??DbgDataSize eq 8
+          fld REAL8 ptr [xbx]
+        else
+          fld REAL10 ptr [xbx]
+        endif
+        mov xdi, xsp
+        sub xsp, DBG_FLOAT_BUFFERSIZE + 20h             ;;Reserve a buffer for the number
+        lea xsi, [xsp + 20h]                            ;; Keep stack aligned!
+        invoke DbgOutTextA, $OfsCStrA("&Var = "), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+        invoke St0ToStrA, xsi, 0, DBG_FLOAT_RESOLUTION, 1
+        invoke DbgOutTextA, xsi, DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+        add xsp, DBG_FLOAT_BUFFERSIZE + 20h             ;;Restore stack
+        DbgShowTxtInfo InfoText, ??DbgDstWnd
+        DbgShowSrcInfo ??DbgDstWnd
+        DbgLoadContext
       endif
-      mov xdi, xsp
-      sub xsp, DBG_FLOAT_BUFFERSIZE + 20h               ;;Reserve a buffer for the number
-      lea xsi, [xsp + 20h]                              ;; Keep stack aligned!
-      invoke DbgOutTextA, $OfsCStrA("&Var = "), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
-      invoke St0ToStrA, xsi, 0, DBG_FLOAT_RESOLUTION, 1
-      invoke DbgOutTextA, xsi, DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
-      add xsp, DBG_FLOAT_BUFFERSIZE + 20h               ;;Restore stack
-      DbgShowTxtInfo InfoText, ??DbgDstWnd
-      DbgShowSrcInfo ??DbgDstWnd
-      DbgLoadContext
     endif
   endif
 endm
@@ -788,7 +779,7 @@ DbgGUID macro Var:req, InfoText, Dest
     if (??DbgDataSize ne @WordSize) and (??DbgDataSize ne type(GUID))
       .err <DbgGUID - wrong argument type>
     else
-      DbgSaveContext TRUE, TRUE, Var
+      DbgSaveContext TRUE, Var
       DbgSetDestWnd Dest
       if TARGET_BITNESS eq 32
         $$Buffersize = 28h                              ;;36 + ZTC + Padding(3) = 28Ch
@@ -825,7 +816,7 @@ endm
 
 DbgARGB macro Var:req, InfoText, Dest
   if DEBUGGING
-    DbgSaveContext TRUE, FALSE, Var
+    DbgSaveContext FALSE, Var
     DbgSetDestWnd Dest
     if type(Var) ne type(DWORD)
       .err <DbgARGB - invalid argument.>
@@ -865,7 +856,7 @@ endm
 
 DbgBmp macro Var:req, Dest
   if DEBUGGING
-    DbgSaveContext TRUE, FALSE, Var
+    DbgSaveContext FALSE, Var
     DbgSetDestWnd Dest
     invoke DbgOutBitmap, ??VarRBX, ??DbgDstWnd
     DbgLoadContext
@@ -888,7 +879,7 @@ endm
 
 DbgMem macro pData:req, DataSize:req, OutputFormat:=<DBG_MEM_STR>, InfoText, Dest
   if DEBUGGING
-    DbgSaveContext TRUE, FALSE, pData
+    DbgSaveContext FALSE, pData                          ;;Pass pData as a value
     DbgSetDestWnd Dest
     invoke DbgOutTextA, $OfsCStrA("MEMORY DUMP of &pData"), DBG_COLOR_MEMORY, DBG_EFFECT_BOLD, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
@@ -953,7 +944,7 @@ endm
 
 DbgFPU macro InfoText, Dest
   if DEBUGGING
-    DbgSaveContext FALSE
+    DbgSaveContext
     DbgSetDestWnd Dest
     invoke DbgOutTextA, $OfsCStrA("FPU DUMP"), DBG_COLOR_FPU, DBG_EFFECT_BOLD, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
@@ -976,7 +967,7 @@ endm
 
 DbgMessage macro Var:req, InfoText, Dest
   if DEBUGGING
-    DbgSaveContext TRUE, FALSE, Var
+    DbgSaveContext FALSE, Var
     DbgSetDestWnd Dest
     invoke DbgOutMsg, ebx, DBG_COLOR_MESSAGE, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
@@ -1012,7 +1003,7 @@ endm
 
 DbgComError macro Var:req, InfoText, Dest
   if DEBUGGING
-    DbgSaveContext TRUE, FALSE, Var
+    DbgSaveContext FALSE, Var
     DbgSetDestWnd Dest
     invoke DbgOutComErr, ebx, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
@@ -1044,7 +1035,7 @@ DbgObject macro Expression, InfoText, Dest
       %ifndef ??ObjExpr
         %.err <DbgObject - unknown object: ??ObjExpr>
       else
-        DbgSaveContext TRUE, TRUE, ??InsExpr
+        DbgSaveContext TRUE, ??InsExpr
         DbgSetDestWnd Dest
         invoke DbgShowObjectHeader, $OfsCStrA(<!"%??ObjExpr!">), xbx, ??DbgDstWnd
         DbgShowTxtInfo InfoText, ??DbgDstWnd
@@ -1101,7 +1092,7 @@ DbgVMT macro Expression, InfoText, Dest
       %ifndef ??ObjExpr
         %.err <DbgVMT - unknown object: ??ObjExpr>
       else
-        DbgSaveContext TRUE, TRUE, ??InsExpr
+        DbgSaveContext TRUE, ??InsExpr
         DbgSetDestWnd Dest
         invoke DbgShowObjectHeader, $OfsCStrA(<!"%??ObjExpr!">), xbx, ??DbgDstWnd
         DbgShowTxtInfo InfoText, ??DbgDstWnd
@@ -1146,7 +1137,7 @@ DbgIMT macro Expression, InfoText, Dest
       %ifndef ??ObjExpr
         %.err <DbgIMT - unknown object: ??ObjExpr>
       else
-        DbgSaveContext TRUE, TRUE, ??InsExpr
+        DbgSaveContext TRUE, ??InsExpr
         DbgSetDestWnd Dest
         invoke DbgShowObjectHeader, $OfsCStrA(<!"%??ObjExpr!">), xbx, ??DbgDstWnd
         DbgShowTxtInfo InfoText, ??DbgDstWnd
@@ -1181,7 +1172,7 @@ endm
 ;DbgTraceObject macro IName:req
 ;  if DEBUGGING
 ;    if TRACING
-;      DbgSaveContext TRUE, TRUE, IName
+;      DbgSaveContext TRUE, IName
 ;      if type(IName) eq @WordSize             ;;If true, then it's not an Object instance!
 ;        if (opattr IName) and OAT_REGISTER    ;;Is ??DbgIName a register?
 ;          mov ??pDbgTraceInstance, IName
@@ -1365,7 +1356,7 @@ endm
 
 DbgAttach macro
   if DEBUGGING
-    DbgSaveContext TRUE
+    DbgSaveContext
     .if $invoke(IsDebuggerPresent) == FALSE
       @CatStr(<int >, <3>)
     .endif
@@ -1391,7 +1382,7 @@ endm
 
 DbgCloseAll macro
   if DEBUGGING
-    DbgSaveContext TRUE
+    DbgSaveContext
     invoke DbgOutCmd, DBG_CMD_CLOSE_ALL, NULL
     DbgLoadContext
   endif
@@ -1404,7 +1395,7 @@ endm
 
 DbgCloseTxt macro Dest
   if DEBUGGING
-    DbgSaveContext TRUE
+    DbgSaveContext
     DbgSetDestWnd Dest
     invoke DbgOutCmd, DBG_CMD_CLOSE_TXT, ??DbgDstWnd
     DbgLoadContext
@@ -1418,7 +1409,7 @@ endm
 
 DbgCloseBmp macro Dest
   if DEBUGGING
-    DbgSaveContext TRUE
+    DbgSaveContext
     DbgSetDestWnd Dest
     invoke DbgOutCmd, DBG_CMD_CLOSE_BMP, ??DbgDstWnd
     DbgLoadContext
@@ -1432,7 +1423,7 @@ endm
 
 DbgClearAll macro
   if DEBUGGING
-    DbgSaveContext TRUE
+    DbgSaveContext
     invoke DbgOutCmd, DBG_CMD_CLEAR_ALL, NULL
     DbgLoadContext
   endif
@@ -1445,7 +1436,7 @@ endm
 
 DbgClearTxt macro Dest
   if DEBUGGING
-    DbgSaveContext TRUE
+    DbgSaveContext
     DbgSetDestWnd Dest
     invoke DbgOutCmd, DBG_CMD_CLEAR_TXT, ??DbgDstWnd
     DbgLoadContext
@@ -1459,7 +1450,7 @@ endm
 
 DbgClearBmp macro Dest
   if DEBUGGING
-    DbgSaveContext TRUE
+    DbgSaveContext
     DbgSetDestWnd Dest
     invoke DbgOutCmd, DBG_CMD_CLEAR_BMP, ??DbgDstWnd
     DbgLoadContext
@@ -1525,7 +1516,7 @@ endm
 ;
 ;ResGuard_Show macro
 ;  if DEBUGGING and RESGUARD_LOADED
-;    DbgSaveContext TRUE
+;    DbgSaveContext
 ;    invoke DbgOutTextA, $OfsCStrA("Report  "), \
 ;                        DBG_COLOR_TEXT, DBG_EFFECT_BOLD, offset(szLeakReport)
 ;    DbgShowSrcInfo offset(szLeakReport)
@@ -1541,7 +1532,7 @@ endm
 ;
 ;ResGuard_Start macro
 ;  if DEBUGGING and RESGUARD_LOADED
-;    DbgSaveContext TRUE
+;    DbgSaveContext
 ;    invoke DbgOutTextA, $OfsCStrA("Started "), \
 ;                        DBG_COLOR_TEXT, DBG_EFFECT_BOLD, offset(szLeakReport)
 ;    DbgShowSrcInfo offset(szLeakReport)
@@ -1557,7 +1548,7 @@ endm
 ;
 ;ResGuard_Stop macro
 ;  if DEBUGGING and RESGUARD_LOADED
-;    DbgSaveContext TRUE
+;    DbgSaveContext
 ;    invoke DbgOutTextA, $OfsCStrA("Stopped "), \
 ;                        DBG_COLOR_TEXT, DBG_EFFECT_BOLD, offset(szLeakReport)
 ;    DbgShowSrcInfo offset(szLeakReport)
@@ -1579,7 +1570,7 @@ DbgComponent macro Var:req, InfoText, Dest
     if (??DbgDataSize ne @WordSize) and (??DbgDataSize ne sizeof(GUID))  ;??!!
       .err <DbgComponent - wrong argument.>
     else
-      DbgSaveContext TRUE, TRUE, Var
+      DbgSaveContext TRUE, Var
       DbgSetDestWnd Dest
       invoke DbgOutComponent, ??VarRBX, DBG_COLOR_OBJECT, ??DbgDstWnd
       DbgShowTxtInfo InfoText, ??DbgDstWnd
@@ -1602,7 +1593,7 @@ DbgInterface macro Var:req, InfoText, Dest
     if (??DbgDataSize ne @WordSize) and (??DbgDataSize ne sizeof(GUID))
       .err <DbgInterface - wrong argument.>
     else
-      DbgSaveContext TRUE, TRUE, Var
+      DbgSaveContext TRUE, Var
       DbgSetDestWnd Dest
       invoke DbgOutInterface, ??VarRBX, DBG_COLOR_INTERFACE, ??DbgDstWnd
       DbgShowTxtInfo InfoText, ??DbgDstWnd
