@@ -1917,19 +1917,18 @@ Method TextView.Parse, uses xdi xsi
 
   .endw
 
-;  xor ebx, ebx
-;  .while ebx < [xsi].Entries.dCount
-;    OCall [xsi].Entries::DataCollection.ItemAt, ebx
-;    DbgDec [xax].TVENTRY.dType
-;    DbgHex [xax].TVENTRY.pStyle
-;    DbgDec [xax].TVENTRY.dCharCount
-;    mov xcx, [xax].TVENTRY.pString
-;    DbgStr xcx
-;    DbgHex [xax].TVENTRY.pHandler
-;    DbgDec [xax].TVENTRY.dValue
-;    DbgLine
-;    inc ebx
-;  .endw
+  xor ebx, ebx
+  .while ebx < [xsi].Entries.dCount
+    OCall [xsi].Entries::DataCollection.ItemAt, ebx
+    DbgDec [xax].TVENTRY.dType
+    DbgHex [xax].TVENTRY.pStyle
+    DbgDec [xax].TVENTRY.dCharCount
+    DbgStr [xax].TVENTRY.pString
+    DbgHex [xax].TVENTRY.pHandler
+    DbgDec [xax].TVENTRY.dValue
+    DbgLine
+    inc ebx
+  .endw
 
   mov eax, TRUE
 
