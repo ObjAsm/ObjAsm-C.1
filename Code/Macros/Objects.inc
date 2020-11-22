@@ -2569,7 +2569,7 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
             REAL4 $$Arg                                 ;;push argument = REAL4
             ??ParamCount = ??ParamCount + 1
           else
-            if (opattr($$Arg)) and 00010000b            ;;$$Arg is register
+            if (opattr $$Arg) and 00010000b             ;;$$Arg is register
               ??RegSize SizeStr <$$Arg>
               if ??RegSize eq 3                         ;;eax, ebx, ecx, edx, esi, esi, esp, esp
                 push $$Arg
@@ -2601,7 +2601,7 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
                 exitm
               endif
             else
-              if (opattr($$Arg) and OAT_IMMEDIATE)      ;;Immediate expression
+              if (opattr $$Arg) and OAT_IMMEDIATE       ;;Immediate expression
                 $$ArgSize = type($$Arg)
                 if $$ArgSize eq 8                       ;;In case that the argument is a QWORD
                   push DWORD ptr ($$Arg and 0FFFFFFFFh)

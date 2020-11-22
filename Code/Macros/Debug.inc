@@ -1,7 +1,7 @@
 ; ==================================================================================================
 ; Title:      Debug.inc
 ; Author:     G. Friedrich
-; Version:    C.1.1
+; Version:    C.1.2
 ; Purpose:    ObjAsm debug macros.
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
@@ -11,13 +11,14 @@
 ;               - DbgSaveContext modified to better handle references.
 ;               - DbgLoadContext simplified.
 ;               - DbgStr bug corrected.
+;               - DbgTextF added.
 ; ==================================================================================================
 
 ;Supported debugging macros:
 ;———————————————————————————
 ;  - DbgCloseAll, DbgCloseTxt, DbgCloseBmp
 ;  - DbgClearAll, DbgClearTxt, DbgClearBmp
-;  - DbgLine, DbgLine2, DbgText, DbgWarning
+;  - DbgLine, DbgLine2, DbgText, DbgTextF, DbgWarning
 ;  - DbgARGB
 ;  - DbgStr, DbgStrA, DbgStrW, DbgStrCA, DbgStrCW
 ;  - DbgBin, DbgDec, DbgHex, DbgFloat, DbgGUID
@@ -145,7 +146,7 @@ DbgSaveContext macro VarIsRef:=<FALSE>, Var
     ??Attributes = opattr(Var)
     if VarIsRef ne FALSE
       if ??Attributes and OAT_REGISTER                  ;;Is Var a register?
-        %ifdifi Var, <xbx>                              ;;Skip if Var is xbx
+        %ifdifi <Var>, <xbx>                            ;;Skip if Var is xbx
           if type(Var) eq @WordSize                     ;;  Use xbx, because it is the only non
             mov xbx, Var                                ;;  volatile register that can be loaded
           else
@@ -193,6 +194,12 @@ DbgSaveContext macro VarIsRef:=<FALSE>, Var
     fxsave [esp]                                        ;;This instruction reinitializes the XMM
     push esp                                            ;;Save FPU storage pointer
     push edi                                            ;;Save address to restore CPU registers
+    ifb <Var>                                           ;;If not Var is supplied, restore regs
+      mov eax, [edi +  7*4]                             ;;Restore volatile registers
+      mov ecx, [edi +  6*4]
+      mov edx, [edi +  5*4]
+      mov edi, [edi]                                    ;;Restore edi from pushed register values
+    endif
   else
     and rsp, 0FFFFFFFFFFFFFFF0h                         ;;Align stack on a 16 byte boundary
     sub rsp, 20h
@@ -201,6 +208,17 @@ DbgSaveContext macro VarIsRef:=<FALSE>, Var
     fxsave [rsp]                                        ;;This instruction reinitializes the XMM
     push rsp                                            ;;Save FPU storage pointer
     push rdi                                            ;;Save address to restore CPU registers
+    ifb <Var>                                           ;;If not Var is supplied, restore regs
+      mov rax, [rdi + 11*8]                             ;;Restore volatile registers
+      mov rcx, [rdi + 10*8]
+      mov rdx, [rdi +  9*8]
+      mov r8,  [rdi +  7*8]
+      mov r9,  [rdi +  6*8]
+      mov r10, [rdi +  5*8]
+      mov r11, [rdi +  4*8]
+      mov rdi, [rdi +  8*8]                             ;;Restore rdi from pushed register values
+    endif
+
     sub rsp, 40h                                        ;;Add an homing area and argument space
   endif                                                 ;; for the comming calls
 endm
@@ -255,7 +273,7 @@ endm
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      DbgShowSrcInfo
 ; Purpose:    Output source line info on the debug device.
-; Arguments:  Arg1: Destination Window Name address.
+; Arguments:  Arg1: Optional destination Window name.
 ; Returns:    Nothing.
 
 DbgShowSrcInfo macro Dest:req
@@ -281,7 +299,7 @@ endm
 ; Macro:      DbgShowTxtInfo
 ; Purpose:    Output additional text info on the debug device.
 ; Arguments:  Arg1: Text.
-;             Arg2: Destination Window Name address.
+;             Arg2: Optional destination Window name.
 ; Returns:    Nothing.
 
 DbgShowTxtInfo macro Text, Dest
@@ -297,7 +315,7 @@ endm
 ;             Arg2: Output color of PreText (defaut is black).
 ;             Arg3: Symbol. Value or address must be stored in rbx/ebx/bx/bl.
 ;             Arg4: Output color (default = black).
-;             Arg5: Destination Window name address.
+;             Arg5: Optional destination Window name.
 ; Note:       If register addressing is used, a size prefix is required.
 ;             i.e.:  DbgHexHex DWORD ptr [rcx]
 ;             THIS MACRO TRASHES XDI & XSI!
@@ -411,7 +429,7 @@ endm
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      DbgLine
 ; Purpose:    Draw a single line on the debug device.
-; Arguments:  Arg1: Destination Window Name address.
+; Arguments:  Arg1: Optional destination Window name.
 
 DbgLine macro Dest
   if DEBUGGING
@@ -425,7 +443,7 @@ endm
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      DbgLine2
 ; Purpose:    Draw a double line on the debug device.
-; Arguments:  Arg1: Destination Window Name address.
+; Arguments:  Arg1: Optional destination Window name.
 
 DbgLine2 macro Dest
   if DEBUGGING
@@ -440,7 +458,7 @@ endm
 ; Macro:      DbgText
 ; Purpose:    Output a text on the debug device.
 ; Arguments:  Arg1: Text.
-;             Arg2: Destination Window Name address.
+;             Arg2: Optional destination Window name.
 
 DbgText macro Var, Dest
   if DEBUGGING
@@ -459,20 +477,49 @@ DbgText macro Var, Dest
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgTextF
+; Purpose:    Output formated a text on the debug device.
+; Arguments:  Arg1: Optional destination Window name.
+;             Arg2: Optional text color.
+;             Arg3: Text.
+;             Arg4: Text paramters.
+; Example:    DbgTextF "Output", $RGB(0,0,0), "Data = '%s'", xax
+
+DbgTextF macro Dest, Color:=<DBG_COLOR_TEXT>, Message:req, Args:vararg
+  if DEBUGGING
+    DbgSaveContext
+    DbgSetDestWnd Dest
+    ifnb <Args>
+      ifndef DebugTextF
+        S_DATA segment
+         DebugTextF CHRA 1024 dup (?)
+        S_DATA ends
+      endif
+
+      invoke wsprintf, offset DebugTextF, $OfsCStrA($Esc(Message)), Args
+      invoke DbgOutText, offset DebugTextF, Color, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+    else
+      invoke DbgOutText, $OfsCStrA($Esc(Message)), Color, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+    endif
+    DbgLoadContext
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      DbgWarning
 ; Purpose:    Output a text on the debug device on red color.
 ; Arguments:  Arg1: Text.
-;             Arg2: Destination Window Name address.
+;             Arg2: Optional destination Window name.
 
 DbgWarning macro DispText, Dest
   if DEBUGGING
     DbgSaveContext
     DbgSetDestWnd Dest
     ifb <&Var>
-      invoke DbgOutTextA, $OfsCStrA($Esc("WARNING\:")), \
+      invoke DbgOutText, $OfsCStr($Esc("WARNING\:")), \
                           DBG_COLOR_WARNING, DBG_EFFECT_NORMAL, ??DbgDstWnd
     else
-      invoke DbgOutTextA, $OfsCStrA($Esc(<DispText>)), \
+      invoke DbgOutText, $OfsCStr($Esc(<DispText>)), \
                           DBG_COLOR_WARNING, DBG_EFFECT_NORMAL, ??DbgDstWnd
     endif
     DbgShowSrcInfo ??DbgDstWnd
@@ -493,7 +540,7 @@ endif
 ; Purpose:    Output a specified string on the debug device.
 ; Arguments:  Arg1: ANSI String.
 ;             Arg2: Additional information.
-;             Arg3: Destination Window Name address.
+;             Arg3: Optional destination Window name.
 
 DbgStrA macro Var:req, InfoText, Dest
   if DEBUGGING
@@ -525,7 +572,7 @@ endm
 ; Purpose:    Output a specified WIDE string on the debug device.
 ; Arguments:  Arg1: WIDE string.
 ;             Arg2: Additional information.
-;             Arg3: Destination Window Name address.
+;             Arg3: Optional destination Window name.
 
 DbgStrW macro Var:req, InfoText, Dest
   if DEBUGGING
@@ -558,7 +605,7 @@ endm
 ; Arguments:  Arg1: ANSI string.
 ;             Arg2: Character count (fix number, like 8).
 ;             Arg3: Additional information.
-;             Arg4: Destination Window Name address.
+;             Arg4: Optional destination Window name.
 
 DbgStrCA macro Var:req, StrLen:req, InfoText, Dest
   if DEBUGGING
@@ -591,7 +638,7 @@ endm
 ; Arguments:  Arg1: WIDE string.
 ;             Arg2: Character count.
 ;             Arg3: Additional information.
-;             Arg4: Destination Window Name address.
+;             Arg4: Optional destination Window name.
 
 DbgStrCW macro Var:req, StrLen:req, InfoText, Dest
   if DEBUGGING
@@ -636,7 +683,7 @@ endif
 ; Purpose:    Display a number in hexadecimal format on the debug device.
 ; Arguments:  Arg1: Number (register or symbol).
 ;             Arg2: Additional information.
-;             Arg3: Destination Window Name address.
+;             Arg3: Optional destination Window name.
 ; Note:       If register addressing is used, a size prefix is required.
 ;             i.e.:  DbgHex DWORD ptr [rcx]
 
@@ -656,7 +703,7 @@ endm
 ; Purpose:    Output a number in binary format on the debug device.
 ; Arguments:  Arg1: Number (register or symbol). Max 32 bits.
 ;             Arg2: Additional information.
-;             Arg3: Destination Window Name address.
+;             Arg3: Optional destination Window name.
 ; Note:       If register addressing is used, a size prefix is required.
 ;             i.e.:  DbgBin DWORD ptr [rcx]
 
@@ -699,7 +746,7 @@ endm
 ; Purpose:    Output a number in decimal format on the debug device.
 ; Arguments:  Arg1: Number (register or symbol). Max 32 bits
 ;             Arg2: Additional information.
-;             Arg3: Destination Window Name address.
+;             Arg3: Optional destination Window name.
 ; Note:       If register addressing is used, a size prefix is required.
 ;             i.e.:  DbgDec DWORD ptr [rcx]
 
@@ -731,7 +778,7 @@ endm
 ; Purpose:    Display a floating point number in decimal format on the debug device.
 ; Arguments:  Arg1: Floating point number (REAL4 or REAL8)
 ;             Arg2: Additional information.
-;             Arg3: Destination Window Name address.
+;             Arg3: Optional destination Window name.
 
 DbgFloat macro Var:req, InfoText, Dest
   if DEBUGGING
@@ -771,7 +818,7 @@ endm
 ; Purpose:    Output the a GUID on the debug device.
 ; Arguments:  Arg1: GUID.
 ;             Arg2: Additional information.
-;             Arg3: Destination Window Name address.
+;             Arg3: Optional destination Window name.
 
 DbgGUID macro Var:req, InfoText, Dest
   if DEBUGGING
@@ -812,7 +859,7 @@ endm
 ; Purpose:    Output the an ARGB color on the debug device.
 ; Arguments:  Arg1: ARGB DWORD color value.
 ;             Arg2: Additional information.
-;             Arg3: Destination Window Name address.
+;             Arg3: Optional destination Window name.
 
 DbgARGB macro Var:req, InfoText, Dest
   if DEBUGGING
@@ -852,7 +899,7 @@ endm
 ; Macro:      DbgBmp
 ; Purpose:    Output a specified bitmap on the debug device.
 ; Arguments:  Arg1: -> Bitmap HANDLE.
-;             Arg2: Destination Window Name address.
+;             Arg2: Optional destination Window name.
 
 DbgBmp macro Var:req, Dest
   if DEBUGGING
@@ -875,7 +922,7 @@ endm
 ;             Arg2: Size of memory block.
 ;             Arg3: Output format (DBG_MEM_STR, DBG_MEM_[U]I??, DBG_MEM_R?, DBG_MEM_H??).
 ;             Arg4: Additional information.
-;             Arg5: Destination Window Name address.
+;             Arg5: Optional destination Window name.
 
 DbgMem macro pData:req, DataSize:req, OutputFormat:=<DBG_MEM_STR>, InfoText, Dest
   if DEBUGGING
@@ -893,7 +940,7 @@ endm
 ; Macro:      DbgGlobalMemUsage
 ; Purpose:    Display global memory usage on the debug window.
 ; Arguments:  Arg1: Additional information.
-;             Arg2: Destination Window Name address.
+;             Arg2: Optional destination Window name.
 
 DbgGlobalMemUsage macro InfoText, Dest
   if DEBUGGING
@@ -940,7 +987,7 @@ endm
 ; Macro:      DbgFPU
 ; Purpose:    Output the content of the FPU registers on the debug device.
 ; Arguments:  Arg1: Additional information.
-;             Arg2: Destination Window Name address.
+;             Arg2: Optional destination Window name.
 
 DbgFPU macro InfoText, Dest
   if DEBUGGING
@@ -963,7 +1010,7 @@ endm
 ; Purpose:    Identify a windows message with a string.
 ; Arguments:  Arg1: Windows message.
 ;             Arg2: Additional information.
-;             Arg3: Destination Window Name address.
+;             Arg3: Optional destination Window name.
 
 DbgMessage macro Var:req, InfoText, Dest
   if DEBUGGING
@@ -980,7 +1027,7 @@ endm
 ; Macro:      DbgApiError
 ; Purpose:    Identify an API error with a string.
 ; Arguments:  Arg1: Additional information.
-;             Arg2: Destination Window name address.
+;             Arg2: Optional destination Window name.
 
 DbgApiError macro InfoText, Dest
   if DEBUGGING
@@ -999,7 +1046,7 @@ endm
 ; Purpose:    Identify a COM error with a string
 ; Arguments:  Arg1: COM error code.
 ;             Arg2: Additional information.
-;             Arg3: Destination Window Name address.
+;             Arg3: Optional destination Window name.
 
 DbgComError macro Var:req, InfoText, Dest
   if DEBUGGING
@@ -1022,7 +1069,7 @@ endm
 ; Purpose:    Output internal object variables to the debug device.
 ; Arguments:  Arg1: InstanceHANDLE::ClassName.
 ;             Arg2: Additional information.
-;             Arg3: Destination Window Name address.
+;             Arg3: Optional destination Window name.
 ; Return:     Nothing.
 ; Note:       ebp is assumed to nothing!
 
@@ -1079,7 +1126,7 @@ endm
 ; Purpose:    Output offsets contained in a VMT.
 ; Arguments:  Arg1: InstanceHANDLE::ClassName.
 ;             Arg2: Additional information.
-;             Arg3: Destination Window Name address.
+;             Arg3: Optional destination Window name.
 ; Return:     Nothing.
 ; Note:       ebp is assumed to nothing!
 
@@ -1124,7 +1171,7 @@ endm
 ; Purpose:    Output offsets contained in a IMT.
 ; Arguments:  Arg1: InstanceHANDLE::ClassName.
 ;             Arg2: Additional information.
-;             Arg3: Destination Window Name address.
+;             Arg3: Optional destination Window name.
 ; Return:     Nothing.
 ; Note:       ebp is assumed to nothing!
 
@@ -1200,7 +1247,7 @@ endm
 ;; Purpose:    Display gattered trace information.
 ;; Arguments:  Arg1: Object name.
 ;;             Arg2: Additional information.
-;;             Arg2: Destination Window Name address.
+;;             Arg2: Optional destination Window name.
 ;
 ;DbgTraceShow macro OName:req, InfoText, Dest
 ;  if DEBUGGING
@@ -1471,7 +1518,7 @@ endm
 ; Purpose:    Display a message if an argument value is FALSE.
 ; Arguments:  Arg1: Value.
 ;             Arg2: Additional information.
-;             Arg3: Destination Window Name address.
+;             Arg3: Optional destination Window name.
 ; Note:       ! acts as escape character, use !!= as unequality comparison.
 
 ASSERT macro Expression:req, InfoText, Dest
@@ -1562,7 +1609,7 @@ endm
 ; Purpose:    Output Componet information on the debug device.
 ; Arguments:  Arg1: GUID.
 ;             Arg2: Additional information.
-;             Arg3: Destination Window Name address.
+;             Arg3: Optional destination Window name.
 
 DbgComponent macro Var:req, InfoText, Dest
   if DEBUGGING
@@ -1585,7 +1632,7 @@ endm
 ; Purpose:    Output Interface information on the debug device.
 ; Arguments:  Arg1: IID.
 ;             Arg2: Additional information.
-;             Arg3: Destination Window Name address.
+;             Arg3: Optional destination Window name.
 
 DbgInterface macro Var:req, InfoText, Dest
   if DEBUGGING

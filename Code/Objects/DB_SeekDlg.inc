@@ -23,7 +23,7 @@ Object DB_SeekDlg,, DialogModal
 
   DefineVariable    pTable,         $ObjPtr(DB_Table),  NULL
   DefineVariable    pActiveIndex,   $ObjPtr(DB_Index),  NULL    ;Currently active index
-  DefineVariable    pRecNo,         PDB_DATA_LINK_TYPE,     NULL
+  DefineVariable    pRecNo,         PDB_DATA_LINK_TYPE, NULL
 
   Embed     StatusBar,  Statusbar                               ;Statusbar object
 ObjectEnd

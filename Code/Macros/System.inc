@@ -113,7 +113,7 @@ OAT_BIT_13        equ 0010000000000000b
 OAT_BIT_14        equ 0100000000000000b
 OAT_BIT_15        equ 1000000000000000b
 
-; Notes: 
+; Notes:
 ;             036 = 0000 0000 0010 0100y = immediate operand or constant
 ;             037 = 0000 0000 0010 0101y = label, either local or global
 ;             042 = 0000 0000 0010 1010y = GLOBAL var
@@ -385,7 +385,7 @@ m2m macro DstMem:req, SrcMem:req, AuxReg
       .err m2m - destination size is smaller than source size!
     endif
   else
-    if ((opattr(SrcMem) and OAT_REGISTER) eq OAT_REGISTER) and ($$DstSize eq $$SrcSize)
+    if ((opattr SrcMem) and OAT_REGISTER) and ($$DstSize eq $$SrcSize)
       mov DstMem, SrcMem                                ;;use mov
     else
       ifb <AuxReg>
@@ -1204,7 +1204,7 @@ Choose1 macro Index:req, Choises:vararg
 
   .code
   .if Index <= ChoiseCount
-    if ((opattr Index) and OAT_REGISTER)                ;;Is dIndex a register?
+    if (opattr Index) and OAT_REGISTER                  ;;Is dIndex a register?
       mov xax, [offset(ConstData) + @WordSize*dIndex]
     else
       mov xax, dIndex
@@ -1491,15 +1491,15 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      sMax / $sMax
-; Purpose:    Return the maximum of 2 signed words.
+; Purpose:    Return the maximum of 2 signed values.
 ; Arguments:  Arg1: First signed word.
 ;             Arg2: Second signed word.
-;             Arg3: Optional return register. Default is xax.
-; Returns:    rax/eax/ax/al = Biggest signed word.
+;             Arg3: Optional destiantion register. Default is xax.
+; Returns:    DstReg/rax/eax/ax/al = Biggest signed value.
 
-sMax macro Var1:req, Var2:req, Reg:=<xax>
+sMax macro Var1:req, Var2:req, DstReg:=<xax>
   $$Attribute = type(Var1)
-  $$Reg textequ $SubReg(Reg, $$Attribute)
+  $$Reg textequ $SubReg(DstReg, $$Attribute)
   $$Word textequ $SubWord(<SQWORD>, $$Attribute)
 
   ifidni <Var2>, $$Reg
@@ -1516,22 +1516,22 @@ sMax macro Var1:req, Var2:req, Reg:=<xax>
   endif
 endm
 
-$sMax macro Var1:req, Var2:req, Reg:=<xax>
-  sMax Var1, Var2, Reg
+$sMax macro Var1:req, Var2:req, DstReg:=<xax>
+  sMax Var1, Var2, DstReg
   %exitm <$SubReg(Reg, type(Var1))>
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      sMin / $sMin
-; Purpose:    Return the minimum of 2 signed words.
+; Purpose:    Return the minimum of 2 signed values.
 ; Arguments:  Arg1: First signed word.
 ;             Arg2: Second signed word.
-;             Arg3: Optional return register. Default is xax.
-; Returns:    rax/eax/ax/al = Smallest signed word.
+;             Arg3: Optional destiantion register. Default is xax.
+; Returns:    DstReg/rax/eax/ax/al = Smallest signed value.
 
-sMin macro Var1:req, Var2:req, Reg:=<xax>
+sMin macro Var1:req, Var2:req, DstReg:=<xax>
   $$Attribute = type(Var1)
-  $$Reg textequ $SubReg(Reg, $$Attribute)
+  $$Reg textequ $SubReg(DstReg, $$Attribute)
   $$Word textequ $SubWord(<SQWORD>, $$Attribute)
 
   ifidni <Var2>, $$Reg
@@ -1555,14 +1555,15 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      uMax / $uMax
-; Purpose:    Return the maximum of 2 words.
+; Purpose:    Return the maximum of 2 values.
 ; Arguments:  Arg1: First word.
 ;             Arg2: Second word.
-; Returns:    rax/eax/ax/al = Biggest word.
+;             Arg3: Optional destiantion register. Default is xax.
+; Returns:    DstReg/rax/eax/ax/al = Biggest value.
 
-uMax macro Var1:req, Var2:req, Reg:=<xax>
+uMax macro Var1:req, Var2:req, DstReg:=<xax>
   $$Attribute = type(Var1)
-  $$Reg textequ $SubReg(Reg, $$Attribute)
+  $$Reg textequ $SubReg(DstReg, $$Attribute)
   $$Word textequ $SubWord(<QWORD>, $$Attribute)
 
   ifidni <Var2>, $$Reg
@@ -1579,21 +1580,22 @@ uMax macro Var1:req, Var2:req, Reg:=<xax>
   endif
 endm
 
-$uMax macro Var1:req, Var2:req, Reg:=<xax>
-  uMax Var1, Var2, Reg
+$uMax macro Var1:req, Var2:req, DstReg:=<xax>
+  uMax Var1, Var2, DstReg
   %exitm <$SubReg(Reg, type(Var1))>
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      uMin / $uMin
-; Purpose:    Return the minimum of 2 words.
-; Arguments:  Arg1: First word.
-;             Arg2: Second word.
-; Returns:    rax/eax/ax/al = Smallest word.
+; Purpose:    Return the minimum of 2 values.
+; Arguments:  Arg1: First value.
+;             Arg2: Second value.
+;             Arg3: Optional destiantion register. Default is xax.
+; Returns:    DstReg/rax/eax/ax/al = Smallest value.
 
-uMin macro Var1:req, Var2:req, Reg:=<xax>
+uMin macro Var1:req, Var2:req, DstReg:=<xax>
   $$Attribute = type(Var1)
-  $$Reg textequ $SubReg(Reg, $$Attribute)
+  $$Reg textequ $SubReg(DstReg, $$Attribute)
   $$Word textequ $SubWord(<QWORD>, $$Attribute)
 
   ifidni <Var2>, $$Reg
@@ -1610,16 +1612,16 @@ uMin macro Var1:req, Var2:req, Reg:=<xax>
   endif
 endm
 
-$uMin macro Var1:req, Var2:req, Reg:=<xax>
-  uMin Var1, Var2, Reg
+$uMin macro Var1:req, Var2:req, DstReg:=<xax>
+  uMin Var1, Var2, DstReg
   %exitm <$SubReg(Reg, type(Var1))>
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      $uMini / uMini
-; Purpose:    Return the smallest of 2 words.
+; Purpose:    Return the smallest of 2 values.
 ; Arguments:  Arg1: Default rax = a, rcx = b
-; Returns:    rax/eax/ax/al = $uMini(a,b)
+; Returns:    Reg1/rax/eax/ax/al = $uMini(a,b)
 ; Uses:       Default are rax, rcx, rdx (Reg2 and AuxReg are trashed).
 
 uMini macro Reg1:=<xax>, Reg2:=<xcx>, AuxReg:=<xdx>
@@ -1641,9 +1643,9 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      $uMaxi / uMaxi
-; Purpose:    Return the maximum of 2 words.
+; Purpose:    Return the maximum of 2 values.
 ; Arguments:  Arg1: Default rax = a, rcx = b
-; Returns:    rax/eax/ax/al = $uMaxi(a,b)
+; Returns:    Reg1/rax/eax/ax/al = $uMaxi(a,b)
 ; Uses:       Default are rax, rcx, rdx (Reg2 and AuxReg are trashed).
 
 uMaxi macro Reg1:=<xax>, Reg2:=<xcx>, AuxReg:=<xdx>
@@ -1665,7 +1667,7 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      $sMaxi / sMaxi
-; Purpose:    Return the maximum of 2 signed words.
+; Purpose:    Return the maximum of 2 signed values.
 ; Arguments:  rax = a, rdx = b
 ; Returns:    rax/eax/ax/al = min(a,b), rdx/edx/dx/dl = max(a,b)
 ; Uses:       rax, rdx.
@@ -1692,7 +1694,7 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      uMiniMaxi
-; Purpose:    Return the minimum and maximun of 2 words.
+; Purpose:    Return the minimum and maximun of 2 values.
 ; Arguments:  Reg1, Reg2
 ; Returns:    Reg1 = min(Reg1, Reg2), Reg2 = max(Reg1, Reg2)
 ; Uses:       Reg1, Reg2, AuxReg1, AuxReg2
@@ -1708,7 +1710,7 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      sMean / $sMean
-; Purpose:    Compute (Reg1 + Reg2)/2 (signed words).
+; Purpose:    Compute (Reg1 + Reg2)/2 (signed values).
 ; Arguments:  Arg1: Reg1.
 ;             Arg2: Reg2.
 ;             Arg3: AuxReg.
@@ -1831,7 +1833,7 @@ endm
 ; Returns:    Nothing.
 
 PushArgsFor macro ProcName:req, ArgList:vararg
-  $$Arg = (opattr ProcName) and 0000011100000000b       ;;$$Arg = Calling convention
+  $$Arg = (opattr ProcName) and OAT_LANGUAGE            ;;$$Arg = Calling convention
   if $$Arg eq 0
     .err <Unknown procedure>
   elseif ($$Arg and 0000010000000000b)                  ;;Pascal, Fortran, Basic => push from L->R
@@ -1958,7 +1960,7 @@ $IsFloat macro Arg:req
       exitm <-1>
     endif
     exitm <0>
-  elseif opattr Arg
+  elseif (opattr Arg)
     exitm <0>
   endif
 
@@ -3401,8 +3403,8 @@ endif
 @Random macro Range
   ifndef @RandSeed
     @RandSeed = @CatStr(@SubStr(<%@Time>, 1, 2), @SubStr(<%@Time>, 4, 2), @SubStr(<%@Time>, 7, 2))
-  endif  
+  endif
   ;Xn = (aXn-1 + b) mod m
   @RandSeed = ((@RandSeed*0A126CDF1h) + 0CA379C13h) mod 024DC5A39h
-  exitm %@CatStr(%(@RandSeed mod (Range))) 
+  exitm %@CatStr(%(@RandSeed mod (Range)))
 endm

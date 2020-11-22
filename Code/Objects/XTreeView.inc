@@ -417,7 +417,7 @@ XTV_GetBranchMaxWidth macro pStartNode:req, pXTV:req    ;;-> first node in branc
     uMaxi ebx, ecx, edx                                 ;;Trash ecx and edx
     .if XTV_IsExpanded(xax)
       mov ecx, [xax].$Obj(XTreeViewNode).dBranchWidth
-      if (opattr(pXTV)) and OAT_REGISTER                ;;Is pXTV a register?
+      if (opattr pXTV) and OAT_REGISTER                 ;;Is pXTV a register?
         add ecx, [pXTV].dNodeIndent
       else
         mov xdx, pXTV
