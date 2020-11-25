@@ -1518,7 +1518,7 @@ endm
 
 $sMax macro Var1:req, Var2:req, DstReg:=<xax>
   sMax Var1, Var2, DstReg
-  %exitm <$SubReg(Reg, type(Var1))>
+  %exitm <$SubReg(DstReg, type(Var1))>
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -1548,9 +1548,9 @@ sMin macro Var1:req, Var2:req, DstReg:=<xax>
   endif
 endm
 
-$sMin macro Var1:req, Var2:req, Reg:=<xax>
-  sMin Var1, Var2, Reg
-  %exitm <$SubReg(Reg, type(Var1))>
+$sMin macro Var1:req, Var2:req, DstReg:=<xax>
+  sMin Var1, Var2, DstReg
+  %exitm <$SubReg(DstReg, type(Var1))>
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -1582,7 +1582,7 @@ endm
 
 $uMax macro Var1:req, Var2:req, DstReg:=<xax>
   uMax Var1, Var2, DstReg
-  %exitm <$SubReg(Reg, type(Var1))>
+  %exitm <$SubReg(DstReg, type(Var1))>
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -1614,7 +1614,7 @@ endm
 
 $uMin macro Var1:req, Var2:req, DstReg:=<xax>
   uMin Var1, Var2, DstReg
-  %exitm <$SubReg(Reg, type(Var1))>
+  %exitm <$SubReg(DstReg, type(Var1))>
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

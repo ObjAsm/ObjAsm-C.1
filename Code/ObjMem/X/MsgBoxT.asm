@@ -204,7 +204,7 @@ MB_WndProc proc private uses xbx xdi xsi hDlg:HWND, uMsg:DWORD, wParam:WPARAM, l
     m2m TVDef.pText, [xdi].MsgBoxInfo.pText, xax
 
     ;Adjust dialog size according to the TextView size
-    mov TVDef.dWidth,  $uMax(TVDef.dWidth,  CRect.right)
+    mov TVDef.dWidth, $uMax(TVDef.dWidth, CRect.right)
     mov eax, CRect.bottom
     sub eax, [xdi].MsgBoxInfo.dBandHeight
     mov TVDef.dHeight, $uMax(eax, TVDef.dHeight)

@@ -288,8 +288,8 @@ DbgShowSrcInfo macro Dest:req
 
   .ifBitSet dDbgOpt, DBG_OPT_SHOWINFO
     invoke DbgOutTextA, \
-             $OfsCStrA(@CatStr(<!" [>, @SubStr(%@FileCur, ??DbgPos + 1), <, >, %@Line, <]!">)), \
-             DBG_COLOR_COMMENT, DBG_EFFECT_NEWLINE, Dest
+              $OfsCStrA(@CatStr(<!" [>, @SubStr(%@FileCur, ??DbgPos + 1), <, >, %@Line, <]!">)), \
+              DBG_COLOR_COMMENT, DBG_EFFECT_NEWLINE, Dest
   .else
     invoke DbgOutTextA, offset(bNULL), DBG_COLOR_TEXT, DBG_EFFECT_NEWLINE, Dest
   .endif

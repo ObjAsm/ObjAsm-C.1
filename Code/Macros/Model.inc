@@ -272,7 +272,7 @@ SysSetup macro Arguments:vararg
   % include &MacPath&WinHelpers.inc
   % include &MacPath&ConstDiv.inc
   % include &IncPath&ObjAsm\\ObjMem.inc
-  
+
   % includelib &LibPath&Windows\\GDI32.lib
   % includelib &LibPath&Windows\\Kernel32.lib
   % includelib &LibPath&Windows\\User32.lib
@@ -322,12 +322,12 @@ SysSetup macro Arguments:vararg
 
     if DEBUGGING
       S_OBJID segment                                   ;;Define a new segment
-        ??ObjIDTableStart equ $                         
+        ??ObjIDTableStart equ $
       S_OBJID ends                                      ;;Switch back to previous segment
-      ??ObjIDTableCount = 0                             
-                                                        
+      ??ObjIDTableCount = 0
+
       S_OBJERR segment                                  ;;Define a new segment
-        ??ObjErrTableStart equ $                        
+        ??ObjErrTableStart equ $
       S_OBJERR ends                                     ;;Switch back to previous segment
       ??ObjErrTableCount = 0
 
@@ -491,7 +491,7 @@ SysSetup macro Arguments:vararg
     endif
   endif
   % include &MacPath&Debug.inc
-  
+
   TARGET_SUFFIX CatStr $ToStr(%TARGET_BITNESS), TARGET_STR_AFFIX
 endm
 
