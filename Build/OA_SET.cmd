@@ -30,8 +30,9 @@ if %SYSTEM_BITNESS%==32 (
   set Assembler="!OBJASM_PATH!\Build\Tools\UASM64.EXE"
 )
 
-rem set Linker="%ToolPath:"=%\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\bin\Hostx64\x64\link.exe"
-set LibraryCompiler="%ToolPath:"=%\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\bin\Hostx64\x64\lib.exe"
+rem set Linker="%ToolPath:"=%\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\bin\Hostx64\x64\link.exe"
+set LibraryCompiler="%ToolPath:"=%\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\bin\Hostx64\x64\lib.exe"
+
 set Debugger="%ToolPath:"=%\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.exe"
 
 exit /b 0

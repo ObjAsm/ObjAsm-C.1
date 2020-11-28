@@ -14,7 +14,7 @@ if [!TARGET_BITNESS!] == [] (
   pushd
   cd %OBJASM_PATH%\Code\ObjMem\!TARGET_BITNESS!
   
-  REM delete all leftover .obj, .lib & .err files that can disturb LIB.EXE
+  REM delete all leftover .obj, .lib & .err files that can disturb the build process
   if exist *.err del *.err
   if exist *.obj del *.obj
   if exist *.lib del *.lib
@@ -37,7 +37,7 @@ if [!TARGET_BITNESS!] == [] (
       if exist *.obj del *.obj
       REM Install library
       cd..
-      call "%OBJASM_PATH%\Code\ObjMem\InstallObjMemLib.cmd"
+      call "%OBJASM_PATH%\Code\ObjMem\InstallObjMemLib!TARGET_BITNESS!.cmd"
       echo Installation ready^^!
       echo.
     )
