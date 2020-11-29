@@ -203,7 +203,7 @@ Method SkinnedMsgBox.OnInitDialog, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   ;100% -> BaseUnitX = 08; BaseUnitY = 16
   ;125% -> BaseUnitX = 10; BaseUnitY = 20
   mov RgnButtonDef.sdPosX, $32($invoke(MulDiv, 40, BaseUnitX, 4))
-  mov RgnButtonDef.sdPosY, $32($invoke(MulDiv, 64, BaseUnitY, 8))
+  mov RgnButtonDef.sdPosY, $32($invoke(MulDiv, 70, BaseUnitY, 8))
   m2m RgnButtonDef.pResName, [xsi].pBtn1ResName, xax
   OCall [xsi].RgnBtn1::RgnButton.Init, xsi, [xsi].hWnd, addr RgnButtonDef
 

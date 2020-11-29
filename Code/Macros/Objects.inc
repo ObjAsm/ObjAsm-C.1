@@ -66,12 +66,6 @@ OBJECT_LOCK struc 1
 OBJECT_LOCK ends
 POBJECT_LOCK typedef ptr OBJECT_LOCK
 
-;Compilation switches
-IMPLEMENT               = TRUE                          ;Default = implement object methods
-MAKETEMPL               = TRUE                          ;Default = create object templates
-SHOWINHERITANCE         = TRUE                          ;Output the object inheritance path
-CREATETYPEDEFS          = TRUE                          ;Emits TYPEDEF object POINTER information
-
 ;Global object namespace
 OBJASM_NAMESPACE        textequ <OA>                    ;Default namespace
 ??ObjPfxSep             textequ <_>                     ;Cosmetic separator
@@ -809,8 +803,8 @@ endm
 ; Arguments:  Arg1: File name list (without extention) that contain the object data to load.
 
 LoadObjects macro FileNameList:vararg
+  IMPLEMENT = FALSE
   for $$FileName:req, <FileNameList>
-    IMPLEMENT = FALSE
     if @InStr(1, $$FileName, <\>) eq 0
       $$IncObjPath textequ <&ObjPath&>
       if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -822,10 +816,14 @@ LoadObjects macro FileNameList:vararg
       $$IncObjPath textequ <>
       $$LibObjPath textequ <>
     endif
+    if TARGET_BIN_FORMAT eq BIN_FORMAT_LIB
+      MAKETEMPL = FALSE
+    else
+      %includelib &$$LibObjPath&&$$FileName&.lib
+    endif
     %include &$$IncObjPath&&$$FileName&.inc
-    %includelib &$$LibObjPath&&$$FileName&.lib
   endm
-  IMPLEMENT = TRUE                                      ;;Set default
+  IMPLEMENT = TRUE                                      ;;Restore defaults
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -2452,7 +2450,7 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
   $$EaxUsed = FALSE
   $$ArgPushed = FALSE
   $$ErrFlag = FALSE
-  
+
   ;Reverse arguments and store them in ??Params
   ??Params textequ <>
   ifnb <Args>

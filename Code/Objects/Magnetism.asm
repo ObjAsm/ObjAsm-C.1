@@ -10,14 +10,12 @@
 
 % include Objects.cop
 
-% include &MacPath&WinHelpers.inc
-
 ;Add here all files that build the inheritance path and referenced objects
-include Primer.inc
-include Stream.inc
-include MsgInterceptor.inc
-include Collection.inc
-include DataCollection.inc
+LoadObjects Primer
+LoadObjects Stream
+LoadObjects MsgInterceptor
+LoadObjects Collection
+LoadObjects DataCollection
 
 ;Add here the file that defines the object(s) to be included in the library
 MakeObjects Magnetism

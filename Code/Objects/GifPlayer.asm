@@ -10,15 +10,13 @@
 
 % include Objects.cop
 
-% include &MacPath&WinHelpers.inc
-
 ;Add here all files that build the inheritance path and referenced objects
-include Primer.inc
-include Stream.inc
-include WinPrimer.inc
-include Collection.inc
-include DataCollection.inc
-include GifDecoder.inc
+LoadObjects Primer
+LoadObjects Stream
+LoadObjects WinPrimer
+LoadObjects Collection
+LoadObjects DataCollection
+LoadObjects GifDecoder
 
 ;Add here the file that defines the object(s) to be included in the library
 MakeObjects GifPlayer

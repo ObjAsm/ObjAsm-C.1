@@ -344,7 +344,7 @@ MethodEnd                                               ;  disconnect
 
 DbgOnError macro WarningText:req, Error:req, InfoText, Dest
   if DEBUGGING
-    DbgSaveContext TRUE, FALSE, Error
+    DbgSaveContext FALSE, Error
     DbgSetDestWnd Dest
     invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, ??DbgDstWnd
     invoke DbgOutTextA, $OfsCStrA($Esc(<WarningText>)), DBG_COLOR_WARNING, DBG_EFFECT_NORMAL, \

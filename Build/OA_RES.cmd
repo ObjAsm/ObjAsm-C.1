@@ -5,7 +5,6 @@ if exist !ProjectName!.rc (
     call !ResourceCompiler! /nologo /v /r /x /w /i"%OBJASM_PATH%\Resources" !ProjectName!.rc
   ) else (
     echo Compiling !ProjectName!.rc resources ...>> !LogFile!
-echo !ResourceCompiler!
     call !ResourceCompiler! /nologo /v /r /x /w /i"%OBJASM_PATH%\Resources" !ProjectName!.rc >> !LogFile!
     echo.>> !LogFile!
   )

@@ -15,17 +15,17 @@
 % include &IncPath&Windows\Shlwapi.inc
 
 ;Add here all files that build the inheritance path and referenced objects
-include Primer.inc
-include Stream.inc
-include DiskStream.inc
-include Collection.inc
-include SortedCollection.inc
-include DataCollection.inc
-include WinPrimer.inc
-include Window.inc
-include Dialog.inc
-include DialogModal.inc
-include DialogProgress.inc
+LoadObjects Primer
+LoadObjects Stream
+LoadObjects DiskStream
+LoadObjects Collection
+LoadObjects SortedCollection
+LoadObjects DataCollection
+LoadObjects WinPrimer
+LoadObjects Window
+LoadObjects Dialog
+LoadObjects DialogModal
+LoadObjects DialogProgress
 
 
 ;Add here the file that defines the object(s) to be included in the library

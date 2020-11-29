@@ -10,12 +10,11 @@
 
 % include Objects.cop
 
-% include &MacPath&WinHelpers.inc
 % include &IncPath&Windows\CommCtrl.inc
 
 ;Add here all files that build the inheritance path and referenced objects
-include Primer.inc
-include Stream.inc
+LoadObjects Primer
+LoadObjects Stream
 
 ;Add here the file that defines the object(s) to be included in the library
 MakeObjects SimpleImageList

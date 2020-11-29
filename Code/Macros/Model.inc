@@ -104,10 +104,10 @@
 ;     target (ANSI_STRING or WIDE_STRING).
 ; 25. Debugging macros are enabled when DEBUG() is added to the SysSetuo macro. The destination
 ;     of the debug information is directed using the Debug auguments WND, CON, LOG or PRN.
-; 26. If a string procedure name contain one of the following characters, it behave as follows:
+; 26. If a string procedure name contain one of the following characters, it behaves as follows:
 ;       - A: ANSI procedure
 ;       - W: WIDE procedure
-;       - C: character count limited
+;       - C: character count is limited
 ;       - E: returns the address of the ZTC
 ;       - I: case insensitive
 ;       - L: operation starts from left
@@ -237,7 +237,7 @@ SysSetup macro Arguments:vararg
       TARGET_USER_INTERFACE = USER_INTERFACE_NONE
       TARGET_BITNESS = 32
     elseifidni  <Argument>, <LIB64>
-      TARGET_BIN_FORMAT = LIB
+      TARGET_BIN_FORMAT = BIN_FORMAT_LIB
       TARGET_USER_INTERFACE = USER_INTERFACE_NONE
       TARGET_BITNESS = 64
 
@@ -273,15 +273,17 @@ SysSetup macro Arguments:vararg
   % include &MacPath&ConstDiv.inc
   % include &IncPath&ObjAsm\\ObjMem.inc
 
-  % includelib &LibPath&Windows\\GDI32.lib
-  % includelib &LibPath&Windows\\Kernel32.lib
-  % includelib &LibPath&Windows\\User32.lib
-  % includelib &LibPath&Windows\\Advapi32.lib
+  if TARGET_BIN_FORMAT ne BIN_FORMAT_LIB                ;;Only load libs when target is not a lib
+    % includelib &LibPath&Windows\\GDI32.lib
+    % includelib &LibPath&Windows\\Kernel32.lib
+    % includelib &LibPath&Windows\\User32.lib
+    % includelib &LibPath&Windows\\Advapi32.lib
 
-  if TARGET_BITNESS eq 32
-    % includelib &LibPath&ObjAsm\\ObjMem32.lib
-  else
-    % includelib &LibPath&ObjAsm\\ObjMem64.lib
+    if TARGET_BITNESS eq 32
+      % includelib &LibPath&ObjAsm\\ObjMem32.lib
+    else
+      % includelib &LibPath&ObjAsm\\ObjMem64.lib
+    endif
   endif
 
   .list
@@ -292,6 +294,36 @@ SysSetup macro Arguments:vararg
   externdef p1stOMD:POINTER                             ;;Export p1stOMD symbol
 
   ;;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  if TARGET_OOP eq OOP_ENABLED
+    echo OOP Support:    ENABLED
+    IMPLEMENT         = TRUE                            ;;Default = implement object methods
+    MAKETEMPL         = TRUE                            ;;Default = create object templates
+    SHOWINHERITANCE   = TRUE                            ;;Output the object inheritance path
+    CREATETYPEDEFS    = TRUE                            ;;Emits TYPEDEF object POINTER information
+    % include &MacPath&Objects.inc                      ;;Here is our OOP support! => ObjAsm
+
+    if DEBUGGING
+      S_OBJID segment                                   ;;Define a new segment
+        ??ObjIDTableStart equ $
+      S_OBJID ends                                      ;;Switch back to previous segment
+      ??ObjIDTableCount = 0
+
+      S_OBJERR segment                                  ;;Define a new segment
+        ??ObjErrTableStart equ $
+      S_OBJERR ends                                     ;;Switch back to previous segment
+      ??ObjErrTableCount = 0
+
+    endif
+    % include &ObjPath&ObjIDs.inc                       ;;These include files must follow the
+    % include &ObjPath&ObjErrs.inc                      ;;  previous segment definitions
+  else
+    echo OOP Support:    DISABLED
+    IMPLEMENT         = FALSE                           ;;Don't implement unless MakeObject is used
+    MAKETEMPL         = FALSE                           ;;Don't create any object template
+    SHOWINHERITANCE   = FALSE                           ;;Don't output the inheritance path
+    CREATETYPEDEFS    = FALSE                           ;;Don't emit TYPEDEF object POINTER info
+  endif
 
   if TARGET_USER_INTERFACE eq USER_INTERFACE_NONE
     echo User Interface: NONE
@@ -314,32 +346,6 @@ SysSetup macro Arguments:vararg
     echo Bitness:        32
   else
     echo Bitness:        64
-  endif
-
-  if TARGET_OOP eq OOP_ENABLED
-    echo OOP Support:    ENABLED
-    % include &MacPath&Objects.inc                      ;;Here is our OOP support! => ObjAsm
-
-    if DEBUGGING
-      S_OBJID segment                                   ;;Define a new segment
-        ??ObjIDTableStart equ $
-      S_OBJID ends                                      ;;Switch back to previous segment
-      ??ObjIDTableCount = 0
-
-      S_OBJERR segment                                  ;;Define a new segment
-        ??ObjErrTableStart equ $
-      S_OBJERR ends                                     ;;Switch back to previous segment
-      ??ObjErrTableCount = 0
-
-    endif
-    % include &ObjPath&ObjIDs.inc                       ;;These include files must follow the
-    % include &ObjPath&ObjErrs.inc                      ;;  previous segment definitions
-
-  else
-    echo OOP Support:    DISABLED
-    IMPLEMENT         = FALSE                           ;;Don't implement unless MakeObject is used
-    MAKETEMPL         = FALSE                           ;;Don't create any object template
-    SHOWINHERITANCE   = FALSE                           ;;Don't output the inheritance path
   endif
 
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -511,7 +517,7 @@ SysInit macro hInst
 
 .code
   ifnb <hInst>                                          ;;Used for DLLs
-    mrm hInstance, hInst, xax
+    m2m hInstance, hInst, xax
   else
     mov hInstance, $invoke(GetModuleHandle, NULL)       ;;Retrieves module instance HANDLE
   endif

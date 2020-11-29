@@ -10,14 +10,13 @@
 
 % include Objects.cop
 
-% include &MacPath&WinHelpers.inc
-% include &IncPath&Windows\CommCtrl.inc 
+% include &IncPath&Windows\CommCtrl.inc
 
 ;Add here all files that build the inheritance path and referenced objects
-include Primer.inc
-include Stream.inc
-include WinPrimer.inc
-include WinControl.inc
+LoadObjects Primer
+LoadObjects Stream
+LoadObjects WinPrimer
+LoadObjects WinControl
 
 ;Add here the file that defines the object(s) to be included in the library
 MakeObjects Tooltip

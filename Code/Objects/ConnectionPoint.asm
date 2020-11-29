@@ -12,18 +12,15 @@
 
 % include &COMPath&COM.inc
 % include &COMPath&COM_Dispatch.inc
-% include &MacPath&Debug.inc
 % include &IncPath&Windows\ocidl.inc
-% include &IncPath&Windows\OleCtl.inc 
-
-DEBUGGING = FALSE
+% include &IncPath&Windows\OleCtl.inc
 
 ;Add here all files that build the inheritance path and referenced objects
-include Primer.inc
-include Stream.inc
-include Collection.inc
-include DataCollection.inc
-include COM_Primers.inc
+LoadObjects Primer
+LoadObjects Stream
+LoadObjects Collection
+LoadObjects DataCollection
+LoadObjects COM_Primers
 
 ;Add here the file that defines the object(s) to be included in the library
 MakeObjects ConnectionPoint

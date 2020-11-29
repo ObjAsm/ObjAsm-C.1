@@ -10,8 +10,6 @@
 
 % include Objects.cop
 
-% include &MacPath&WinHelpers.inc
-% include &MacPath&fMath.inc
 % include &MacPath&Strings.inc
 % include &MacPath&BStrings.inc
 % include &IncPath&Windows\sGUID.inc
@@ -23,24 +21,24 @@
 % include &COMPath&COM_Dispatch.inc
 % include &COMPath&COM_Dispatch.asm
 
-% include &OA_PATH&\Projects\32\MSChart\MSChart20Lib.inc
+% include &OA_PATH&Projects\32\MSChart\MSChart20Lib.inc
 
 ;Add here all files that build the inheritance path and referenced objects
-include Primer.inc
-include Stream.inc
-include Collection.inc
-include DataCollection.inc
-include WinPrimer.inc
-include Window.inc
-include Dialog.inc
-include DialogModal.inc
-include DialogAbout.inc
-include WinApp.inc
-include SdiApp.inc
-include COM_Primers.inc
-include IDispatch.inc
-include ConnectionPoint.inc
-include IConnectionPointContainer.inc
+LoadObjects Primer
+LoadObjects Stream
+LoadObjects Collection
+LoadObjects DataCollection
+LoadObjects WinPrimer
+LoadObjects Window
+LoadObjects Dialog
+LoadObjects DialogModal
+LoadObjects DialogAbout
+LoadObjects WinApp
+LoadObjects SdiApp
+LoadObjects COM_Primers
+LoadObjects IDispatch
+LoadObjects ConnectionPoint
+LoadObjects IConnectionPointContainer
 
 ;Add here the file that defines the object(s) to be included in the library
 MakeObjects MSChart

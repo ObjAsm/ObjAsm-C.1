@@ -10,19 +10,19 @@
 
 % include Objects.cop
 
-% include &MacPath&WinHelpers.inc
+% include &MacPath&fMath.inc
 
 ;Add here all files that build the inheritance path and referenced objects
-include Primer.inc
-include Stream.inc
-include WinPrimer.inc
-include Window.inc
-include Button.inc
-include Dialog.inc
-include DialogModal.inc
-include MsgInterceptor.inc
-include Array.inc
-include Collection.inc
+LoadObjects Primer
+LoadObjects Stream
+LoadObjects WinPrimer
+LoadObjects Window
+LoadObjects Button
+LoadObjects Dialog
+LoadObjects DialogModal
+LoadObjects MsgInterceptor
+LoadObjects Array
+LoadObjects Collection
 
 ;Add here the file that defines the object(s) to be included in the library
 MakeObjects PlotXY

@@ -10,14 +10,16 @@
 
 % include Objects.cop
 
+% include &MacPath&fMath.inc
+
 ;Add here all files that build the inheritance path and referenced objects
-include Primer.inc
-include Stream.inc
-include DiskStream.inc
-include Collection.inc
-include SortedCollection.inc
-include SortedDataCollection.inc
-include DataCollection.inc
+LoadObjects Primer
+LoadObjects Stream
+LoadObjects DiskStream
+LoadObjects Collection
+LoadObjects SortedCollection
+LoadObjects SortedDataCollection
+LoadObjects DataCollection
 
 ;Add here the file that defines the object(s) to be included in the library
 MakeObjects D3Engine

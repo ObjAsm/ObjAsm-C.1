@@ -10,19 +10,18 @@
 
 % include Objects.cop
 
-% include &MacPath&WinHelpers.inc
 % include &IncPath&Windows\RichEdit.inc
 % include &MacPath&DlgTmpl.inc
 
 ;Add here all files that build the inheritance path and referenced objects
-include Primer.inc
-include Stream.inc
-include WinPrimer.inc
-include Window.inc
-include WinApp.inc
-include Dialog.inc
-include DialogModeless.inc
-include DialogModelessIndirect.inc
+LoadObjects Primer
+LoadObjects Stream
+LoadObjects WinPrimer
+LoadObjects Window
+LoadObjects WinApp
+LoadObjects Dialog
+LoadObjects DialogModeless
+LoadObjects DialogModelessIndirect
 
 ;Add here the file that defines the object(s) to be included in the library
 MakeObjects DialogFindText

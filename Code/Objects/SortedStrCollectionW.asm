@@ -11,10 +11,10 @@
 % include Objects.cop
 
 ;Add here all files that build the inheritance path and referenced objects
-include Primer.inc
-include Stream.inc
-include Collection.inc
-include SortedCollection.inc
+LoadObjects Primer
+LoadObjects Stream
+LoadObjects Collection
+LoadObjects SortedCollection
 
 ;Add here the file that defines the object(s) to be included in the library
 MakeObjects SortedStrCollectionW

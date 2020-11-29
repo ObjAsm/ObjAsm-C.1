@@ -16,14 +16,14 @@
 % include &IncPath&Windows\propkeydef.inc
 
 ;Add here all files that build the inheritance path and referenced objects
-include Primer.inc
-include Stream.inc
-include Collection.inc
-include DataCollection.inc
-include WinPrimer.inc
-include Window.inc
-include WinApp.inc
-include COM_Primers.inc
+LoadObjects Primer
+LoadObjects Stream
+LoadObjects Collection
+LoadObjects DataCollection
+LoadObjects WinPrimer
+LoadObjects Window
+LoadObjects WinApp
+LoadObjects COM_Primers
 
 ;Add here the file that defines the object(s) to be included in the library
 MakeObjects Ribbon
