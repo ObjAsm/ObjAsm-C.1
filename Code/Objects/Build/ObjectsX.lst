@@ -27,6 +27,7 @@ RedBlackTree
 RegExA
 RegExW
 RegKey
+Json
 SharedMemoryObject
 Splash
 StopWatch
