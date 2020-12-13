@@ -9,6 +9,8 @@
 
 % include Objects.cop
 
+% include &MacPath&LDLL.inc
+
 ;Add here all files that build the inheritance path and referenced objects
 LoadObjects Primer
 LoadObjects Stream

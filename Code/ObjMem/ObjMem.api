@@ -429,8 +429,8 @@ NewObjInst, dObjID
 IsScrollbarVisible, hWnd, dScrollbarType
 GetDlgBaseUnits, hDC
 SendChildrenMessage, hWnd, MsgID, wParam, lParam
-UTF8ToWide, pDestination, pSource, dBufferSize
-WideToUTF8, pDestination, pSource, dBufferSize
+UTF8ToWide, pDestination, pSource, dDestBufferSize
+WideToUTF8, pDestination, pSource, dDestBufferSize
 Real4ToHalf, real4
 FindModuleByAddr, pAddress, pModuleName
 FindModuleByAddrA, pAddress, pModuleNameA

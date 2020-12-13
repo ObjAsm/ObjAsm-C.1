@@ -3,7 +3,7 @@ setlocal ENABLEEXTENSIONS ENABLEDELAYEDEXPANSION
 title=ObjAsm Object Library  
 
 REM Set the following variables
-set FileName="..."
+set FileName=...
 set TARGET_BITNESS=32
 set TARGET_STR_TYPE=STR_TYPE_ANSI
 

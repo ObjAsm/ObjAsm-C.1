@@ -17,7 +17,7 @@
 ; Purpose:    Convert an WIDE string to an UTF8 encoded stream.
 ; Arguments:  Arg1: -> Destination buffer.
 ;             Arg2: -> Source WIDE string.
-;             Arg3: Buffer size in BYTEs.
+;             Arg3: Destination buffer size in BYTEs.
 ; Return:     eax = Number of BYTEs written.
 ;             ecx = 0: succeeded
 ;                   1: buffer full
