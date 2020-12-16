@@ -54,6 +54,7 @@ endif
 ;Memory management procedures
 
 MemFillB proto :POINTER, :DWORD, :BYTE
+MemFillW proto :POINTER, :DWORD, :WORD
 MemClone proto :POINTER, :POINTER, :DWORD
 MemComp  proto :POINTER, :POINTER, :DWORD
 MemShift proto :POINTER, :POINTER, :DWORD

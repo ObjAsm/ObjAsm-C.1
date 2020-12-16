@@ -25,31 +25,31 @@ OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE
 
 align ALIGN_CODE
-hex2dwordW proc pHexA:POINTER
+hex2dwordW proc pHexW:POINTER
   push esi
 
   mov esi, [esp + 8]
 
-  movzx ecx, BYTE ptr [esi]
+  movzx ecx, CHRW ptr [esi]
   mov ah, h2dw_Tbl1[ecx - 48]
-  movzx edx, BYTE ptr [esi + 2]
+  movzx edx, CHRW ptr [esi + 2]
   add ah, h2dw_Tbl2[edx - 48]
 
-  movzx ecx, BYTE ptr [esi + 4]
+  movzx ecx, CHRW ptr [esi + 4]
   mov al, h2dw_Tbl1[ecx - 48]
-  movzx edx, BYTE ptr [esi + 6]
+  movzx edx, CHRW ptr [esi + 6]
   add al, h2dw_Tbl2[edx - 48]
 
   rol eax, 16
 
-  movzx ecx, BYTE ptr [esi + 8]
+  movzx ecx, CHRW ptr [esi + 8]
   mov ah, h2dw_Tbl1[ecx - 48]
-  movzx edx, BYTE ptr [esi + 10]
+  movzx edx, CHRW ptr [esi + 10]
   add ah, h2dw_Tbl2[edx - 48]
 
-  movzx ecx, BYTE ptr [esi + 12]
+  movzx ecx, CHRW ptr [esi + 12]
   mov al, h2dw_Tbl1[ecx - 48]
-  movzx edx, BYTE ptr [esi + 14]
+  movzx edx, CHRW ptr [esi + 14]
   add al, h2dw_Tbl2[edx - 48]
 
   pop esi

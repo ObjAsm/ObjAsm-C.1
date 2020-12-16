@@ -23,29 +23,29 @@ externdef h2dw_Tbl2:BYTE
 
 align ALIGN_CODE
 hex2dwordW proc pHexW:POINTER
-  movzx edx, CHRA ptr [rcx]
+  movzx edx, CHRW ptr [rcx]
   lea r8, h2dw_Tbl1
   lea r9, h2dw_Tbl2
   mov al, [r8 + rdx - 48]
-  movzx edx, CHRA ptr [rcx + 2]
+  movzx edx, CHRW ptr [rcx + 2]
   add al, [r9 + rdx - 48]
   shl eax, 8
 
-  movzx edx, CHRA ptr [rcx + 4]
+  movzx edx, CHRW ptr [rcx + 4]
   mov al, [r8 + rdx - 48]
-  movzx edx, CHRA ptr [rcx + 6]
+  movzx edx, CHRW ptr [rcx + 6]
   add al, [r9 + rdx - 48]
   shl eax, 8
 
-  movzx edx, CHRA ptr [rcx + 8]
+  movzx edx, CHRW ptr [rcx + 8]
   mov al, [r8 + rdx - 48]
-  movzx edx, CHRA ptr [rcx + 10]
+  movzx edx, CHRW ptr [rcx + 10]
   add al, [r9 + rdx - 48]
   shl eax, 8
 
-  movzx edx, CHRA ptr [rcx + 12]
+  movzx edx, CHRW ptr [rcx + 12]
   mov al, [r8 + rdx - 48]
-  movzx edx, CHRA ptr [rcx + 14]
+  movzx edx, CHRW ptr [rcx + 14]
   add al, [r9 + rdx - 48]
 
   ret

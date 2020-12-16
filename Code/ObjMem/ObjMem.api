@@ -1,4 +1,5 @@
 MemFillB, pMem, dCount, bByte
+MemFillW, pMem, dCount, wWord
 MemClone, pDstMem, pSrcMem, dSize
 MemComp, pMem1, pMem2, dCount
 MemShift, pDstMem, pSrcMem, dSize
@@ -217,6 +218,11 @@ StrRepChr, Character, dCount
 StrRepChrA, CharacterA, dCount
 StrRepChrW, CharacterW, dCount
 BStrRepChr, CharacterW, dCount
+
+StrFillChr, Character, dCount
+StrFillChrA, CharacterA, dCount
+StrFillChrW, CharacterW, dCount
+BStrFillChr, CharacterW, dCount
 
 StrA2StrW, pDstStringW, pSrcStringA
 StrW2StrA, pDstStringA, pSrcStringW

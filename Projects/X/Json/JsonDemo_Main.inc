@@ -38,6 +38,7 @@ Method JsonDemoApp.Init, uses xbx xsi
   local dWndPosX:DWORD, dWndPosY:DWORD, dWndWidth:DWORD, dWndHeight:DWORD
   local pPerson:PJSON_PROPERTY, pTools:PJSON_PROPERTY, pTool:PJSON_PROPERTY
   local DskStream:$Obj(DiskStream)
+  local wBuffer[100]:CHRW
 
   SetObject xsi
   ACall xsi.Init
@@ -64,7 +65,7 @@ Method JsonDemoApp.Init, uses xbx xsi
   mov pPerson, xax
     OCall xbx::Json.AddData, pPerson, $OfsCStr("Name"), JSON_TYPE_STRING, $OfsCStr("John")
     OCall xbx::Json.AddData, pPerson, $OfsCStr("Age"), JSON_TYPE_NUMBER, $OfsCStr("40")
-    OCall xbx::Json.AddData, pPerson, $OfsCStr("City"), JSON_TYPE_STRING, $OfsCStr("Amsterdam")
+    OCall xbx::Json.AddData, pPerson, $OfsCStr("City"), JSON_TYPE_STRING, $OfsCStr("Amsterdam\u0023")
 
     OCall xbx::Json.AddArray, pPerson, $OfsCStr("Tools")
     mov pTools, xax
@@ -120,6 +121,9 @@ Method JsonDemoApp.Init, uses xbx xsi
   OCall xbx::Json.GetArrayItem, pPerson, 2
   DbgStr [xax].JSON_PROPERTY.pName
   DbgStr [xax].JSON_PROPERTY.pValue
+  mov xdx, [xax].JSON_PROPERTY.pValue
+  OCall xbx::Json.EscDecode, xdx, addr wBuffer, sizeof(wBuffer)
+  DbgStr wBuffer 
 
   Destroy xbx
   OCall DskStream::DiskStream.Done

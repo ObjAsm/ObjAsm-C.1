@@ -54,6 +54,8 @@ Object Json, 0, Streamable
   VirtualMethod     AddObject,        PJSON_PROPERTY, PSTRING
   VirtualMethod     DelProperty,      PJSON_PROPERTY
   RedefineMethod    Done
+  VirtualMethod     EscDecode,        PSTRING, PSTRING, DWORD        
+  VirtualMethod     EscEncode,        PSTRING, PSTRING, DWORD
   VirtualMethod     GetArrayItem,     PJSON_PROPERTY, DWORD
   VirtualMethod     GetPrevProperty,  PJSON_PROPERTY
   VirtualMethod     GetNextProperty,  PJSON_PROPERTY
@@ -166,6 +168,204 @@ Method Json.Done, uses xbx xsi
     OCall xsi.DelProperty, xdx
   .endw
   ACall xsi.Done
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     Json.EscDecode
+; Purpose:    .
+; Arguments:  Arg1: -> Input wide string.
+;             Arg2: -> Output Buffer.
+;             Arg3: Output Buffer size in bytes.
+; Return:     eax = Number of chars written.
+
+Method Json.EscDecode, uses xbx xdi xsi, pInputStr:PSTRINGW, pBuffer:PSTRINGW, dCount:DWORD
+  mov xsi, pInputStr
+  mov xdi, pBuffer
+  mov ebx, dCount
+  shr ebx, 1
+  xor ecx, ecx
+  
+  test ebx, ebx
+  .while !ZERO?
+    mov ax, [xsi]
+
+    .if ax == 0
+      mov [xdi], ax
+      dec ebx
+      .break
+    .endif
+
+    .if ecx == 0
+      .if ax == "\"
+        mov ecx, 1
+        add xsi, sizeof(CHRW)
+      .else
+        mov [xdi], ax
+        add xsi, sizeof(CHRW)
+        add xdi, sizeof(CHRW)
+      .endif
+    .elseif ecx == 1
+      .if ax == '"'
+        xor ecx, ecx
+        mov [xdi], ax
+        add xsi, sizeof(CHRW)
+        add xdi, sizeof(CHRW)
+      .elseif ax == '\'
+        xor ecx, ecx
+        mov [xdi], ax
+        add xsi, sizeof(CHRW)
+        add xdi, sizeof(CHRW)
+      .elseif ax == '/'
+        xor ecx, ecx
+        mov [xdi], ax
+        add xsi, sizeof(CHRW)
+        add xdi, sizeof(CHRW)
+      .elseif ax == 'b'
+        xor ecx, ecx
+        mov CHRW ptr [xdi], 08                          ;Backspace
+        add xsi, sizeof(CHRW)
+        add xdi, sizeof(CHRW)
+      .elseif ax == 'f'
+        xor ecx, ecx
+        mov CHRW ptr [xdi], 12                          ;Formfeed
+        add xsi, sizeof(CHRW)
+        add xdi, sizeof(CHRW)
+      .elseif ax == 'n'
+        xor ecx, ecx
+        mov CHRW ptr [xdi], 10                          ;Linefeed
+        add xsi, sizeof(CHRW)
+        add xdi, sizeof(CHRW)
+      .elseif ax == 'r'
+        xor ecx, ecx
+        mov CHRW ptr [xdi], 13                          ;Carriage return
+        add xsi, sizeof(CHRW)
+        add xdi, sizeof(CHRW)
+      .elseif ax == 't'
+        xor ecx, ecx
+        mov CHRW ptr [xdi], 09                          ;Horizontal tab
+        add xsi, sizeof(CHRW)
+        add xdi, sizeof(CHRW)
+      .elseif ax == 'u'
+        mov ecx, 2                                      ;4 hex digits
+        add xsi, sizeof(CHRW)
+      .else
+        mov ecx, 999                                    ;Error
+      .endif
+    .elseif ecx == 2
+      .if (ax >= "0" && ax <= "9")
+        sub ax, "0"
+        mov dl, al
+        mov ecx, 3
+        add xsi, sizeof(CHRW)
+      .elseif ax >= "A" && ax <= "F"
+        sub ax, "A" + 10
+        mov dl, al
+        mov ecx, 3
+        add xsi, sizeof(CHRW)
+      .elseif ax >= "a" && ax <= "f"
+        sub ax, "a" + 10
+        mov dl, al
+        mov ecx, 3
+        add xsi, sizeof(CHRW)
+      .else
+        mov ecx, 999
+      .endif 
+    .elseif ecx == 3
+      .if (ax >= "0" && ax <= "9")
+        sub ax, "0"
+        shl edx, 4
+        add dl, al
+        mov ecx, 4
+        add xsi, sizeof(CHRW)
+      .elseif ax >= "A" && ax <= "F"
+        sub ax, "A" + 10
+        shl edx, 4
+        add dl, al
+        mov ecx, 4
+        add xsi, sizeof(CHRW)
+      .elseif ax >= "a" && ax <= "f"
+        sub ax, "a" + 10
+        shl edx, 4
+        add dl, al
+        mov ecx, 4
+        add xsi, sizeof(CHRW)
+      .else
+        mov ecx, 999
+      .endif 
+    .elseif ecx == 4
+      .if (ax >= "0" && ax <= "9")
+        sub ax, "0"
+        shl edx, 4
+        add dl, al
+        mov ecx, 5
+        add xsi, sizeof(CHRW)
+      .elseif ax >= "A" && ax <= "F"
+        sub ax, "A" + 10
+        shl edx, 4
+        add dl, al
+        mov ecx, 5
+        add xsi, sizeof(CHRW)
+      .elseif ax >= "a" && ax <= "f"
+        sub ax, "a" + 10
+        shl edx, 4
+        add dl, al
+        mov ecx, 5
+        add xsi, sizeof(CHRW)
+      .else
+        mov ecx, 999
+      .endif 
+    .elseif ecx == 5
+      .if (ax >= "0" && ax <= "9")
+        sub ax, "0"
+        shl edx, 4
+        add dl, al
+        xor ecx, ecx
+        mov [xdi], dx
+        add xdi, sizeof(CHRW)
+        add xsi, sizeof(CHRW)
+      .elseif ax >= "A" && ax <= "F"
+        sub ax, "A" + 10
+        shl edx, 4
+        add dl, al
+        xor ecx, ecx
+        mov [xdi], dx
+        add xdi, sizeof(CHRW)
+        add xsi, sizeof(CHRW)
+      .elseif ax >= "a" && ax <= "f"
+        sub ax, "a" + 10
+        shl edx, 4
+        add dl, al
+        xor ecx, ecx
+        mov [xdi], dx
+        add xdi, sizeof(CHRW)
+        add xsi, sizeof(CHRW)
+      .else
+        mov ecx, 999
+      .endif 
+    .else
+      xor eax, eax
+      jmp @@Exit                                        ;Error
+    .endif
+    dec ebx
+  .endw
+
+  mov eax, dCount
+  shr eax, 1
+  sub eax, ebx
+  
+@@Exit:
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     Json.EscEncode
+; Purpose:    .
+; Arguments:  Arg1: -> Input wide string.
+;             Arg2: -> Output Buffer.
+;             Arg3: Output Buffer size in bytes.
+; Return:     eax = Number of chars written.
+
+Method Json.EscEncode, uses xbx xdi xsi, pInputStr:PSTRINGW, pBuffer:PSTRINGW, dCount:DWORD
+  SetObject xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

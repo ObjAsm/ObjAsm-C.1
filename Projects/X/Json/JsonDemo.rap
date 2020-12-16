@@ -39,7 +39,7 @@ Debug=0
 28=..\..\..\Code\Macros\xLSLL.inc
 29=..\..\..\Code\Macros\SDLL.inc
 30=..\..\..\Code\Macros\CDLL.inc
-31=..\libraries-master\cJSON\cjson x64\cjson_x64.inc
+31=
 32=..\..\..\Code\Objects\Json.inc
 33=..\..\..\Code\Macros\Memory.inc
 34=..\..\..\Code\Objects\DiskStream.inc
@@ -118,7 +118,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Objects,Macros
 28=7
 29=7
 30=7
-31=7
+31=
 32=6
 33=7
 34=6
@@ -154,7 +154,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=13
+MilestoneOnDateDate=14
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -189,11 +189,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,1907,628,4605
+2=0,0,1907,628,2944
 1=0,0,0,0,586
 6=0,0,1456,414,7231
 4=0,0,0,0,173
-31=0,0,1213,691,4949
+31=
 8=0,0,777,591,14851
 7=0,0,0,0,841
 9=0,0,0,0,22447
@@ -221,7 +221,7 @@ ProductVer4Range=0
 30=0,0,0,0,828
 28=0,0,0,0,0
 33=0,0,0,0,4454
-32=0,0,0,0,1086
+32=0,0,0,0,9060
 34=0,0,0,0,11963
 35=0,0,1907,628,251
 36=0,0,0,0,49369
@@ -243,16 +243,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="DbgStr"
-2="JsonGetArray"
-3="    mov [xdi].JSON_PROPERTY.dType, JSON_TYPE_OBJECT"
-4="pParent"
-5="pParentCtrl"
-6="JsonGetValue"
-7="Dbg"
-8="WideCharToMultiByte"
-9="if TARGET_STR_TYPE eq STR_TYPE_ANSI"
-10="StrCNewW"
+1="Done"
+2="DbgStr"
+3="JsonGetArray"
+4="    mov [xdi].JSON_PROPERTY.dType, JSON_TYPE_OBJECT"
+5="pParent"
+6="pParentCtrl"
+7="JsonGetValue"
+8="Dbg"
+9="WideCharToMultiByte"
+10="if TARGET_STR_TYPE eq STR_TYPE_ANSI"
 [Collapse]
 1=
 2=
@@ -364,11 +364,11 @@ ProductVer4Range=0
 15=
 25=
 27=
-32=839,1140850688,1537
+32=263,1140850688,1537,
 [AutoLoad]
-AutoLoad=1,2,32
+AutoLoad=1,2,32,35
 [PTimer]
-PTimer=1135339763
+PTimer=1140093747
 [GroupExpand]
 GroupExpand=1,1,1,1,0,1,1,0
 [RADebugBP]

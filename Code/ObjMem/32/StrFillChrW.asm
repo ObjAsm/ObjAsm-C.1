@@ -1,8 +1,8 @@
 ; ==================================================================================================
-; Title:      StrRepChrW.asm
+; Title:      StrFillChrW.asm
 ; Author:     G. Friedrich
-; Version:    C.1.1
-; Notes:      Version C.1.1, May 2020
+; Version:    C.1.2
+; Notes:      Version C.1.2, December 2020
 ;               - First release.
 ; ==================================================================================================
 
@@ -11,8 +11,8 @@
 
 TARGET_STR_TYPE = STR_TYPE_WIDE
 TARGET_STR_AFFIX textequ <W>
-ProcName equ <StrRepChrW>
+ProcName equ <StrFillChrW>
 
-% include &ObjMemPath&X\StrRepChr.asm
+% include &ObjMemPath&X\StrFillChrT.asm
 
 end

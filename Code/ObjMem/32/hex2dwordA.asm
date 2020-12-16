@@ -30,26 +30,26 @@ hex2dwordA proc pHexA:POINTER
 
   mov esi, [esp + 8]
 
-  movzx ecx, BYTE ptr [esi]
+  movzx ecx, CHRA ptr [esi]
   mov ah, h2dw_Tbl1[ecx - 48]
-  movzx edx, BYTE ptr [esi + 1]
+  movzx edx, CHRA ptr [esi + 1]
   add ah, h2dw_Tbl2[edx - 48]
 
-  movzx ecx, BYTE ptr [esi + 2]
+  movzx ecx, CHRA ptr [esi + 2]
   mov al, h2dw_Tbl1[ecx - 48]
-  movzx edx, BYTE ptr [esi + 3]
+  movzx edx, CHRA ptr [esi + 3]
   add al, h2dw_Tbl2[edx - 48]
 
   rol eax, 16
 
-  movzx ecx, BYTE ptr [esi + 4]
+  movzx ecx, CHRA ptr [esi + 4]
   mov ah, h2dw_Tbl1[ecx - 48]
-  movzx edx, BYTE ptr [esi + 5]
+  movzx edx, CHRA ptr [esi + 5]
   add ah, h2dw_Tbl2[edx - 48]
 
-  movzx ecx, BYTE ptr [esi + 6]
+  movzx ecx, CHRA ptr [esi + 6]
   mov al, h2dw_Tbl1[ecx - 48]
-  movzx edx, BYTE ptr [esi + 7]
+  movzx edx, CHRA ptr [esi + 7]
   add al, h2dw_Tbl2[edx - 48]
 
   pop esi

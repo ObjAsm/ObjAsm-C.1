@@ -1,18 +1,17 @@
 ; ==================================================================================================
-; Title:      StrRepChrW.asm
+; Title:      BStrFillChr.asm
 ; Author:     G. Friedrich
-; Version:    C.1.1
-; Notes:      Version C.1.1, May 2020
+; Version:    C.1.2
+; Notes:      Version C.1.2, December 2020
 ;               - First release.
 ; ==================================================================================================
 
 
-% include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
+% include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
 
 TARGET_STR_TYPE = STR_TYPE_WIDE
 TARGET_STR_AFFIX textequ <W>
-ProcName equ <StrRepChrW>
 
-% include &ObjMemPath&X\StrRepChr.asm
+% include &ObjMemPath&X\BStrFillChr.asm
 
 end
