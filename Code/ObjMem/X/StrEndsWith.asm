@@ -12,7 +12,7 @@
 
 .code
 
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
 ; Procedure:  StrEndsWith
 ; Purpose:    Compares the ending of a string.
 ; Arguments:  Arg1: -> Analized string.
@@ -20,7 +20,7 @@
 ; Return:     eax = TRUE of the ending matches, otherwise FALSE.
 
 align ALIGN_CODE
-ProcName proc pString:POINTER, pSuffix:POINTER
+ProcName proc uses xbx pString:POINTER, pSuffix:POINTER
   invoke StrEnd, pString
   mov xbx, xax
   invoke StrSize, pSuffix
