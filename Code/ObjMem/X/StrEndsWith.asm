@@ -1,8 +1,10 @@
 ; ==================================================================================================
 ; Title:      StrEndsWith.asm
 ; Author:     G. Friedrich
-; Version:    C.1.1
-; Notes:      Version C.1.1, April 2020.
+; Version:    C.1.2
+; Notes:      Version C.1.2, December 2020.
+;               - xbx preservation added by HSE.
+;             Version C.1.1, April 2020.
 ;               - First release.
 ;               - Character and bitness neutral code. 
 ; ==================================================================================================
@@ -20,7 +22,7 @@
 ; Return:     eax = TRUE of the ending matches, otherwise FALSE.
 
 align ALIGN_CODE
-ProcName proc pString:POINTER, pSuffix:POINTER
+ProcName proc uses xbx pString:POINTER, pSuffix:POINTER
   invoke StrEnd, pString
   mov xbx, xax
   invoke StrSize, pSuffix
