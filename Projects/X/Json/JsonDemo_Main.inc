@@ -58,6 +58,8 @@ Method JsonDemoApp.Init, uses xbx xsi
   New DskStream::DiskStream
   OCall DskStream::DiskStream.Init, xsi, $OfsCStr("Data.json"), GENERIC_READ or GENERIC_WRITE, \
                                     0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
+
+  DbgLine ;--------------------------------------------------------------------------------
   mov xbx, $New(Json)
   OCall xbx::Json.Init, xsi
 
@@ -65,7 +67,7 @@ Method JsonDemoApp.Init, uses xbx xsi
   mov pPerson, xax
     OCall xbx::Json.AddData, pPerson, $OfsCStr("Name"), JSON_TYPE_STRING, $OfsCStr("John")
     OCall xbx::Json.AddData, pPerson, $OfsCStr("Age"), JSON_TYPE_NUMBER, $OfsCStr("40")
-    OCall xbx::Json.AddData, pPerson, $OfsCStr("City"), JSON_TYPE_STRING, $OfsCStr("Amsterdam\u0023")
+    OCall xbx::Json.AddData, pPerson, $OfsCStr("City"), JSON_TYPE_STRING, $OfsCStr("Amsterdam")
 
     OCall xbx::Json.AddArray, pPerson, $OfsCStr("Tools")
     mov pTools, xax
@@ -109,8 +111,8 @@ Method JsonDemoApp.Init, uses xbx xsi
                                     0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
   mov xbx, $New(Json)
   OCall xbx::Json.Init, xsi
-  OCall xbx::Json.Read, addr DskStream 
-  
+  OCall xbx::Json.Read, addr DskStream
+
   OCall xbx::Json.GetProperty, addr [xbx].$Obj(Json).RootProperty, $OfsCStr("Person")
   mov pPerson, xax
 
@@ -121,12 +123,17 @@ Method JsonDemoApp.Init, uses xbx xsi
   OCall xbx::Json.GetArrayItem, pPerson, 2
   DbgStr [xax].JSON_PROPERTY.pName
   DbgStr [xax].JSON_PROPERTY.pValue
-  mov xdx, [xax].JSON_PROPERTY.pValue
-  OCall xbx::Json.EscDecode, xdx, addr wBuffer, sizeof(wBuffer)
-  DbgStr wBuffer 
 
   Destroy xbx
   OCall DskStream::DiskStream.Done
+  
+  DbgLine ;--------------------------------------------------------------------------------
+  invoke JsonEscEncodeSize, $OfsCStrW("123§")
+  DbgDec eax
+  invoke JsonEscEncode, $OfsCStrW("123§"), addr wBuffer, sizeof(wBuffer)
+  DbgStr wBuffer
+  invoke JsonEscDecode, addr wBuffer, addr wBuffer, sizeof(wBuffer)
+  DbgStr wBuffer
 
 MethodEnd
 

@@ -2,7 +2,7 @@
   "Person":{
     "Name":"John",
     "Age":40,
-    "City":"Amsterdam\u0023",
+    "City":"Amsterdam",
     "Tools":[
       {
         "Name":"Screwdriver",

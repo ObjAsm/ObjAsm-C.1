@@ -51,7 +51,7 @@ GetFileLinesA proc uses ebx edi esi hFile:HANDLE
 
   .const
     GFL_MASK_TABLE DWORD 0000000FFh, 00000FFFFh, 000FFFFFFh
-    GFL_JUMP_TABLE DWORD @@1, @@2, @@3, @@4
+    GFL_JUMP_TABLE POINTER @@1, @@2, @@3, @@4
 
   .code
   ;Ensure all requirements are met

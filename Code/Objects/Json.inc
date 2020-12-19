@@ -54,8 +54,6 @@ Object Json, 0, Streamable
   VirtualMethod     AddObject,        PJSON_PROPERTY, PSTRING
   VirtualMethod     DelProperty,      PJSON_PROPERTY
   RedefineMethod    Done
-  VirtualMethod     EscDecode,        PSTRING, PSTRING, DWORD        
-  VirtualMethod     EscEncode,        PSTRING, PSTRING, DWORD
   VirtualMethod     GetArrayItem,     PJSON_PROPERTY, DWORD
   VirtualMethod     GetPrevProperty,  PJSON_PROPERTY
   VirtualMethod     GetNextProperty,  PJSON_PROPERTY
@@ -71,6 +69,299 @@ ObjectEnd
 ; ==================================================================================================
 
 if IMPLEMENT
+
+externdef HexCharTableW:CHRW
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  JsonEscDecode
+; Purpose:    Translate a wide string containig JSON escape sequences to a plain wide string.
+; Arguments:  Arg1: -> Input wide string.
+;             Arg2: -> Output Buffer.
+;             Arg3: Output Buffer size in bytes.
+; Return:     eax = Number of chars written, including the ZTC.
+
+JsonEscDecodeGetHex macro
+  .if (ax >= "0" && ax <= "9")
+    sub ax, "0"
+  .elseif ax >= "A" && ax <= "F"
+    sub ax, "A" - 10
+  .elseif ax >= "a" && ax <= "f"
+    sub ax, "a" - 10
+  .else
+    xor eax, eax
+    jmp @@Exit                                          ;Error
+  .endif
+endm
+
+JsonEscDecode proc uses xbx xdi xsi pInputStr:PSTRINGW, pBuffer:PSTRINGW, dCount:DWORD
+.const
+  JsonEscDecodeJumpTable POINTER @@0, @@1, @@2, @@3, @@4, @@5
+
+.code
+  mov xsi, pInputStr
+  mov xdi, pBuffer
+  mov ebx, dCount
+  shr ebx, 1
+  xor ecx, ecx
+  if TARGET_BITNESS eq 64
+    lea r8, JsonEscDecodeJumpTable
+  endif
+
+  .while ebx != 0
+    lodsw                                               ;ax = [xsi]; add xsi, 2
+
+    .if ax == 0
+      mov [xdi], ax
+      dec ebx
+      .break
+    .endif
+
+    if TARGET_BITNESS eq 32
+      jmp POINTER ptr [JsonEscDecodeJumpTable + sizeof(POINTER)*xcx]
+    else
+      jmp POINTER ptr [r8 + sizeof(POINTER)*xcx]
+    endif
+
+@@0:
+    .if ax == "\"
+      mov ecx, 1
+    .else
+      stosw
+      dec ebx
+    .endif
+    .continue
+@@1:
+    xor ecx, ecx
+    .if ax == '"'
+      stosw
+      dec ebx
+    .elseif ax == '\'
+      stosw
+      dec ebx
+    .elseif ax == '/'
+      stosw
+      dec ebx
+    .elseif ax == 'b'
+      mov CHRW ptr [xdi], 08                            ;Backspace
+      add xdi, sizeof(CHRW)
+      dec ebx
+    .elseif ax == 'f'
+      mov CHRW ptr [xdi], 12                            ;Formfeed
+      add xdi, sizeof(CHRW)
+      dec ebx
+    .elseif ax == 'n'
+      mov CHRW ptr [xdi], 10                            ;Linefeed
+      add xdi, sizeof(CHRW)
+      dec ebx
+    .elseif ax == 'r'
+      mov CHRW ptr [xdi], 13                            ;Carriage return
+      add xdi, sizeof(CHRW)
+      dec ebx
+    .elseif ax == 't'
+      mov CHRW ptr [xdi], 09                            ;Horizontal tab
+      add xdi, sizeof(CHRW)
+      dec ebx
+    .elseif ax == 'u'
+      mov ecx, 2                                        ;4 hex digits
+    .else
+      xor eax, eax
+      jmp @@Exit                                        ;Error
+    .endif
+    .continue
+@@2:
+    inc ecx
+    JsonEscDecodeGetHex
+    mov dx, ax
+    .continue
+@@3:
+    inc ecx
+    JsonEscDecodeGetHex
+    shl edx, 4
+    add dx, ax
+    .continue
+@@4:
+    inc ecx
+    JsonEscDecodeGetHex
+    shl edx, 4
+    add dx, ax
+    .continue
+@@5:
+    xor ecx, ecx
+    JsonEscDecodeGetHex
+    shl edx, 4
+    add ax, dx
+    stosw
+    dec ebx
+  .endw
+
+  mov eax, dCount
+  shr eax, 1
+  sub eax, ebx
+@@Exit:
+  ret
+JsonEscDecode endp
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  JsonEscEncode
+; Purpose:    Translate a plain wide string to a wide string containig JSON escape sequences.
+; Arguments:  Arg1: -> Input wide string.
+;             Arg2: -> Output Buffer.
+;             Arg3: Output Buffer size in bytes.
+; Return:     eax = Number of chars written.
+
+JsonEscEncode proc uses xbx xdi xsi pInputStr:PSTRINGW, pBuffer:PSTRINGW, dCount:DWORD
+.const
+  JsonEscEncodeJumpTable label POINTER
+  ;       NUL  SOH  STX  ETX  EDT  ENQ  ACK  BEL  BS   TAB  LF   VF   FF   CR   SO   SI
+  POINTER @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@b, @@t, @@n, @@?, @@f, @@r, @@?, @@?
+  ;       DLE  DC1  DC2  DC3  DC4  NAK  SYN  ETB  CAN  BM   SUB  ESC  FS   GS   RS   US
+  POINTER @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?
+  ;       SPC   !    "    #    $    %    &    '    (    )    *    +    ,    -    .    /
+  POINTER @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@2
+  ;        0    1    2    3    4    5    6    7    8    9    :    ;    <    =    >    ?
+  POINTER @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?
+  ;        @    A    B    C    D    E    F    G    H    I    J    K    L    M    N    O
+  POINTER @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?
+  ;       P    Q    R    S    T    U    V    W    X    Y    Z    [    \    ]    ^    _
+  POINTER @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@1, @@?, @@?, @@?
+  ;       `    a    b    c    d    e    f    g    h    i    j    k    l    m    n    o
+  POINTER @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?
+  ;       p    q    r    s    t    u    v    w    x    y    z    {    |    }    ~
+  POINTER @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?, @@?
+
+.code
+  mov xsi, pInputStr
+  mov xdi, pBuffer
+  mov ebx, dCount
+  shr ebx, 1
+  if TARGET_BITNESS eq 64
+    lea r8, JsonEscEncodeJumpTable
+  endif
+
+  .while ebx != 0
+    xor eax, eax
+    lodsw                                               ;ax = [xsi]; add xsi, 2
+
+    .if ax > 127
+      movzx edx, ax
+      mov eax, 'u'*65536 + '\'
+      stosd
+      xor eax, eax
+      mov al, dh
+      lea xcx, HexCharTableW
+      mov eax, [xcx + sizeof(DCHRW)*xax]
+      stosd
+      movzx xax, dl
+      mov eax, [xcx + sizeof(DCHRW)*xax]
+      stosd
+      sub ebx, 6
+      .continue
+    .endif
+    if TARGET_BITNESS eq 32
+      jmp POINTER ptr [JsonEscEncodeJumpTable + sizeof(POINTER)*xax]
+    else
+      jmp POINTER ptr [r8 + sizeof(POINTER)*xax]
+    endif
+
+@@?:
+    stosw
+    dec ebx
+    .break .if ax == 0
+    .continue
+@@1:
+    mov eax, '\'*65536 + '\'
+    stosd
+    sub ebx, 2
+    .continue
+@@2:
+    mov eax, '/'*65536 + '\'
+    stosd
+    sub ebx, 2
+    .continue
+@@b:
+    mov eax, 'b'*65536 + '\'
+    stosd
+    sub ebx, 2
+    .continue
+@@f:
+    mov eax, 'f'*65536 + '\'
+    stosd
+    sub ebx, 2
+    .continue
+@@n:
+    mov eax, 'n'*65536 + '\'
+    stosd
+    sub ebx, 2
+    .continue
+@@r:
+    mov eax, 'r'*65536 + '\'
+    stosd
+    sub ebx, 2
+    .continue
+@@t:
+    mov eax, 't'*65536 + '\'
+    stosd
+    sub ebx, 2
+  .endw
+
+  mov eax, dCount
+  shr eax, 1
+  sub eax, ebx
+  ret
+JsonEscEncode endp
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     JsonEscEncodeSize
+; Purpose:    Calculates the requiered buffer size for JsonEscEncode method.
+; Arguments:  Arg1: -> Input wide string.
+; Return:     eax = Number of bytes requierd, including the ZTC.
+
+JsonEscEncodeSize proc uses xsi pInputStr:PSTRINGW
+.const
+  JsonEscEncodeSizeTable label POINTER
+  ;       NUL  SOH  STX  ETX  EDT  ENQ  ACK  BEL  BS   TAB  LF   VF   FF   CR   SO   SI
+  BYTE      1,   1,   1,   1,   1,   1,   1,   1,   2,   2,   2,   1,   2,   2,   1,   1
+  ;       DLE  DC1  DC2  DC3  DC4  NAK  SYN  ETB  CAN  BM   SUB  ESC  FS   GS   RS   US
+  BYTE      1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1
+  ;       SPC   !    "    #    $    %    &    '    (    )    *    +    ,    -    .    /
+  BYTE      1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   2
+  ;        0    1    2    3    4    5    6    7    8    9    :    ;    <    =    >    ?
+  BYTE      1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1
+  ;        @    A    B    C    D    E    F    G    H    I    J    K    L    M    N    O
+  BYTE      1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1
+  ;       P    Q    R    S    T    U    V    W    X    Y    Z    [    \    ]    ^    _
+  BYTE      1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   2,   1,   1,   1
+  ;       `    a    b    c    d    e    f    g    h    i    j    k    l    m    n    o
+  BYTE      1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1
+  ;       p    q    r    s    t    u    v    w    x    y    z    {    |    }    ~
+  BYTE      1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1
+
+.code
+  mov xsi, pInputStr
+  xor ecx, ecx
+  xor eax, eax
+  if TARGET_BITNESS eq 64
+    lea r8, JsonEscEncodeSizeTable
+  endif
+
+  .while TRUE
+    lodsw                                               ;ax = [xsi]; add xsi, 2
+    .if ax < 128
+      if TARGET_BITNESS eq 32
+        movzx edx, BYTE ptr [JsonEscEncodeSizeTable + xax]
+      else
+        movzx edx, BYTE ptr [r8 + xax]
+      endif
+      add ecx, edx
+      .break .if ax == 0
+    .else
+      add ecx, 6
+    .endif
+  .endw
+
+  lea eax, [2*ecx]
+  ret
+JsonEscEncodeSize endp
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Json.AddArray
@@ -168,204 +459,6 @@ Method Json.Done, uses xbx xsi
     OCall xsi.DelProperty, xdx
   .endw
   ACall xsi.Done
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     Json.EscDecode
-; Purpose:    .
-; Arguments:  Arg1: -> Input wide string.
-;             Arg2: -> Output Buffer.
-;             Arg3: Output Buffer size in bytes.
-; Return:     eax = Number of chars written.
-
-Method Json.EscDecode, uses xbx xdi xsi, pInputStr:PSTRINGW, pBuffer:PSTRINGW, dCount:DWORD
-  mov xsi, pInputStr
-  mov xdi, pBuffer
-  mov ebx, dCount
-  shr ebx, 1
-  xor ecx, ecx
-  
-  test ebx, ebx
-  .while !ZERO?
-    mov ax, [xsi]
-
-    .if ax == 0
-      mov [xdi], ax
-      dec ebx
-      .break
-    .endif
-
-    .if ecx == 0
-      .if ax == "\"
-        mov ecx, 1
-        add xsi, sizeof(CHRW)
-      .else
-        mov [xdi], ax
-        add xsi, sizeof(CHRW)
-        add xdi, sizeof(CHRW)
-      .endif
-    .elseif ecx == 1
-      .if ax == '"'
-        xor ecx, ecx
-        mov [xdi], ax
-        add xsi, sizeof(CHRW)
-        add xdi, sizeof(CHRW)
-      .elseif ax == '\'
-        xor ecx, ecx
-        mov [xdi], ax
-        add xsi, sizeof(CHRW)
-        add xdi, sizeof(CHRW)
-      .elseif ax == '/'
-        xor ecx, ecx
-        mov [xdi], ax
-        add xsi, sizeof(CHRW)
-        add xdi, sizeof(CHRW)
-      .elseif ax == 'b'
-        xor ecx, ecx
-        mov CHRW ptr [xdi], 08                          ;Backspace
-        add xsi, sizeof(CHRW)
-        add xdi, sizeof(CHRW)
-      .elseif ax == 'f'
-        xor ecx, ecx
-        mov CHRW ptr [xdi], 12                          ;Formfeed
-        add xsi, sizeof(CHRW)
-        add xdi, sizeof(CHRW)
-      .elseif ax == 'n'
-        xor ecx, ecx
-        mov CHRW ptr [xdi], 10                          ;Linefeed
-        add xsi, sizeof(CHRW)
-        add xdi, sizeof(CHRW)
-      .elseif ax == 'r'
-        xor ecx, ecx
-        mov CHRW ptr [xdi], 13                          ;Carriage return
-        add xsi, sizeof(CHRW)
-        add xdi, sizeof(CHRW)
-      .elseif ax == 't'
-        xor ecx, ecx
-        mov CHRW ptr [xdi], 09                          ;Horizontal tab
-        add xsi, sizeof(CHRW)
-        add xdi, sizeof(CHRW)
-      .elseif ax == 'u'
-        mov ecx, 2                                      ;4 hex digits
-        add xsi, sizeof(CHRW)
-      .else
-        mov ecx, 999                                    ;Error
-      .endif
-    .elseif ecx == 2
-      .if (ax >= "0" && ax <= "9")
-        sub ax, "0"
-        mov dl, al
-        mov ecx, 3
-        add xsi, sizeof(CHRW)
-      .elseif ax >= "A" && ax <= "F"
-        sub ax, "A" + 10
-        mov dl, al
-        mov ecx, 3
-        add xsi, sizeof(CHRW)
-      .elseif ax >= "a" && ax <= "f"
-        sub ax, "a" + 10
-        mov dl, al
-        mov ecx, 3
-        add xsi, sizeof(CHRW)
-      .else
-        mov ecx, 999
-      .endif 
-    .elseif ecx == 3
-      .if (ax >= "0" && ax <= "9")
-        sub ax, "0"
-        shl edx, 4
-        add dl, al
-        mov ecx, 4
-        add xsi, sizeof(CHRW)
-      .elseif ax >= "A" && ax <= "F"
-        sub ax, "A" + 10
-        shl edx, 4
-        add dl, al
-        mov ecx, 4
-        add xsi, sizeof(CHRW)
-      .elseif ax >= "a" && ax <= "f"
-        sub ax, "a" + 10
-        shl edx, 4
-        add dl, al
-        mov ecx, 4
-        add xsi, sizeof(CHRW)
-      .else
-        mov ecx, 999
-      .endif 
-    .elseif ecx == 4
-      .if (ax >= "0" && ax <= "9")
-        sub ax, "0"
-        shl edx, 4
-        add dl, al
-        mov ecx, 5
-        add xsi, sizeof(CHRW)
-      .elseif ax >= "A" && ax <= "F"
-        sub ax, "A" + 10
-        shl edx, 4
-        add dl, al
-        mov ecx, 5
-        add xsi, sizeof(CHRW)
-      .elseif ax >= "a" && ax <= "f"
-        sub ax, "a" + 10
-        shl edx, 4
-        add dl, al
-        mov ecx, 5
-        add xsi, sizeof(CHRW)
-      .else
-        mov ecx, 999
-      .endif 
-    .elseif ecx == 5
-      .if (ax >= "0" && ax <= "9")
-        sub ax, "0"
-        shl edx, 4
-        add dl, al
-        xor ecx, ecx
-        mov [xdi], dx
-        add xdi, sizeof(CHRW)
-        add xsi, sizeof(CHRW)
-      .elseif ax >= "A" && ax <= "F"
-        sub ax, "A" + 10
-        shl edx, 4
-        add dl, al
-        xor ecx, ecx
-        mov [xdi], dx
-        add xdi, sizeof(CHRW)
-        add xsi, sizeof(CHRW)
-      .elseif ax >= "a" && ax <= "f"
-        sub ax, "a" + 10
-        shl edx, 4
-        add dl, al
-        xor ecx, ecx
-        mov [xdi], dx
-        add xdi, sizeof(CHRW)
-        add xsi, sizeof(CHRW)
-      .else
-        mov ecx, 999
-      .endif 
-    .else
-      xor eax, eax
-      jmp @@Exit                                        ;Error
-    .endif
-    dec ebx
-  .endw
-
-  mov eax, dCount
-  shr eax, 1
-  sub eax, ebx
-  
-@@Exit:
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     Json.EscEncode
-; Purpose:    .
-; Arguments:  Arg1: -> Input wide string.
-;             Arg2: -> Output Buffer.
-;             Arg3: Output Buffer size in bytes.
-; Return:     eax = Number of chars written.
-
-Method Json.EscEncode, uses xbx xdi xsi, pInputStr:PSTRINGW, pBuffer:PSTRINGW, dCount:DWORD
-  SetObject xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
