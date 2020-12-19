@@ -6,7 +6,7 @@
 ;               - xbx preservation added by HSE.
 ;             Version C.1.1, April 2020.
 ;               - First release.
-;               - Character and bitness neutral code. 
+;               - Character and bitness neutral code.
 ; ==================================================================================================
 
 
