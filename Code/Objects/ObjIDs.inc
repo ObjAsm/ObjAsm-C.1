@@ -427,3 +427,9 @@ TextViewID                        equ     0000012520
 
 ;GridView
 GridViewID                        equ     0000012530
+
+;JSON
+JsonID                            equ     0000012540
+
+;HttpServer
+HttpServerID                      equ     0000012550

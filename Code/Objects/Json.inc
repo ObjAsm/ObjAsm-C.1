@@ -48,7 +48,7 @@ JSON_PROPERTY ends
 ;             a value. It is up to the host to interpret the string value and convert it to the
 ;             desired format, e.g. BYTE, WORD, DWORD, QWORD, REAL4, REAL8 etc.
 
-Object Json, 0, Streamable
+Object Json, JsonID, Streamable
   VirtualMethod     AddArray,         PJSON_PROPERTY, PSTRING
   VirtualMethod     AddData,          PJSON_PROPERTY, PSTRING, DWORD, PSTRING
   VirtualMethod     AddObject,        PJSON_PROPERTY, PSTRING

@@ -148,7 +148,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=15
+MilestoneOnDateDate=20
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -191,8 +191,8 @@ ProductVer4Range=0
 8=0,0,0,0,1911
 5=0,0,0,0,1681
 9=0,0,1838,628,30985
-7=0,0,1262,635,13942
-14=0,0,1297,620,20045
+7=0,0,1262,635,21775
+14=0,0,1297,620,10909
 13=0,0,894,619,1482
 12=0,0,0,0,1927
 11=0,0,1251,559,75610
@@ -218,16 +218,16 @@ ProductVer4Range=0
 35=0,0,0,0,0
 36=
 [Find]
-1="NetComIOSockJobPool"
-2="Method NetComIOSockJobPool.NewItem, uses xsi, pOwner:POINTER, wOperation:WORD"
-3="wsprintf"
-4="OnConnect"
-5="An unhandled error has happen"
-6="int 3"
-7="DbgHex pConnection, "NetComProtocol.OnError", "&PROTOCOL_WND_NAME""
-8="DbgDec [xsi].dPendingIOJobs"
-9="Protocol error"
-10="NetComProtocol.OnError"
+1="hSupervisor"
+2="Supervisor"
+3="Super"
+4="NetComIOSockJobPool"
+5="Method NetComIOSockJobPool.NewItem, uses xsi, pOwner:POINTER, wOperation:WORD"
+6="wsprintf"
+7="OnConnect"
+8="An unhandled error has happen"
+9="int 3"
+10="DbgHex pConnection, "NetComProtocol.OnError", "&PROTOCOL_WND_NAME""
 [Collapse]
 17=,
 14=,
@@ -277,7 +277,7 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,2,7,14,25,9,26,20
 [PTimer]
-PTimer=522226823
+PTimer=522296151
 [GroupExpand]
 GroupExpand=1,1,1,1,0,0,1,1,0
 [RADebugBP]

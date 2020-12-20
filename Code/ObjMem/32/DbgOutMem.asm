@@ -96,8 +96,7 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
     invoke DbgOutTextA, addr cBuffer, $RGB(100,100,200), DBG_EFFECT_NORMAL, pDest
     lea edi, cBuffer
 
-    .if dVCode == 100
-
+    .if dVCode == DBG_MEM_STRA
       mov DWORD ptr [edi], "  | "
       add edi, 4
 
@@ -110,10 +109,31 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
         .else
           dec ebx
           inc esi
-          cmp al, 20h
-          jae @F
-          mov al, "."
-@@:
+          .if al < " "                                  ;Not printable
+            mov al, "."
+          .endif
+        .endif
+        mov [edi], al
+        inc edi
+        inc ecx
+      .endw
+
+    .elseif dVCode == DBG_MEM_STRW
+      mov DWORD ptr [edi], "  | "
+      add edi, 4
+
+      ;;Dump text output:
+      xor ecx, ecx
+      .while ecx < 16
+        mov ax, [esi]
+        .if !ebx
+          mov ax, " "
+        .else
+          sub ebx, 2
+          add esi, 2
+          .if ax < " " || ax > 255                      ;Not printable
+            mov ax, "."
+          .endif
         .endif
         mov [edi], al
         inc edi
@@ -121,7 +141,6 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       .endw
 
     .elseif dVCode == DBG_MEM_UI8
-
       mov DWORD ptr [edi], "  U:"
       add edi, 4
 
@@ -152,7 +171,6 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       .endw
 
     .elseif dVCode == DBG_MEM_UI16
-
       mov DWORD ptr [edi], "  U:"
       add edi, 4
 
@@ -186,7 +204,6 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       .endw
 
     .elseif dVCode == DBG_MEM_UI32
-
       mov DWORD ptr [edi], "  U:"
       add edi, 4
 
@@ -220,7 +237,6 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       .endw
 
     .elseif dVCode == DBG_MEM_I8
-
       mov DWORD ptr [edi], "  D:"
       add edi, 4
 
@@ -251,7 +267,6 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       .endw
 
     .elseif dVCode == DBG_MEM_I16
-
       mov DWORD ptr [edi], "  D:"
       add edi, 4
 
@@ -285,7 +300,6 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       .endw
 
     .elseif dVCode == DBG_MEM_I32
-
       mov DWORD ptr [edi], "  D:"
       add edi, 4
 
@@ -318,9 +332,7 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
         inc ecx
       .endw
 
-
     .elseif dVCode == DBG_MEM_R4
-
       mov DWORD ptr [edi], "  R:"
       add edi, 4
 
@@ -357,7 +369,6 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       .endw
 
     .elseif dVCode == DBG_MEM_R8
-
       mov DWORD ptr [edi], "  R:"
       add edi, 4
 
@@ -394,7 +405,6 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       .endw
 
     .elseif dVCode == DBG_MEM_H8
-
       mov DWORD ptr [edi], "  H:"
       add edi, 4
 
@@ -425,7 +435,6 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       .endw
 
     .elseif dVCode == DBG_MEM_H16
-
       mov DWORD ptr [edi], "  H:"
       add edi, 4
 
@@ -459,7 +468,6 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       .endw
 
     .elseif dVCode == DBG_MEM_H32
-
       mov DWORD ptr [edi], "  H:"
       add edi, 4
 

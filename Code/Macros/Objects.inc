@@ -1,13 +1,15 @@
 ; ==================================================================================================
 ; Title:      Objects.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm support of objects using UASM.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    C.1.2
+; Purpose:    ObjAsm object support using MASM compatible assembers (UASM, ASMC, JWASM, ML)
+; Notes:      Version C.1.2, December 2020
+;               - $MethodAddr can handle addresses of embedded objects.
 ;             Version C.1.1, September 2019
 ;               - Method "uses": skip 64 bit registers in 32 bit mode.
 ;               - Undefined symbol warning added in $PushMethodArgs.
+;             Version C.1.0, October 2017
+;               - First release.
 ; ==================================================================================================
 
 
@@ -1337,7 +1339,17 @@ $MethodAddr macro Expression:req
           if (opattr ??InsExpr) and OAT_REGISTER        ;;Is ??InsExpr a register?
             mov xax, POINTER ptr [??InsExpr]            ;;Get address of VMT
           else
-            mov xax, ??InsExpr                          ;;??InsExpr is not a register => load it
+            if type(??InsExpr) eq @WordSize
+              mov xax, ??InsExpr                          ;;??InsExpr is not a register => load it
+            else
+              $$Attributes = opattr(??InsExpr)
+              if ($$Attributes eq (OAT_NO_ERROR or OAT_RELOCATABLE)) or \
+                 ($$Attributes eq (OAT_SS_RELATIVE or OAT_NO_ERROR or OAT_RELOCATABLE))
+                lea xax, ??InsExpr
+              else
+                mov xax, ??InsExpr
+              endif
+            endif
             mov xax, POINTER ptr [xax]                  ;;Get address of VMT
           endif
         endif
@@ -1352,7 +1364,13 @@ $MethodAddr macro Expression:req
           if (opattr ??InsExpr) and OAT_REGISTER        ;;Is ??InsExpr a register?
             mov xax, POINTER ptr [??InsExpr]            ;;Get address of IMT
           else
-            mov xax, ??InsExpr                          ;;??InsExpr is not a register => load it
+            $$Attributes = opattr(??InsExpr)
+            if ($$Attributes eq (OAT_NO_ERROR or OAT_RELOCATABLE)) or \
+               ($$Attributes eq (OAT_SS_RELATIVE or OAT_NO_ERROR or OAT_RELOCATABLE))
+              lea xax, ??InsExpr
+            else
+              mov xax, ??InsExpr
+            endif
             mov xax, POINTER ptr [xax]                  ;;Get address of IMT from this instance
           endif
         endif
@@ -1366,7 +1384,13 @@ $MethodAddr macro Expression:req
           if (opattr ??InsExpr) and OAT_REGISTER        ;;Is ??InsExpr a register?
             %exitm <(??ObjExpr ptr [??InsExpr]).??MtdExpr>;;Return method address in instance data
           else
-            mov xax, ??InsExpr                          ;;??InsExpr is not a register => load it
+            $$Attributes = opattr(??InsExpr)
+            if ($$Attributes eq (OAT_NO_ERROR or OAT_RELOCATABLE)) or \
+               ($$Attributes eq (OAT_SS_RELATIVE or OAT_NO_ERROR or OAT_RELOCATABLE))
+              lea xax, ??InsExpr
+            else
+              mov xax, ??InsExpr
+            endif
             %exitm <(??ObjExpr ptr [xax]).??MtdExpr>    ;;Return method address in instance data
           endif
         endif
@@ -1385,6 +1409,73 @@ $MethodAddr macro Expression:req
   endif
 endm
 
+;$MethodAddr macro Expression:req
+;  PreParseExpr Expression
+;  if $ParseMtdExpr(Expression) eq FALSE
+;    .err <$MethodAddr - invalid syntax: Expression>
+;    exitm <NULL>
+;  else
+;    %ifdef ??ObjExpr
+;      %GetMtdType ??ObjExpr, ??MtdExpr                  ;;Updates ??MtdType & ??ImpObj
+;      if ??MtdType eq ??MTDTYPE_STATIC
+;        exitm @CatStr(<offset(>, %??ImpObj, %??MtdExpr, <)>)
+;
+;      elseif ??MtdType eq ??MTDTYPE_VIRTUAL
+;        %ifb <??InsExpr>
+;          mov xax, @CatStr(<offset(TPL_>, %??ImpObj, <)>)
+;          mov xax, POINTER ptr [xax]
+;        else
+;          if (opattr ??InsExpr) and OAT_REGISTER        ;;Is ??InsExpr a register?
+;            mov xax, POINTER ptr [??InsExpr]            ;;Get address of VMT
+;          else
+;            mov xax, ??InsExpr                          ;;??InsExpr is not a register => load it
+;            mov xax, POINTER ptr [xax]                  ;;Get address of VMT
+;          endif
+;        endif
+;        %exitm <@CatStr(<(??>, %??ObjExpr, <_VMT ptr [xax - ??>, %??ObjExpr, \
+;                        <_VMT - sizeof(POINTER)]).>, %??MtdExpr)>
+;
+;      elseif ??MtdType eq ??MTDTYPE_INTERFACE
+;        %ifb <??InsExpr>
+;          mov xax, @CatStr(<offset(TPL_>, %??ImpObj, <_DMT) + sizeof(??>, %??ImpObj, <_VMT)>)) + \
+;                   sizeof(POINTER)                      ;;xax -> IMT of the implementing object
+;        else
+;          if (opattr ??InsExpr) and OAT_REGISTER        ;;Is ??InsExpr a register?
+;            mov xax, POINTER ptr [??InsExpr]            ;;Get address of IMT
+;          else
+;            mov xax, ??InsExpr                          ;;??InsExpr is not a register => load it
+;            mov xax, POINTER ptr [xax]                  ;;Get address of IMT from this instance
+;          endif
+;        endif
+;        exitm @CatStr(<(??>, %??ObjExpr, <_IMT ptr [xax]).>, %??MtdExpr) ;;Ret mtd addr in IMT
+;
+;      elseif ??MtdType eq ??MTDTYPE_DYNAMIC
+;        %ifb <??InsExpr>
+;          mov xax, @CatStr(<offset(TPL_>, %??ImpObj, <.>, %??MtdExpr, <)>) ;;Get member addr in DYN.
+;          exitm <POINTER ptr [xax]>                     ;;Return method address
+;        else
+;          if (opattr ??InsExpr) and OAT_REGISTER        ;;Is ??InsExpr a register?
+;            %exitm <(??ObjExpr ptr [??InsExpr]).??MtdExpr>;;Return method address in instance data
+;          else
+;            mov xax, ??InsExpr                          ;;??InsExpr is not a register => load it
+;            %exitm <(??ObjExpr ptr [xax]).??MtdExpr>    ;;Return method address in instance data
+;          endif
+;        endif
+;
+;      elseif ??MtdType eq ??MTDTYPE_INLINE
+;        .err <$MethodAddr - inline method has no address: Expression>
+;        exitm <NULL>
+;      else
+;        .err <$MethodAddr - undefined method: Expression>
+;        exitm <NULL>
+;      endif
+;    else
+;      .err <$MethodAddr - undefined object: Expression>
+;      exitm <NULL>
+;    endif
+;  endif
+;endm
+;
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      New / $New
 ; Purpose:    Create a new instance of an object copying the object template.
