@@ -5,6 +5,8 @@
 ; Purpose:    ObjAsm support of HttpServer objects.
 ; Notes:      Version C.1.2, December 2020
 ;               - First release.
+;             https://docs.microsoft.com/en-us/windows/win32/http/http-api-start-page
+;             https://docs.microsoft.com/en-us/windows/win32/http/urlprefix-strings
 ; Example:    https://docs.microsoft.com/en-us/windows/win32/http/http-server-sample-application
 ; URL:        https://myname:secret@www.example.com:8080/index.html?p1=A&p2=B#ressource
 ;             \___/   \____/ \____/ \_____________/ \__/ \________/ \_______/ \_______/
@@ -128,7 +130,7 @@ endm
 
 AddKnownHeader macro Response, HeaderId, pRawVal
   m2m Response.Headers.KnownHeaders[HeaderId*sizeof(HTTP_KNOWN_HEADER)].pRawValue, pRawVal, xcx
-  invoke StrSizeA, xcx                                  ;Size in bytes including ZTC
+  invoke StrSizeA, pRawVal                              ;Size in bytes including ZTC
   dec eax                                               ;Discard the ZTC
   mov Response.Headers.KnownHeaders[HeaderId*sizeof(HTTP_KNOWN_HEADER)].RawValueLength, ax
 endm
@@ -373,12 +375,12 @@ Method HttpServer.SendPostResponse, uses xbx xsi, pRequest:PHTTP_REQUEST
 
     invoke GetTempFileName, $OfsCStr("."), $OfsCStr("New"), 0, addr szTempName
     test eax, eax
-    jnz @@Done
+    jz @@Done
 
     invoke CreateFile, addr szTempName, GENERIC_READ or GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, \
                        FILE_ATTRIBUTE_NORMAL, NULL
     test eax, eax
-    jnz @@Done
+    jz @@Done
     mov hTempFile, xax
 
     .while TRUE
@@ -428,16 +430,21 @@ Method HttpServer.SendPostResponse, uses xbx xsi, pRequest:PHTTP_REQUEST
 
         ;Send entity body from a file handle.
         mov DataChunk.DataChunkType, HttpDataChunkFromFileHandle
-
-        mov DataChunk.FromFileHandle.ByteRange.StartingOffset.QuadPart, 0
-        mov DataChunk.FromFileHandle.ByteRange.Length_.QuadPart, HTTP_BYTE_RANGE_TO_EOF
+        if TARGET_BITNESS eq 32
+          mov DataChunk.FromFileHandle.ByteRange.StartingOffset.LowPart, 0
+          mov DataChunk.FromFileHandle.ByteRange.StartingOffset.HighPart, 0
+          mov DataChunk.FromFileHandle.ByteRange.Length_.LowPart, HTTP_BYTE_RANGE_TO_EOF
+          mov DataChunk.FromFileHandle.ByteRange.Length_.HighPart, HTTP_BYTE_RANGE_TO_EOF
+        else
+          mov DataChunk.FromFileHandle.ByteRange.StartingOffset.QuadPart, 0
+          mov DataChunk.FromFileHandle.ByteRange.Length_.QuadPart, HTTP_BYTE_RANGE_TO_EOF
+        endif
         m2m DataChunk.FromFileHandle.FileHandle, hTempFile, xax
 
         invoke HttpSendResponseEntityBody, [xsi].hReqQueue, [xbx].HTTP_REQUEST.RequestId, 0, \
                                            1, addr DataChunk, \
                                            NULL, NULL, 0, NULL, NULL
-        test eax, eax
-        jnz @@Done
+        jmp @@Done
 
       .else
         jmp @@Done

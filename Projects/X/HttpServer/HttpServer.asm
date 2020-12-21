@@ -18,7 +18,6 @@
 
 
 WIN32_LEAN_AND_MEAN         equ 1                       ;Necessary to exclude WinSock.inc
-INCL_WINSOCK_API_PROTOTYPES equ 1
 INTERNET_PROTOCOL_VERSION   equ 4
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc
