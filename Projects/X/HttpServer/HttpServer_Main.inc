@@ -70,7 +70,7 @@ Method HttpServerApp.Init, uses xsi
 
   OCall [xsi].Server::HttpServer.Init, xsi
   OCall [xsi].Server::HttpServer.AddURL, $OfsCStrW("http://localhost:8080/")
-;  OCall [xsi].Server::HttpServer.AddURL, $OfsCStrW("http://192.168.0.40:8080/")
+  OCall [xsi].Server::HttpServer.AddURL, $OfsCStrW("http://192.168.0.40:8080/")
 ;  OCall [xsi].Server::HttpServer.AddURL, $OfsCStrW("http://192.168.0.40:8080/service/")
 ;  OCall [xsi].Server::HttpServer.AddURL, $OfsCStrW("http://127.0.0.1:8080/service/")
 ;  OCall [xsi].Server::HttpServer.AddURL, $OfsCStrW("http://localhost:8080/service/")
