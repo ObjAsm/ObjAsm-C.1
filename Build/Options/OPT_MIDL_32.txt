@@ -1,5 +1,0 @@
-/nologo
-/env win32
-/win32
-/nocpp
-

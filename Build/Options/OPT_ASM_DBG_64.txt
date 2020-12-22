@@ -1,9 +1,0 @@
--win64
--c
--q
--less
--nomlib
--FwNUL
--Zd
--Zi
--Zp8
