@@ -1,0 +1,22 @@
+// Dialog resource: SkinnedDialogAbout.rc
+
+#define IDC_DAB_ICON        100
+#define IDC_DAB_TEXT        101
+#define IDC_DAB_LINK        102
+#define IDC_DAB_MAIL        103
+
+
+SKINNEDDIALOGABOUT DIALOG DISCARDABLE  0,0,198,104
+STYLE DS_CENTER | DS_CENTERMOUSE | WS_POPUP | WS_CHILD
+EXSTYLE WS_EX_TRANSPARENT
+CAPTION "About"
+FONT 9, "Segoe UI"
+BEGIN
+    CONTROL  "BUTTON_CLOSE", IDOK, "RgnButton", 0, 135,100,100,50
+    CTEXT    "", IDC_DAB_TEXT, 48,32,140,50
+    ICON     "ICON_APP", IDC_DAB_ICON, 23,32,32,32
+    CONTROL  "ICON_LINK|Visit our Homepage|http://objasm.x10host.com//index.htm", IDC_DAB_LINK,
+             "Hyperlink", WS_TABSTOP, 20,90,95,14
+    CONTROL  "ICON_MAIL|Send us an Email|mailto:objasm@gmx.net", IDC_DAB_MAIL,
+             "Hyperlink", WS_TABSTOP, 20,102,95,14
+END

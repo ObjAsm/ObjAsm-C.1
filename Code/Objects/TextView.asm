@@ -1,0 +1,29 @@
+; ==================================================================================================
+; Title:      TextView.asm
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Purpose:    ObjAsm compilation file for TextView object.
+; Notes:      Version C.1.1, April 2020
+;             - First release.
+; ==================================================================================================
+
+
+% include Objects.cop
+
+% include &IncPath&Windows\CommCtrl.inc
+
+;Add here all files that build the inheritance path and referenced objects
+LoadObjects Primer
+LoadObjects Stream
+LoadObjects Collection
+LoadObjects DataCollection
+LoadObjects SortedCollection
+LoadObjects SortedDataCollection
+LoadObjects XWCollection
+LoadObjects WinPrimer
+LoadObjects Window
+
+;Add here the file that defines the object(s) to be included in the library
+MakeObjects TextView
+
+end

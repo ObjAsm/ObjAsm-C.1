@@ -1,0 +1,27 @@
+.version 3.0
+.target sm_30
+.visible .entry log_2 (
+  .param .u32 pArray,
+  .param .s32 ArrCount)
+{
+  .reg .u16 w1, w2;
+  .reg .u32 e1, xind, r1;
+  .reg .u64 r2;
+  .reg .f32 f1;
+  .reg .pred p1;
+  mov.u16         w1, %ctaid.x;
+  mov.u16         w2, %ntid.x;
+  cvt.u32.u16     e1, %tid.x;
+  mad.wide.u16    xind, w1, w2, e1;
+  ld.param.s32    e1, [ArrCount];
+  setp.le.s32     p1, e1, xind;
+@p1 bra           Exit;
+  ld.param.u32    r1, [pArray];
+  cvt.u64.u32     r2, r1;
+  mad.wide.u32    r2, xind, 4, r2;
+  ld.global.f32   f1, [r2+0];
+  lg2.approx.f32  f1, f1;
+  st.global.f32   [r2+0], f1;
+Exit:
+  ret;
+}

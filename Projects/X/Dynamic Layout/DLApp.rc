@@ -1,0 +1,54 @@
+; ==================================================================================================
+; Title:      DLApp.rc
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Purpose:    ObjAsm Dynamic Window Layout Application resource file.
+; Notes:      Version C.1.0, October 2017
+;               - First release.
+; ==================================================================================================
+
+
+#include "Resource.h"               //Windows resource definitions
+#include "DLApp_Shared.rc"         //Application shared definitions
+#include "VER\Version.rc"           //Application version definition
+#include "MFT\Manifest_Invoker.rc"  //Application manifest definition
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+
+// Icons ------------------------------------------------------------------------------------------
+ICON_APP  ICON DISCARDABLE "ICO\OA.ico"
+
+
+// Bitmaps ----------------------------------------------------------------------------------------
+BMP_BACKGROUND  BITMAP "BMP\WndBkgnd.bmp"
+
+
+// Dialogs ----------------------------------------------------------------------------------------
+#include "DLG\DialogAbout.rc"
+#include "Res\DynLayDlgDlg.rc"
+
+
+// Menus ------------------------------------------------------------------------------------------
+MENU_APP MENUEX DISCARDABLE
+BEGIN
+  POPUP "&File", 0,     MFT_STRING, MFS_ENABLED
+  BEGIN
+    MENUITEM "&Dialog\tF2", IDM_DIALOG, MFT_STRING, MFS_ENABLED
+    MENUITEM "&Exit",   IDM_EXIT,   MFT_STRING, MFS_ENABLED
+  END
+  POPUP "&Help", 0,     MFT_STRING, MFS_ENABLED
+  BEGIN
+    MENUITEM "&Help",   IDM_HELP,   MFT_STRING, MFS_ENABLED
+    MENUITEM "&About",  IDM_ABOUT,  MFT_STRING, MFS_ENABLED
+  END
+END
+
+// Accelerators ------------------------------------------------------------------------------------
+
+ACCEL_APP ACCELERATORS DISCARDABLE
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+BEGIN
+  VK_F1,  IDM_HELP,     VIRTKEY, NOINVERT
+  VK_F2,  IDM_DIALOG,   VIRTKEY, NOINVERT
+END

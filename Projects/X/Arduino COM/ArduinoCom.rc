@@ -1,0 +1,61 @@
+; ==================================================================================================
+; Title:      ArduinoCom.rc
+; Author:     G. Friedrich
+; Version:    C.1.1
+; Purpose:    ObjAsm resource file.
+; Notes:      Version C.1.1, October 2020
+;               - First release.
+; ==================================================================================================
+
+
+#include "Resource.h"               //Windows resource definitions
+#include "ArduinoCom_Shared.rc"     //Application shared definitions
+#include "VER\Version.rc"           //Application version definition
+#include "MFT\Manifest_Invoker.rc"  //Application manifest definition
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+
+// Icons ------------------------------------------------------------------------------------------
+ICON_APP  ICON DISCARDABLE "ICO\OA.ico"
+
+
+// Bitmaps ----------------------------------------------------------------------------------------
+BMP_BACKGROUND  BITMAP "BMP\WndBkgnd.bmp"
+
+
+// Dialogs ----------------------------------------------------------------------------------------
+#include "DLG\DialogAbout.rc"
+
+#include "Res\ComPortSelectionDlg.rc"
+
+// Menus ------------------------------------------------------------------------------------------
+MENU_APP MENUEX DISCARDABLE
+BEGIN
+  POPUP "&File", 0, MFT_STRING,   MFS_ENABLED
+  BEGIN
+    MENUITEM "COM Port &Selection...\tCtrl+S",  IDM_SELECTION,  MFT_STRING, MFS_ENABLED
+    MENUITEM "", , MFT_SEPARATOR
+    MENUITEM "&Connect\tCtrl+C",    IDM_CONNECT,    MFT_STRING, MFS_ENABLED
+    MENUITEM "&Disconnect\tCtrl+D", IDM_DISCONNECT, MFT_STRING, MFS_ENABLED
+    MENUITEM "", , MFT_SEPARATOR
+    MENUITEM "&Transmit\tCtrl+T",   IDM_TRANSMIT,   MFT_STRING, MFS_ENABLED
+    MENUITEM "&Recieve\tCtrl+R",    IDM_RECIEVE,    MFT_STRING, MFS_ENABLED
+    MENUITEM "", , MFT_SEPARATOR
+    MENUITEM "&Exit\tAlt+F4",       IDM_EXIT,       MFT_STRING, MFS_ENABLED
+  END
+  POPUP "&Help", 0, MFT_STRING,     MFS_ENABLED
+  BEGIN
+    MENUITEM "&Help",               IDM_HELP,       MFT_STRING, MFS_ENABLED
+    MENUITEM "&About",              IDM_ABOUT,      MFT_STRING, MFS_ENABLED
+  END
+END
+
+ACCEL_APP ACCELERATORS DISCARDABLE
+BEGIN
+  "S",   IDM_SELECTION,   VIRTKEY, CONTROL, NOINVERT
+  "C",   IDM_CONNECT,     VIRTKEY, CONTROL, NOINVERT
+  "D",   IDM_DISCONNECT,  VIRTKEY, CONTROL, NOINVERT
+  "T",   IDM_TRANSMIT,    VIRTKEY, CONTROL, NOINVERT
+  "R",   IDM_RECIEVE,     VIRTKEY, CONTROL, NOINVERT
+END

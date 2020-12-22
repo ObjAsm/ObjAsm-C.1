@@ -1,0 +1,2 @@
+% include @Environ(OBJASM_PATH)\Code\Macros\Model.inc
+SysSetup OOP, LIB32, ANSI_STRING

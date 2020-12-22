@@ -1,0 +1,249 @@
+; ==================================================================================================
+; Title:      SkinApp.rc
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Purpose:    ObjAsm SkinApp resource file.
+; Notes:      Version C.1.0, October 2017
+;               - First release.
+; ==================================================================================================
+
+
+#include "Resource.h"               //Windows resource definitions
+#include "SkinApp_Shared.rc"        //Application shared definitions
+#include "VER\Version.rc"           //Application version definition
+#include "MFT\Manifest_Invoker.rc"  //Application manifest definition
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+
+// ICO ------------------------------------------------------------------------------------------
+ICON_APP             ICON DISCARDABLE "ICO\OA.ico"
+
+// Menu icons
+ICON_FILE_EXIT       ICON DISCARDABLE "ICO\Exit_16x16_04.ico"
+ICON_HELP_ABOUT      ICON DISCARDABLE "ICO\Info_Blue_16x16_04.ico"
+
+// SkinnedDialogAbout icons
+ICON_LINK            ICON DISCARDABLE "ICO\LINK_16x16_04.ico"
+ICON_MAIL            ICON DISCARDABLE "ICO\MAIL_16x16_04.ico"
+
+
+// Cursors ----------------------------------------------------------------------------------------
+
+CURSOR_HAND          CURSOR DISCARDABLE "CUR\Hand.cur"      ;Used by SkinnedDialogAbout
+
+
+// Bitmaps ----------------------------------------------------------------------------------------
+500  BITMAP "Res\BtnClose_E.bmp"
+501  BITMAP "Res\BtnClose_H.bmp"
+502  BITMAP "Res\BtnClose_P.bmp"
+503  BITMAP "Res\BtnClose_D.bmp"
+
+510  BITMAP "Res\BtnMini_E.bmp"
+511  BITMAP "Res\BtnMini_H.bmp"
+512  BITMAP "Res\BtnMini_P.bmp"
+513  BITMAP "Res\BtnMini_D.bmp"
+
+520  BITMAP "Res\BtnMaxi_E.bmp"
+521  BITMAP "Res\BtnMaxi_H.bmp"
+522  BITMAP "Res\BtnMaxi_P.bmp"
+523  BITMAP "Res\BtnMaxi_D.bmp"
+
+550  BITMAP "Res\BtnDlg_E.bmp"
+551  BITMAP "Res\BtnDlg_H.bmp"
+552  BITMAP "Res\BtnDlg_P.bmp"
+553  BITMAP "Res\BtnDlg_D.bmp"
+
+600  BITMAP "Res\SkinApp.bmp"
+650  BITMAP "Res\SkinDlg.bmp"
+
+
+// Dialogs ----------------------------------------------------------------------------------------
+#include "DLG\SkinnedDialogAbout.rc"
+#include "DLG\SkinnedMsgBox.rc"
+
+
+// IDs --------------------------------------------------------------------------------------------
+#define IDM_EXIT	1000
+#define IDM_ABOUT	1999
+
+
+// Menus ------------------------------------------------------------------------------------------
+MENU_APP MENUEX DISCARDABLE
+BEGIN
+  POPUP "Context", 0, MFT_STRING, MFS_ENABLED
+  BEGIN
+    MENUITEM "02|&About...", IDM_ABOUT,  MFT_STRING, MFS_ENABLED
+    MENUITEM "01|&Exit",     IDM_EXIT,   MFT_STRING, MFS_ENABLED
+  END
+END
+
+
+// Gifs -------------------------------------------------------------------------------------------
+BUGGY GIF DISCARDABLE "Gif\\Bug_Report.gif"
+ALERT GIF DISCARDABLE "Gif\\Alert.gif"
+
+
+// Skins ------------------------------------------------------------------------------------------
+// Fill these defines but don't touch the SKIN definition
+#define    W0    115L             // Width of BMP
+#define    W1     69L             // Width of Upper Left Corner
+#define    W2     71L             // Width of Lower Left Corner
+#define    W3     22L             // Width of Left Vertical Filler
+#define    H0     61L             // Height of BMP
+#define    H1     38L             // Height of Upper Corners
+#define    H2     19L             // Height of Lower Corners
+#define    H3     18L             // Height of Title bar
+#define    X1     73L             // X position of Upper Right Corner
+#define    X2    102L             // X position of Right Vertical Filler
+#define    X3    101L             // X position of Lower Right Corner
+
+SKIN WNDSKIN                      // Format Px, Py, Width, Height
+BEGIN
+     600L,                        // BMP resource ID
+       0L,    0L,    W1,    H1,   // Upper Left Corner              (1)
+       W1,    0L,    1L, H1-H3,   // Upper Horizontal Filler        (2)
+       X1,    0L, W0-X1,    H1,   // Upper Right Corner             (3)
+       X2,    H1, W0-X2,    1L,   // Right Vertical Filler          (4)
+       X3, H0-H2, W0-X3,    H2,   // Lower Right Corner             (5)
+       W2, H0-H2,    1L,    H2,   // Lower Horizontal Filler        (6)
+       0L, H0-H2,    W2,    H2,   // Lower Left Corner              (7)
+       0L,    H1,    W3,    1L,   // Left Vertical Filler           (8)
+       W1, H1-H3,    1L,    H3,   // Title bar rect                 (9)
+     200L,  180L,                 // Min. window size
+      -1L,   -1L,                 // Max. window size (-1 = no limit)
+     0x00939A92L,                 // Client area background color
+     0x000000FFL                  // Transparent color = Red
+END
+
+// Fill these defines but don't touch the SKIN definition
+#define    W0    115L             // Width of BMP
+#define    W1     69L             // Width of Upper Left Corner
+#define    W2     71L             // Width of Lower Left Corner
+#define    W3     22L             // Width of Left Vertical Filler
+#define    H0     61L             // Height of BMP
+#define    H1     40L             // Height of Upper Corners
+#define    H2     19L             // Height of Lower Corners
+#define    H3     20L             // Height of Title bar
+#define    X1     73L             // X position of Upper Right Corner
+#define    X2    102L             // X position of Right Vertical Filler
+#define    X3    101L             // X position of Lower Right Corner
+
+SKIN DLGSKIN                      // Format Px, Py, Width, Height
+BEGIN
+     650L,                        // BMP resource ID
+       0L,    0L,    W1,    H1,   // Upper Left Corner              (1)
+       W1,    0L,    1L, H1-H3,   // Upper Horizontal Filler        (2)
+       X1,    0L, W0-X1,    H1,   // Upper Right Corner             (3)
+       X2,    H1, W0-X2,    1L,   // Right Vertical Filler          (4)
+       X3, H0-H2, W0-X3,    H2,   // Lower Right Corner             (5)
+       W2, H0-H2,    1L,    H2,   // Lower Horizontal Filler        (6)
+       0L, H0-H2,    W2,    H2,   // Lower Left Corner              (7)
+       0L,    H1,    W3,    1L,   // Left Vertical Filler           (8)
+       W1, H1-H3,    1L,    H3,   // Title bar rect                 (9)
+     200L,  180L,                 // Min. window size
+      -1L,   -1L,                 // Max. window size (-1 = no limit)
+     0x00939A92L,                 // Client area background color
+     0x000000FFL                  // Transparent color = Red
+END
+
+
+// RgnButton --------------------------------------------------------------------------------------
+RGNBUTTON BUTTON_SYSCLOSE
+BEGIN
+    0x00FF00FFL,                  // Region delimiter color = Pink
+    500L,                         // Enabled Bimap Resource ID
+    501L,                         // Hovered Bimap Resource ID
+    502L,                         // Pressed Bimap Resource ID
+    503L,                         // Disabled Bimap Resource ID
+    10L,                          // Button Text ID
+    0x00FFFFFFL,                  // Button Text Color = White
+    11L                           // Tooltip Text ID
+END
+
+RGNBUTTON BUTTON_SYSMINIMIZE
+BEGIN
+    0x00FF00FFL,                  // Region delimiter color = Pink
+    510L,                         // Enabled Bimap Resource ID
+    511L,                         // Hovered Bimap Resource ID
+    512L,                         // Pressed Bimap Resource ID
+    513L,                         // Disabled Bimap Resource ID
+    20L,                          // Button Text ID
+    0x00FFFFFFL,                  // Button Text Color = White
+    21L                           // Tooltip Text ID
+END
+
+RGNBUTTON BUTTON_SYSMAXIMIZE
+BEGIN
+    0x00FF00FFL,                  // Region delimiter color = Pink
+    520L,                         // Enabled Bimap Resource ID
+    521L,                         // Hovered Bimap Resource ID
+    522L,                         // Pressed Bimap Resource ID
+    523L,                         // Disabled Bimap Resource ID
+    30L,                          // Button Text ID
+    0x00FFFFFFL,                  // Button Text Color = White
+    31L                           // Tooltip Text ID
+END
+
+RGNBUTTON BUTTON_CLOSE
+BEGIN
+    0x00FF00FFL,                  // Region delimiter color = Pink
+    550L,                         // Enabled Bimap Resource ID
+    551L,                         // Hovered Bimap Resource ID
+    552L,                         // Pressed Bimap Resource ID
+    553L,                         // Disabled Bimap Resource ID
+    11L,                          // Button Text ID
+    0x0000FFFFL,                  // Button Text Color = Yellow
+    00L                           // Tooltip Text ID
+END
+
+RGNBUTTON BUTTON_OK
+BEGIN
+    0x00FF00FFL,                  // Region delimiter color = Pink
+    550L,                         // Enabled Bimap Resource ID
+    551L,                         // Hovered Bimap Resource ID
+    552L,                         // Pressed Bimap Resource ID
+    553L,                         // Disabled Bimap Resource ID
+    40L,                          // Button Text ID
+    0x0000FFFFL,                  // Button Text Color = Yellow
+    00L                           // Tooltip Text ID
+END
+
+RGNBUTTON BUTTON_YES
+BEGIN
+    0x00FF00FFL,                  // Region delimiter color = Pink
+    550L,                         // Enabled Bimap Resource ID
+    551L,                         // Hovered Bimap Resource ID
+    552L,                         // Pressed Bimap Resource ID
+    553L,                         // Disabled Bimap Resource ID
+    52L,                          // Button Text ID
+    0x0000FFFFL,                  // Button Text Color = Yellow
+    00L                           // Tooltip Text ID
+END
+
+RGNBUTTON BUTTON_NO
+BEGIN
+    0x00FF00FFL,                  // Region delimiter color = Pink
+    550L,                         // Enabled Bimap Resource ID
+    551L,                         // Hovered Bimap Resource ID
+    552L,                         // Pressed Bimap Resource ID
+    553L,                         // Disabled Bimap Resource ID
+    53L,                          // Button Text ID
+    0x0000FFFFL,                  // Button Text Color = Yellow
+    00L                           // Tooltip Text ID
+END
+
+
+// STRINGTABLE ------------------------------------------------------------------------------------
+STRINGTABLE
+MOVEABLE PURE LOADONCALL DISCARDABLE
+BEGIN
+  11, "Close"
+  21, "Minimize"
+  31, "Maximize/Restore"
+  40, "OK"
+  50, "Application exit"
+  51, "Are you sure?\n\nPressing [Yes] will terminate the application immediately!"
+  52, "Yes"
+  53, "No"
+END

@@ -1,0 +1,67 @@
+; ==================================================================================================
+; Title:      Demo03.rc
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Purpose:    ObjAsm resource file.
+; Notes:      Version C.1.0, October 2017
+;               - First release.
+; ==================================================================================================
+
+
+#include "Resource.h"               //Windows resource definitions
+#include "Demo03_Shared.rc"         //Application shared definitions
+#include "VER\Version.rc"           //Application version definition
+#include "MFT\Manifest_Invoker.rc"  //Application manifest definition
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+
+// Icons ------------------------------------------------------------------------------------------
+ICON_APP     ICON DISCARDABLE "ICO\OA.ico"
+ICON_GIFT    ICON DISCARDABLE "ICO\Window_16x16_04.ico"
+ICON_OPEN    ICON DISCARDABLE "ICO\Open_16x16_04.ico"
+ICON_NEW     ICON DISCARDABLE "ICO\New_16x16_04.ico"
+ICON_SAVE    ICON DISCARDABLE "ICO\Save_16x16_04.ico"
+ICON_SAVEAS  ICON DISCARDABLE "ICO\SaveAs_16x16_04.ico"
+ICON_CUT     ICON DISCARDABLE "ICO\Cut_16x16_04.ico"
+ICON_COPY    ICON DISCARDABLE "ICO\Copy_16x16_04.ico"
+ICON_PASTE   ICON DISCARDABLE "ICO\Paste_16x16_04.ico"
+
+
+// Bitmaps ----------------------------------------------------------------------------------------
+BMP_BACKGROUND  BITMAP "BMP\WndBkgnd.bmp"
+
+
+// Dialogs ----------------------------------------------------------------------------------------
+#include "DLG\DialogAbout.rc"
+
+DIALOG1 DIALOG DISCARDABLE  0, 0, 190, 95
+STYLE DS_MODALFRAME | DS_3DLOOK | DS_CENTER | DS_CENTERMOUSE | DS_CONTEXTHELP | WS_CAPTION | WS_SYSMENU | WS_POPUP
+CAPTION "Modeless Dialog"
+FONT 9, "Segoe UI"
+BEGIN
+  DEFPUSHBUTTON "OK", IDOK, 129, 7, 50, 14, WS_TABSTOP | BS_PUSHBUTTON
+  PUSHBUTTON    "Cancel", IDCANCEL, 129, 24, 50, 14, WS_TABSTOP
+  LTEXT         "Demo03 Dialog", IDC_STATIC1, 5, 5, 100, 10
+  CONTROL       "Enable", IDC_CHECK1, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 10, 25, 85, 10
+  GROUPBOX      "Static", IDC_STATIC2, 10, 45, 120, 45, WS_TABSTOP
+  CONTROL       "Radio1", IDC_RADIO1, "Button", BS_AUTORADIOBUTTON, 20, 55, 100, 10
+  CONTROL       "Radio2", IDC_RADIO2, "Button", BS_AUTORADIOBUTTON, 20, 65, 100, 10
+  CONTROL       "Radio3", IDC_RADIO3, "Button", BS_AUTORADIOBUTTON, 20, 75, 100, 10
+END
+
+
+// Menus ------------------------------------------------------------------------------------------
+MENU_APP MENUEX DISCARDABLE
+BEGIN
+  POPUP "&File", 0, MFT_STRING, MFS_ENABLED
+  BEGIN
+    MENUITEM "Hallo World", IDM_HELLO, MFT_STRING, MFS_ENABLED
+    MENUITEM MFT_SEPARATOR
+    MENUITEM "&Exit",       IDM_EXIT,  MFT_STRING, MFS_ENABLED
+  END
+  POPUP "&Help", 0, MFT_STRING, MFS_ENABLED
+  BEGIN
+    MENUITEM "&About",      IDM_ABOUT, MFT_STRING, MFS_ENABLED
+  END
+END

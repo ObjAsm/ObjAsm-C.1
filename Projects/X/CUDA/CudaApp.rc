@@ -1,0 +1,31 @@
+; ==================================================================================================
+; Title:      CudaApp.rc
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Purpose:    ObjAsm CUDA demo application resource file.
+; Notes:      Version C.1.0, October 2017
+;               - First release.
+; ==================================================================================================
+
+
+#include "Resource.h"               //Windows resource definitions
+#include "CudaApp_Shared.rc"         //Application shared definitions
+#include "VER\Version.rc"           //Application version definition
+#include "MFT\Manifest_Invoker.rc"  //Application manifest definition
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+
+// Icons -------------------------------------------------------------------------------------------
+ICON_APP  ICON DISCARDABLE "ICO\OA.ico"
+
+
+// Dialogs -----------------------------------------------------------------------------------------
+#include "Res/MainDlgDlg.rc"
+
+
+// PTX ---------------------------------------------------------------------------------------------
+
+LOG2_32 PTX "PTX\Log2_32.ptx"
+LOG2_64 PTX "PTX\Log2_64.ptx"
+

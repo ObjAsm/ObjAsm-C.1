@@ -1,0 +1,23 @@
+// Dialog resource: DialogAboutEx.rc
+
+#define IDC_DAB_ICON        100
+#define IDC_DAB_TEXT        101
+#define IDC_DAB_MAIL        102
+#define IDC_DAB_LINK        103
+
+
+DIALOGABOUT DIALOGEX DISCARDABLE 0,0,200,108
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_CENTER | DS_CENTERMOUSE | WS_POPUP | WS_CAPTION | WS_SYSMENU
+//EXSTYLE WS_EX_LAYERED
+CAPTION "About"
+FONT 9, "Segoe UI"
+BEGIN
+    DEFPUSHBUTTON   "&OK", IDOK, 136,80,50,16, WS_TABSTOP
+    CTEXT           "", IDC_DAB_TEXT, 46,10,140,55
+    ICON            "ICON_APP", IDC_DAB_ICON, 13,9,32,32
+    CONTROL         "", IDC_STATIC, "Static", SS_BLACKFRAME | SS_SUNKEN, 45,68,143,1
+    CONTROL         "ICON_MAIL|Send us an Email|mailto:objasm@gmx.net", IDC_DAB_MAIL,
+                    "Hyperlink", WS_TABSTOP, 10,74,100,14
+    CONTROL         "ICON_LINK|Visit our Homepage|http://objasm.x10host.com/", IDC_DAB_LINK,
+                    "Hyperlink", WS_TABSTOP, 10,87,100,14
+END

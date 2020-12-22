@@ -1,0 +1,27 @@
+{
+  "Person":{
+    "Name":"John",
+    "Age":40,
+    "City":"Amsterdam",
+    "Tools":[
+      {
+        "Name":"Screwdriver",
+        "Type":"Torx",
+        "Size":"25",
+        "Weight":"100 gr"
+      },
+      {
+        "Name":"Hammer",
+        "Type":"Flat",
+        "Size":"350",
+        "Weight":"500 gr"
+      },
+      {
+        "Name":"Pliers",
+        "Type":"Combi",
+        "Size":"200",
+        "Weight":"250 gr"
+      }
+    ]
+  }
+}

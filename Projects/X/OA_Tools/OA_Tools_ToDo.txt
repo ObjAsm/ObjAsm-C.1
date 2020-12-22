@@ -1,0 +1,19 @@
+; ==================================================================================================
+; Title:      OA_Tools_ToDo.txt
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Purpose:    Tools for ObjAsm.
+; Notes:      Version C.1.0, October 2017
+;               - First release.
+; ==================================================================================================
+
+
+List of open issues/features
+----------------------------
+
+- LineCountCollection => don't MemAlloc
+- Read lines directly in a buffer
+- Use SystemParametersInfo:SPI_GETHIGHCONTRAST to detect HighContrast
+- Exchange rax/ecx output from GetNextWord => modify whole code! (speedup)
+- Command line arguments
+

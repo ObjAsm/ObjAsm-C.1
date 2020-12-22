@@ -1,0 +1,67 @@
+; ==================================================================================================
+; Title:      qword2hexA.asm
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Notes:      Version C.1.0, October 2017
+;               - First release.
+; ==================================================================================================
+
+
+% include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
+% include &ObjMemPath&ObjMem.cop
+
+externdef HexCharTableA:CHRA
+
+.code
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  qword2hexA
+; Purpose:    Converts a QWORD to its hexadecimal ANSI string representation.
+; Arguments:  Arg1: -> Destination ANSI string buffer.
+;             Arg2: QWORD value.
+; Return:     Nothing.
+; Note:       The destination buffer must be at least 17 bytes large to allocate the output string
+;             (16 character bytes + ZTC = 17 bytes).
+
+align ALIGN_CODE
+qword2hexA proc pBuffer:POINTER, qValue:QWORD
+  ;rcx -> Buffer, rdx = qValue
+  lea r10, HexCharTableA
+  movzx rax, dl
+  mov r8w, DCHRA ptr [r10 + sizeof(DCHRA)*rax]
+  shr rdx, 8
+  shl r8, 16
+  movzx rax, dl
+  mov r8w, DCHRA ptr [r10 + sizeof(DCHRA)*rax]
+  shr rdx, 8
+  shl r8, 16
+  movzx rax, dl
+  mov r8w, DCHRA ptr [r10 + sizeof(DCHRA)*rax]
+  shr rdx, 8
+  shl r8, 16
+  movzx rax, dl
+  mov r8w, DCHRA ptr [r10 + sizeof(DCHRA)*rax]
+  mov [rcx + 8], r8
+
+  shr rdx, 8
+  movzx rax, dl
+  mov r8w, DCHRA ptr [r10 + sizeof(DCHRA)*rax]
+  shr rdx, 8
+  shl r8, 16
+  movzx rax, dl
+  mov r8w, DCHRA ptr [r10 + sizeof(DCHRA)*rax]
+  shr rdx, 8
+  shl r8, 16
+  movzx rax, dl
+  mov r8w, DCHRA ptr [r10 + sizeof(DCHRA)*rax]
+  shr rdx, 8
+  shl r8, 16
+  movzx rax, dl
+  mov r8w, DCHRA ptr [r10 + sizeof(DCHRA)*rax]
+  mov [rcx], r8
+
+  m2z CHRA ptr [rcx + 16*sizeof(CHRA)]                              ;Set ZTC
+  ret
+qword2hexA endp
+
+end

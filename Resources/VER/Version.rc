@@ -1,0 +1,44 @@
+#if BUILD_MODE == DBG
+  #define BUILD_MODE_STR "debug, "
+  #define VER_FILEFLAGS VS_FF_DEBUG
+#else
+  #define BUILD_MODE_STR ""
+  #define VER_FILEFLAGS 0
+#endif
+
+#if BUILD_BITNESS == 32
+  #define BUILD_BITNESS_STR "32"
+#else
+  #define BUILD_BITNESS_STR "64"
+#endif
+
+#define PROD_NAME APP_TITLE " (" BUILD_MODE_STR BUILD_BITNESS_STR "-bit)"
+
+1 VERSIONINFO
+FILEVERSION     VER_FILEVERSION
+PRODUCTVERSION  VER_PRODUCTVERSION
+FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
+FILEFLAGS       VER_FILEFLAGS
+FILEOS          VOS__WINDOWS32
+FILETYPE        VFT_APP
+FILESUBTYPE     0
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904E4"                            // Lang=US English, CharSet=Windows Multilingual
+    BEGIN
+      VALUE "CompanyName",      "ObjAsm" 0
+      VALUE "FileDescription",  ABOUT_TEXT 0
+      VALUE "FileVersion",      VER_FILEVERSION_STR 0
+      VALUE "InternalName",     APP_TITLE 0
+      VALUE "LegalCopyright",   COPYRIGHT 0
+      VALUE "OriginalFilename", APP_TITLE ".exe" 0
+      VALUE "ProductName",      PROD_NAME 0
+      VALUE "ProductVersion",   VER_PRODUCTVERSION_STR 0
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x0409, 1252
+  END
+END
