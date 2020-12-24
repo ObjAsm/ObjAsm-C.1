@@ -68,12 +68,14 @@ Method HttpServerApp.Init, uses xsi
   invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL          ;Show the window
   invoke UpdateWindow, [xsi].hWnd                       ;Update if necessary
 
+
   OCall [xsi].Server::HttpServer.Init, xsi
-  OCall [xsi].Server::HttpServer.AddURL, $OfsCStrW("http://localhost:8080/")
-  OCall [xsi].Server::HttpServer.AddURL, $OfsCStrW("http://192.168.0.40:8080/")
-;  OCall [xsi].Server::HttpServer.AddURL, $OfsCStrW("http://192.168.0.40:8080/service/")
-;  OCall [xsi].Server::HttpServer.AddURL, $OfsCStrW("http://127.0.0.1:8080/service/")
-;  OCall [xsi].Server::HttpServer.AddURL, $OfsCStrW("http://localhost:8080/service/")
+  OCall [xsi].Server::HttpServer.AddURL, $OfsCStrW("http://+:8080/")  ;Current PC IP-address
+;  OCall [xsi].Server::HttpServer.AddURL, $OfsCStrW("http://+:8080/service/")
+  .if eax != NO_ERROR
+    invoke MessageBox, [xsi].hWnd, $OfsCStr("Failed to register the URL."), $OfsCStr("Error"), \
+                       MB_ICONERROR + MB_OK
+  .endif
   OCall [xsi].Server::HttpServer.Run
 MethodEnd
 

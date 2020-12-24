@@ -139,12 +139,15 @@ endm
 ; Method:     HttpServer.AddURL
 ; Purpose:    Add a new URL that the server listens to.
 ; Arguments:  Arg1: -> URL (WIDE String)
-; Return:     Nothing.
+; Return:     eax = NO_ERROR indicates success, otherwise ERROR_XXX.
 
 Method HttpServer.AddURL, uses xsi, pURL:PSTRINGW
   SetObject xsi
   invoke HttpAddUrl, [xsi].hReqQueue, pURL, NULL
-  OCall [xsi].UrlColl::XWCollection.Insert, pURL
+  .if eax == NO_ERROR
+    OCall [xsi].UrlColl::XWCollection.Insert, pURL
+    mov eax, NO_ERROR
+  .endif
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
