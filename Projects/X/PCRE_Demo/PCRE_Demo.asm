@@ -1,9 +1,11 @@
 ; =================================================================================================
 ; Title:      PCRE_Demo.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Purpose:    ObjAsm RegEx demo.
-; Notes:      Version C.1.0, October 2017
+; Notes:      Version C.1.1, December 2020
+;               - Updated to PCRE 8.44.
+;             Version C.1.0, October 2017
 ;               - First release.
 ; =================================================================================================
 
@@ -13,8 +15,8 @@ SysSetup OOP, NUI64, WIDE_STRING, DEBUG(WND)            ;Load OOP files and OS r
 
 .code
 
-% include &IncPath&PCRE\PCRE841S.inc
-% includelib &LibPath&PCRE\PCRE841S.lib
+% include &IncPath&PCRE\PCRE844S.inc
+% includelib &LibPath&PCRE\PCRE844S&TARGET_STR_AFFIX&.lib
 % includelib &LibPath&Windows\MSVCRT.lib
 % includelib &LibPath&Windows\UUID.lib
 
