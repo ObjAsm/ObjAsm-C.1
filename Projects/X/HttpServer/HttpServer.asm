@@ -21,7 +21,7 @@ WIN32_LEAN_AND_MEAN         equ 1                       ;Necessary to exclude Wi
 INTERNET_PROTOCOL_VERSION   equ 4
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc
-SysSetup OOP, WIN32, ANSI_STRING, DEBUG(WND)
+SysSetup OOP, WIN32, ANSI_STRING;, DEBUG(WND)
 
 % includelib &LibPath&Windows\Kernel32.lib
 % includelib &LibPath&Windows\Shell32.lib
