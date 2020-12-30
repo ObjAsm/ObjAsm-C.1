@@ -174,13 +174,15 @@ DbgSaveContext macro VarIsRef:=<FALSE>, Var
           ??VarRBX textequ <bl>
         else
           if (opattr Var) and OAT_IMMEDIATE
-            mov ebx, Var
-            ??VarRBX textequ <rbx>
+            mov xbx, Var
+            ??VarRBX textequ <xbx>
           else
             .err <DbgSaveContext - Value error>
             exitm
           endif
         endif
+      else
+        ??VarRBX textequ Var
       endif
     endif
   endif
@@ -551,7 +553,7 @@ DbgStrA macro Var:req, InfoText, Dest
                           DBG_EFFECT_NORMAL, ??DbgDstWnd
     else
       if (opattr Var) and OAT_REGISTER                  ;;Is Var a register?
-        .err <DbgStrW - <Var> register error>
+        .err <DbgStrA - <Var> register error>
         exitm
       else
         DbgSaveContext TRUE, Var                        ;;Pass Var as a reference
@@ -616,7 +618,7 @@ DbgStrCA macro Var:req, StrLen:req, InfoText, Dest
                           DBG_EFFECT_NORMAL, ??DbgDstWnd
     else
       if (opattr Var) and OAT_REGISTER                  ;;Is Var a register?
-        .err <DbgStrW - <Var> register error>
+        .err <DbgStrCA - <Var> register error>
         exitm
       else
         DbgSaveContext TRUE, Var                        ;;Pass Var as a reference
@@ -649,7 +651,7 @@ DbgStrCW macro Var:req, StrLen:req, InfoText, Dest
                           DBG_EFFECT_NORMAL, ??DbgDstWnd
     else
       if (opattr Var) and OAT_REGISTER                  ;;Is Var a register?
-        .err <DbgStrW - <Var> register error>
+        .err <DbgStrCW - <Var> register error>
         exitm
       else
         DbgSaveContext TRUE, Var                        ;;Pass Var as a reference
