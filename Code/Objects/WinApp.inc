@@ -62,7 +62,7 @@ MethodEnd
 
 Method WinApp.OnNcDestroy,, wParam:WPARAM, lParam:LPARAM
   SetObject xcx
-  invoke SetWindowLong, [xcx].hWnd, DWL_USER, NULL
+  invoke SetWindowLongPtr, [xcx].hWnd, DWLP_USER, NULL
   invoke PostQuitMessage, 0
   xor eax, eax
 MethodEnd

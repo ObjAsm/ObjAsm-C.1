@@ -93,9 +93,9 @@ MethodEnd
 ; Arguments:  Arg1: -> Section name.
 ;             Arg2: -> Key name.
 ;             Arg3: -> default string.
-; Return:     xax -> New created ANSI string. If the key was not found, xax -> empty string.
+; Return:     xax -> New created string. If the key was not found, xax -> Default string.
 ;             In all cases the retuned string must be freed by the caller using StrDispose.
-; Note:       Maximal string size = 1023 chars + 1 zero char.
+; Note:       Maximal string size = 1023 chars + ZTC.
 
 Method IniFile.GetString, uses xsi, pSection:PSTRING, pKey:PSTRING, pDefault:PSTRING
   local cBuffer[1024]:CHR

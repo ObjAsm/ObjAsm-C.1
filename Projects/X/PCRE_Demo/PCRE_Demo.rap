@@ -122,7 +122,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Macros,Dialogs,Objects
 [Size]
 3=
 2=0,0,0,0,10570
-1=0,0,806,424,289
+1=0,0,806,424,702
 4=0,0,0,0,8922
 5=0,0,0,0,81980
 7=0,0,0,0,7809
@@ -239,7 +239,7 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,10
 [PTimer]
-PTimer=1346842300
+PTimer=1346992237
 [RADebugBP]
 2=
 4=

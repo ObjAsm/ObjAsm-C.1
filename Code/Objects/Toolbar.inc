@@ -173,7 +173,7 @@ MethodEnd
 ; Note:       Window handle is passed in pSelf (hidden parameter).
 
 Method Toolbar.WndProc,, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-;  DbgMessage uMsg
+  ;DbgMessage uMsg,, "Toolbar"
   GetSubclassingInst Toolbar, pSelf
   OCall xax::Toolbar.Dispatch, pSelf, uMsg, wParam, lParam
 MethodEnd

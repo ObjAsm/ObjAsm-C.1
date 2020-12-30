@@ -1,7 +1,7 @@
 ; ==================================================================================================
 ; Title:      XMenu.inc
 ; Author:     G. Friedrich.
-; Version:    C.1.0
+; Version:    C.1.1
 ; Purpose:    ObjAsm support of extended menu objects.
 ; Links:      - http://www.microsoft.com/msj/0198/coolmenu.aspx
 ; Note:       Required files:
@@ -10,7 +10,9 @@
 ;              - DialogModalIndirect.inc
 ;             This object requires unique MenuItemIDs to work properly!
 ;             NEVER use a command ID = 0! (The OS has problems with the first MenuBar item).
-;             Version 1.0.0, October 2017
+;             Version C.1.1, December 2020
+;               - Minor changes to avaoid this probem http://masm32.com/board/index.php?topic=8928.0
+;             Version C.1.0, October 2017
 ;               - First release.
 ; ==================================================================================================
 
@@ -460,7 +462,7 @@ Method XMenu.Convert, uses xbx xdi xsi, hMenu:HMENU, dIsMenuBar:DWORD
           add eax, [xsi].dLanguage
           mov dResID, eax
           mov pChar, $addr(cBuffer)
-          invoke LoadString, hInstance, dResID, pChar, lengthof cBuffer - 1
+          invoke LoadString, hInstance, dResID, pChar, lengthof(cBuffer) - 1
           if DEBUGGING
           .if eax == 0
             invoke StrCopy, pChar, offset cResStrNotFound
@@ -501,7 +503,7 @@ Method XMenu.Convert, uses xbx xdi xsi, hMenu:HMENU, dIsMenuBar:DWORD
 
         ;Get help from resource ID
         .if dResID != 0
-          invoke LoadString, hInstance, dResID, addr cBuffer, lengthof cBuffer - 1
+          invoke LoadString, hInstance, dResID, addr cBuffer, lengthof(cBuffer) - 1
           .if eax == 0
             if DEBUGGING
               invoke StrNew, offset cResStrNotFound
@@ -555,7 +557,8 @@ Method XMenu.Convert, uses xbx xdi xsi, hMenu:HMENU, dIsMenuBar:DWORD
       mov Rect.right, eax
       mov Rect.bottom, eax
 
-      .if [xbx].$Obj(XMenuItem).dType == MENU_TYPE_MAINBAR
+      mov eax, [xbx].$Obj(XMenuItem).dType 
+      .if eax == MENU_TYPE_MAINBAR
         invoke SelectObject, hDC, [xsi].hFontTxtNorm
         invoke DrawText, hDC, [xbx].$Obj(XMenuItem).pMenuStr, -1, \
                          addr Rect, DT_CALCRECT or DT_SINGLELINE
@@ -563,7 +566,7 @@ Method XMenu.Convert, uses xbx xdi xsi, hMenu:HMENU, dIsMenuBar:DWORD
         m2z [xbx].$Obj(XMenuItem).dMaxSCutWidth
         m2m [xbx].$Obj(XMenuItem).dHeight, Rect.bottom, eax
 
-      .elseif [xbx].$Obj(XMenuItem).dType == MENU_TYPE_SEPARATOR
+      .elseif eax == MENU_TYPE_SEPARATOR
         .if [xbx].$Obj(XMenuItem).pMenuStr != NULL
           invoke SelectObject, hDC, [xsi].hFontSep
           invoke DrawText, hDC, [xbx].$Obj(XMenuItem).pMenuStr, -1, \
@@ -580,7 +583,7 @@ Method XMenu.Convert, uses xbx xdi xsi, hMenu:HMENU, dIsMenuBar:DWORD
         mov [xbx].$Obj(XMenuItem).dHeight, eax
         add dTotalHeight, eax
 
-      .elseif [xbx].$Obj(XMenuItem).dType == MENU_TYPE_SIDEBAR
+      .elseif eax == MENU_TYPE_SIDEBAR
         ;No action
 
       .else
@@ -599,7 +602,8 @@ Method XMenu.Convert, uses xbx xdi xsi, hMenu:HMENU, dIsMenuBar:DWORD
           mov eax, Rect.right
         .endif
 
-        .if [xbx].$Obj(XMenuItem).dID < 50000 || [xbx].$Obj(XMenuItem).dID > 50009
+        mov ecx, [xbx].$Obj(XMenuItem).dID 
+        .if ecx < 50000 || ecx > 50009
           .if SDWORD ptr eax > sdMaxRegTextWidth
             mov sdMaxRegTextWidth, eax                  ;Store max regular text width
           .endif
@@ -609,7 +613,8 @@ Method XMenu.Convert, uses xbx xdi xsi, hMenu:HMENU, dIsMenuBar:DWORD
           .endif
         .endif
 
-        .if [xbx].$Obj(XMenuItem).pSCutStr == NULL
+        mov xax, [xbx].$Obj(XMenuItem).pSCutStr
+        .if xax == NULL
           xor eax, eax
         .else
           invoke DrawText, hDC, [xbx].$Obj(XMenuItem).pSCutStr, -1, \
@@ -635,7 +640,8 @@ Method XMenu.Convert, uses xbx xdi xsi, hMenu:HMENU, dIsMenuBar:DWORD
       invoke GetMenuItemInfo, hMenu, ebx, MF_BYPOSITION, addr MenuInfo
       mov xax, MenuInfo.dwItemData
       .if xax != NULL
-        .if [xax].$Obj(XMenuItem).dType == MENU_TYPE_SIDEBAR
+        mov ecx, [xax].$Obj(XMenuItem).dType 
+        .if ecx == MENU_TYPE_SIDEBAR
           m2m [xax].$Obj(XMenuItem).dHeight, dTotalHeight, ecx
         .else
           ;Popup item
@@ -765,8 +771,9 @@ Method XMenu.DrawMenuBarText, uses xbx xdi xsi, pDIS:PDRAWITEMSTRUCT
     invoke GetSysColor, COLOR_BTNSHADOW
     invoke SetTextColor, [xdi].DRAWITEMSTRUCT.hDC, eax
     mov dPrevColor, eax
-    .if [xbx].$Obj(XMenuItem).pMenuStr != NULL
-      invoke DrawText, [xdi].DRAWITEMSTRUCT.hDC, [xbx].$Obj(XMenuItem).pMenuStr, -1, \
+    mov xdx, [xbx].$Obj(XMenuItem).pMenuStr 
+    .if xdx != NULL
+      invoke DrawText, [xdi].DRAWITEMSTRUCT.hDC, xdx, -1, \
                        addr Rect, DT_CENTER or DT_VCENTER or DT_SINGLELINE
     .endif
   .else
@@ -783,8 +790,9 @@ Method XMenu.DrawMenuBarText, uses xbx xdi xsi, pDIS:PDRAWITEMSTRUCT
       invoke SetTextColor, [xdi].DRAWITEMSTRUCT.hDC, eax
       mov dPrevColor, eax
 
-      .if [xbx].$Obj(XMenuItem).pMenuStr != NULL
-        invoke DrawText, [xdi].DRAWITEMSTRUCT.hDC, [xbx].$Obj(XMenuItem).pMenuStr, -1, \
+      mov xdx, [xbx].$Obj(XMenuItem).pMenuStr 
+      .if xdx != NULL
+        invoke DrawText, [xdi].DRAWITEMSTRUCT.hDC, xdx, -1, \
                          addr Rect, DT_CENTER or DT_VCENTER or DT_SINGLELINE
       .endif
     .else
@@ -792,11 +800,12 @@ Method XMenu.DrawMenuBarText, uses xbx xdi xsi, pDIS:PDRAWITEMSTRUCT
       invoke GetSysColor, COLOR_BTNHILIGHT
       invoke SetTextColor, [xdi].DRAWITEMSTRUCT.hDC, eax
       mov dPrevColor, eax
-      .if [xbx].$Obj(XMenuItem).pMenuStr != NULL
+      mov xdx, [xbx].$Obj(XMenuItem).pMenuStr 
+      .if xdx != NULL
         .ifBitClr [xdi].DRAWITEMSTRUCT.itemState, ODS_SELECTED
           inc Rect.left
           inc Rect.top
-          invoke DrawText, [xdi].DRAWITEMSTRUCT.hDC, [xbx].$Obj(XMenuItem).pMenuStr, -1, \
+          invoke DrawText, [xdi].DRAWITEMSTRUCT.hDC, xdx, -1, \
                            addr Rect, DT_CENTER or DT_VCENTER or DT_SINGLELINE
           dec Rect.left
           dec Rect.top
@@ -1550,7 +1559,8 @@ Method XMenu.OnMeasureItem, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   .if [xbx].MEASUREITEMSTRUCT.CtlType == ODT_MENU
     mov xdi, [xbx].MEASUREITEMSTRUCT.itemData           ;Get -> XMenuItem
     .if xdi != NULL
-      .if [xdi].$Obj(XMenuItem).dType == MENU_TYPE_MAINBAR
+      mov eax, [xdi].$Obj(XMenuItem).dType
+      .if eax == MENU_TYPE_MAINBAR
         invoke GetSystemMetrics, SM_CYMENU
         inc eax
         mov [xbx].MEASUREITEMSTRUCT.itemHeight, eax
@@ -1558,13 +1568,13 @@ Method XMenu.OnMeasureItem, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
         add edx, MENU_BAR_LEFT_MARGIN + MENU_BAR_RIGHT_MARGIN
         mov [xbx].MEASUREITEMSTRUCT.itemWidth, edx
 
-      .elseif [xdi].$Obj(XMenuItem).dType == MENU_TYPE_SEPARATOR
+      .elseif eax == MENU_TYPE_SEPARATOR
         m2m [xbx].MEASUREITEMSTRUCT.itemHeight, [xdi].$Obj(XMenuItem).dHeight, edx
         mov edx, [xdi].$Obj(XMenuItem).dMaxTextWidth
         sub edx, MENU_CX_WIN
         mov [xbx].MEASUREITEMSTRUCT.itemWidth, edx
 
-      .elseif [xdi].$Obj(XMenuItem).dType == MENU_TYPE_SIDEBAR
+      .elseif eax == MENU_TYPE_SIDEBAR
         invoke GetSystemMetrics, SM_CXMENUCHECK         ;size always added
         dec eax
         mov ecx, MENU_SIDEBAR_WIDTH + 1
@@ -1850,12 +1860,12 @@ Method XMenu.WindowMenuCreate, uses xbx xdi xsi, hMenu:HMENU
           lea xax, cBuffer
           add xax, 2*sizeof(CHR)
           mov edx, ecx
-          invoke LoadString, hInstance, edx, xax, lengthof cBuffer - 3
+          invoke LoadString, hInstance, edx, xax, lengthof(cBuffer) - 3
           mov dFlag, TRUE
         .elseif MenuInfo.wID == MENU_WINDOW_MORE        ;More windows...
           mov edx, [xsi].dLanguage
           add edx, MENU_WINDOW_MORE
-          invoke LoadString, hInstance, edx, addr cBuffer, lengthof cBuffer - 1
+          invoke LoadString, hInstance, edx, addr cBuffer, lengthof(cBuffer) - 1
           .if eax != 0
             FillString cBuffer, <$50009>
           .else
@@ -2040,7 +2050,7 @@ SelectDlgEnumProc proc uses xsi hWnd:HWND, pSelf:$ObjPtr(XMenuSelectDlg)
   invoke GetParent, hWnd
   mov xcx, [xsi].pOwner
   .if xax == [xcx].$Obj(XMenu).hMdiClientWnd
-    invoke GetWindowText, hWnd, addr cBuffer, lengthof cBuffer - 1
+    invoke GetWindowText, hWnd, addr cBuffer, lengthof(cBuffer) - 1
     invoke SendMessage, [xsi].hListBox, LB_ADDSTRING, 0, addr cBuffer   ;Set child caption
     mov dIndex, eax
     invoke SendMessage, [xsi].hListBox, LB_SETITEMDATA, dIndex, hWnd    ;Remember hWnd
@@ -2074,7 +2084,7 @@ Method XMenuSelectDlg.CtlsSet, uses xdi xsi
   mov ecx, [xdi].$Obj(XMenu).dLanguage
   add ecx, MENU_WINDOW_MORE
   mov edx, ecx
-  invoke LoadString, hInstance, edx, addr cBuffer, lengthof cBuffer - 1
+  invoke LoadString, hInstance, edx, addr cBuffer, lengthof(cBuffer) - 1
   .if eax != 0
     invoke StrLScan, addr cBuffer, MENU_CHAR_LITERAL
     .if xax != NULL

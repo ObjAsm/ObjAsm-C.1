@@ -23,7 +23,7 @@ Object WinControl, WinControlID, WinPrimer
   VirtualMethod     Dispatch,       HWND, DWORD, WPARAM, LPARAM
   VirtualMethod     GetHeight
   VirtualMethod     GetWidth
-  VirtualAbstract   WndProc,        DWORD, DWORD, DWORD
+  VirtualAbstract   WndProc,        DWORD, WPARAM, LPARAM
 
   DefineVariable    pPrevWndProc,   POINTER,    NULL
 ObjectEnd

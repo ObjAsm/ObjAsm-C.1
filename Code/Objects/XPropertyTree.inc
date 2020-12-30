@@ -2441,7 +2441,7 @@ Method XPropertyTree.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
     OCall xsi::XPropertyTree.Dispatch, pSelf, uMsg, wParam, lParam
   .else
     invoke GetWindowLongPtr, pSelf, GWLP_USERDATA       ;If GWL_USERDATA wasn't set,
-    .if xax == NULL                                     ;GetWindowLong returns NULL
+    .if xax == NULL                                     ;GetWindowLongPtr returns NULL
       invoke DefWindowProc, pSelf, uMsg, wParam, lParam
     .else
       OCall xax::XPropertyTree.Dispatch, pSelf, uMsg, wParam, lParam

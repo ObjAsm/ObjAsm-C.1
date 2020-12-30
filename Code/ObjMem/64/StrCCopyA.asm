@@ -19,8 +19,8 @@
 ;             characters + 1.
 ; Arguments:  Arg1: -> Destination buffer.
 ;             Arg2: -> Source ANSI string.
-;             Arg3: Maximal number of charachters to be copied.
-; Return:     eax = Number of copied characters, not including the ending zero character.
+;             Arg3: Maximal number of charachters to be copied, excluding the ZTC.
+; Return:     eax = Number of copied characters, not including the ZTC.
 
 align ALIGN_CODE
 StrCCopyA proc uses rdi pBuffer:POINTER, pSrcStringA:POINTER, dMaxChars:DWORD

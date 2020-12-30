@@ -220,7 +220,7 @@ Method IconButton.OnPaint, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
         invoke DrawTextEx, [xsi].hMemDC, [xsi].pTextBuffer, -1, \
                            addr [xsi].TextRect, DT_CENTER or DT_VCENTER or DT_SINGLELINE, NULL
       .else
-        invoke StrCCopy, addr cBuffer, [xsi].pTextBuffer, lengthof cBuffer - 1
+        invoke StrCCopy, addr cBuffer, [xsi].pTextBuffer, lengthof(cBuffer) - 1
         invoke StrLScan, addr cBuffer, "&"
         .if xax != 0
           m2z CHR ptr [xax]

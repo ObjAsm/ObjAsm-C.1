@@ -12,7 +12,7 @@
 
 externdef hInstance:HANDLE
 
-IDM_FIRSTCHILD equ 50000                                ;Has to be bigger than all other menu ID's
+IDM_FIRSTCHILD equ 50000                                ;Must be larger than any other menu ID
 
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -198,7 +198,7 @@ endm
 ; Note:       Window handle is passed in pSelf (hidden parameter).
 
 Method MdiApp.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-;  DbgMessage uMsg,, "MDI Frame Window"
+  ;DbgMessage uMsg,, "MDI Frame Window"
   .if uMsg == WM_NCCREATE
     mov xax, lParam
     mov xsi, [xax].CREATESTRUCT.lpCreateParams
@@ -278,7 +278,7 @@ MethodEnd
 ; Return:     eax = Result of the message processing and depends on the message ID.
 
 Method MdiClientWnd.WndProc,, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-;  DbgMessage uMsg,, "MDI Client Window"
+  ;DbgMessage uMsg,, "MDI Client Window"
   GetSubclassingInst MdiClientWnd, pSelf
   OCall xax::MdiClientWnd.Dispatch, pSelf, uMsg, wParam, lParam
 MethodEnd
@@ -315,7 +315,7 @@ MethodEnd
 ; Note:       Window HANDLE is passed in pSelf (hidden parameter).
 
 Method MdiChildWnd.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-;  DbgMessage uMsg,, "MDI Child Window"
+  ;DbgMessage uMsg,, "MDI Child Window"
   .if uMsg == WM_NCCREATE
     mov xax, lParam
     mov xcx, [xax].CREATESTRUCT.lpCreateParams

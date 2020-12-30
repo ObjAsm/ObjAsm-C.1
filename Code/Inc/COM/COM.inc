@@ -134,6 +134,8 @@ VERBDATA struc                  ;Wrapper of OLEVERB structure
 VERBDATA ends
 LPVERBDATA typedef ptr VERBDATA
 
+LPDISPPARAMS typedef ptr DISPPARAMS
+
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:     SUCCEEDED
 ; Purpose:   Check if HRESULT indicates succeed condition.

@@ -15,7 +15,7 @@
 Object RegExA, RegExAID, Streamable
   RedefineMethod    Done
   RedefineMethod    Init,         POINTER, PSTRINGA, DWORD      ;-> Owner, -> RegEx, Options
-  VirtualMethod     Exec,         POINTER, DWORD, DWORD, DWORD  ;-> Subject, Char count
+  VirtualMethod     Exec,         POINTER, DWORD, DWORD, DWORD  ;-> Subject, Char count, start, opts
   VirtualMethod     GetConfig,    DWORD, POINTER                ;What, -> Where
   VirtualMethod     GetInfo,      POINTER, DWORD, POINTER       ;-> ExtraData, What, -> Where
   VirtualMethod     SetOutCount,  DWORD                         ;Count
