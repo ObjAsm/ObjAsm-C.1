@@ -2575,7 +2575,7 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
           endif
         endif
         if $$ErrFlag ne FALSE
-          %echo @CatStr (<Error on line >, %@Line, < of >, @FileCur)
+          %echo @CatStr (<$PushMethodArgs - Error on line >, %@Line, < of >, @FileCur)
           .err <$PushMethodArgs - EAX register already in use.>
           exitm
         else
@@ -2703,7 +2703,7 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
                 $$ArgSize = type($$Arg)
                 ??Count = (($$ArgSize + 3)/4)*4
                 if ??Count eq 0
-                  %echo @CatStr(<Error on line >, %@Line, < of >, @FileCur)
+                  %echo @CatStr(<$PushMethodArgs - Error on line >, %@Line, < of >, @FileCur)
                   .err <$PushMethodArgs - undefined symbol ($$Arg).>
                 else
                   repeat ($$ArgSize + 3)/4
@@ -2731,17 +2731,17 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
 ;      echo ==============================
 
       if ??ParamCount gt ArgCount
-        %echo @CatStr(<Error on line >, %@Line, < of >, @FileCur)
+        %echo @CatStr(<$PushMethodArgs - Error on line >, %@Line, < of >, @FileCur)
         .err <$PushMethodArgs - too many arguments or argument type mismatch.>
       elseif ??ParamCount lt ArgCount
-        %echo @CatStr(<Error on line >, %@Line, < of >, @FileCur)
+        %echo @CatStr(<$PushMethodArgs - Error on line >, %@Line, < of >, @FileCur)
         .err <$PushMethodArgs - too few arguments or argument type mismatch.>
       endif
       exitm <0>
     else
       if ??ParamCount lt (-1-ArgCount)
         .err <$PushMethodArgs - too few arguments or argument type mismatch.>
-        %echo @CatStr(<Error on line >, %@Line, < of >, @FileCur)
+        %echo @CatStr(<$PushMethodArgs - Error on line >, %@Line, < of >, @FileCur)
       endif
       %exitm <@WordSize*(??ParamCount + ArgCount + 1)>  ;;Return number of bytes to remove
     endif                                               ;; from stack by the caller
@@ -3539,7 +3539,7 @@ ICall macro Expression:req, Args:vararg
         call (??ImpIfc ptr [r11]).??MtdExpr
       endif
     else
-      %.err <ICall - undefined !i!nterface ??IfcExpr>
+      %.err <ICall - undefined !i!nterface method ??IfcExpr.&??MtdExpr>
       exitm
     endif
   endif
