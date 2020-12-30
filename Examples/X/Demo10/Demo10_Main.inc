@@ -15,16 +15,16 @@ TBSTYLE   equ   WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or TBSTYLE_TOOLTIPS or
 
 SBSTYLE   equ   WS_CHILD or WS_VISIBLE or SBARS_TOOLTIPS or SBARS_SIZEGRIP
 
-STSTYLE equ WS_CHILD or WS_VISIBLE or WS_TABSTOP or TCS_TABS or TCS_FOCUSNEVER; or TCS_HOTTRACK
+TCSTYLE   equ   WS_CHILD or WS_VISIBLE or WS_TABSTOP or TCS_TABS or TCS_FOCUSNEVER; or TCS_HOTTRACK
 
 .const
 ToolbarFile DEF_TOOLBAR {IDC_TOOLBARFILE, TBSTYLE, TBSTYLE_EX_MIXEDBUTTONS, \
-                         $OfsTStr("File operations"), 0, 0, 0, 0, 2}
+                         $OfsTStr("File commands"), 0, 0, 0, 0, 2}
   TBBUTTON {IDB_FILE_NEW,   IDM_FILE_NEW,   TBSTATE_ENABLED, TBSTYLE_BUTTON}
   TBBUTTON {IDB_FILE_CLOSE, IDM_FILE_CLOSE, TBSTATE_ENABLED, TBSTYLE_BUTTON}
 
 ToolbarWindow DEF_TOOLBAR {IDC_TOOLBARWINDOW, TBSTYLE, TBSTYLE_EX_MIXEDBUTTONS, \
-                           $OfsTStr("Window operations"), 0, 0, 0, 0, 6}
+                           $OfsTStr("Window commands"), 0, 0, 0, 0, 6}
   TBBUTTON {IDB_WINDOW_CASCADE,  IDM_WINDOW_CASCADE,  TBSTATE_ENABLED, TBSTYLE_BUTTON}
   TBBUTTON {IDB_WINDOW_TILE_HOR, IDM_WINDOW_TILE_HOR, TBSTATE_ENABLED, TBSTYLE_BUTTON}
   TBBUTTON {IDB_WINDOW_TILE_VER, IDM_WINDOW_TILE_VER, TBSTATE_ENABLED, TBSTYLE_BUTTON}
@@ -38,7 +38,7 @@ AppStatusbar DEF_STATUSBAR {IDC_STATUSBAR, SBSTYLE, 0, 4}
   DEF_STATUSBAR_PART {120,  -2, 0, SBT_SUNKEN,    NULL} ;Spring
   DEF_STATUSBAR_PART {120, 100, 2, SBT_SUNKEN,    NULL}
 
-SetupTabCtrl DEF_TABCONTROL {100, STSTYLE, 0, NULL, 2, 2, 295, 180}
+SetupTabCtrl DEF_TABCONTROL {100, TCSTYLE, 0, NULL, 2, 2, 295, 180}
 
 CStr szDemoChild10, "DemoChild10"
 CStr szDemoApp10,   "DemoApp10"
@@ -176,7 +176,7 @@ Method XMenu.DrawMenuBarBkgnd2, uses xdi xsi, pDIS:PDRAWITEMSTRUCT
       mov hBrush, $invoke(CreateSolidBrush, eax)
     .else
       mov xcx, [xdi].DRAWITEMSTRUCT.itemData
-      mov xdx, [xcx].$Obj(XMenuItem).pMenuStr 
+      mov xdx, [xcx].$Obj(XMenuItem).pMenuStr
       .if [xcx].$Obj(XMenuItem).dID == IDM_HELP
         .ifBitSet [xsi].dFlags, XMF_FLASHING
           mov eax, [xsi].MenuBarBkColor
@@ -200,13 +200,14 @@ MethodEnd
 ; Return:     Nothing.
 
 Method DemoApp10.ChangeBtnLanguage, uses xbx xdi xsi, dLangID:DWORD
+
   SetButtonText macro ButtonCommand:req, TextIndex:req
     mov eax, dLangID
     add eax, TextIndex
-    invoke LoadString, hInstance, eax, xdi, lengthof cButtonText - 1
+    invoke LoadString, hInstance, eax, xdi, lengthof(cButtonText) - 1
     invoke StrLScan, xdi, MENU_CHAR_LITERAL
     .if xax == NULL
-      mov [xdi], xax
+      mov [xdi], $SubReg(xax, sizeof CHR)               ;Set ZTC
     .else
       add xax, sizeof CHR                               ;Skip MENULITERALCHAR character
       mov pPos, xax
@@ -228,14 +229,14 @@ Method DemoApp10.ChangeBtnLanguage, uses xbx xdi xsi, dLangID:DWORD
   mov tbbi.TBBUTTONINFO.cchText, lengthof cButtonText - 1
 
   lea xbx, [xsi].TbFile
-  SetButtonText IDM_FILE_NEW, 01
-  SetButtonText IDM_FILE_CLOSE, 02
+  SetButtonText IDM_FILE_NEW,        01
+  SetButtonText IDM_FILE_CLOSE,      02
 
   lea xbx, [xsi].TbWindow
-  SetButtonText IDM_WINDOW_CASCADE, 31
+  SetButtonText IDM_WINDOW_CASCADE,  31
   SetButtonText IDM_WINDOW_TILE_HOR, 32
   SetButtonText IDM_WINDOW_TILE_VER, 33
-  SetButtonText IDM_WINDOW_ARRANGE, 34
+  SetButtonText IDM_WINDOW_ARRANGE,  34
   SetButtonText IDM_WINDOW_CLOSEALL, 35
 MethodEnd
 
@@ -301,7 +302,7 @@ Method DemoApp10.Done, uses xsi
   OCall [xsi].SplitterVer::Splitter.Done
   OCall [xsi].SplitterHor::Splitter.Done
   OCall [xsi].Menu::XMenu.Done
-  Destroy [xsi].pClientWnd
+  OCall [xsi].pClientWnd::MyClientWnd.Done
   ACall xsi.Done
 MethodEnd
 
@@ -378,18 +379,17 @@ Method DemoApp10.Init, uses xbx xdi xsi
                          dWndPosX, dWndPosY, dWndWidth, dWndHeight, \
                          NULL, [xsi].hMenuInit, hInstance, pSelf
 
-  ;Create and Initialize Client window
-  mov [xsi].pClientWnd, $New(MyClientWnd)
-  OCall xax::MyClientWnd.Init, xsi
-  mov xax, [xsi].pClientWnd
-  mov xdi, [xax].$Obj(MyClientWnd).hWnd
+  ;Initialize Client window
+  mrm [xsi].pClientWnd, offset $ObjTmpl(MyClientWnd), xdi
+  OCall xdi::MyClientWnd.Init, xsi
+  mov xdi, [xdi].$Obj(MyClientWnd).hWnd
 
   ;Create and initialize XMenu
   m2m pSBHelp, $MethodAddr(DemoApp10.StatusbarHelp), xax
   OCall [xsi].Menu::XMenu.Init, xsi, [xsi].hWnd, xdi, [xsi].hMenuChildWnd, \
                                 xbx, pSBHelp, IDLANG_ENGLISH
 
-  Override [xsi].Menu::XMenu.DrawMenuBarBkgnd, XMenu.DrawMenuBarBkgnd2 
+  Override [xsi].Menu::XMenu.DrawMenuBarBkgnd, XMenu.DrawMenuBarBkgnd2
   OCall xsi.ChangeBtnLanguage, IDLANG_ENGLISH
 
   invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL
@@ -549,7 +549,7 @@ Method DemoApp10.OnCreate, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   ;Initialize statusbar
   OCall [xsi].Status::Statusbar.Init, xsi, [xsi].hWnd, offset AppStatusbar
 
-  ;Create rebar, toolbars
+  ;Initialize rebar and toolbars
   OCall [xsi].RBar::Rebar.Init, xsi, [xsi].hWnd
 
   OCall [xsi].TbWindow::Toolbar.Init, xsi, [xsi].hWnd, offset ToolbarWindow, \
@@ -566,7 +566,7 @@ Method DemoApp10.OnCreate, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
 
   ;Disable toolbar buttons
   OCall xsi.EnableActions, FALSE
-  
+
   xor eax, eax
 MethodEnd
 
@@ -588,6 +588,7 @@ Method DemoApp10.OnDestroy, uses xsi, wParam:WPARAM, lParam:LPARAM
   .if [xsi].hAccelerators
     invoke DestroyAcceleratorTable, [xsi].hAccelerators
   .endif
+  xor eax, eax
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -777,7 +778,7 @@ MethodEnd
 ; Return:     eax = Non zero => we do the job.
 
 Method MyClientWnd.OnEraseBkgnd,, wParam:WPARAM, lParam:LPARAM
-  mov eax, 1
+  mov eax, -1
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -855,7 +856,7 @@ Method MyChildWnd.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRING
       invoke SendMessage, [xdi].$Obj(MyClientWnd).hWnd, WM_MDISETMENU, \
                           [xbx].$Obj(DemoApp10).hMenuChild, \
                           [xbx].$Obj(DemoApp10).hMenuChildWnd
-      OCall [xbx].$Obj(DemoApp10).Menu::XMenu.SetMenuBarBkColor, [xbx].$Obj(DemoApp10).Menu.MenuBarBkColor 
+      OCall [xbx].$Obj(DemoApp10).Menu::XMenu.SetMenuBarBkColor, [xbx].$Obj(DemoApp10).Menu.MenuBarBkColor
       invoke DrawMenuBar, [xbx].$Obj(DemoApp10).hWnd    ;Redraw the new menu bar
     .endif
 
