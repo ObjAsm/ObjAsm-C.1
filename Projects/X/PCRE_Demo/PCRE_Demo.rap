@@ -9,10 +9,10 @@ Debug=1
 [Files]
 1=PCRE_Demo.asm
 2=..\..\..\Code\Objects\RegExA.inc
-3=
+3=..\..\..\Code\Inc\PCRE\PCRE844S.inc
 4=..\..\..\Code\Objects\Stream.inc
 5=..\..\..\Code\Macros\System.inc
-6=..\..\..\Code\Inc\Windows\PCRE841S.inc
+6=
 7=..\..\..\Code\Macros\Model.inc
 8=
 9=..\..\..\Code\Objects\RegExW.inc
@@ -78,10 +78,10 @@ Menu=0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 Group=Added files,Assembly,Resources,Misc,Modules,Macros,Dialogs,Objects
 1=2
 2=8
-3=
+3=1
 4=8
 5=6
-6=1
+6=
 7=6
 8=
 9=8
@@ -108,25 +108,25 @@ Group=Added files,Assembly,Resources,Misc,Modules,Macros,Dialogs,Objects
 30=
 
 [Find]
-1="WIN32"
-2="page"
-3="probe"
-4="alloca_probe_16"
-5="_alloca_probe_16"
-6="proto "
-7="pcre_version"
-8="rdx"
-9="rbx"
-10="rax"
+1="{"
+2="["
+3="WIN32"
+4="page"
+5="probe"
+6="alloca_probe_16"
+7="_alloca_probe_16"
+8="proto "
+9="pcre_version"
+10="rdx"
 
 [Size]
 3=
 2=0,0,0,0,10570
-1=0,0,806,424,702
+1=0,0,806,424,1301
 4=0,0,0,0,8922
 5=0,0,0,0,81980
 7=0,0,0,0,7809
-6=0,0,0,0,0
+6=
 9=0,0,0,0,5640
 11=
 10=0,0,0,0,115
@@ -160,7 +160,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=26
+MilestoneOnDateDate=31
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=30
@@ -239,7 +239,7 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,10
 [PTimer]
-PTimer=1346992237
+PTimer=1347159409
 [RADebugBP]
 2=
 4=
