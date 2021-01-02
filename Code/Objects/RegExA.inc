@@ -11,6 +11,8 @@
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Object:     RegExA
 ; Purpose:    This object is a small wrapper around a Perl Compatible Regular Expression (PCRE).
+; Note:       Exec returns an array of PCRE_OUTDATA structures. The first contains the global
+;             match, while the rest contain the submatches.  
 
 Object RegExA, RegExAID, Streamable
   RedefineMethod    Done
@@ -71,8 +73,8 @@ MethodEnd
 ; Method:     RegExA.Exec
 ; Purpose:    Perform a search for a pattern match on the subject string.
 ; Arguments:  Arg1: -> Subject string.
-;             Arg2: character count.
-;             Arg3: start offset.
+;             Arg2: Character count.
+;             Arg3: Start offset in CHR.
 ;             Arg4: Options [PCRE_ANCHORED..PCRE_PARTIAL_HARD]
 ; Return:     eax < 0: Error code.
 ;             eax >= 0: Number of matches, otherwise error code.

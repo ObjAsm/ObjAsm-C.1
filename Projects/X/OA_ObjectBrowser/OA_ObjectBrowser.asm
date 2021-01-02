@@ -10,7 +10,7 @@
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc
-SysSetup OOP, WIN64, WIDE_STRING, DEBUG(WND)
+SysSetup OOP, WIN64, ANSI_STRING, DEBUG(WND)
 
 % includelib &LibPath&Windows\Kernel32.lib
 % includelib &LibPath&Windows\Shell32.lib
@@ -42,7 +42,7 @@ SysSetup OOP, WIN64, WIDE_STRING, DEBUG(WND)
 % include &IncPath&Windows\uxtheme.inc
 % include &IncPath&Windows\OleCtl.inc
 
-% include &IncPath&PCRE\PCRE841S.inc
+% include &IncPath&PCRE\PCRE844S.inc
 
 % include &MacPath&DlgTmpl.inc                          ;Include Dlg Template macros for XMenu
 % include &MacPath&SDLL.inc
@@ -108,6 +108,8 @@ MakeObjects WinApp, MdiApp
 MakeObjects COM_Primers, IDispatch
 MakeObjects OcxContainer, IDocHostUIHandler
 
+include OA_TextSource.inc
+include OA_ObjDB_Collections.inc
 include OA_ObjDB.inc
 include OA_InfoTree.inc
 include OA_TreeWindow.inc
@@ -118,7 +120,6 @@ start proc
   SysInit
 
   DbgClearAll
-  DbgStr xbx
 
   invoke OleInitialize, 0                               ;Internally invokes CoInitialize
   invoke InitCommonControls

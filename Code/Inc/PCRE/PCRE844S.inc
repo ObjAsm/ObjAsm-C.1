@@ -38,9 +38,9 @@
 ;The current PCRE version information.
 
 PCRE_MAJOR      equ   8
-PCRE_MINOR      equ   40
+PCRE_MINOR      equ   44
 PCRE_PRERELEASE equ
-PCRE_DATE       equ   2017-01-11
+PCRE_DATE       equ   2020-02-12
 
 
 ifndef defined
@@ -56,35 +56,35 @@ endif
 if defined(_WIN32) AND  0 eq defined(PCRE_STATIC)
   ifndef PCRE_EXP_DECL
   PCRE_EXP_DECL EQU <extern __declspec ( dllimport )>
-endif 
+endif
 
 ifdef __cplusplus
   ifndef PCRECPP_EXP_DECL
     PCRECPP_EXP_DECL EQU <extern __declspec ( dllimport )>
-  endif 
+  endif
   ifndef PCRECPP_EXP_DEFN
     PCRECPP_EXP_DEFN EQU <__declspec ( dllimport )>
-  endif 
-endif 
+  endif
+endif
 
-endif 
+endif
 
 ifndef PCRE_EXP_DECL
   ifdef __cplusplus
     PCRE_EXP_DECL EQU <extern "C">
-  else 
+  else
     PCRE_EXP_DECL EQU <extern>
-  endif 
-endif 
+  endif
+endif
 
 ifdef __cplusplus
   ifndef PCRECPP_EXP_DECL
     PCRECPP_EXP_DECL EQU <extern>
-  endif 
+  endif
   ifndef PCRECPP_EXP_DEFN
     PCRECPP_EXP_DEFN EQU <>
-  endif 
-endif 
+  endif
+endif
 
 ;Public options. Some are compile-time only, some are run-time only, and some
 ;are both. Most of the compile-time options are saved with the compiled regex so
@@ -115,163 +115,163 @@ endif
 ;from pcre_compile(). Those that are compatible with JIT execution are flagged
 ;with J.
 
-PCRE_CASELESS               equ     00000001h  ;C1
-PCRE_MULTILINE              equ     00000002h  ;C1
-PCRE_DOTALL                 equ     00000004h  ;C1
-PCRE_EXTENDED               equ     00000008h  ;C1
-PCRE_ANCHORED               equ     00000010h  ;C4 E D
-PCRE_DOLLAR_ENDONLY         equ     00000020h  ;C2
-PCRE_EXTRA                  equ     00000040h  ;C1
-PCRE_NOTBOL                 equ     00000080h  ;   E D J
-PCRE_NOTEOL                 equ     00000100h  ;   E D J
-PCRE_UNGREEDY               equ     00000200h  ;C1
-PCRE_NOTEMPTY               equ     00000400h  ;   E D J
-PCRE_UTF8                   equ     00000800h  ;C4        )
-PCRE_UTF16                  equ     00000800h  ;C4        ) Synonyms
-PCRE_UTF32                  equ     00000800h  ;C4        )
-PCRE_NO_AUTO_CAPTURE        equ     00001000h  ;C1
-PCRE_NO_UTF8_CHECK          equ     00002000h  ;C1 E D J  )
-PCRE_NO_UTF16_CHECK         equ     00002000h  ;C1 E D J  ) Synonyms
-PCRE_NO_UTF32_CHECK         equ     00002000h  ;C1 E D J  )
-PCRE_AUTO_CALLOUT           equ     00004000h  ;C1
-PCRE_PARTIAL_SOFT           equ     00008000h  ;   E D J  ) Synonyms
-PCRE_PARTIAL                equ     00008000h  ;   E D J  )
-                                    
-;This pair use the same bit.    
-PCRE_NEVER_UTF              equ     00010000h  ;C1        ) Overlaid
-PCRE_DFA_SHORTEST           equ     00010000h  ;     D    ) Overlaid
-                                    
-;This pair use the same bit.        
-PCRE_NO_AUTO_POSSESS        equ     00020000h  ;C1        ) Overlaid
-PCRE_DFA_RESTART            equ     00020000h  ;     D    ) Overlaid
-                                    
-PCRE_FIRSTLINE              equ     00040000h  ;C3
-PCRE_DUPNAMES               equ     00080000h  ;C1
-PCRE_NEWLINE_CR             equ     00100000h  ;C3 E D
-PCRE_NEWLINE_LF             equ     00200000h  ;C3 E D
-PCRE_NEWLINE_CRLF           equ     00300000h  ;C3 E D
-PCRE_NEWLINE_ANY            equ     00400000h  ;C3 E D
-PCRE_NEWLINE_ANYCRLF        equ     00500000h  ;C3 E D
-PCRE_BSR_ANYCRLF            equ     00800000h  ;C3 E D
-PCRE_BSR_UNICODE            equ     01000000h  ;C3 E D
-PCRE_JAVASCRIPT_COMPAT      equ     02000000h  ;C5
-PCRE_NO_START_OPTIMIZE      equ     04000000h  ;C2 E D    ) Synonyms
-PCRE_NO_START_OPTIMISE      equ     04000000h  ;C2 E D    )
-PCRE_PARTIAL_HARD           equ     08000000h  ;   E D J
-PCRE_NOTEMPTY_ATSTART       equ     10000000h  ;   E D J
-PCRE_UCP                    equ     20000000h  ;C3
+PCRE_CASELESS                 equ     00000001h  ;C1
+PCRE_MULTILINE                equ     00000002h  ;C1
+PCRE_DOTALL                   equ     00000004h  ;C1
+PCRE_EXTENDED                 equ     00000008h  ;C1
+PCRE_ANCHORED                 equ     00000010h  ;C4 E D
+PCRE_DOLLAR_ENDONLY           equ     00000020h  ;C2
+PCRE_EXTRA                    equ     00000040h  ;C1
+PCRE_NOTBOL                   equ     00000080h  ;   E D J
+PCRE_NOTEOL                   equ     00000100h  ;   E D J
+PCRE_UNGREEDY                 equ     00000200h  ;C1
+PCRE_NOTEMPTY                 equ     00000400h  ;   E D J
+PCRE_UTF8                     equ     00000800h  ;C4        )
+PCRE_UTF16                    equ     00000800h  ;C4        ) Synonyms
+PCRE_UTF32                    equ     00000800h  ;C4        )
+PCRE_NO_AUTO_CAPTURE          equ     00001000h  ;C1
+PCRE_NO_UTF8_CHECK            equ     00002000h  ;C1 E D J  )
+PCRE_NO_UTF16_CHECK           equ     00002000h  ;C1 E D J  ) Synonyms
+PCRE_NO_UTF32_CHECK           equ     00002000h  ;C1 E D J  )
+PCRE_AUTO_CALLOUT             equ     00004000h  ;C1
+PCRE_PARTIAL_SOFT             equ     00008000h  ;   E D J  ) Synonyms
+PCRE_PARTIAL                  equ     00008000h  ;   E D J  )
+
+;This pair use the same bit.
+PCRE_NEVER_UTF                equ     00010000h  ;C1        ) Overlaid
+PCRE_DFA_SHORTEST             equ     00010000h  ;     D    ) Overlaid
+
+;This pair use the same bit.
+PCRE_NO_AUTO_POSSESS          equ     00020000h  ;C1        ) Overlaid
+PCRE_DFA_RESTART              equ     00020000h  ;     D    ) Overlaid
+
+PCRE_FIRSTLINE                equ     00040000h  ;C3
+PCRE_DUPNAMES                 equ     00080000h  ;C1
+PCRE_NEWLINE_CR               equ     00100000h  ;C3 E D
+PCRE_NEWLINE_LF               equ     00200000h  ;C3 E D
+PCRE_NEWLINE_CRLF             equ     00300000h  ;C3 E D
+PCRE_NEWLINE_ANY              equ     00400000h  ;C3 E D
+PCRE_NEWLINE_ANYCRLF          equ     00500000h  ;C3 E D
+PCRE_BSR_ANYCRLF              equ     00800000h  ;C3 E D
+PCRE_BSR_UNICODE              equ     01000000h  ;C3 E D
+PCRE_JAVASCRIPT_COMPAT        equ     02000000h  ;C5
+PCRE_NO_START_OPTIMIZE        equ     04000000h  ;C2 E D    ) Synonyms
+PCRE_NO_START_OPTIMISE        equ     04000000h  ;C2 E D    )
+PCRE_PARTIAL_HARD             equ     08000000h  ;   E D J
+PCRE_NOTEMPTY_ATSTART         equ     10000000h  ;   E D J
+PCRE_UCP                      equ     20000000h  ;C3
 
 ;Exec-time and get/set-time error codes
 
-PCRE_ERROR_NOMATCH          equ      (-1)
-PCRE_ERROR_NULL             equ      (-2)
-PCRE_ERROR_BADOPTION        equ      (-3)
-PCRE_ERROR_BADMAGIC         equ      (-4)
-PCRE_ERROR_UNKNOWN_OPCODE   equ      (-5)
-PCRE_ERROR_UNKNOWN_NODE     equ      (-5)  ;For backward compatibility
-PCRE_ERROR_NOMEMORY         equ      (-6)
-PCRE_ERROR_NOSUBSTRING      equ      (-7)
-PCRE_ERROR_MATCHLIMIT       equ      (-8)
-PCRE_ERROR_CALLOUT          equ      (-9)  ;Never used by PCRE itself
-PCRE_ERROR_BADUTF8          equ     (-10)  ;Same for 8/16/32
-PCRE_ERROR_BADUTF16         equ     (-10)  ;Same for 8/16/32
-PCRE_ERROR_BADUTF32         equ     (-10)  ;Same for 8/16/32
-PCRE_ERROR_BADUTF8_OFFSET   equ     (-11)  ;Same for 8/16
-PCRE_ERROR_BADUTF16_OFFSET  equ     (-11)  ;Same for 8/16
-PCRE_ERROR_PARTIAL          equ     (-12)
-PCRE_ERROR_BADPARTIAL       equ     (-13)
-PCRE_ERROR_INTERNAL         equ     (-14)
-PCRE_ERROR_BADCOUNT         equ     (-15)
-PCRE_ERROR_DFA_UITEM        equ     (-16)
-PCRE_ERROR_DFA_UCOND        equ     (-17)
-PCRE_ERROR_DFA_UMLIMIT      equ     (-18)
-PCRE_ERROR_DFA_WSSIZE       equ     (-19)
-PCRE_ERROR_DFA_RECURSE      equ     (-20)
-PCRE_ERROR_RECURSIONLIMIT   equ     (-21)
-PCRE_ERROR_NULLWSLIMIT      equ     (-22)  ;No longer actually used
-PCRE_ERROR_BADNEWLINE       equ     (-23)
-PCRE_ERROR_BADOFFSET        equ     (-24)
-PCRE_ERROR_SHORTUTF8        equ     (-25)
-PCRE_ERROR_SHORTUTF16       equ     (-25)  ;Same for 8/16
-PCRE_ERROR_RECURSELOOP      equ     (-26)
-PCRE_ERROR_JIT_STACKLIMIT   equ     (-27)
-PCRE_ERROR_BADMODE          equ     (-28)
-PCRE_ERROR_BADENDIANNESS    equ     (-29)
-PCRE_ERROR_DFA_BADRESTART   equ     (-30)
-PCRE_ERROR_JIT_BADOPTION    equ     (-31)
-PCRE_ERROR_BADLENGTH        equ     (-32)
-PCRE_ERROR_UNSET            equ     (-33)
+PCRE_ERROR_NOMATCH            equ      (-1)
+PCRE_ERROR_NULL               equ      (-2)
+PCRE_ERROR_BADOPTION          equ      (-3)
+PCRE_ERROR_BADMAGIC           equ      (-4)
+PCRE_ERROR_UNKNOWN_OPCODE     equ      (-5)
+PCRE_ERROR_UNKNOWN_NODE       equ      (-5)  ;For backward compatibility
+PCRE_ERROR_NOMEMORY           equ      (-6)
+PCRE_ERROR_NOSUBSTRING        equ      (-7)
+PCRE_ERROR_MATCHLIMIT         equ      (-8)
+PCRE_ERROR_CALLOUT            equ      (-9)  ;Never used by PCRE itself
+PCRE_ERROR_BADUTF8            equ     (-10)  ;Same for 8/16/32
+PCRE_ERROR_BADUTF16           equ     (-10)  ;Same for 8/16/32
+PCRE_ERROR_BADUTF32           equ     (-10)  ;Same for 8/16/32
+PCRE_ERROR_BADUTF8_OFFSET     equ     (-11)  ;Same for 8/16
+PCRE_ERROR_BADUTF16_OFFSET    equ     (-11)  ;Same for 8/16
+PCRE_ERROR_PARTIAL            equ     (-12)
+PCRE_ERROR_BADPARTIAL         equ     (-13)
+PCRE_ERROR_INTERNAL           equ     (-14)
+PCRE_ERROR_BADCOUNT           equ     (-15)
+PCRE_ERROR_DFA_UITEM          equ     (-16)
+PCRE_ERROR_DFA_UCOND          equ     (-17)
+PCRE_ERROR_DFA_UMLIMIT        equ     (-18)
+PCRE_ERROR_DFA_WSSIZE         equ     (-19)
+PCRE_ERROR_DFA_RECURSE        equ     (-20)
+PCRE_ERROR_RECURSIONLIMIT     equ     (-21)
+PCRE_ERROR_NULLWSLIMIT        equ     (-22)  ;No longer actually used
+PCRE_ERROR_BADNEWLINE         equ     (-23)
+PCRE_ERROR_BADOFFSET          equ     (-24)
+PCRE_ERROR_SHORTUTF8          equ     (-25)
+PCRE_ERROR_SHORTUTF16         equ     (-25)  ;Same for 8/16
+PCRE_ERROR_RECURSELOOP        equ     (-26)
+PCRE_ERROR_JIT_STACKLIMIT     equ     (-27)
+PCRE_ERROR_BADMODE            equ     (-28)
+PCRE_ERROR_BADENDIANNESS      equ     (-29)
+PCRE_ERROR_DFA_BADRESTART     equ     (-30)
+PCRE_ERROR_JIT_BADOPTION      equ     (-31)
+PCRE_ERROR_BADLENGTH          equ     (-32)
+PCRE_ERROR_UNSET              equ     (-33)
 
 ;Specific error codes for UTF-8 validity checks
 
-PCRE_UTF8_ERR0              equ      0
-PCRE_UTF8_ERR1              equ      1
-PCRE_UTF8_ERR2              equ      2
-PCRE_UTF8_ERR3              equ      3
-PCRE_UTF8_ERR4              equ      4
-PCRE_UTF8_ERR5              equ      5
-PCRE_UTF8_ERR6              equ      6
-PCRE_UTF8_ERR7              equ      7
-PCRE_UTF8_ERR8              equ      8
-PCRE_UTF8_ERR9              equ      9
-PCRE_UTF8_ERR10             equ     10
-PCRE_UTF8_ERR11             equ     11
-PCRE_UTF8_ERR12             equ     12
-PCRE_UTF8_ERR13             equ     13
-PCRE_UTF8_ERR14             equ     14
-PCRE_UTF8_ERR15             equ     15
-PCRE_UTF8_ERR16             equ     16
-PCRE_UTF8_ERR17             equ     17
-PCRE_UTF8_ERR18             equ     18
-PCRE_UTF8_ERR19             equ     19
-PCRE_UTF8_ERR20             equ     20
-PCRE_UTF8_ERR21             equ     21
-PCRE_UTF8_ERR22             equ     22  ;Unused (was non-character)
+PCRE_UTF8_ERR0                equ      0
+PCRE_UTF8_ERR1                equ      1
+PCRE_UTF8_ERR2                equ      2
+PCRE_UTF8_ERR3                equ      3
+PCRE_UTF8_ERR4                equ      4
+PCRE_UTF8_ERR5                equ      5
+PCRE_UTF8_ERR6                equ      6
+PCRE_UTF8_ERR7                equ      7
+PCRE_UTF8_ERR8                equ      8
+PCRE_UTF8_ERR9                equ      9
+PCRE_UTF8_ERR10               equ     10
+PCRE_UTF8_ERR11               equ     11
+PCRE_UTF8_ERR12               equ     12
+PCRE_UTF8_ERR13               equ     13
+PCRE_UTF8_ERR14               equ     14
+PCRE_UTF8_ERR15               equ     15
+PCRE_UTF8_ERR16               equ     16
+PCRE_UTF8_ERR17               equ     17
+PCRE_UTF8_ERR18               equ     18
+PCRE_UTF8_ERR19               equ     19
+PCRE_UTF8_ERR20               equ     20
+PCRE_UTF8_ERR21               equ     21
+PCRE_UTF8_ERR22               equ     22  ;Unused (was non-character)
 
 ;Specific error codes for UTF-16 validity checks
 
-PCRE_UTF16_ERR0             equ      0
-PCRE_UTF16_ERR1             equ      1
-PCRE_UTF16_ERR2             equ      2
-PCRE_UTF16_ERR3             equ      3
-PCRE_UTF16_ERR4             equ      4  ;Unused (was non-character)
+PCRE_UTF16_ERR0               equ      0
+PCRE_UTF16_ERR1               equ      1
+PCRE_UTF16_ERR2               equ      2
+PCRE_UTF16_ERR3               equ      3
+PCRE_UTF16_ERR4               equ      4  ;Unused (was non-character)
 
 ;Specific error codes for UTF-32 validity checks
 
-PCRE_UTF32_ERR0             equ      0
-PCRE_UTF32_ERR1             equ      1
-PCRE_UTF32_ERR2             equ      2  ;Unused (was non-character)
-PCRE_UTF32_ERR3             equ      3
+PCRE_UTF32_ERR0               equ      0
+PCRE_UTF32_ERR1               equ      1
+PCRE_UTF32_ERR2               equ      2  ;Unused (was non-character)
+PCRE_UTF32_ERR3               equ      3
 
 ;Request types for pcre_fullinfo()
 
-PCRE_INFO_OPTIONS           equ      0
-PCRE_INFO_SIZE              equ      1
-PCRE_INFO_CAPTURECOUNT      equ      2
-PCRE_INFO_BACKREFMAX        equ      3
-PCRE_INFO_FIRSTBYTE         equ      4
-PCRE_INFO_FIRSTCHAR         equ      4  ;For backwards compatibility
-PCRE_INFO_FIRSTTABLE        equ      5
-PCRE_INFO_LASTLITERAL       equ      6
-PCRE_INFO_NAMEENTRYSIZE     equ      7
-PCRE_INFO_NAMECOUNT         equ      8
-PCRE_INFO_NAMETABLE         equ      9
-PCRE_INFO_STUDYSIZE         equ     10
-PCRE_INFO_DEFAULT_TABLES    equ     11
-PCRE_INFO_OKPARTIAL         equ     12
-PCRE_INFO_JCHANGED          equ     13
-PCRE_INFO_HASCRORLF         equ     14
-PCRE_INFO_MINLENGTH         equ     15
-PCRE_INFO_JIT               equ     16
-PCRE_INFO_JITSIZE           equ     17
-PCRE_INFO_MAXLOOKBEHIND     equ     18
-PCRE_INFO_FIRSTCHARACTER    equ     19
+PCRE_INFO_OPTIONS             equ      0
+PCRE_INFO_SIZE                equ      1
+PCRE_INFO_CAPTURECOUNT        equ      2
+PCRE_INFO_BACKREFMAX          equ      3
+PCRE_INFO_FIRSTBYTE           equ      4
+PCRE_INFO_FIRSTCHAR           equ      4  ;For backwards compatibility
+PCRE_INFO_FIRSTTABLE          equ      5
+PCRE_INFO_LASTLITERAL         equ      6
+PCRE_INFO_NAMEENTRYSIZE       equ      7
+PCRE_INFO_NAMECOUNT           equ      8
+PCRE_INFO_NAMETABLE           equ      9
+PCRE_INFO_STUDYSIZE           equ     10
+PCRE_INFO_DEFAULT_TABLES      equ     11
+PCRE_INFO_OKPARTIAL           equ     12
+PCRE_INFO_JCHANGED            equ     13
+PCRE_INFO_HASCRORLF           equ     14
+PCRE_INFO_MINLENGTH           equ     15
+PCRE_INFO_JIT                 equ     16
+PCRE_INFO_JITSIZE             equ     17
+PCRE_INFO_MAXLOOKBEHIND       equ     18
+PCRE_INFO_FIRSTCHARACTER      equ     19
 PCRE_INFO_FIRSTCHARACTERFLAGS equ   20
-PCRE_INFO_REQUIREDCHAR      equ     21
-PCRE_INFO_REQUIREDCHARFLAGS equ     22
-PCRE_INFO_MATCHLIMIT        equ     23
-PCRE_INFO_RECURSIONLIMIT    equ     24
-PCRE_INFO_MATCH_EMPTY       equ     25
+PCRE_INFO_REQUIREDCHAR        equ     21
+PCRE_INFO_REQUIREDCHARFLAGS   equ     22
+PCRE_INFO_MATCHLIMIT          equ     23
+PCRE_INFO_RECURSIONLIMIT      equ     24
+PCRE_INFO_MATCH_EMPTY         equ     25
 
 ;Request types for pcre_config(). Do not re-arrange, in order to remain
 ;compatible.
@@ -313,35 +313,35 @@ PCRE_EXTRA_EXECUTABLE_JIT             equ   0040h
 
 PCRE_UCHAR16  equ <WORD>
 PCRE_SPTR16   typedef ptr WORD
- 
+
 PCRE_UCHAR32  equ <DWORD>
 PCRE_SPTR32   typedef ptr DWORD
 
 PCRE_SPTR     typedef ptr BYTE
 
-pcre_extra struct 
-  flags                 DWORD   ?   ;Bits for which fields are set
-  study_data            POINTER ?   ;Opaque data from pcre_study()
-  match_limit           DWORD   ?   ;Maximum number of calls to match()
-  callout_data          POINTER ?   ;Data passed back in callouts
-  tables                POINTER ?   ;Pointer to character tables
-  match_limit_recursion DWORD   ?   ;Max recursive calls to match()
-  mark                  POINTER ?   ;For passing back a mark pointer
-  executable_jit        POINTER ?   ;Contains a pointer to a compiled jit code
+pcre_extra struct
+  flags                 DWORD   ?       ;Bits for which fields are set
+  study_data            POINTER ?       ;Opaque data from pcre_study()
+  match_limit           DWORD   ?       ;Maximum number of calls to match()
+  callout_data          POINTER ?       ;Data passed back in callouts
+  tables                POINTER ?       ;Pointer to character tables
+  match_limit_recursion DWORD   ?       ;Max recursive calls to match()
+  mark                  POINTER ?       ;For passing back a mark pointer
+  executable_jit        POINTER ?       ;Contains a pointer to a compiled jit code
 pcre_extra ends
 
-pcre16_extra struct 
-  flags                 DWORD   ?   ;Bits for which fields are set
-  study_data            POINTER ?   ;Opaque data from pcre_study()
-  match_limit           DWORD   ?   ;Maximum number of calls to match()
-  callout_data          POINTER ?   ;Data passed back in callouts
-  tables                POINTER ?   ;Pointer to character tables
-  match_limit_recursion DWORD   ?   ;Max recursive calls to match()
-  mark                  POINTER ?   ;For passing back a mark pointer
-  executable_jit        POINTER ?   ;Contains a pointer to a compiled jit code
+pcre16_extra struct
+  flags                 DWORD   ?       ;Bits for which fields are set
+  study_data            POINTER ?       ;Opaque data from pcre_study()
+  match_limit           DWORD   ?       ;Maximum number of calls to match()
+  callout_data          POINTER ?       ;Data passed back in callouts
+  tables                POINTER ?       ;Pointer to character tables
+  match_limit_recursion DWORD   ?       ;Max recursive calls to match()
+  mark                  POINTER ?       ;For passing back a mark pointer
+  executable_jit        POINTER ?       ;Contains a pointer to a compiled jit code
 pcre16_extra ends
 
-pcre32_extra struct 
+pcre32_extra struct
   flags                 DWORD   ?       ;Bits for which fields are set
   study_data            POINTER ?       ;Opaque data from pcre_study()
   match_limit           DWORD   ?       ;Maximum number of calls to match()
@@ -352,7 +352,7 @@ pcre32_extra struct
   executable_jit        POINTER ?       ;Contains a pointer to a compiled jit code
 pcre32_extra ends
 
-pcre_callout_block struct 
+pcre_callout_block struct
   version               POINTER ?       ;Identifies version of block
   ;------------------------ Version 0 -------------------------------
   callout_number        DWORD   ?       ;Number compiled into pattern
@@ -371,7 +371,7 @@ pcre_callout_block struct
   mark                  POINTER ?       ;Pointer to current mark or NULL
 pcre_callout_block ends
 
-pcre16_callout_block struct 
+pcre16_callout_block struct
   version               POINTER ?       ;Identifies version of block
   ;------------------------ Version 0 -------------------------------
   callout_number        DWORD   ?       ;Number compiled into pattern
@@ -390,7 +390,7 @@ pcre16_callout_block struct
   mark                  POINTER ?       ;Pointer to current mark or NULL
 pcre16_callout_block ends
 
-pcre32_callout_block struct 
+pcre32_callout_block struct
   version               POINTER ?       ;Identifies version of block
   ;------------------------ Version 0 -------------------------------
   callout_number        DWORD   ?       ;Number compiled into pattern
@@ -410,8 +410,8 @@ pcre32_callout_block struct
 pcre32_callout_block ends
 
 PCRE_OUTDATA struc
-  dBegIndex  DWORD   ?      ;Zero based index where the substring begins
-  dEndIndex  DWORD   ?      ;Zero based index where the substring ends
+  dBegIndex  DWORD   ?      ;Zero based CHR index where the substring begins
+  dEndIndex  DWORD   ?      ;Zero based CHR index where the substring ends
 PCRE_OUTDATA ends
 
 
@@ -460,12 +460,12 @@ externdef pcre32_callout:ptr pcre32_callout_type
 pcre32_stack_guard_type typedef proto
 externdef pcre32_stack_guard:ptr pcre32_stack_guard_type
 
- 
-proto_pcre_jit_callback typedef proto  :ptr 
+
+proto_pcre_jit_callback typedef proto  :ptr
 pcre_jit_callback typedef ptr proto_pcre_jit_callback
-proto_pcre16_jit_callback typedef proto  :ptr 
+proto_pcre16_jit_callback typedef proto  :ptr
 pcre16_jit_callback typedef ptr proto_pcre16_jit_callback
-proto_pcre32_jit_callback typedef proto  :ptr 
+proto_pcre32_jit_callback typedef proto  :ptr
 pcre32_jit_callback typedef ptr proto_pcre32_jit_callback
 
 pcre_compile proto  :ptr SBYTE, :DWORD, :ptr ptr SBYTE, :ptr DWORD, :ptr BYTE
@@ -474,9 +474,9 @@ pcre32_compile proto  :PCRE_SPTR32, :DWORD, :ptr ptr SBYTE, :ptr DWORD, :ptr BYT
 pcre_compile2 proto  :ptr SBYTE, :DWORD, :ptr DWORD, :ptr ptr SBYTE, :ptr DWORD, :ptr BYTE
 pcre16_compile2 proto  :PCRE_SPTR16, :DWORD, :ptr DWORD, :ptr ptr SBYTE, :ptr DWORD, :ptr BYTE
 pcre32_compile2 proto  :PCRE_SPTR32, :DWORD, :ptr DWORD, :ptr ptr SBYTE, :ptr DWORD, :ptr BYTE
-pcre_config proto  :DWORD, :ptr 
-pcre16_config proto  :DWORD, :ptr 
-pcre32_config proto  :DWORD, :ptr 
+pcre_config proto  :DWORD, :ptr
+pcre16_config proto  :DWORD, :ptr
+pcre32_config proto  :DWORD, :ptr
 pcre_copy_named_substring proto  :ptr pcre, :ptr SBYTE, :ptr DWORD, :DWORD, :ptr SBYTE, :ptr SBYTE, :DWORD
 pcre16_copy_named_substring proto  :ptr pcre16, :PCRE_SPTR16, :ptr DWORD, :DWORD, :PCRE_SPTR16, :ptr PCRE_UCHAR16, :DWORD
 pcre32_copy_named_substring proto  :ptr pcre32, :PCRE_SPTR32, :ptr DWORD, :DWORD, :PCRE_SPTR32, :ptr PCRE_UCHAR32, :DWORD
@@ -498,9 +498,9 @@ pcre32_free_substring proto  :PCRE_SPTR32
 pcre_free_substring_list proto  :ptr ptr SBYTE
 pcre16_free_substring_list proto  :ptr PCRE_SPTR16
 pcre32_free_substring_list proto  :ptr PCRE_SPTR32
-pcre_fullinfo proto  :ptr pcre, :ptr pcre_extra, :DWORD, :ptr 
-pcre16_fullinfo proto  :ptr pcre16, :ptr pcre16_extra, :DWORD, :ptr 
-pcre32_fullinfo proto  :ptr pcre32, :ptr pcre32_extra, :DWORD, :ptr 
+pcre_fullinfo proto  :ptr pcre, :ptr pcre_extra, :DWORD, :ptr
+pcre16_fullinfo proto  :ptr pcre16, :ptr pcre16_extra, :DWORD, :ptr
+pcre32_fullinfo proto  :ptr pcre32, :ptr pcre32_extra, :DWORD, :ptr
 pcre_get_named_substring proto  :ptr pcre, :ptr SBYTE, :ptr DWORD, :DWORD, :ptr SBYTE, :ptr ptr SBYTE
 pcre16_get_named_substring proto  :ptr pcre16, :PCRE_SPTR16, :ptr DWORD, :DWORD, :PCRE_SPTR16, :ptr PCRE_SPTR16
 pcre32_get_named_substring proto  :ptr pcre32, :PCRE_SPTR32, :ptr DWORD, :DWORD, :PCRE_SPTR32, :ptr PCRE_SPTR32
@@ -516,9 +516,9 @@ pcre32_get_substring proto  :PCRE_SPTR32, :ptr DWORD, :DWORD, :DWORD, :ptr PCRE_
 pcre_get_substring_list proto  :ptr SBYTE, :ptr DWORD, :DWORD, :ptr ptr ptr SBYTE
 pcre16_get_substring_list proto  :PCRE_SPTR16, :ptr DWORD, :DWORD, :ptr ptr PCRE_SPTR16
 pcre32_get_substring_list proto  :PCRE_SPTR32, :ptr DWORD, :DWORD, :ptr ptr PCRE_SPTR32
-pcre_maketables proto  
-pcre16_maketables proto  
-pcre32_maketables proto  
+pcre_maketables proto
+pcre16_maketables proto
+pcre32_maketables proto
 pcre_refcount proto  :ptr pcre, :DWORD
 pcre16_refcount proto  :ptr pcre16, :DWORD
 pcre32_refcount proto  :ptr pcre32, :DWORD
@@ -528,9 +528,9 @@ pcre32_study proto  :ptr pcre32, :DWORD, :ptr ptr SBYTE
 pcre_free_study proto  :ptr pcre_extra
 pcre16_free_study proto  :ptr pcre16_extra
 pcre32_free_study proto  :ptr pcre32_extra
-pcre_version proto  
-pcre16_version proto  
-pcre32_version proto  
+pcre_version proto
+pcre16_version proto
+pcre32_version proto
 pcre_pattern_to_host_byte_order proto  :ptr pcre, :ptr pcre_extra, :ptr BYTE
 pcre16_pattern_to_host_byte_order proto  :ptr pcre16, :ptr pcre16_extra, :ptr BYTE
 pcre32_pattern_to_host_byte_order proto  :ptr pcre32, :ptr pcre32_extra, :ptr BYTE
@@ -542,11 +542,11 @@ pcre32_jit_stack_alloc proto  :DWORD, :DWORD
 pcre_jit_stack_free proto  :ptr pcre_jit_stack
 pcre16_jit_stack_free proto  :ptr pcre16_jit_stack
 pcre32_jit_stack_free proto  :ptr pcre32_jit_stack
-pcre_assign_jit_stack proto  :ptr pcre_extra, :pcre_jit_callback, :ptr 
-pcre16_assign_jit_stack proto  :ptr pcre16_extra, :pcre16_jit_callback, :ptr 
-pcre32_assign_jit_stack proto  :ptr pcre32_extra, :pcre32_jit_callback, :ptr 
-pcre_jit_free_unused_memory proto  
-pcre16_jit_free_unused_memory proto  
-pcre32_jit_free_unused_memory proto  
+pcre_assign_jit_stack proto  :ptr pcre_extra, :pcre_jit_callback, :ptr
+pcre16_assign_jit_stack proto  :ptr pcre16_extra, :pcre16_jit_callback, :ptr
+pcre32_assign_jit_stack proto  :ptr pcre32_extra, :pcre32_jit_callback, :ptr
+pcre_jit_free_unused_memory proto
+pcre16_jit_free_unused_memory proto
+pcre32_jit_free_unused_memory proto
 
 

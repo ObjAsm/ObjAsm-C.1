@@ -1,13 +1,16 @@
 ; ==================================================================================================
 ; Title:      RegEx.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Purpose:    ObjAsm support of RegEx objects.
 ; Link:       http://www.pcre.org
+;             https://www.pcre.org/original/doc/html/
+;             https://learnxinyminutes.com/docs/pcre/
+;             https://en.wikipedia.org/wiki/Regular_expression
 ; Notes:      Requires the following code in the main asm file:
 ;
-;               % include &IncPath&Windows\PCRE841S.inc
-;               % includelib &LibPath&Windows\PCRE841S.lib
+;               % include &IncPath&Windows\PCRE844S.inc
+;               % includelib &LibPath&Windows\PCRE844S.lib
 ;               % includelib &LibPath&Windows\MSVCRT.lib
 ;               % includelib &LibPath&Windows\UUID.lib
 ;
@@ -15,13 +18,15 @@
 ;                   ret
 ;               _chkstk endp
 ;
-;             This PCRE version (8.41) was compiled as a static library using VS 2017. It uses the
-;             msvcrt provided memory management. The used calling convention is __fastcall.
+;             This PCRE version (8.44) was compiled as a static library using VS 2019. It uses the
+;             msvcrt provided memory management. The used calling convention is __stdcall.
 ;             In the "config.h" the followinf switches were set:
 ;                 HAVE_SYS_STAT_H, HAVE_SYS_TYPES_H, HAVE_WINDOWS_H, HAVE_STDINT_H, HAVE_INTTYPES_H,
 ;                 HAVE_STRERROR, HAVE_STRTOLL, HAVE__STRTOI64, SUPPORT_PCRE8, SUPPORT_PCRE16,
 ;                 SUPPORT_JIT, SUPPORT_UTF, SUPPORT_UCP, HAVE_LONG_LONG, HAVE_UNSIGNED_LONG_LONG
 ;
+;             Version C.1.1, December 2020
+;               - Updated to version 8.44
 ;             Version C.1.0, October 2017
 ;               - First release.
 ; ==================================================================================================
@@ -71,8 +76,12 @@
 ; Character class shortcuts:
 ; \d    [0-9] A digit
 ; \D    [^0-9] A non-digit
+; \h    any horizontal white space character.
+; \H    any character that is not a horizontal white space character.
 ; \s    [ \t\n\r\f] A whitespace char.
 ; \S    [^ \t\n\r\f] A non-whitespace char.
+; \v     any vertical white space character.
+; \V     any character that is not a vertical white space character.
 ; \w    [a-zA-Z0-9_] A ‘word’ char.
 ; \W    [^a-zA-Z0-9_] A ‘non-word’ char.
 ; These shortcuts can be used either on their own, or within a character class.

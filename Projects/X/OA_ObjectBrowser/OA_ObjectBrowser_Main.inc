@@ -534,7 +534,7 @@ Method IWebBrowserEvents2.Invoke, uses xbx xsi, dMethodID:DWORD, pIID:REFIID, dL
 
     ;Call the method according to its type
     movzx ecx, [xbx].??EVENT_ENTRY.wType                ;ecx = Method type
-    lea xdx, @@IWebBrowserEvents2_SiteDispatch_JumpTable 
+    lea xdx, @@IWebBrowserEvents2_SiteDispatch_JumpTable
     jmp POINTER ptr [xdx + sizeof(POINTER)*xcx]
 
 @@IWebBrowserEvents2_SiteDispatch_Static:
@@ -1248,7 +1248,7 @@ Method ObjectBrowser.Init, uses xbx xdi xsi
   FillString [xax], <\OA_ObjectBrowser.ini>
 
   OCall [xsi].SetupFile::IniFile.Init, xsi, xbx
-  
+
   OCall [xsi].SetupFile::IniFile.GetString, offset cSetup, offset cViewer, offset cDefViewer
   mov [xsi].pViewerApp, xax
   OCall [xsi].SetupFile::IniFile.GetDWord, offset cSetup, offset cLanguage, IDLANG_ENGLISH
@@ -1257,9 +1257,6 @@ Method ObjectBrowser.Init, uses xbx xdi xsi
   mov [xsi].dShowRedefMtds, eax
   OCall [xsi].SetupFile::IniFile.GetDWord, offset cSetup, offset cShowRedefVars, BST_CHECKED
   mov [xsi].dShowRedefVars, eax
-
-  m2m [xsi].pObjDB, offset $ObjTmpl(OA_ObjDB), xax
-  OCall [xsi].pObjDB::OA_ObjDB.Init, xsi, addr [xsi].SetupFile 
 
   ;Extract some files from the resource section to the user temp folder
   lea xdi, cBuffer
@@ -1350,10 +1347,13 @@ Method ObjectBrowser.Init, uses xbx xdi xsi
 
   OCall xsi.EnableActions                               ;Disable toolbar buttons
 
-  OCall xsi.Refresh, REFRESH_ALL                        ;Load Object information from .stm file
-
   invoke ShowWindow, [xsi].hWnd, SW_SHOW
   invoke UpdateWindow, [xsi].hWnd
+
+  m2m [xsi].pObjDB, offset $ObjTmpl(OA_ObjDB), xax
+  OCall [xsi].pObjDB::OA_ObjDB.Init, xsi, addr [xsi].SetupFile
+
+  OCall xsi.Refresh, REFRESH_ALL                        ;Load Object information from .stm file --> other thread
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -1447,7 +1447,7 @@ ChildSearch proc uses xbx hWnd:HANDLE, lParam:LPARAM
       .endif
     .endif
   .else
-    mov eax, TRUE                                     ;Continue enumeration
+    mov eax, TRUE                                       ;Continue enumeration
   .endif
   ret
 ChildSearch endp
@@ -1467,7 +1467,7 @@ Method ObjectBrowser.OnCommand, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   mov xax, wParam
   mov xbx, [xsi].pClientWnd
 
-  .if ax == IDM_OPEN_INT_PROP_WND                 ;Create a child window
+  .if ax == IDM_OPEN_INT_PROP_WND                       ;Create a child window
     mov xcx, lParam
     m2m PTI.pCaption, [xcx].INFORMATION.pName, xax
     mov PTI.pChild, NULL
@@ -1483,7 +1483,7 @@ Method ObjectBrowser.OnCommand, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
     .endif
     xor eax, eax
 
-  .elseif ax == IDM_OPEN_OBJ_PROP_WND             ;Create a child window
+  .elseif ax == IDM_OPEN_OBJ_PROP_WND                   ;Create a child window
     mov xcx, lParam
     m2m PTI.pCaption, [xcx].INFORMATION.pName, xax
     mov PTI.pChild, NULL
@@ -1553,17 +1553,17 @@ Method ObjectBrowser.OnCommand, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
     OCall AboutDialog::DialogAbout.Done
     xor eax, eax
 
-  .elseif (ax == IDM_WIND_CLOSE) || (ax == SC_CLOSE)  ;Close the active window
+  .elseif (ax == IDM_WIND_CLOSE) || (ax == SC_CLOSE)    ;Close the active window
     invoke SendMessage, [xbx].$Obj(ClientWnd).hWnd, WM_MDIGETACTIVE, 0, 0
     invoke SendMessage, xax, WM_CLOSE, 0, 0
     xor eax, eax
 
-  .elseif ax == SC_RESTORE                            ;Restore the active window
+  .elseif ax == SC_RESTORE                              ;Restore the active window
     invoke SendMessage, [xbx].$Obj(ClientWnd).hWnd, WM_MDIGETACTIVE, 0, 0
     invoke SendMessage, [xbx].$Obj(ClientWnd).hWnd, WM_MDIRESTORE, eax, 0
     xor eax, eax
 
-  .elseif ax == SC_MINIMIZE                           ;Minimize the active window
+  .elseif ax == SC_MINIMIZE                             ;Minimize the active window
     invoke SendMessage, [xbx].$Obj(ClientWnd).hWnd, WM_MDIGETACTIVE, 0, 0
     invoke ShowWindow, xax, SW_MINIMIZE
     xor eax, eax
@@ -1827,9 +1827,11 @@ CloseEnumProc endp
 ; Procedure:  ResetInfoFlags
 ; Purpose:    Resets the info flags INF_INVALID + INF_INTREE in a INFORMATION structure.
 ; Arguments:  Arg1: -> INFORMATION.
+;             Arg2: Dummy.
+;             Arg3: Dummy.
 ; Return:     Nothing.
 
-ResetInfoFlags proc pInfo:PINFORMATION
+ResetInfoFlags proc pInfo:PINFORMATION, xArg1:XWORD, xArg2:XWORD
   mov xcx, pInfo
   BitClr [xcx].INFORMATION.dFlags, (INF_INVALID or INF_INTREE)
   ret
@@ -1881,9 +1883,10 @@ AddObjectBranch endp
 ; Purpose:    Auxiliary procedure used by ObjectBrowser.Refresh.
 ; Arguments:  Arg1: -> OBJECTINFORMATION.
 ;             Arg2: -> ObjectBrowser.
+;             Arg3: Dummy.
 ; Return:     Nothing.
 
-AddBrokenObjects proc uses xbx xdi xsi pInfo:POBJECTINFORMATION, pSelf:$ObjPtr(ObjectBrowser)
+AddBrokenObjects proc uses xbx xdi xsi pInfo:POBJECTINFORMATION, pSelf:$ObjPtr(ObjectBrowser), xDummy:XWORD
   SetObject xsi, ObjectBrowser, pSelf
   mov xax, pInfo
   .ifBitClr [xax].OBJECTINFORMATION.dFlags, INF_INTREE
@@ -1951,9 +1954,10 @@ AddInterfaceBranch endp
 ; Purpose:    Auxiliary procedure used by ObjectBrowser.Refresh.
 ; Arguments:  Arg1: -> INTERFACEINFORMATION.
 ;             Arg2: -> ObjectBrowser.
+;             Arg3: Dummy.
 ; Return:     Nothing.
 
-AddBrokenInterfaces proc uses xbx xdi xsi pInfo:PINTERFACEINFORMATION, pSelf:$ObjPtr(ObjectBrowser)
+AddBrokenInterfaces proc uses xbx xdi xsi pInfo:PINTERFACEINFORMATION, pSelf:$ObjPtr(ObjectBrowser), xDummy:XWORD
   SetObject xsi, ObjectBrowser, pSelf
   mov xax, pInfo
   .ifBitClr [xax].INTERFACEINFORMATION.dFlags, INF_INTREE
@@ -2027,7 +2031,6 @@ Method ObjectBrowser.Refresh, uses xbx xsi, dFlags:DWORD
     OCall [xsi].TreeWnd.Tree::InfoTree.Reset
 
     mov xbx, [xsi].pObjDB
-    ;Grab all pointers from Addin
     ;Load data from .stm file
     OCall [xbx].$Obj(OA_ObjDB)::OA_ObjDB.ScanDBFiles
 
@@ -2253,9 +2256,10 @@ EmitHtmlText endp
 ; Purpose:    Used with Collection.LastThatNot to reset the MDT_FINAL flag.
 ; Arguments:  Arg1: -> Iterated MEMBERDATA.
 ;             Arg2: -> Source MEMBERDATA.
+;             Arg3: Dummy.
 ; Return:     eax = Zero stops the iteration.
 
-FindFinalMember proc pMemberData:PMEMBERDATA, pSrcData:PMEMBERDATA
+FindFinalMember proc pMemberData:PMEMBERDATA, pSrcData:PMEMBERDATA, xDummy:XWORD
   mov xax, pMemberData
   mov xdx, [xax].MEMBERDATA.pMemberInfo
   mov xcx, pSrcData
@@ -2326,7 +2330,7 @@ MethodEnd
 
 Method PropWnd.Init, uses xbx xdi xsi, pOwner:$ObjPtr(ClientWnd), pWndClassName:PSTRING, \
                                        pInfo:PINFORMATION
-  local Rect:RECT, cTempPath[MAX_PATH]:CHR, dIsMaximized:DWORD 
+  local Rect:RECT, cTempPath[MAX_PATH]:CHR, dIsMaximized:DWORD
 
   SetObject xsi
   ACall xsi.Init, pOwner, NULL                          ;hWnd is set in WndProc
@@ -2359,7 +2363,7 @@ Method PropWnd.Init, uses xbx xdi xsi, pOwner:$ObjPtr(ClientWnd), pWndClassName:
 
   mov xdi, pOwner
   inc [xdi].$Obj(ClientWnd).dChildCount
-  invoke SendMessage, [xdi].$Obj(ClientWnd).hWnd, WM_MDIGETACTIVE, 0, addr dIsMaximized 
+  invoke SendMessage, [xdi].$Obj(ClientWnd).hWnd, WM_MDIGETACTIVE, 0, addr dIsMaximized
   .if xax != 0 && dIsMaximized == FALSE     ;xax = MDI Child HWND
     xor ebx, ebx
   .else
@@ -2588,9 +2592,10 @@ MethodEnd
 ; Purpose:    Emits HTML codes to render interface method member information.
 ; Arguments:  Arg1: -> MEMBERDATA.
 ;             Arg2: -> IntPropWnd.
+;             Arg3: Dummy.
 ; Return:     Nothing.
 
-ShowIntMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(IntPropWnd)
+ShowIntMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(IntPropWnd), xDummy:XWORD
   local dBytesWritten:DWORD, cBuffer[20]:CHR, hHtmlFile:HANDLE
 
   SetObject xsi, IntPropWnd
@@ -3026,9 +3031,10 @@ MatchObjectImpMethod endp
 ; Purpose:    Emits HTML codes to render object method member information.
 ; Arguments:  Arg1: -> MEMBERDATA.
 ;             Arg2: -> ObjPropWnd.
+;             Arg3: Dummy.
 ; Return:     Nothing.
 
-ShowObjMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropWnd)
+ShowObjMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropWnd), xDummy:XWORD
   local dBytesWritten:DWORD, cBuffer[20]:CHR, hHtmlFile:HANDLE, pText:POINTER
   local pImpMtdInfo:PIMPMTDINFORMATION
 
@@ -3227,9 +3233,10 @@ ShowObjMtd endp
 ; Purpose:    Emits HTML codes to render variable member information.
 ; Arguments:  Arg1: -> MEMBERDATA.
 ;             Arg2: -> ObjPropWnd.
+;             Arg3: Dummy.
 ; Return:     Nothing.
 
-ShowObjVar proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropWnd)
+ShowObjVar proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropWnd), xDummy:XWORD
   local dBytesWritten:DWORD, hHtmlFile:HANDLE, pText:POINTER
   local dLength:DWORD, dLength1:DWORD, dLength2:DWORD
   local cBuffer1[1024]:CHR, cBuffer2[1024]:CHR, cHexBuffer[12]:CHR
@@ -3563,7 +3570,7 @@ MethodEnd
 ;             Arg3: -> ObjPropWnd.
 ; Return:     Nothing.
 
-GatherObjMtds proc uses xbx xdi xsi pObjMtdInfo:POBJMTDINFORMATION, pObjName:POINTER, pSelf:$ObjPtr(ObjPropWnd)
+GatherObjMtds proc uses xbx xdi xsi pObjMtdInfo:POBJMTDINFORMATION, pObjName:PSTRING, pSelf:$ObjPtr(ObjPropWnd)
   SetObject xsi, ObjPropWnd
   mov xbx, pObjMtdInfo
   .if $invoke(StrComp, [xbx].OBJMTDINFORMATION.pObjectName, pObjName) == 0
@@ -3622,7 +3629,7 @@ MethodEnd
 ;             Arg3: -> ObjPropWnd.
 ; Return:     Nothing.
 
-GatherObjVars proc uses xbx xdi xsi pObjVarInfo:POBJVARINFORMATION, pObjName:POINTER, pSelf:$ObjPtr(ObjPropWnd)
+GatherObjVars proc uses xbx xdi xsi pObjVarInfo:POBJVARINFORMATION, pObjName:PSTRING, pSelf:$ObjPtr(ObjPropWnd)
   SetObject xsi, ObjPropWnd
   mov xbx, pObjVarInfo
   .if $invoke(StrComp, [xbx].OBJVARINFORMATION.pObjectName, pObjName) == 0

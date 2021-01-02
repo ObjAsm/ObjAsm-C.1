@@ -1,36 +1,116 @@
-# Sources
-*.c     text diff=c
-*.cc    text diff=cpp
-*.cxx   text diff=cpp
-*.cpp   text diff=cpp
-*.c++   text diff=cpp
-*.hpp   text diff=cpp
-*.h     text diff=c
-*.h++   text diff=cpp
-*.hh    text diff=cpp
+# Source files
+*.asm       text diff=astextplain
+*.inc       text diff=astextplain
+*.cop       text diff=astextplain
+*.api       text diff=astextplain
+*.ini       text diff=astextplain
+*.rap       text diff=astextplain
+*.txt       text diff=astextplain
+*.c         text diff=c
+*.cpp       text diff=cpp
+*.h         text diff=c
+*.md        text
 
-# Compiled Object files
-*.slo   binary
-*.lo    binary
-*.o     binary
-*.obj   binary
-
-# Precompiled Headers
-*.gch   binary
-*.pch   binary
-
-# Compiled Dynamic libraries
-*.so    binary
-*.dylib binary
-*.dll   binary
-
-# Compiled Static libraries
-*.lai   binary
-*.la    binary
-*.a     binary
-*.lib   binary
+# Compiled files
+*.obj       binary
+*.rc        binary
+*.lib       binary
 
 # Executables
-*.exe   binary
-*.out   binary
-*.app   binary
+*.exe       binary
+*.dll       binary
+
+# Raw data storage files
+*.data      binary
+*.ctx       binary
+*.stm       binary
+*.bml       binary
+*.tlb       binary
+*.idl       binary
+*.url       binary
+*.dlg       binary
+*.x         binary
+
+# Documents
+*.pdf       binary
+*.json      text
+*.xml       text
+*.xls       binary
+*.xlsx      binary
+*.doc       binary
+*.docx      binary
+*.swf       binary
+
+# Scripts
+*.vbs       text eol=crlf diff=astextplain
+*.bash      text eol=lf
+*.fish      text eol=lf
+*.sh        text eol=lf
+# These are explicitly windows files and should use crlf
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+*.ps1       text eol=crlf
+
+# Graphic files
+*.ani       binary
+*.avi       binary
+*.bmp       binary
+*.cur       binary
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.tif       binary
+*.tiff      binary
+*.ico       binary
+*.svg       binary
+*.eps       binary
+
+# Sound files
+*.wav       binary
+
+# Visual Studio files
+*.sln       text eol=crlf
+*.csproj    text eol=crlf
+*.vbproj    text eol=crlf
+*.vcxproj   text eol=crlf
+*.vcproj    text eol=crlf
+*.dbproj    text eol=crlf
+*.fsproj    text eol=crlf
+*.lsproj    text eol=crlf
+*.wixproj   text eol=crlf
+*.modelproj text eol=crlf
+*.sqlproj   text eol=crlf
+*.wwaproj   text eol=crlf
+
+*.xproj     text eol=crlf
+*.props     text eol=crlf
+*.filters   text eol=crlf
+*.vcxitems  text eol=crlf
+
+# Serialisation files
+*.json      text
+*.toml      text
+*.xml       text
+*.yaml      text
+*.yml       text
+
+# Archive files
+*.7z        binary
+*.gz        binary
+*.tar       binary
+*.tgz       binary
+*.zip       binary
+*.rar       binary
+
+# Database files
+*.db        binary
+*.dbf       binary
+
+# Text files where line endings should be preserved
+*.patch     -text
+
+# Exclude files from exporting
+#.gitattributes export-ignore
+.gitignore  export-ignore
+.gitkeep    export-ignore
