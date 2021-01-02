@@ -967,12 +967,6 @@ else
   echo Warning: incompatible TARGET_STR_TYPE
 endif
 
-GFL_DATA struc
-  dFileOffset   DWORD   ?
-  dLineLength   DWORD   ?
-GFL_DATA ends
-PGFL_DATA typedef ptr GFL_DATA
-
 GetFileLinesW             proto :HANDLE
 GetFileLinesA             proto :HANDLE
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
