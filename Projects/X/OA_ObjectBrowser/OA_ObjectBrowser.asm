@@ -10,7 +10,7 @@
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc
-SysSetup OOP, WIN64, ANSI_STRING, DEBUG(WND)
+SysSetup OOP, WIN64, ANSI_STRING;, DEBUG(WND)
 
 % includelib &LibPath&Windows\Kernel32.lib
 % includelib &LibPath&Windows\Shell32.lib
@@ -115,6 +115,7 @@ include OA_InfoTree.inc
 include OA_TreeWindow.inc
 include OA_ObjectBrowser_Globals.inc
 include OA_ObjectBrowser_Main.inc
+
 
 start proc
   SysInit

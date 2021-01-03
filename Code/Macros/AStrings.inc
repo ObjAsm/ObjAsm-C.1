@@ -13,7 +13,8 @@
 ;             (X = J) code segment returning a reference to it if the "$" prefix was used.
 ; $Ofs(X)Str: Same as ($C/$T/$D/$J)Str, but returns the string offset.
 ;
-; The LengthOf directive returns the number of characters in the string, NOT including the ZTC!
+; Note: The LengthOf and SizeOf directives return the number of characters in the string, 
+;       NOT including the ZTC!
 ; ==================================================================================================
 
 

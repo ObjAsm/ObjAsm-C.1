@@ -19,16 +19,16 @@ include OA_ObjectBrowser_Shared.inc
                           <  -  Build: >, %BUILD_NUMBER, <->, %ASSEMBLER, <->, \
                           %TARGET_MODE_STR, <->, %TARGET_BITNESS, <!">)
 
-INF_PRJ         equ   BIT00             ;This Info belongs to the current project
-INF_INVALID     equ   BIT01             ;This is an info about an invalid object or interface
-INF_INTREE      equ   BIT02             ;This Info is loaded into the tree
-INF_INTERFACE   equ   BIT31             ;This Info is about a COM interface
+INF_PRJ               equ   BIT00             ;This Info belongs to the current project
+INF_INVALID           equ   BIT01             ;This is an info about an invalid object or interface
+INF_INTREE            equ   BIT02             ;This Info is loaded into the tree
+INF_INTERFACE         equ   BIT31             ;This Info is about a COM interface
 
 CStr szIcoName,       "ICON_APP"
 
 ;Setup strings
 CStr  cViewer,        "Viewer"
-CStr  cDefViewer,     "Notepad.exe"     ;Default string
+CStr  cDefViewer,     "Notepad.exe"           ;Default string
 CStr  cLanguage,      "Language"
 CStr  cShowRedefMtds, "ShowRedefinedMethods"
 CStr  cShowRedefVars, "ShowRedefinedVariables"
@@ -39,8 +39,8 @@ CStr  cViewerError,   "Can't start the specified viewer.", 13, 10, "Please check
 CStr  cPNG,           "PNG"
 CStr  cOpen,          "open"
 
-INFO_TYPE_OBJECT            equ     0       ;Link type encoded in the char color
-INFO_TYPE_INTERFACE         equ     1
+INFO_TYPE_OBJECT      equ   0                 ;Link type encoded in the char color
+INFO_TYPE_INTERFACE   equ   1
 
 
 HTML_VAROBJ           CHRA  'VarObj'          ;Object

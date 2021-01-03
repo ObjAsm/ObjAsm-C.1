@@ -164,7 +164,7 @@ Method IDispatch.GetIDsOfNames,, pIID:POINTER, pNames:POINTER, dNameCnt:DWORD, d
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     IDispatch.DispatchInvoke
+; Method:     IDispatch.Invoke
 ; Purpose:    Provide access to properties and methods exposed by an object.
 ; Arguments:  Arg1: Method Member ID.
 ;             Arg2: -> IID_NULL

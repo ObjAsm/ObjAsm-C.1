@@ -2959,7 +2959,7 @@ else
     if Boundary eq 4 or Boundary eq 8 or Boundary eq 16 or Boundary eq 32 or Boundary eq 64 or Boundary eq 128
       ??StackAlignCount = ??StackAlignCount + 1           ;;Increment counter
       mov AuxReg, rsp                                     ;;Save esp
-      sub rsp, @WordSize                                    ;;Reserve room for a QWORD
+      sub rsp, @WordSize                                  ;;Reserve room for a QWORD
       and rsp, -Boundary                                  ;;Align stack
       mov [rsp], AuxReg                                   ;;Save previous esp value
     else

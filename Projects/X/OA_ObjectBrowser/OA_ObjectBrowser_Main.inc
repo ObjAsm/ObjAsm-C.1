@@ -161,10 +161,10 @@ ObjectEnd
 Object PropWnd, PropWndID, MdiChildWnd                  ;MDI base child window.
   RedefineMethod    Done
   RedefineMethod    Init,               $ObjPtr(ClientWnd), PSTRING, PINFORMATION
-  StaticMethod      InitContainer,      POINTER
+  StaticMethod      InitContainer,      PSTRING
   VirtualAbstract   EmitHtml
   VirtualAbstract   Gather
-  StaticMethod      SetOcxPosition,     POINTER
+  StaticMethod      SetOcxPosition,     PRECT
 
   VirtualEvent      OnClose,            WM_CLOSE
   VirtualEvent      OnSize,             WM_SIZE
@@ -187,22 +187,22 @@ ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-CStr cIntPropClass, "IntPropWnd"
+CStr cIntPropClass, "IntPropWndClass"
 
 Object IntPropWnd, IntPropWndID, PropWnd
   RedefineMethod    Init,               $ObjPtr(ClientWnd), PSTRING, PINTERFACEINFORMATION
   RedefineMethod    EmitHtml
   RedefineMethod    Gather
   StaticMethod      GatherMethods,      PINTERFACEINFORMATION
-  StaticMethod      ShowInher,          PINTERFACEINFORMATION, DWORD
+  StaticMethod      ShowInheritance,    PINTERFACEINFORMATION, DWORD
   StaticMethod      Startup
 
-  Embed     MethodProperties,     DataCollection
+  Embed     Methods,     DataCollection       ;Collection of MEMBERDATA structures
 ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-CStr cObjPropClass, "ObjPropWnd"
+CStr cObjPropClass, "ObjPropWndClass"
 
 Object ObjPropWnd, ObjPropWndID, PropWnd
   RedefineMethod    Done
@@ -211,11 +211,11 @@ Object ObjPropWnd, ObjPropWndID, PropWnd
   RedefineMethod    Gather
   StaticMethod      GatherMethods,      POBJECTINFORMATION
   StaticMethod      GatherVariables,    POBJECTINFORMATION
-  StaticMethod      ShowInher,          POBJECTINFORMATION, DWORD
+  StaticMethod      ShowInheritance,    POBJECTINFORMATION, DWORD
   StaticMethod      Startup
 
-  Embed     MethodProperties,     DataCollection
-  Embed     VariableProperties,   DataCollection
+  Embed     Methods,     DataCollection       ;Collection of MEMBERDATA structures
+  Embed     Variables,   DataCollection       ;Collection of MEMBERDATA structures
 
 ObjectEnd
 
@@ -246,14 +246,14 @@ ObjectEnd
 
 CloseEnumProc    proto :HANDLE, :LPARAM
 
-CStr cObjectBrowserClass, "ObjectBrowser"
+CStr cObjectBrowserClass, "ObjectBrowserClass"
 
 Object ObjectBrowser, ObjectBrowserID, MdiApp           ;MDI application.
   VirtualMethod     ChangeBtnLanguage,  DWORD           ;IDLANG_XXX
   VirtualMethod     ChangeLanguage,     DWORD           ;IDLANG_XXX
   RedefineMethod    Done
   StaticMethod      EnableActions
-  StaticMethod      ExtractResFile,     HANDLE, POINTER, POINTER, POINTER
+  StaticMethod      ExtractResFile,     HANDLE, POINTER, PSTRING, PSTRING
   StaticMethod      FindObjInfo,        PSTRING
   VirtualMethod     FindIntInfo,        PSTRING
   RedefineMethod    Init
@@ -427,7 +427,7 @@ Method ICustomDocHostUIHandler.ShowContextMenu, uses xbx xdi, dwID:DWORD, pPoint
     mov xcx, [xdx].$Obj(OcxClientSite).pOwner                 ;xcx -> OcxContainer
     mov xdx, [xcx].$Obj(OcxContainer).pOwner                  ;xdx -> PropWnd
     mov xcx, [xdx].$Obj(PropWnd).pOwner                       ;xcx -> ClientWnd
-    mov xbx, [xcx].$Obj(ClientWnd).pOwner               ;xbx -> ObjectBrowser
+    mov xbx, [xcx].$Obj(ClientWnd).pOwner                     ;xbx -> ObjectBrowser
     assume xbx:$ObjPtr(ObjectBrowser)
     mov xdi, $invoke(GetSubMenu, [xbx].hMenuContext, 0)
 
@@ -511,13 +511,13 @@ Method IWebBrowserEvents2.Invoke, uses xbx xsi, dMethodID:DWORD, pIID:REFIID, dL
     add xbx, sizeof DWORD                               ;ebx -> first ??EVENT_ENTRY
     or ecx, ecx
     .while !Zero?
-      mov eax, [xbx].??EVENT_ENTRY.dID                   ;Recover DispID
+      mov eax, [xbx].??EVENT_ENTRY.dID                  ;Recover DispID
       .if eax == dMethodID
-        mov dx, word ptr [xbx].??EVENT_ENTRY.wFlags      ;DispID found!
+        mov dx, word ptr [xbx].??EVENT_ENTRY.wFlags     ;DispID found!
         cmp dx, wFlags                                  ;Now check the flags
         je @@Found                                      ;Flags OK
       .endif
-      add ebx, sizeof ??EVENT_ENTRY                      ;Goto next ??EVENT_ENTRY
+      add ebx, sizeof ??EVENT_ENTRY                     ;Goto next ??EVENT_ENTRY
       dec ecx
     .endw
 ;      DbgWarning "Failed to get this DISPID:", "IWebBrowserEvents2_SiteDispatch"
@@ -571,20 +571,20 @@ MethodEnd
 ; Return:     eax = HRESULT.
 ;
 ; Parameters:
-;   pDisp:     Object that evaluates to the top-level or frame WebBrowser2 object corresponding to
-;              the navigation.
-;   Url:       String expression that evaluates to the URL to which the browser is navigating.
-;   Flags:     Integer expression that contains the following flag, or zero.
-;                &H0001 : Windows Internet Explorer 7 or later. This navigation is the result of
+;   pDisp:    Object that evaluates to the top-level or frame WebBrowser2 object corresponding to
+;             the navigation.
+;   Url:      String expression that evaluates to the URL to which the browser is navigating.
+;   Flags:    Integer expression that contains the following flag, or zero.
+;               &H0001 : Windows Internet Explorer 7 or later. This navigation is the result of
 ;                         an external window or tab that targets this browser.
 ;   TargetFrameName: String expression that evaluates to the name of the frame in which the resource
-;              will be displayed, or Null if no named frame is targeted for the resource.
-;   PostData:  Data to send to the server if the HTTP POST transaction is being used.
-;   Headers:   Value that specifies the additional HTTP headers to send to the server
-;              (HTTP URLs only). The headers can specify such things as the action required of
-;              the server, the type of data being passed to the server, or a status code.
-;   Cancel:    Boolean value that the container can set to True to cancel the navigation operation,
-;              or to False to allow it to proceed.
+;             will be displayed, or Null if no named frame is targeted for the resource.
+;   PostData: Data to send to the server if the HTTP POST transaction is being used.
+;   Headers:  Value that specifies the additional HTTP headers to send to the server
+;             (HTTP URLs only). The headers can specify such things as the action required of
+;             the server, the type of data being passed to the server, or a status code.
+;   Cancel:   Boolean value that the container can set to True to cancel the navigation operation,
+;             or to False to allow it to proceed.
 
 Method IWebBrowserEvents2.BeforeNavigate2, uses xbx xsi, pParams:LPDISPPARAMS, pRetVal:LPVARIANT
   ;DbgText "IWebBrowserEvents2.BeforeNavigate2"
@@ -615,13 +615,15 @@ Method IWebBrowserEvents2.BeforeNavigate2, uses xbx xsi, pParams:LPDISPPARAMS, p
       invoke StrLScanW, xbx, "?"
       .if xax == NULL
         invoke hex2dwordW, xbx                          ;xax -> OBJECT / INTERFACE  INFORMATION
-        mov xdx, [xsi].$Obj(PropWnd).pOwner             ;xdx -> ClientWnd
-        .ifBitSet [xax].INFORMATION.dFlags, INF_INTERFACE
-          mov ecx, INFO_TYPE_INTERFACE
+        mov xdx, xax
+        mov xcx, [xsi].$Obj(PropWnd).pOwner             ;xdx -> ClientWnd
+        .ifBitSet [xdx].INFORMATION.dFlags, INF_INTERFACE
+          mov eax, INFO_TYPE_INTERFACE
         .else
-          mov ecx, INFO_TYPE_OBJECT
+          mov eax, INFO_TYPE_OBJECT
         .endif
-        OCall [xdx].$Obj(ClientWnd).pOwner::ObjectBrowser.Navigate, [xax].INFORMATION.pName, ecx
+        DbgStrA [xdx].INFORMATION.pName
+        OCall [xcx].$Obj(ClientWnd).pOwner::ObjectBrowser.Navigate, [xdx].INFORMATION.pName, eax
       .endif
     .endif
   .endif
@@ -739,17 +741,18 @@ MethodEnd
 ; Procedure:  MatchMtdInfo
 ; Purpose:    Performs a match test.
 ; Arguments:  Arg1: -> MEMBERDATA.
-;             Arg2: -> ObjMtdInfo.
+;             Arg2: -> OBJMTDINFORMATION.
+;             Arg3: Dummy.
 ; Return:     eax = Zero if matches.
 
-MatchMtdInfo proc pMemberData:PMEMBERDATA, pObjMtdInfo:POINTER
+MatchMtdInfo proc pMemberData:PMEMBERDATA, pObjMtdInfo:POBJMTDINFORMATION, xDummy:XWORD
   mov xax, pObjMtdInfo
   mov xcx, pMemberData
-  sub xax, [xcx].MEMBERDATA.pMemberInfo
-  if TARGET_BITNESS eq 64
+  sub xax, [xcx].MEMBERDATA.pMemberInfo                 ;Check if both POINTERs are equal
+  if TARGET_BITNESS eq 64                               ;  by subtracting them
     mov ecx, eax
     shr rax, 32
-    or eax, ecx
+    or eax, ecx                                         ;Merge high 32 bit with low 32 bit
   endif
   ret
 MatchMtdInfo endp
@@ -762,7 +765,7 @@ MatchMtdInfo endp
 ; Return:     eax = HRESULT. See IDispatch.DispatchInvoke return values.
 
 Method ICustomSiteDispatch.OnClick, uses xbx xdi xsi, pParams:LPDISPPARAMS, pRetVal:LPVARIANT
-  local dType:DWORD, dID:DWORD, hWnd:HANDLE, pName:POINTER
+  local dType:DWORD, xID:XWORD, hWnd:HANDLE, pName:PSTRING
   local StartupInfo:STARTUPINFO, ProcessInfo:PROCESS_INFORMATION
   local cFileName[MAX_PATH]:CHR, cParam[2*MAX_PATH]:CHR, cCommand[2*MAX_PATH]:CHR
 
@@ -773,7 +776,7 @@ Method ICustomSiteDispatch.OnClick, uses xbx xdi xsi, pParams:LPDISPPARAMS, pRet
     mov xdx, [xcx]
     .if [xdx].VARIANT.vt == VT_I4
       ;Inspect second parameter = ID
-      m2m dID, [xdx].VARIANT.lVal, eax
+      m2m xID, [xdx].VARIANT.lVal, xax
       ;Move to first argument
       add xdx, sizeof VARIANT
       .if [xdx].VARIANT.vt == VT_I4
@@ -783,14 +786,14 @@ Method ICustomSiteDispatch.OnClick, uses xbx xdi xsi, pParams:LPDISPPARAMS, pRet
           lea xbx, cParam
           FillString [xbx], < /e, /select,>           ;Write this into cParam
           lea xcx, [xbx + 13*sizeof(CHR)]
-          mov edx, dID
+          mov xdx, xID
           invoke StrCopy, xcx, [xdx].FILEINFORMATION.pFileName                      ;****************************************
           invoke ShellExecute, 0, offset cOpen, addr [xsi].cExplorerApp, xbx, NULL, SW_SHOW
         .elseif dType == BUTTON_TYPE_EXPLORE_ASM
           lea xbx, cParam
           FillString [xbx], < /e, /select,>           ;Write this into cParam
           lea xcx, [xbx + 13*sizeof(CHR)]
-          mov edx, dID
+          mov xdx, xID
           invoke StrECopy, xcx, [xdx].FILEINFORMATION.pFileName
           FillString CHR ptr [xax - 3*sizeof(CHR)], <asm>
           invoke ShellExecute, 0, offset cOpen, addr [xsi].cExplorerApp, xbx, NULL, SW_SHOW
@@ -798,7 +801,7 @@ Method ICustomSiteDispatch.OnClick, uses xbx xdi xsi, pParams:LPDISPPARAMS, pRet
           lea xbx, cParam
           FillString [xbx], < /e, /select,>           ;Write this into cParam
           lea xcx, [xbx + 13*sizeof(CHR)]
-          mov edx, dID
+          mov xdx, xID
           invoke StrECopy, xcx, [xdx].FILEINFORMATION.pFileName
           FillString CHR ptr [xax - 3*sizeof(CHR)], <lib>
           invoke ShellExecute, 0, offset cOpen, addr [xsi].cExplorerApp, xbx, NULL, SW_SHOW
@@ -812,7 +815,7 @@ Method ICustomSiteDispatch.OnClick, uses xbx xdi xsi, pParams:LPDISPPARAMS, pRet
 
           mov xcx, [xbx].$Obj(ObjectBrowser).pViewerApp
           .if xcx == NULL || CHR ptr [xcx] == 0
-            mov eax, dID
+            mov xax, xID
             invoke ShellExecute, 0, offset cOpen, [xax].FILEINFORMATION.pFileName, NULL, NULL, SW_SHOW
           .else
             mov StartupInfo.cb, sizeof STARTUPINFO
@@ -822,7 +825,7 @@ Method ICustomSiteDispatch.OnClick, uses xbx xdi xsi, pParams:LPDISPPARAMS, pRet
             invoke StrECopy, addr cParam, [xbx].$Obj(ObjectBrowser).pViewerApp
             FillString CHR ptr [xax], < >
             add eax, sizeof(CHR)
-            mov edx, dID
+            mov xdx, xID
             invoke StrCopy, xax, [xdx].FILEINFORMATION.pFileName
             invoke ExpandEnvironmentStrings, addr cParam, addr cCommand, lengthof cCommand
             invoke CreateProcess, NULL, addr cCommand, NULL, NULL, TRUE, NULL, NULL, NULL, \
@@ -831,7 +834,7 @@ Method ICustomSiteDispatch.OnClick, uses xbx xdi xsi, pParams:LPDISPPARAMS, pRet
 
         .elseif dType == BUTTON_TYPE_EDIT_ASM
           lea xbx, cFileName
-          mov edx, dID
+          mov xdx, xID
           invoke StrECopy, xbx, [xdx].FILEINFORMATION.pFileName
           FillString CHR ptr [xax - 3*sizeof(CHR)], <asm>
 
@@ -868,7 +871,7 @@ Method ICustomSiteDispatch.OnClick, uses xbx xdi xsi, pParams:LPDISPPARAMS, pRet
           m2m hWnd, [xbx].$Obj(ObjectBrowser).hWnd, xax
 
           lea xbx, cFileName
-          mov eax, dID
+          mov xax, xID
           invoke StrECopy, xbx, [xax].FILEINFORMATION.pFileName
           m2z CHR ptr [xax - 3*sizeof(CHR)]
           invoke StrRScan, xbx, "\"
@@ -932,8 +935,8 @@ Method ICustomSiteDispatch.OnClick, uses xbx xdi xsi, pParams:LPDISPPARAMS, pRet
           mov xcx, [xsi].pOwner
           mov xdx, [xcx].$Obj(OcxClientSite).pOwner
           mov xbx, [xdx].$Obj(OcxContainer).pOwner      ;xbx -> PropWindow
-          OCall [xbx].$Obj(ObjPropWnd).MethodProperties::DataCollection.FirstThatNot, \
-                                                                  offset MatchMtdInfo, dID, NULL
+          OCall [xbx].$Obj(ObjPropWnd).Methods::DataCollection.FirstThatNot, \
+                                                                  offset MatchMtdInfo, xID, NULL
           BitToggle [xax].MEMBERDATA.dFlags, MDT_SHOWDETAIL
           OCall xbx::PropWnd.EmitHtml
           ICall [xbx].$Obj(PropWnd).pIWebBrowser2::IWebBrowser2.Refresh
@@ -942,7 +945,7 @@ Method ICustomSiteDispatch.OnClick, uses xbx xdi xsi, pParams:LPDISPPARAMS, pRet
           mov xcx, [xsi].pOwner
           mov xdx, [xcx].$Obj(OcxClientSite).pOwner
           mov xbx, [xdx].$Obj(OcxContainer).pOwner      ;xbx -> PropWindow
-          m2m [xbx].$Obj(PropWnd).dShowRedefMtds, dID, ecx
+          m2m [xbx].$Obj(PropWnd).dShowRedefMtds, DWORD ptr xID, xcx
           OCall xbx::PropWnd.EmitHtml
           ICall [xbx].$Obj(PropWnd).pIWebBrowser2::IWebBrowser2.Refresh
 
@@ -950,7 +953,7 @@ Method ICustomSiteDispatch.OnClick, uses xbx xdi xsi, pParams:LPDISPPARAMS, pRet
           mov xcx, [xsi].pOwner
           mov xdx, [xcx].$Obj(OcxClientSite).pOwner
           mov xbx, [xdx].$Obj(OcxContainer).pOwner      ;xbx -> PropWindow
-          m2m [xbx].$Obj(PropWnd).dShowRedefVars, dID, ecx
+          m2m [xbx].$Obj(PropWnd).dShowRedefVars, DWORD ptr xID, xcx
           OCall xbx::PropWnd.EmitHtml
           ICall [xbx].$Obj(PropWnd).pIWebBrowser2::IWebBrowser2.Refresh
 
@@ -1033,7 +1036,7 @@ MethodEnd
 ; Return:     Nothing.
 
 Method ObjectBrowser.ChangeLanguage, uses xbx xdi xsi, dLangID:DWORD
-  local MenuInfo:MENUITEMINFO, tbbi:TBBUTTONINFO, cButtonText[256]:CHR
+  local MenuInfo:MENUITEMINFO
 
   SetObject xsi
   m2m [xsi].dLanguage, dLangID, ecx                   ;Save setting
@@ -1141,7 +1144,7 @@ MethodEnd
 ; Return:     eax = OBJ_OK on success, otherwise an error code.
 
 Method ObjectBrowser.ExtractResFile, uses xsi, hInst:HANDLE, pResType:POINTER, \
-                                               pResName:POINTER, pFileName:POINTER
+                                               pResName:PSTRING, pFileName:PSTRING
   local hFindRes:HANDLE, hResData:HANDLE, hFile:HANDLE
   local pResData:POINTER, dResSize:DWORD, dBytesWritten:DWORD
 
@@ -1831,7 +1834,7 @@ CloseEnumProc endp
 ;             Arg3: Dummy.
 ; Return:     Nothing.
 
-ResetInfoFlags proc pInfo:PINFORMATION, xArg1:XWORD, xArg2:XWORD
+ResetInfoFlags proc pInfo:PINFORMATION, xDummy1:XWORD, xDummy2:XWORD
   mov xcx, pInfo
   BitClr [xcx].INFORMATION.dFlags, (INF_INVALID or INF_INTREE)
   ret
@@ -1860,7 +1863,7 @@ AddObjectBranch proc uses xbx xdi xsi, pInfo:POBJECTINFORMATION, pAncestorNode:$
         ret
       .endif
       mov xdx, [xcx].$Obj(InfoNode).pInfo
-      invoke StrComp, xax, [xdx].OBJECTINFORMATION.pName
+      invoke StrCompA, xax, [xdx].OBJECTINFORMATION.pName
       .if eax != 0
         ret
       .endif
@@ -1931,7 +1934,7 @@ AddInterfaceBranch proc uses xbx xdi xsi, pInfo:PINTERFACEINFORMATION, pAncestor
         ret
       .endif
       mov xdx, [xcx].$Obj(InfoNode).pInfo
-      invoke StrComp, xax, [xdx].INTERFACEINFORMATION.pName
+      invoke StrCompA, xax, [xdx].INTERFACEINFORMATION.pName
       .if eax != 0
         ret
       .endif
@@ -2206,8 +2209,7 @@ Method ClientWnd.OnPaint, uses xsi, wParam:WPARAM, lParam:LPARAM
   invoke FillRect, PS.hdc, addr Rct, [xsi].hBGBrush
   invoke EndPaint, [xsi].hWnd, addr PS
   invoke CallWindowProc, [xsi].$Obj(ClientWnd).pPrevWndProc, \
-                         [xsi].$Obj(ClientWnd).hWnd, \
-                         WM_PAINT, wParam, lParam
+                         [xsi].$Obj(ClientWnd).hWnd, WM_PAINT, wParam, lParam
 MethodEnd
 
 ;##/
@@ -2225,7 +2227,7 @@ MethodEnd
 ;             Arg2: -> Source text.
 ; Return:     Nothing.
 
-EmitHtmlText proc uses xbx xdi xsi hHtmlFile:HANDLE, pText:POINTER
+EmitHtmlText proc uses xbx xdi xsi hHtmlFile:HANDLE, pText:PSTRING
   local bBuffer[20]:BYTE, dBytesWritten:DWORD, dLength:DWORD
 
   invoke StrLength, pText
@@ -2264,17 +2266,17 @@ FindFinalMember proc pMemberData:PMEMBERDATA, pSrcData:PMEMBERDATA, xDummy:XWORD
   mov xdx, [xax].MEMBERDATA.pMemberInfo
   mov xcx, pSrcData
   mov xax, [xcx].MEMBERDATA.pMemberInfo
-  invoke StrComp, [xax].INFORMATION.pName, [xdx].INFORMATION.pName
-  .if eax == 0
+  invoke StrCompA, [xax].INFORMATION.pName, [xdx].INFORMATION.pName
+  .if eax == 0                                          ;Method/Variable found
     mov xcx, pMemberData
-    BitClr [xcx].MEMBERDATA.dFlags, MDT_FINAL
+    BitClr [xcx].MEMBERDATA.dFlags, MDT_FINAL           ;Reset the flag
     mov xdx, [xcx].MEMBERDATA.pDefinition
     .if xdx == NULL
       mov xdx, [xcx].MEMBERDATA.pMemberInfo
     .endif
     mov xcx, pSrcData
-    mov [xcx].MEMBERDATA.pDefinition, xdx
-  .endif                                              ;eax == 0 => stop search
+    mov [xcx].MEMBERDATA.pDefinition, xdx               ;Copy pDefinition from MemberData in SrcData
+  .endif                                                ;eax == 0 => stop search
   ret
 FindFinalMember endp
 
@@ -2307,7 +2309,7 @@ Method PropWnd.Done, uses xbx xdi xsi
   mov xbx, [xdi].$Obj(ObjectBrowser).pClientWnd
   dec [xbx].$Obj(ClientWnd).dChildCount
   OCall xdi::ObjectBrowser.EnableActions
-  .if [xbx].$Obj(ClientWnd).dChildCount == 0    ;No more child windows ?
+  .if [xbx].$Obj(ClientWnd).dChildCount == 0            ;No more child windows ?
     invoke SendMessage, [xdi].$Obj(ObjectBrowser).hWnd, WM_MDISETMENU, \
                         [xbx].$Obj(ObjectBrowser).hMenuInit, NULL
     invoke DrawMenuBar, [xdi].$Obj(ObjectBrowser).hWnd  ;Redraw the new menu bar
@@ -2341,7 +2343,7 @@ Method PropWnd.Init, uses xbx xdi xsi, pOwner:$ObjPtr(ClientWnd), pWndClassName:
 
   ;Apply application setup
   mov xcx, [xsi].pOwner                                 ;xcx -> ClientWnd
-  mov xdx, [xcx].$Obj(ClientWnd).pOwner           ;xdx -> ObjectBrowser
+  mov xdx, [xcx].$Obj(ClientWnd).pOwner                 ;xdx -> ObjectBrowser
   m2m [xsi].dShowRedefMtds, [xdx].$Obj(ObjectBrowser).dShowRedefMtds, eax
   m2m [xsi].dShowRedefVars, [xdx].$Obj(ObjectBrowser).dShowRedefVars, eax
 
@@ -2364,7 +2366,7 @@ Method PropWnd.Init, uses xbx xdi xsi, pOwner:$ObjPtr(ClientWnd), pWndClassName:
   mov xdi, pOwner
   inc [xdi].$Obj(ClientWnd).dChildCount
   invoke SendMessage, [xdi].$Obj(ClientWnd).hWnd, WM_MDIGETACTIVE, 0, addr dIsMaximized
-  .if xax != 0 && dIsMaximized == FALSE     ;xax = MDI Child HWND
+  .if xax != 0 && dIsMaximized == FALSE                 ;xax = MDI Child HWND
     xor ebx, ebx
   .else
     mov ebx, WS_MAXIMIZE
@@ -2376,7 +2378,7 @@ Method PropWnd.Init, uses xbx xdi xsi, pOwner:$ObjPtr(ClientWnd), pWndClassName:
   mov xbx, [xdi].$Obj(ClientWnd).pOwner
   OCall xbx::ObjectBrowser.EnableActions
   .if eax != 0
-    .if [xdi].$Obj(ClientWnd).dChildCount == 1    ;First child window ?
+    .if [xdi].$Obj(ClientWnd).dChildCount == 1          ;First child window ?
       mov xax, [xbx].$Obj(ObjectBrowser).pClientWnd
       invoke SendMessage, [xax].$Obj(ClientWnd).hWnd, WM_MDISETMENU, \
                           [xbx].$Obj(ObjectBrowser).hMenuChild, [xbx].$Obj(ObjectBrowser).hMenuChildWnd
@@ -2400,7 +2402,7 @@ MethodEnd
 ; Arguments:  Arg1: -> FileName (ANSI).
 ; Return:     Nothing.
 
-Method PropWnd.InitContainer, uses xsi, pFileName:POINTER
+Method PropWnd.InitContainer, uses xsi, pFileName:PSTRING
   local URL[1024]:word, pICustomSiteDispatch:POINTER
 
   SetObject xsi
@@ -2523,7 +2525,7 @@ MethodEnd
 ; Arguments:  Arg1: -> RECT.
 ; Return:     eax = Zero.
 
-Method PropWnd.SetOcxPosition, uses xsi, pRect:POINTER
+Method PropWnd.SetOcxPosition, uses xsi, pRect:PRECT
   local Rect:RECT
 
 ;  DbgText "PropWnd.SetOcxPosition"
@@ -2566,7 +2568,7 @@ Method IntPropWnd.Done, uses xsi
   SetObject xsi
 
   ;Release internal data
-  OCall [xsi].MethodProperties::DataCollection.Done
+  OCall [xsi].Methods::DataCollection.Done
 
   ;Final object cleanup
   ACall xsi.Done
@@ -2583,7 +2585,7 @@ MethodEnd
 Method IntPropWnd.Init, uses xsi, pOwner:$ObjPtr(ClientWnd), pWndClassName:PSTRING, \
                                   pInfo:PINTERFACEINFORMATION
   SetObject xsi
-  OCall [xsi].MethodProperties::DataCollection.Init, xsi, 50, 50, COL_MAX_CAPACITY
+  OCall [xsi].Methods::DataCollection.Init, xsi, 50, 50, COL_MAX_CAPACITY
   ACall xsi.Init, pOwner, pWndClassName, pInfo
 MethodEnd
 
@@ -2596,7 +2598,7 @@ MethodEnd
 ; Return:     Nothing.
 
 ShowIntMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(IntPropWnd), xDummy:XWORD
-  local dBytesWritten:DWORD, cBuffer[20]:CHR, hHtmlFile:HANDLE
+  local dBytesWritten:DWORD, hHtmlFile:HANDLE
 
   SetObject xsi, IntPropWnd
   m2m hHtmlFile, [xsi].hHtmlFile, xax
@@ -2780,7 +2782,7 @@ Method IntPropWnd.EmitHtml, uses xbx xdi xsi
   .if xbx != NULL
     invoke WriteFile, [xsi].hHtmlFile, offset HTML_DSC_02, HTML_DSC_02_SIZE, xdi, NULL
     .while xbx != NULL
-      lea xdx, [xbx + 4]
+      lea xdx, [xbx + sizeof(POINTER)]
       invoke EmitHtmlText, [xsi].hHtmlFile, xdx
       invoke WriteFile, [xsi].hHtmlFile, offset HTML_BREAK, sizeof HTML_BREAK, xdi, NULL
       invoke WriteFile, [xsi].hHtmlFile, offset bCRLF, 2, xdi, NULL
@@ -2791,7 +2793,7 @@ Method IntPropWnd.EmitHtml, uses xbx xdi xsi
 
   ;Show inheritance path
   invoke WriteFile, [xsi].hHtmlFile, offset HTML_INH_00, HTML_INH_00_SIZE, xdi, NULL
-  OCall xsi.ShowInher, [xsi].pInfo, FALSE
+  OCall xsi.ShowInheritance, [xsi].pInfo, FALSE
   invoke WriteFile, [xsi].hHtmlFile, offset HTML_INH_07, HTML_INH_07_SIZE, xdi, NULL
 
   ;Show file information
@@ -2818,7 +2820,7 @@ Method IntPropWnd.EmitHtml, uses xbx xdi xsi
 
   ;Show method information
   invoke WriteFile, [xsi].hHtmlFile, offset HTML_IMD_00, HTML_IMD_00_SIZE, xdi, NULL
-  OCall [xsi].MethodProperties::DataCollection.ForEach, offset ShowIntMtd, xsi, NULL
+  OCall [xsi].Methods::DataCollection.ForEach, offset ShowIntMtd, xsi, NULL
   invoke WriteFile, [xsi].hHtmlFile, offset HTML_OMD_12, HTML_OMD_12_SIZE, xdi, NULL
 
   ;End HTML document
@@ -2847,15 +2849,15 @@ MethodEnd
 GatherIntMtds proc uses xbx xdi xsi pIntMtdInfo:PINTMTDINFORMATION, pInterfaceName:PSTRING, pSelf:$ObjPtr(IntPropWnd)
   SetObject xsi, IntPropWnd
   mov xbx, pIntMtdInfo
-  .if $invoke(StrComp, [xbx].INTMTDINFORMATION.pInterfaceName, pInterfaceName) == 0
+  .if $invoke(StrCompA, [xbx].INTMTDINFORMATION.pInterfaceName, pInterfaceName) == 0
     mov xdi, $MemAlloc(MEMBERDATA)
     mov [xdi].MEMBERDATA.pMemberInfo, xbx
     mov [xdi].MEMBERDATA.dFlags, MDT_FINAL
     m2z [xdi].MEMBERDATA.pDefinition
     .if [xbx].INTMTDINFORMATION.dFlags == METHODTYPE_REDEFINED
-      OCall [xsi].MethodProperties::DataCollection.LastThatNot, offset FindFinalMember, xdi, NULL
+      OCall [xsi].Methods::DataCollection.LastThatNot, offset FindFinalMember, xdi, NULL
     .endif
-    OCall [xsi].MethodProperties::DataCollection.Insert, xdi
+    OCall [xsi].Methods::DataCollection.Insert, xdi
   .endif
   ret
 GatherIntMtds endp
@@ -2868,7 +2870,7 @@ GatherIntMtds endp
 
 Method IntPropWnd.GatherMethods, uses xbx xsi, pInfo:PINTERFACEINFORMATION
   SetObject xsi
-  OCall [xsi].MethodProperties::DataCollection.DisposeAll
+  OCall [xsi].Methods::DataCollection.DisposeAll
 
   mov xcx, pInfo
   mov xdx, [xcx].INTERFACEINFORMATION.pAncestorName
@@ -2880,7 +2882,7 @@ Method IntPropWnd.GatherMethods, uses xbx xsi, pInfo:PINTERFACEINFORMATION
     .else
       ;Stop recursion
       MemAlloc MEMBERDATA
-      OCall [xsi].MethodProperties::DataCollection.Insert, xax
+      OCall [xsi].Methods::DataCollection.Insert, xax
       m2m [xax].MEMBERDATA.pMemberInfo, pInfo, xdx
       mov [xax].MEMBERDATA.dFlags, MDT_UNKNOWN
       m2z [xax].MEMBERDATA.pDefinition
@@ -2896,13 +2898,13 @@ Method IntPropWnd.GatherMethods, uses xbx xsi, pInfo:PINTERFACEINFORMATION
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     IntPropWnd.ShowInher
+; Method:     IntPropWnd.ShowInheritance
 ; Purpose:    Method that is called recursively to output an inheritance path.
 ; Arguments:  Arg1: -> INTERFACENFORMATION.
 ;             Arg2: Flag to signal if the current item should generate a link.
 ; Return:     Nothing.
 
-Method IntPropWnd.ShowInher, uses xbx xdi xsi, pInterfaceInfo:PINTERFACEINFORMATION, dLink:DWORD
+Method IntPropWnd.ShowInheritance, uses xbx xdi xsi, pInterfaceInfo:PINTERFACEINFORMATION, dLink:DWORD
   local dBytesWritten:DWORD, cHexBuffer[12]:CHR
 
   SetObject xsi
@@ -2913,7 +2915,7 @@ Method IntPropWnd.ShowInher, uses xbx xdi xsi, pInterfaceInfo:PINTERFACEINFORMAT
     mov xcx, [xsi].pOwner                             ;ecx -> ClientWnd
     OCall [xcx].$Obj(ClientWnd).pOwner::ObjectBrowser.FindIntInfo, xbx
     .if xax != NULL
-      OCall xsi::IntPropWnd.ShowInher, xax, TRUE
+      OCall xsi::IntPropWnd.ShowInheritance, xax, TRUE
     .else
       ;Stop recursion
       invoke WriteFile, [xsi].hHtmlFile, offset HTML_ANF_00, HTML_ANF_00_SIZE, xdi, NULL
@@ -2985,8 +2987,8 @@ Method ObjPropWnd.Done, uses xsi
   SetObject xsi
 
   ;Release internal data
-  OCall [xsi].VariableProperties::DataCollection.Done
-  OCall [xsi].MethodProperties::DataCollection.Done
+  OCall [xsi].Variables::DataCollection.Done
+  OCall [xsi].Methods::DataCollection.Done
 
   ;Final object cleanup
   ACall xsi.Done
@@ -3003,8 +3005,8 @@ MethodEnd
 Method ObjPropWnd.Init, uses xsi, pOwner:$ObjPtr(ClientWnd), pWndClassName:PSTRING, \
                                   pInfo:POBJECTINFORMATION
   SetObject xsi
-  OCall [xsi].MethodProperties::DataCollection.Init, xsi, 50, 50, COL_MAX_CAPACITY
-  OCall [xsi].VariableProperties::DataCollection.Init, xsi, 50, 50, COL_MAX_CAPACITY
+  OCall [xsi].Methods::DataCollection.Init, xsi, 50, 50, COL_MAX_CAPACITY
+  OCall [xsi].Variables::DataCollection.Init, xsi, 50, 50, COL_MAX_CAPACITY
   ACall xsi.Init, pOwner, pWndClassName, pInfo
 MethodEnd
 
@@ -3018,10 +3020,10 @@ MethodEnd
 
 MatchObjectImpMethod proc pImpMtdInfo:PIMPMTDINFORMATION, pObjectName:POINTER, pMethodName:POINTER
   mov xcx, pImpMtdInfo
-  invoke StrComp, [xcx].IMPMTDINFORMATION.pObjectName, pObjectName
+  invoke StrCompA, [xcx].IMPMTDINFORMATION.pObjectName, pObjectName
   .if eax == 0
     mov xcx, pImpMtdInfo
-    invoke StrComp, [xcx].IMPMTDINFORMATION.pName, pMethodName
+    invoke StrCompA, [xcx].IMPMTDINFORMATION.pName, pMethodName
   .endif
   ret
 MatchObjectImpMethod endp
@@ -3213,7 +3215,7 @@ ShowObjMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropW
       .if xax != NULL
         mov xsi, [xax].IMPMTDINFORMATION.pHelpData
         .while xsi != NULL
-          lea xdx, [xsi + 4]
+          lea xdx, [xsi + sizeof(POINTER)]
           invoke EmitHtmlText, hHtmlFile, xdx
           invoke WriteFile, hHtmlFile, offset HTML_BREAK, sizeof HTML_BREAK, xdi, NULL
           invoke WriteFile, hHtmlFile, offset bCRLF, 2, xdi, NULL
@@ -3461,7 +3463,7 @@ Method ObjPropWnd.EmitHtml, uses xbx xdi xsi
   .if xbx != NULL
     invoke WriteFile, [xsi].hHtmlFile, offset HTML_DSC_02, HTML_DSC_02_SIZE, xdi, NULL
     .while xbx != NULL
-      lea xdx, [xbx + 4]
+      lea xdx, [xbx + sizeof(POINTER)]
       invoke EmitHtmlText, [xsi].hHtmlFile, xdx
       invoke WriteFile, [xsi].hHtmlFile, offset HTML_BREAK, sizeof HTML_BREAK, xdi, NULL
       invoke WriteFile, [xsi].hHtmlFile, offset bCRLF, 2, xdi, NULL
@@ -3472,7 +3474,7 @@ Method ObjPropWnd.EmitHtml, uses xbx xdi xsi
 
   ;Show inheritance path
   invoke WriteFile, [xsi].hHtmlFile, offset HTML_INH_00, HTML_INH_00_SIZE, xdi, NULL
-  OCall xsi.ShowInher, [xsi].pInfo, FALSE
+  OCall xsi.ShowInheritance, [xsi].pInfo, FALSE
   invoke WriteFile, [xsi].hHtmlFile, offset HTML_INH_07, HTML_INH_07_SIZE, xdi, NULL
 
   ;Show file information
@@ -3538,12 +3540,12 @@ Method ObjPropWnd.EmitHtml, uses xbx xdi xsi
 
   ;Show method information
   invoke WriteFile, [xsi].hHtmlFile, offset HTML_OMD_00, HTML_OMD_00_SIZE, xdi, NULL
-  OCall [xsi].MethodProperties::DataCollection.ForEach, offset ShowObjMtd, xsi, NULL
+  OCall [xsi].Methods::DataCollection.ForEach, offset ShowObjMtd, xsi, NULL
   invoke WriteFile, [xsi].hHtmlFile, offset HTML_OMD_12, HTML_OMD_12_SIZE, xdi, NULL
 
   ;Show variable information
   invoke WriteFile, [xsi].hHtmlFile, offset HTML_VAR_00, HTML_VAR_00_SIZE, xdi, NULL
-  OCall [xsi].VariableProperties::DataCollection.ForEach, offset ShowObjVar, xsi, NULL
+  OCall [xsi].Variables::DataCollection.ForEach, offset ShowObjVar, xsi, NULL
   invoke WriteFile, [xsi].hHtmlFile, offset HTML_VAR_07, HTML_VAR_07_SIZE, xdi, NULL
 
   ;End HTML document
@@ -3573,15 +3575,15 @@ MethodEnd
 GatherObjMtds proc uses xbx xdi xsi pObjMtdInfo:POBJMTDINFORMATION, pObjName:PSTRING, pSelf:$ObjPtr(ObjPropWnd)
   SetObject xsi, ObjPropWnd
   mov xbx, pObjMtdInfo
-  .if $invoke(StrComp, [xbx].OBJMTDINFORMATION.pObjectName, pObjName) == 0
+  .if $invoke(StrCompA, [xbx].OBJMTDINFORMATION.pObjectName, pObjName) == 0
     mov xdi, $MemAlloc(MEMBERDATA)
     mov [xdi].MEMBERDATA.pMemberInfo, xbx
     mov [xdi].MEMBERDATA.dFlags, MDT_FINAL
     m2z [xdi].MEMBERDATA.pDefinition
     .if [xbx].OBJMTDINFORMATION.dFlags == METHODTYPE_REDEFINED
-      OCall [xsi].MethodProperties::DataCollection.LastThatNot, offset FindFinalMember, xdi, NULL
+      OCall [xsi].Methods::DataCollection.LastThatNot, offset FindFinalMember, xdi, NULL
     .endif
-    OCall [xsi].MethodProperties::DataCollection.Insert, xdi
+    OCall [xsi].Methods::DataCollection.Insert, xdi
   .endif
   ret
 GatherObjMtds endp
@@ -3594,7 +3596,7 @@ GatherObjMtds endp
 
 Method ObjPropWnd.GatherMethods, uses xsi, pInfo:POBJECTINFORMATION
   SetObject xsi
-  OCall [xsi].MethodProperties::DataCollection.DisposeAll
+  OCall [xsi].Methods::DataCollection.DisposeAll
 
   mov xcx, pInfo
   mov xdx, [xcx].OBJECTINFORMATION.pAncestorName
@@ -3606,7 +3608,7 @@ Method ObjPropWnd.GatherMethods, uses xsi, pInfo:POBJECTINFORMATION
     .else
       ;Stop recursion
       MemAlloc MEMBERDATA
-      OCall [xsi].MethodProperties::DataCollection.Insert, xax
+      OCall [xsi].Methods::DataCollection.Insert, xax
       m2m [xax].MEMBERDATA.pMemberInfo, pInfo, xdx
       mov [xax].MEMBERDATA.dFlags, MDT_UNKNOWN
       m2z [xax].MEMBERDATA.pDefinition
@@ -3632,15 +3634,15 @@ MethodEnd
 GatherObjVars proc uses xbx xdi xsi pObjVarInfo:POBJVARINFORMATION, pObjName:PSTRING, pSelf:$ObjPtr(ObjPropWnd)
   SetObject xsi, ObjPropWnd
   mov xbx, pObjVarInfo
-  .if $invoke(StrComp, [xbx].OBJVARINFORMATION.pObjectName, pObjName) == 0
+  .if $invoke(StrCompA, [xbx].OBJVARINFORMATION.pObjectName, pObjName) == 0
     mov xdi, $MemAlloc(MEMBERDATA)
     mov [xdi].MEMBERDATA.pMemberInfo, xbx
     mov [xdi].MEMBERDATA.dFlags, MDT_FINAL
     m2z [xdi].MEMBERDATA.pDefinition
     .if [xbx].OBJVARINFORMATION.dFlags == VARIABLETYPE_REDEFINED
-      OCall [xsi].VariableProperties::DataCollection.LastThatNot, offset FindFinalMember, xsi, NULL
+      OCall [xsi].Variables::DataCollection.LastThatNot, offset FindFinalMember, xdi, NULL
     .endif
-    OCall [xsi].VariableProperties::DataCollection.Insert, xdi
+    OCall [xsi].Variables::DataCollection.Insert, xdi
   .endif
   ret
 GatherObjVars endp
@@ -3653,19 +3655,19 @@ GatherObjVars endp
 
 Method ObjPropWnd.GatherVariables, uses xsi, pInfo:POBJECTINFORMATION
   SetObject xsi
-  OCall [xsi].VariableProperties::DataCollection.DeleteAll
+  OCall [xsi].Variables::DataCollection.DeleteAll
 
   mov xcx, pInfo
   mov xdx, [xcx].OBJECTINFORMATION.pAncestorName
   .if xdx != NULL
-    mov xcx, [xsi].pOwner                             ;ecx -> ClientWnd
+    mov xcx, [xsi].pOwner                               ;xcx -> ClientWnd
     OCall [xcx].$Obj(ClientWnd).pOwner::ObjectBrowser.FindObjInfo, xdx
     .if xax != NULL
       OCall xsi.GatherVariables, xax
     .else
       ;Stop recursion
       MemAlloc MEMBERDATA
-      OCall [xsi].VariableProperties::DataCollection.Insert, xax
+      OCall [xsi].Variables::DataCollection.Insert, xax
       m2m [xax].MEMBERDATA.pMemberInfo, pInfo, xdx
       mov [xax].MEMBERDATA.dFlags, MDT_UNKNOWN
       m2z [xax].MEMBERDATA.pDefinition
@@ -3674,20 +3676,20 @@ Method ObjPropWnd.GatherVariables, uses xsi, pInfo:POBJECTINFORMATION
 
   mov xax, pInfo
   mov xcx, [xsi].pOwner                                 ;xcx -> ClientWnd
-  mov xdx, [xcx].$Obj(ClientWnd).pOwner           ;xax -> ObjectBrowser
+  mov xdx, [xcx].$Obj(ClientWnd).pOwner                 ;xax -> ObjectBrowser
   mov xcx, [xdx].$Obj(ObjectBrowser).pObjDB
   OCall [xcx].$Obj(OA_ObjDB).ObjVariableColl::ObjVarInfoCollection.ForEach, \
                 offset GatherObjVars, [xax].OBJECTINFORMATION.pName, xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:   	ObjPropWnd.ShowInher
+; Method:   	ObjPropWnd.ShowInheritance
 ; Purpose:  	Method that is called recursively to output an inheritance path.
 ; Arguments:	Arg1: -> OBJECTINFORMATION.
 ;           	Arg2: Flag to signal if the current item should generate a link.
 ; Return:   	Nothing.
 
-Method ObjPropWnd.ShowInher, uses xbx xdi xsi, pObjectInfo:POBJECTINFORMATION, dLink:DWORD
+Method ObjPropWnd.ShowInheritance, uses xbx xdi xsi, pObjectInfo:POBJECTINFORMATION, dLink:DWORD
   local dBytesWritten:DWORD, cHexBuffer[12]:CHR
 
   SetObject xsi
@@ -3695,10 +3697,10 @@ Method ObjPropWnd.ShowInher, uses xbx xdi xsi, pObjectInfo:POBJECTINFORMATION, d
   mov xcx, pObjectInfo
   mov xbx, [xcx].OBJECTINFORMATION.pAncestorName
   .if xbx != NULL
-    mov xcx, [xsi].pOwner                             ;ecx -> ClientWnd
+    mov xcx, [xsi].pOwner                               ;xcx -> ClientWnd
     OCall [xcx].$Obj(ClientWnd).pOwner::ObjectBrowser.FindObjInfo, xbx
     .if xax != NULL
-      OCall xsi::ObjPropWnd.ShowInher, xax, TRUE
+      OCall xsi::ObjPropWnd.ShowInheritance, xax, TRUE
     .else
       ;Stop recursion
       invoke WriteFile, [xsi].hHtmlFile, offset HTML_ANF_00, HTML_ANF_00_SIZE, xdi, NULL
@@ -3990,12 +3992,12 @@ MethodEnd
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  InfoMatch
 ; Purpose:    Used to filter out not matching strings from the ListBox content.
-; Arguments:  Arg1: -> Item.
+; Arguments:  Arg1: -> INFORMATION.
 ;             Arg2: -> Filter string.
 ;             Arg3: ListBox handle.
 ; Return:     Nothing.
 
-InfoMatch proc uses xdi pItem:POINTER, pFilter:POINTER, hListBox:HANDLE
+InfoMatch proc pItem:PINFORMATION, pFilter:PSTRING, hListBox:HANDLE
   mov xcx, pItem
   invoke StrIFilter, [xcx].INFORMATION.pName, pFilter
   .if eax != FALSE

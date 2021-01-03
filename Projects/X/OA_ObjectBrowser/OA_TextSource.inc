@@ -18,7 +18,7 @@ Object TextSource,, Primer
   StaticMethod      GetNextArgument
   StaticMethod      GetNextLine
   StaticMethod      GetNextWord
-  RedefineMethod    Init,           POINTER, POINTER  ;-> Owner, -> FileName
+  RedefineMethod    Init,           POINTER, PSTRING  ;-> Owner, -> FileName
   StaticMethod      Reset
 
   DefineVariable    hSource,        HANDLE,     NULL  ;File HANDLE
@@ -60,7 +60,7 @@ MethodEnd
 ;             Arg2: -> File Name string.
 ; Return:     Nothing.
 
-Method TextSource.Init, uses xsi, pOwner:POINTER, pFileName:POINTER
+Method TextSource.Init, uses xsi, pOwner:POINTER, pFileName:PSTRING
   SetObject xsi
 ;  DbgText "TextSource.Init"
 ;  DbgStr pFileName
@@ -83,44 +83,44 @@ MethodEnd
 ;             ecx = Character offset.
 ;             edx = Character count.
 
-Method TextSource.GetPrevLine, uses xbx xsi
+Method TextSource.GetPrevLine, uses xbx xdi xsi
   local dBytesRead:DWORD
 
   SetObject xsi
-;  xor eax, eax
-;  mov [xsi].MemStream.dPosition, eax                    ;Position = 0
-;  mov [xsi].MemStream.dCurrSize, eax                    ;Fill level = 0
-;
-;  ;The source is a file
-;  mov xcx, [xsi].pFileLines
-;  .if [xsi].dLineNumber <= 1
-;    xor eax, eax                                        ;Returns FALSE
-;  .else
-;    dec [xsi].dLineNumber
-;    mov eax, [xsi].dLineNumber
-;
-;    lea xbx, [xcx + sizeof(GFL_DATA)*xax + sizeof(DWORD)]  ;xbx -> 1st GFL_DATA
-;    mov xdx, xbx
-;    mov ecx, [xdx].GFL_DATA.dLineLength
-;    inc ecx                                             ;Add space for zero terminator char
-;    .if ecx > [xsi].MemStream.dLimit
-;      OCall [xsi].MemStream::MemoryStream.SetCapacity, ecx
-;    .endif
-;    invoke SetFilePointer, [xsi].hSource, [xbx].GFL_DATA.dFileOffset, NULL, FILE_BEGIN
-;    invoke ReadFile, [xsi].hSource, [xsi].MemStream.pBuffer, [xbx].GFL_DATA.dLineLength, addr dBytesRead, NULL
-;
-;    mov xax, [xsi].MemStream.pBuffer
-;    mov ecx, [xbx].GFL_DATA.dLineLength
-;    m2z CHRA ptr [xax + xcx]
-;
-;    inc ecx
-;    mov [xsi].MemStream.dCurrSize, ecx
-;
-;    mov eax, TRUE
-;    mov xdx, xbx
-;    mov ecx, [xdx].GFL_DATA.dFileOffset                 ;ecx = Char offset
-;    mov edx, [xdx].GFL_DATA.dLineLength                 ;edx = Char count in this line
-;  .endif
+  xor eax, eax
+  mov [xsi].MemStream.dPosition, eax                    ;Position = 0
+  mov [xsi].MemStream.dCurrSize, eax                    ;Fill level = 0
+
+  ;The source is a file
+  mov xcx, [xsi].pFileLines                             ;Array of line ending offsets
+  .if [xsi].dLineNumber == 0
+    xor eax, eax                                        ;Returns FALSE
+  .else
+    mov eax, [xsi].dLineNumber
+    mov edi, [xcx + sizeof(DWORD)*xax]
+    dec [xsi].dLineNumber
+    mov eax, [xsi].dLineNumber
+    .if ZERO?
+      xor ebx, ebx
+    .else
+      mov ebx, [xcx + sizeof(DWORD)*xax]
+    .endif
+    sub edi, ebx
+    lea edx, [edi + 1]                                  ;Space for ZTC
+    .if edi > [xsi].MemStream.dLimit
+      OCall [xsi].MemStream::MemoryStream.SetCapacity, edx
+    .endif
+    invoke SetFilePointer, [xsi].hSource, ebx, NULL, FILE_BEGIN
+    invoke ReadFile, [xsi].hSource, [xsi].MemStream.pBuffer, edi, addr dBytesRead, NULL
+
+    mov xax, [xsi].MemStream.pBuffer
+    mov ecx, dBytesRead
+    m2z CHRA ptr [xax + xcx]                            ;set ZTC
+
+    mov eax, TRUE
+    mov ecx, ebx                                        ;ecx = Char offset
+    mov edx, edi                                        ;edx = Char count in this line
+  .endif
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -172,9 +172,14 @@ Method TextSource.GetNextLine, uses xbx xsi
 
     mov edx, dBytesRead
     mov xax, [xsi].MemStream.pBuffer
-    m2z CHRA ptr [xax + xdx]                            ;Set ZTC
+    add xax, xdx
+    ;check if we have a CRLF at the end of the line
+    .if edx >= 2 && DCHRA ptr [xax - 2*sizeof(CHRA)] == 13 + 256*10
+      sub xax, 2*sizeof(CHRA)
+    .endif
+    m2z CHRA ptr [xax]                                  ;Set ZTC
 
-    add [xsi].dFileOffset, edx 
+    add [xsi].dFileOffset, edx
     inc [xsi].dLineNumber
 
     mov eax, TRUE
@@ -185,7 +190,7 @@ MethodEnd
 ; Method:     TextSource.GetNextWord
 ; Purpose:    Retrieves the next word from the object line buffer.
 ; Arguments:  None.
-; Return:     eax -> Word or NULL if no more words are available.
+; Return:     xax -> Word or NULL if no more words are available.
 ;             ecx = Word length
 ;             edx = Flags. Bit00 = line break, Bit01 = Comment
 ; Notes:      dInWord: 0 = at the beginning, 1 = in Word, 2 = at the end
@@ -299,7 +304,7 @@ Method TextSource.GetNextWord, uses xbx xdi xsi
 
   .if xax != NULL && ecx != 0
     .ifBitSet dFlags, BIT17
-      .if ecx == sizeof bComment
+      .if ecx == lengthof bComment
         mov xbx, xax
         mov edi, ecx
         invoke StrCIComp, offset bComment, xbx, edi
@@ -325,6 +330,8 @@ Method TextSource.GetNextWord, uses xbx xdi xsi
     .endif
   .endif
   mov edx, dFlags
+;  DbgStr xax
+;  DbgDec [xsi].dLineNumber
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

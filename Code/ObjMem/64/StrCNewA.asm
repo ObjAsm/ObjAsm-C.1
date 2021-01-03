@@ -26,7 +26,7 @@
 align ALIGN_CODE
 StrCNewA proc uses rbx rdi pStringA:POINTER, dMaxChars:DWORD
   mov rax, rcx                                          ;rax -> StringA
-  test rax, rax                                         ;is NULL => fail
+  test rax, rax                                         ;Is NULL => fail
   jz @F
   invoke StrCLengthA, rcx, edx
   mov rbx, rax

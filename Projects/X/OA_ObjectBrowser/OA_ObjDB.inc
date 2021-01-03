@@ -65,7 +65,7 @@ Object OA_ObjDB, OA_ObjDBID, Primer
   RedefineMethod    Init,               POINTER, $ObjPtr(IniFile)
   StaticMethod      Open,               PSTRING
   StaticMethod      Save,               PSTRING
-  StaticMethod      ScanFile,           POINTER, FILETIME, DWORD
+  StaticMethod      ScanFile,           PSTRING, FILETIME, DWORD
   StaticMethod      ScanDBFiles
   StaticMethod      ScanDirFiles,       POINTER
 
@@ -106,7 +106,7 @@ if IMPLEMENT
 ; Return:     Nothing.
 
 align ALIGN_CODE
-DelMatchingObjVariable proc pItem:POINTER, pFileInfo:POINTER, pColl:POINTER
+DelMatchingObjVariable proc pItem:POBJVARINFORMATION, pFileInfo:PFILEINFORMATION, pColl:$ObjPtr(ObjVarInfoCollection)
   mov xax, pItem
   mov xcx, [xax].OBJVARINFORMATION.pFileInfo
   .if xcx == pFileInfo
@@ -116,7 +116,7 @@ DelMatchingObjVariable proc pItem:POINTER, pFileInfo:POINTER, pColl:POINTER
 DelMatchingObjVariable endp
 
 align ALIGN_CODE
-DelMatchingObjMethod proc pItem:POINTER, pFileInfo:POINTER, pColl:POINTER
+DelMatchingObjMethod proc pItem:POBJMTDINFORMATION, pFileInfo:PFILEINFORMATION, pColl:$ObjPtr(ObjMtdInfoCollection)
   mov xax, pItem
   mov xcx, [xax].OBJMTDINFORMATION.pFileInfo
   .if xcx == pFileInfo
@@ -126,7 +126,7 @@ DelMatchingObjMethod proc pItem:POINTER, pFileInfo:POINTER, pColl:POINTER
 DelMatchingObjMethod endp
 
 align ALIGN_CODE
-DelMatchingObject proc pItem:POINTER, pFileInfo:POINTER, pColl:POINTER
+DelMatchingObject proc pItem:POBJECTINFORMATION, pFileInfo:PFILEINFORMATION, pColl:$ObjPtr(ObjInfoCollection)
   mov xax, pItem
   mov xcx, [xax].OBJECTINFORMATION.pFileInfo
   .if xcx == pFileInfo
@@ -136,7 +136,7 @@ DelMatchingObject proc pItem:POINTER, pFileInfo:POINTER, pColl:POINTER
 DelMatchingObject endp
 
 align ALIGN_CODE
-DelMatchingIntMethod proc pItem:POINTER, pFileInfo:POINTER, pColl:POINTER
+DelMatchingIntMethod proc pItem:PINTMTDINFORMATION, pFileInfo:PFILEINFORMATION, pColl:$ObjPtr(IntMtdInfoCollection)
   mov xax, pItem
   mov xcx, [xax].INTMTDINFORMATION.pFileInfo
   .if xcx == pFileInfo
@@ -146,7 +146,7 @@ DelMatchingIntMethod proc pItem:POINTER, pFileInfo:POINTER, pColl:POINTER
 DelMatchingIntMethod endp
 
 align ALIGN_CODE
-DelMatchingInterface proc pItem:POINTER, pFileInfo:POINTER, pColl:POINTER
+DelMatchingInterface proc pItem:PINTERFACEINFORMATION, pFileInfo:PFILEINFORMATION, pColl:$ObjPtr(IntInfoCollection)
   mov xax, pItem
   mov xcx, [xax].INTERFACEINFORMATION.pFileInfo
   .if xcx == pFileInfo
@@ -156,7 +156,7 @@ DelMatchingInterface proc pItem:POINTER, pFileInfo:POINTER, pColl:POINTER
 DelMatchingInterface endp
 
 align ALIGN_CODE
-DelMatchingImpMethod proc pItem:POINTER, pFileInfo:POINTER, pColl:POINTER
+DelMatchingImpMethod proc pItem:PIMPMTDINFORMATION, pFileInfo:PFILEINFORMATION, pColl:$ObjPtr(ImpMtdInfoCollection)
   mov xax, pItem
   mov xcx, [xax].IMPMTDINFORMATION.pFileInfo
   .if xcx == pFileInfo
@@ -239,6 +239,7 @@ Method OA_ObjDB.Init, uses xbx xdi xsi, pOwner:POINTER, pIniFile:$ObjPtr(IniFile
   local cBuffer[1024]:CHR
 
   SetObject xsi
+  ACall xsi.Init, pOwner
 
   lea xbx, [xsi].FilesColl
   OCall xbx::FilesCollection.Init, xsi, 50, 25, COL_MAX_CAPACITY
@@ -374,7 +375,7 @@ Method OA_ObjDB.Save, uses xbx xsi, pFileName:PSTRING
   SetObject xsi
   DbgText "Saving Database..."
   mov xbx, $New(DskStm::DiskStream)
-  OCall xbx::DiskStream.Init, xsi, pFileName, 0, 0, 0, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, 0
+  OCall xbx::DiskStream.Init, xsi, pFileName, 0, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
   OCall xbx::DiskStream.BinWrite32, DATABASE_VERSION
   OCall xbx::DiskStream.Put, addr [xsi].FilesColl
   OCall xbx::DiskStream.Put, addr [xsi].ObjectColl
@@ -388,12 +389,13 @@ Method OA_ObjDB.Save, uses xbx xsi, pFileName:PSTRING
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     OA_ObjDB.ScanFile
-; Purpose:    Scans a file in the ObjAsm\Code\Objects directory for object information.
-; Arguments:  Arg1: -> File name.
-;             Arg2: Last Write Time (FILETIME).
-;             Arg3: Info Flags: OIF_xxx (INF_PRJ, etc.).
-; Return:     xax -> FILEINFORMATION or NULL if the file was excluded of the scan.
+; Procedure:  FindHelpLines
+; Purpose:    Scans a file from a defined linenumber backwards looking for consecutive outcommented
+;             lines.
+; Arguments:  Arg1: -> TextSource.
+;             Arg2: -> INFORMATION.
+; Return:     INFORMATION.pHelpData -> chain of [Ptr to next block, Help string].
+;             INFORMATION.dHelpLineCount = Number of lines.
 
 FindHelpLines proc uses xbx xdi xsi pTextSrc:$ObjPtr(TextSource), pInfo:PINFORMATION
 ;  local dHelpLineCount:DWORD, dLineNumber:DWORD
@@ -402,7 +404,7 @@ FindHelpLines proc uses xbx xdi xsi pTextSrc:$ObjPtr(TextSource), pInfo:PINFORMA
 ;  xor edi, edi
 ;  mov dHelpLineCount, edi
 ;
-;  m2m dLineNumber, [xbx].$Obj(TextSource).dLineNumber, eax      ;Save current line position
+;  m2m dLineNumber, [xbx].$Obj(TextSource).dLineNumber, eax  ;Save current line position
 ;
 ;  .repeat
 ;    OCall xbx::TextSource.GetPrevLine
@@ -415,20 +417,22 @@ FindHelpLines proc uses xbx xdi xsi pTextSrc:$ObjPtr(TextSource), pInfo:PINFORMA
 ;    .repeat
 ;      mov al, [xsi]
 ;      .break .if al != VK_SPACE && al != VK_TAB
-;      inc esi
+;      inc xsi
 ;    .until FALSE                                        ;xsi -> 1st non blank character
 ;
 ;    .continue .if dHelpLineCount == 0 && al == 0
-;    .break .if al != ";"
+;    .break .if al != ";"                                ;Help lines end here
+;
 ;    add xdx, [xbx].$Obj(TextSource).MemStream.pBuffer
-;    sub xdx, xsi
-;    inc xsi
-;    add edx, sizeof(DWORD)
+;    sub xdx, xsi                                        ;edx = # of chars included ZTC
+;
+;    inc xsi                                             ;Move to next character                                             
+;    add edx, sizeof(POINTER)                            ;Room for block chaining POINTER
 ;    mov eax, edx
 ;    MemAlloc eax
-;    mov [xax], edi
-;    mov edi, eax
-;    add eax, 4
+;    mov xdi, xax
+;    mov [xax], xdi                                      ;Store the POINTER
+;    add xax, sizeof(POINTER)
 ;    invoke StrCopy, xax, xsi
 ;    inc dHelpLineCount
 ;  .until FALSE
@@ -440,20 +444,27 @@ FindHelpLines proc uses xbx xdi xsi pTextSrc:$ObjPtr(TextSource), pInfo:PINFORMA
 ;    m2z [xax].INFORMATION.pHelpData
 ;    m2z [xax].INFORMATION.dHelpLineCount
 ;  .else
-;    mov [xax].INFORMATION.pHelpData, xdi
+;    mov [xax].INFORMATION.pHelpData, xdi                ;Store the last block POINTER
 ;    m2m [xax].INFORMATION.dHelpLineCount, dHelpLineCount, edx
 ;  .endif
 ;
-;  m2m [xbx].$Obj(TextSource).dLineNumber, dLineNumber, eax      ;Restore line position
-;
-  xor eax, eax
+;  m2m [xbx].$Obj(TextSource).dLineNumber, dLineNumber, eax  ;Restore line position
+
   ret
 FindHelpLines endp
 
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     OA_ObjDB.ScanFile
+; Purpose:    Scans a file in the ObjAsm\Code\Objects directory for object information.
+; Arguments:  Arg1: -> File name.
+;             Arg2: Last Write Time (FILETIME).
+;             Arg3: Info Flags: OIF_xxx (INF_PRJ, etc.).
+; Return:     xax -> FILEINFORMATION or NULL if the file was excluded of the scan.
+
 CheckMthWord macro ThisWord, ThisFlag
-  cmp dWordSize, lengthof ThisWord
+  cmp dWordLength, lengthof ThisWord
   jnz @F
-  invoke StrCCompA, pWord, offset ThisWord, dWordSize
+  invoke StrCCompA, pWord, offset ThisWord, dWordLength
   jnz @F
   mov dFlags, ThisFlag
   jmp @@AddNewMethod
@@ -461,9 +472,9 @@ CheckMthWord macro ThisWord, ThisFlag
 endm
 
 CheckVarWord macro ThisWord, ThisFlag
-  cmp dWordSize, lengthof ThisWord
+  cmp dWordLength, lengthof ThisWord
   jnz @F
-  invoke StrCCompA, pWord, offset ThisWord, dWordSize
+  invoke StrCCompA, pWord, offset ThisWord, dWordLength
   jnz @F
   mov dFlags, ThisFlag
   jmp @@AddNewVariable
@@ -475,15 +486,14 @@ FileNotListed proc pFileNameInCollection:PSTRING, pTestFileName:PSTRING, xDummy:
   ret
 FileNotListed endp 
 
-Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:POINTER, LastWriteTime:FILETIME, dInfoFlags:DWORD
-  local cBuffer[MAX_PATH]:CHR, pWord:PSTRINGA, dWordSize:DWORD
-  local pName:POINTER, pFileInfo:PFILEINFORMATION, dFlags:DWORD
-  local dNameLength:DWORD, dIncludeLength:DWORD
-  local TextSrc:$Obj(TextSource), pTextSrc:$ObjPtr(TextSource)
-  local pExtension:PSTRING, sdMatches:SDWORD
+Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FILETIME, dInfoFlags:DWORD
+  local pWord:PSTRINGA, dWordLength:DWORD
+  local pName:POINTER, dNameLength:DWORD
+  local dIncludeLength:DWORD, pExtension:PSTRING, dFlags:DWORD
+  local pFileInfo:PFILEINFORMATION, TextSrc:$Obj(TextSource)
 
-  DbgText "OA_ObjDB.ScanFile"
-  DbgStr pFileName
+;  DbgText "OA_ObjDB.ScanFile"
+;  DbgStr pFileName
   SetObject xsi
   m2z pFileInfo
 
@@ -496,7 +506,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:POINTER, LastWriteTime:FIL
     mov xbx, xax
     mov dIncludeLength, $32($invoke(StrLength, xbx))
     .while TRUE
-      %OCall [xsi].Parser::RegEx.Exec, xbx, dIncludeLength, 0, 0    ;Extract extensions
+      %OCall [xsi].Parser::RegEx.Exec, xbx, dIncludeLength, 0, 0  ;Extract extensions
       .if eax == 2                                      ;RegEx.Exec should return 2x PCRE_OUTDATA
         ;Get allowed extension length
         mov eax, [xdi + sizeof PCRE_OUTDATA].PCRE_OUTDATA.dEndIndex      ;CHR index
@@ -535,301 +545,301 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:POINTER, LastWriteTime:FIL
   .endif
   mov pFileInfo, xax
 
-  lea xdi, cBuffer
-
-  mov pTextSrc, $New(TextSource)
-  OCall pTextSrc::TextSource.Init, xsi, pFileName
-  OCall pTextSrc::TextSource.Reset
+  New TextSrc::TextSource
+  OCall TextSrc::TextSource.Init, xsi, pFileName
+  OCall TextSrc::TextSource.Reset
 
   .repeat
-    .repeat
-      .if $OCall(pTextSrc::TextSource.GetNextLine) == FALSE
-        jmp @@Exit
-      .endif
-      OCall pTextSrc::TextSource.GetNextWord
-      .if ecx != 0
-        mov pWord, xax
-        mov dWordSize, ecx
+    .if $OCall(TextSrc::TextSource.GetNextLine) == FALSE
+      jmp @@Exit
+    .endif
+    OCall TextSrc::TextSource.GetNextWord
+    .if ecx != 0
+      mov pWord, xax
+      mov dWordLength, ecx
 
-        .if ecx == lengthof bObject
-          invoke StrCCompA, pWord, offset bObject, dWordSize
-          .if eax == 0
-            OCall pTextSrc::TextSource.GetNextWord          ;Get object name
+      .if ecx == lengthof bObject
+        invoke StrCCompA, pWord, offset bObject, dWordLength
+        .if eax == 0
+          OCall TextSrc::TextSource.GetNextWord      ;Get object name
+          .if ecx != 0
+            mov pWord, xax
+            mov dWordLength, ecx
+            .if ecx == lengthof bMacro
+              invoke StrCICompA, offset bMacro, pWord, dWordLength  ;Check for Object macro
+              .continue .if eax == 0
+            .endif
+
+            ;Object name OK => create a new OBJECTINFORMATION entry in the object collection
+            mov pName, $invoke(StrCNewA, pWord, dWordLength)
+            mov xbx, $MemAlloc(sizeof OBJECTINFORMATION)
+            m2m [xbx].OBJECTINFORMATION.pName, pName, edx
+            DbgStrA pName
+            m2m [xbx].OBJECTINFORMATION.dFlags, dInfoFlags, ecx
+            m2m [xbx].OBJECTINFORMATION.pFileInfo, pFileInfo, xdx
+            m2z [xbx].OBJECTINFORMATION.pHelpData     ;Ignore this now
+            m2z [xbx].OBJECTINFORMATION.dHelpLineCount
+            OCall [xsi].ObjectColl::ObjInfoCollection.Insert, xbx
+
+            OCall TextSrc::TextSource.GetNextWord    ;Skip object ID
+            OCall TextSrc::TextSource.GetNextWord    ;Get object ancestor name
             .if ecx != 0
-              mov pWord, xax
-              mov dWordSize, ecx
-              .if ecx == sizeof bMacro
-                invoke StrCICompA, offset bMacro, pWord, dWordSize  ;Check for Object macro
-                .if eax != 0  
-                  ;Object name OK => create a new entry in the object collection
-                  mov pName, $invoke(StrCNewA, pWord, dWordSize)
-                  mov xbx, $MemAlloc(sizeof OBJECTINFORMATION)
-                  m2m [xbx].OBJECTINFORMATION.pName, pName, edx
-                  m2m [xbx].OBJECTINFORMATION.dFlags, dInfoFlags, edx
-                  m2m [xbx].OBJECTINFORMATION.pFileInfo, pFileInfo, xdx
-                  m2z [xbx].OBJECTINFORMATION.pHelpData
-                  OCall [xsi].ObjectColl::ObjInfoCollection.Insert, xbx
+              mov edx, ecx
+              invoke StrCNewA, xax, edx
+            .else
+              xor eax, eax
+            .endif
+            mov [xbx].OBJECTINFORMATION.pAncestorName, xax  ;Store ancestor name
 
-                  OCall pTextSrc::TextSource.GetNextWord   ;Get object ID
-                  OCall pTextSrc::TextSource.GetNextWord   ;Get object ancestor
+            invoke FindHelpLines, addr TextSrc, xbx       ;Get the help lines now
+
+            ;Scan now for object members
+            .repeat
+              .if $OCall(TextSrc::TextSource.GetNextLine) == FALSE
+                jmp @@Exit
+              .endif
+              OCall TextSrc::TextSource.GetNextWord
+              .if ecx != 0
+                mov pWord, xax
+                mov dWordLength, ecx
+                .if ecx == lengthof bObjectEnd
+                  invoke StrCCompA, pWord, offset bObjectEnd, dWordLength
+                  .break .if eax == 0                 ;We are done
+                .endif
+
+                CheckMthWord bVirtualMethod,    METHODTYPE_VIRTUAL
+                CheckMthWord bStaticMethod,     METHODTYPE_STATIC
+                CheckMthWord bDynamicMethod,    METHODTYPE_DYNAMIC
+                CheckMthWord bInterfaceMethod,  METHODTYPE_INTERFACE
+                CheckMthWord bInlineMethod,     METHODTYPE_INLINE
+
+                CheckMthWord bVirtualEvent,     METHODTYPE_VIRTUAL_EVENT
+                CheckMthWord bDynamicEvent,     METHODTYPE_DYNAMIC_EVENT
+
+                CheckMthWord bVirtualAbstract,  METHODTYPE_VIRTUAL_ABSTRACT
+                CheckMthWord bDynamicAbstract,  METHODTYPE_DYNAMIC_ABSTRACT
+
+                CheckMthWord bRedefineMethod,   METHODTYPE_REDEFINED
+
+                CheckVarWord bDefineVariable,   VARIABLETYPE_REGULAR
+                CheckVarWord bRedefineVariable, VARIABLETYPE_REDEFINED
+                CheckVarWord bEmbed,            VARIABLETYPE_OBJECT
+
+              .endif
+              .continue                             ;Check next line
+
+          @@AddNewMethod:
+              OCall TextSrc::TextSource.GetNextWord  ;Get method name
+              .if ecx != 0
+                mov edx, ecx
+                mov xbx, $invoke(StrCNewA, xax, edx)
+                MemAlloc sizeof OBJMTDINFORMATION
+                mov [xax].OBJMTDINFORMATION.pName, xbx
+                mov xbx, xax
+                mov [xbx].OBJMTDINFORMATION.pObjectName, $invoke(StrNewA, pName)
+                m2m [xbx].OBJMTDINFORMATION.pFileInfo, pFileInfo, xdx   ;From FilesCollection
+                m2m [xbx].OBJMTDINFORMATION.dFlags, dFlags, edx
+                m2z [xbx].OBJMTDINFORMATION.pHelpData                   ;Ignore this now
+                m2z [xbx].OBJMTDINFORMATION.dHelpLineCount
+
+                mov pWord, $OCall(TextSrc::TextSource.GetNextWord)     ;xax -> parameters
+                .if xax != NULL
+                  invoke StrRScanA, xax, ';'          ;Look for a remark at the end of line
+                  .if xax != NULL
+                    m2z CHRA ptr [xax]                ;Set ZTC to ignore the remark
+                    invoke StrRTrimA, pWord, pWord
+                  .endif
+                .endif
+                .if dFlags == METHODTYPE_VIRTUAL_EVENT || dFlags == METHODTYPE_DYNAMIC_EVENT
+                  mov [xbx].OBJMTDINFORMATION.pArguments, $invoke(StrNewA, $OfsCStr("wParam, lParam"))
+                .else
+                  mov [xbx].OBJMTDINFORMATION.pArguments, $invoke(StrNewA, pWord)
+                .endif
+                OCall [xsi].ObjMethodColl::ObjMtdInfoCollection.Insert, xbx
+
+                invoke FindHelpLines, addr TextSrc, xbx   ;Get the help lines now    
+
+              .endif
+              .continue
+
+          @@AddNewVariable:
+              OCall TextSrc::TextSource.GetNextWord  ;Get variable name
+              .if ecx != 0
+                mov edx, ecx
+                mov xbx, $invoke(StrCNewA, xax, edx)
+                MemAlloc sizeof OBJVARINFORMATION
+                mov [xax].OBJVARINFORMATION.pName, xbx
+                mov xbx, xax
+                mov [xbx].OBJVARINFORMATION.pObjectName, $invoke(StrNewA, pName)
+                m2m [xbx].OBJVARINFORMATION.pFileInfo, pFileInfo, xdx  ;From FilesCollection
+                m2m [xbx].OBJVARINFORMATION.dFlags, dFlags, edx
+                m2z [xbx].OBJVARINFORMATION.pHelpData ;Ignore this now
+                m2z [xbx].OBJVARINFORMATION.dHelpLineCount
+                mov pWord, $OCall(TextSrc::TextSource.GetNextWord)
+                .if xax != NULL
+                  invoke StrRScanA, xax, ';'          ;Look for a remark at the end of line
+                  .if xax != NULL
+                    m2z CHRA ptr [xax]                ;Set ZTC to ignore the remark
+                    invoke StrRTrimA, pWord, pWord
+                  .endif
+                .endif
+                mov [xbx].OBJVARINFORMATION.pArgType, $invoke(StrNewA, pWord)
+                OCall [xsi].ObjVariableColl::ObjVarInfoCollection.Insert, xbx
+              .endif
+
+              invoke FindHelpLines, addr TextSrc, xbx     ;Get the help lines now    
+
+            .until FALSE
+          .endif
+        .endif
+
+        ;-- Interface definition --------------------------------------------------
+
+      .elseif dWordLength == lengthof bBeginInterface
+        invoke StrCCompA, pWord, offset bBeginInterface, dWordLength
+        .if eax == 0
+          OCall TextSrc::TextSource.GetNextWord     ;Get interface name
+          mov pWord, xax
+          mov dWordLength, ecx
+          .if ecx != 0
+            .if ecx == lengthof bMacro
+              invoke StrCICompA, offset bMacro, pWord, dWordLength
+              .continue .if eax == 0
+            .endif
+            ;Interface name OK => create a new entry in the interface collection
+            invoke StrCNewA, pWord, dWordLength
+            mov pName, xax
+            mov xbx, $MemAlloc(sizeof INTERFACEINFORMATION)
+            m2m [xbx].INTERFACEINFORMATION.pName, pName, xdx
+            mov edx, dInfoFlags
+            or edx, INF_INTERFACE
+            mov [xbx].INTERFACEINFORMATION.dFlags, edx
+            m2m [xbx].INTERFACEINFORMATION.pFileInfo, pFileInfo, xax
+            m2z [xbx].INTERFACEINFORMATION.pHelpData
+            m2z [xbx].INTERFACEINFORMATION.dHelpLineCount
+
+            OCall TextSrc::TextSource.GetNextWord   ;Get interface ancestor
+            mov pWord, xax
+            mov dWordLength, ecx
+            .if ecx != 0
+              invoke StrCNewA, pWord, dWordLength
+            .else
+              xor eax, eax
+            .endif
+            mov [xbx].INTERFACEINFORMATION.pAncestorName, xax
+
+            OCall [xsi].InterfaceColl::IntInfoCollection.Insert, xbx
+
+            invoke FindHelpLines, addr TextSrc, xbx
+
+            ;Scan now for standart/dispatch interface methods
+            .repeat
+              .if $OCall(TextSrc::TextSource.GetNextLine) == FALSE
+                jmp @@Exit
+              .endif
+              OCall TextSrc::TextSource.GetNextWord
+              .if ecx != 0
+                mov pWord, xax
+                mov dWordLength, ecx
+                .if dWordLength == lengthof bEndInterface
+                  invoke StrCCompA, pWord, offset bEndInterface, dWordLength
+                  .break .if eax == 0
+                .endif
+
+                .if dWordLength == lengthof bStdMethod
+                  invoke StrCCompA, pWord, offset bStdMethod, dWordLength
+                  mov dFlags, METHODTYPE_STANDARD
+                .elseif dWordLength == lengthof bDispMethod
+                  invoke StrCCompA, pWord, offset bDispMethod, dWordLength
+                  mov dFlags, METHODTYPE_DISPATCH
+                .endif
+
+                .if eax == 0
+                  OCall TextSrc::TextSource.GetNextWord    ;Get method name
                   .if ecx != 0
                     mov edx, ecx
-                    invoke StrCNewA, xax, edx
-                  .else
-                    xor eax, eax
+                    mov xbx, $invoke(StrCNewA, xax, edx)
+                    MemAlloc sizeof INTMTDINFORMATION
+                    mov [xax].INTMTDINFORMATION.pName, xbx
+                    mov xbx, xax
+                    mov [xbx].INTMTDINFORMATION.pInterfaceName, $invoke(StrNewA, pName)
+                    m2m [xbx].INTMTDINFORMATION.dFlags, dFlags, edx
+                    m2m [xbx].INTMTDINFORMATION.pFileInfo, pFileInfo, xdx  ;From FilesCollection
+                    m2z [xbx].INTMTDINFORMATION.pHelpData   ;Ignore this now
+                    m2z [xbx].INTMTDINFORMATION.dHelpLineCount
+
+                    OCall TextSrc::TextSource.GetNextWord
+                    mov pWord, xax
+                    mov dWordLength, ecx
+                    .if xax != NULL
+                      invoke StrRScanA, xax, ';'  ;Look for a remark at the end of line
+                      .if xax != NULL
+                        m2z CHRA ptr [xax]        ;Set ZTC to ignore the remark
+                        invoke StrRTrimA, pWord, pWord
+                      .endif
+                    .endif
+                    mov [xbx].INTMTDINFORMATION.pArguments, $invoke(StrNewA, xax)
+                    OCall [xsi].IntMethodColl::IntMtdInfoCollection.Insert, xbx
+
+                    invoke FindHelpLines, addr TextSrc, xbx     ;Get the help lines now    
+
                   .endif
-                  mov [xbx].OBJECTINFORMATION.pAncestorName, xax
-
-                  invoke FindHelpLines, pTextSrc, xbx
-
-                  ;Scan now for object members
-                  .repeat
-                    .if $OCall(pTextSrc::TextSource.GetNextLine) == FALSE
-                      jmp @@Exit
-                    .endif
-                    OCall pTextSrc::TextSource.GetNextWord
-                    .if ecx != 0
-                      mov pWord, xax
-                      mov dWordSize, ecx
-                      .if ecx == sizeof bObjectEnd
-                        invoke StrCCompA, pWord, offset bObjectEnd, dWordSize
-                        .break .if eax == 0
-                      .endif
-
-                      CheckMthWord bVirtualMethod,    METHODTYPE_VIRTUAL
-                      CheckMthWord bStaticMethod,     METHODTYPE_STATIC
-                      CheckMthWord bDynamicMethod,    METHODTYPE_DYNAMIC
-                      CheckMthWord bInterfaceMethod,  METHODTYPE_INTERFACE
-                      CheckMthWord bInlineMethod,     METHODTYPE_INLINE
-
-                      CheckMthWord bVirtualEvent,     METHODTYPE_VIRTUAL_EVENT
-                      CheckMthWord bDynamicEvent,     METHODTYPE_DYNAMIC_EVENT
-
-                      CheckMthWord bVirtualAbstract,  METHODTYPE_VIRTUAL_ABSTRACT
-                      CheckMthWord bDynamicAbstract,  METHODTYPE_DYNAMIC_ABSTRACT
-
-                      CheckMthWord bRedefineMethod,   METHODTYPE_REDEFINED
-
-                      CheckVarWord bDefineVariable,   VARIABLETYPE_REGULAR
-                      CheckVarWord bRedefineVariable, VARIABLETYPE_REDEFINED
-                      CheckVarWord bEmbed,            VARIABLETYPE_OBJECT
-
-                      .continue
-                    .endif
-
-                @@AddNewMethod:
-                    OCall pTextSrc::TextSource.GetNextWord         ;Get method name
-                    .if ecx != 0
-                      mov edx, ecx
-                      mov xbx, $invoke(StrCNewA, xax, edx)
-                      MemAlloc sizeof OBJMTDINFORMATION
-                      mov [xax].OBJMTDINFORMATION.pName, xbx
-                      mov xbx, xax
-                      mov [xbx].OBJMTDINFORMATION.pObjectName, $invoke(StrNewA, pName)
-                      m2m [xbx].OBJMTDINFORMATION.pFileInfo, pFileInfo, xdx  ;From FilesCollection
-                      m2m [xbx].OBJMTDINFORMATION.dFlags, dFlags, edx
-                      m2z [xbx].OBJMTDINFORMATION.pHelpData
-                      m2z [xbx].OBJMTDINFORMATION.dHelpLineCount
-
-                      mov pWord, $OCall(pTextSrc::TextSource.GetNextWord)     ;xax -> parameters
-                      .if xax != NULL
-                        invoke StrRScanA, xax, ';'
-                        .if eax != NULL
-                          m2z BYTE ptr [xax]
-                          invoke StrRTrimA, pWord, pWord
-                        .endif
-                      .endif
-                      .if dFlags == METHODTYPE_VIRTUAL_EVENT || dFlags == METHODTYPE_DYNAMIC_EVENT
-                        mov [xbx].OBJMTDINFORMATION.pArguments, $invoke(StrNewA, $OfsCStr("wParam, lParam"))
-                      .else
-                        mov [xbx].OBJMTDINFORMATION.pArguments, $invoke(StrNewA, pWord)
-                      .endif
-                      OCall [xsi].ObjMethodColl::ObjMtdInfoCollection.Insert, xbx
-                    .endif
-                    .continue
-
-                @@AddNewVariable:
-                    OCall pTextSrc::TextSource.GetNextWord         ;Get variable name
-                    .if ecx != 0
-                      mov edx, ecx
-                      mov xbx, $invoke(StrCNewA, xax, edx)
-                      MemAlloc sizeof OBJVARINFORMATION
-                      mov [xax].OBJVARINFORMATION.pName, xbx
-                      mov xbx, xax
-                      mov [xbx].OBJVARINFORMATION.pObjectName, $invoke(StrNewA, pName)
-                      m2m [xbx].OBJVARINFORMATION.pFileInfo, pFileInfo, xdx  ;From FilesCollection
-                      m2m [xbx].OBJVARINFORMATION.dFlags, dFlags, edx
-                      m2z [xbx].OBJVARINFORMATION.pHelpData
-                      m2z [xbx].OBJVARINFORMATION.dHelpLineCount
-                      mov pWord, $OCall(pTextSrc::TextSource.GetNextWord)
-                      .if xax != NULL
-                        invoke StrRScanA, pWord, ';'
-                        .if xax != NULL
-                          m2z BYTE ptr [xax]
-                          invoke StrRTrimA, pWord, pWord
-                        .endif
-                      .endif
-                      mov [xbx].OBJVARINFORMATION.pArgType, $invoke(StrNewA, pWord)
-                      OCall [xsi].ObjVariableColl::ObjVarInfoCollection.Insert, xbx
-                    .endif
-
-                    invoke FindHelpLines, pTextSrc, xbx
-
-                @@NextLine1:
-                  .until FALSE
                 .endif
               .endif
-            .endif
+            .until FALSE
           .endif
 
-          ;-- Interface definition --------------------------------------------------
-
-        .elseif dWordSize == sizeof bBeginInterface
-          invoke StrCCompA, pWord, offset bBeginInterface, dWordSize
+        ;-- Method implementation --------------------------------------------------
+        .elseif dWordLength == lengthof bMethod
+          invoke StrCCompA, pWord, offset bMethod, dWordLength
           .if eax == 0
-            OCall pTextSrc::TextSource.GetNextWord     ;Get interface name
+            OCall TextSrc::TextSource.GetNextWord    ;Get object/interface name
             mov pWord, xax
-            mov dWordSize, ecx
+            mov dWordLength, ecx
             .if ecx != 0
-              .if ecx == sizeof bMacro
-                invoke StrCICompA, offset bMacro, pWord, dWordSize
+              .if ecx == lengthof bMacro
+                invoke StrCICompA, offset bMacro, pWord, dWordLength
                 .if eax == 0
-                  ;Interface name OK => create a new entry in the interface collection
-                  invoke StrCNewA, pWord, dWordSize
-                  mov pName, xax
-                  mov xbx, $MemAlloc(sizeof INTERFACEINFORMATION)
-                  m2m [xbx].INTERFACEINFORMATION.pName, pName, xdx
-                  mov edx, dInfoFlags
-                  or edx, INF_INTERFACE
-                  mov [xbx].INTERFACEINFORMATION.dFlags, edx
-                  m2m [xbx].INTERFACEINFORMATION.pFileInfo, pFileInfo, xax
-                  m2z [xbx].INTERFACEINFORMATION.pHelpData
-                  m2z [xbx].INTERFACEINFORMATION.dHelpLineCount
+                  ;Get the interface/object name
+                  mov xbx, $MemAlloc(sizeof IMPMTDINFORMATION)
+                  invoke StrCNew, pWord, dWordLength
+                  mov [xbx].IMPMTDINFORMATION.pObjectName, xax
+                  m2m [xbx].IMPMTDINFORMATION.pFileInfo, pFileInfo, xdx ;From FilesCollection
+                  m2z [xbx].IMPMTDINFORMATION.dFlags
+                  m2z [xbx].IMPMTDINFORMATION.pArguments
+                  m2z [xbx].IMPMTDINFORMATION.pHelpData   ;Ignore this now
+                  m2z [xbx].IMPMTDINFORMATION.dHelpLineCount
 
-                  OCall pTextSrc::TextSource.GetNextWord   ;Get interface ancestor
+                  ;Get the method name
+                  OCall TextSrc::TextSource.GetNextWord  ;xax -> parameters
                   mov pWord, xax
-                  mov dWordSize, ecx
-                  .if ecx != 0
-                    invoke StrCNewA, pWord, dWordSize
-                  .else
-                    xor eax, eax
-                  .endif
-                  mov [xbx].INTERFACEINFORMATION.pAncestorName, xax
-
-                  OCall [xsi].InterfaceColl::IntInfoCollection.Insert, xbx
-
-                  invoke FindHelpLines, pTextSrc, xbx
-
-                  ;Scan now for standart/dispatch interface methods
-                  .repeat
-                    .if $OCall(pTextSrc::TextSource.GetNextLine) == FALSE
-                      jmp @@Exit
-                    .endif
-                    OCall pTextSrc::TextSource.GetNextWord
-                    .if ecx != 0
-                      mov pWord, xax
-                      mov dWordSize, ecx
-                      .if dWordSize == sizeof bEndInterface
-                        invoke StrCCompA, pWord, offset bEndInterface, dWordSize
-                        .break .if eax == 0
-                      .endif
-
-                      .if dWordSize == sizeof bStdMethod
-                        invoke StrCCompA, pWord, offset bStdMethod, dWordSize
-                        mov dFlags, METHODTYPE_STANDARD
-                      .elseif dWordSize == sizeof bDispMethod
-                        invoke StrCCompA, pWord, offset bDispMethod, dWordSize
-                        mov dFlags, METHODTYPE_DISPATCH
-                      .endif
-
-                      .if eax == 0
-                        OCall pTextSrc::TextSource.GetNextWord    ;Get method name
-                        .if ecx != 0
-                          mov edx, ecx
-                          mov xbx, $invoke(StrCNewA, xax, edx)
-                          MemAlloc sizeof INTMTDINFORMATION
-                          mov [xax].INTMTDINFORMATION.pName, xbx
-                          mov xbx, xax
-                          mov [xbx].INTMTDINFORMATION.pInterfaceName, $invoke(StrNewA, pName)
-                          m2m [xbx].INTMTDINFORMATION.dFlags, dFlags, edx
-                          m2m [xbx].INTMTDINFORMATION.pFileInfo, pFileInfo, xdx  ;From FilesCollection
-                          m2z [xbx].INTMTDINFORMATION.pHelpData
-                          m2z [xbx].INTMTDINFORMATION.dHelpLineCount
-
-                          OCall pTextSrc::TextSource.GetNextWord
-                          mov pWord, xax
-                          mov dWordSize, ecx
-                          .if xax != NULL
-                            invoke StrRScanA, xax, ';'
-                            .if xax != NULL
-                              m2z CHRA ptr [xax]
-                              invoke StrRTrimA, pWord, pWord
-                            .endif
-                          .endif
-                          mov [xbx].INTMTDINFORMATION.pArguments, $invoke(StrNewA, xax)
-                          OCall [xsi].IntMethodColl::IntMtdInfoCollection.Insert, xbx
-                        .endif
-                      .endif
-                    .endif
-                  .until FALSE
-                .endif
-              .endif
-            .endif
-
-          ;-- Method implementation --------------------------------------------------
-          .elseif dWordSize == sizeof bMethod
-            invoke StrCCompA, pWord, offset bMethod, dWordSize
-            .if eax == 0
-              OCall pTextSrc::TextSource.GetNextWord       ;Get object/interface name
-              mov pWord, xax
-              mov dWordSize, ecx
-              .if ecx != 0
-                .if ecx == sizeof bMacro
-                  invoke StrCICompA, offset bMacro, pWord, dWordSize
-                  .if eax == 0
-                    ;Get the interface/object name
-                    mov xbx, $MemAlloc(sizeof IMPMTDINFORMATION)
-                    invoke StrCNew, pWord, dWordSize
-                    mov [xbx].IMPMTDINFORMATION.pObjectName, xax
-                    m2m [xbx].IMPMTDINFORMATION.pFileInfo, pFileInfo, xdx ;From FilesCollection
-                    m2z [xbx].IMPMTDINFORMATION.dFlags
-                    m2z [xbx].IMPMTDINFORMATION.pArguments
-                    m2z [xbx].IMPMTDINFORMATION.pHelpData
-                    m2z [xbx].IMPMTDINFORMATION.dHelpLineCount
-
-                    ;Get the method name
-                    OCall pTextSrc::TextSource.GetNextWord   ;xax -> parameters
-                    mov pWord, xax
-                    mov dWordSize, ecx
-                    add pWord, xcx
-                    mov [xbx].IMPMTDINFORMATION.pName, $invoke(StrCNewA, xax, dWordSize)
-                    invoke StrLScanA, pWord, ","
+                  mov dWordLength, ecx
+                  add pWord, xcx
+                  mov [xbx].IMPMTDINFORMATION.pName, $invoke(StrCNewA, xax, dWordLength)
+                  invoke StrLScanA, pWord, ","
+                  .if xax != NULL
+                    invoke StrLScanA, xax, ","
                     .if xax != NULL
-                      invoke StrLScanA, xax, ","
-                      .if xax != NULL
-                        inc xax
-                        mov [xbx].IMPMTDINFORMATION.pArguments, $invoke(StrNewA, xax)
-                      .endif
+                      inc xax
+                      mov [xbx].IMPMTDINFORMATION.pArguments, $invoke(StrNewA, xax)
                     .endif
-
-                    OCall [xsi].ImpMethodColl::ImpMtdInfoCollection.Insert, xbx
-
-                    invoke FindHelpLines, pTextSrc, xbx
-
                   .endif
+
+                  OCall [xsi].ImpMethodColl::ImpMtdInfoCollection.Insert, xbx
+
+                  invoke FindHelpLines, addr TextSrc, xbx
+
                 .endif
               .endif
             .endif
           .endif
         .endif
       .endif
-    .until FALSE
+    .endif
   .until FALSE
 
 @@Exit:
-  OCall pTextSrc::TextSource.Done
-
-@@Abort:
+  OCall TextSrc::TextSource.Done
   mov xax, pFileInfo
 MethodEnd
 

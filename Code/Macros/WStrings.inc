@@ -28,7 +28,8 @@
 ;                  segment returning a reference to it if the "$" prefix was used.
 ; $Ofs(C/D/J)WStr: Same as ($C/$D/$J)WStr, but returns the string offset.
 
-; Note: The LengthOf directive returns the number of chars in the string, NOT including the ZTC!
+; Note: The LengthOf and SizeOf directives return the number of characters in the string, 
+;       NOT including the ZTC!
 ; ==================================================================================================
 
 

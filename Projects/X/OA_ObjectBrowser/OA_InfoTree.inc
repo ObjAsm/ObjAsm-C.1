@@ -17,8 +17,8 @@ PXTVN_TREE_DISP_INFO typedef ptr XTVN_TREE_DISP_INFO
 
 
 Object InfoTree, 0, XTreeView
-  VirtualMethod     FindNode,           POINTER, DWORD
-  RedefineMethod    Init,               POINTER, HANDLE, POINTER
+  VirtualMethod     FindNode,           PSTRINGA, DWORD
+  RedefineMethod    Init,               POINTER, HANDLE, PDEF_XTV
   RedefineMethod    OnCreate,           WPARAM, LPARAM            ;Create icons
   RedefineMethod    OnDestroy,          WPARAM, LPARAM            ;Destroy icons
   RedefineMethod    OnLButtonDblClk,    WPARAM, LPARAM
@@ -39,7 +39,7 @@ ObjectEnd
 
 Object InfoNode, 0, XTreeViewNode
   RedefineMethod    CanDragMe,          DWORD
-  VirtualMethod     FindNode,           POINTER
+  VirtualMethod     FindNode,           PSTRINGA
   RedefineMethod    RenderContent,      PXTVN_TREE_DISP_INFO    ;Render check box
 
   DefineVariable    pInfo,              PINFORMATION,    NULL   ;-> INFORMATION
@@ -63,20 +63,22 @@ if IMPLEMENT
 ; Return:     TRUE / FALSE.
 
 Method InfoNode.CanDragMe,, dKeyFlags:DWORD
-  xor eax, eax                                          ;eax = FALSE
+  xor eax, eax                                          ;eax = FALSE  (disallow dragging)
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     InfoNode.FindNode
 ; Purpose:    Searches this node branch for the specified node name.
 ; Arguments:  Arg1: -> Node name.
-; Return:     -> found node or NULL.
+; Return:     xax -> found node or NULL.
 
-Method InfoNode.FindNode, uses xsi, pName:POINTER
+Method InfoNode.FindNode, uses xsi, pName:PSTRINGA
   SetObject xsi
   mov xcx, [xsi].pInfo
-  .if $invoke(StrComp, [xcx].INFORMATION.pName, pName) == 0
-    mov eax, esi
+  DbgStrA [xcx].INFORMATION.pName
+  DbgStrA pName
+  .if $invoke(StrCompA, [xcx].INFORMATION.pName, pName) == 0
+    mov xax, xsi
   .else
     mov xcx, [xsi].pFirstChild
     .if xcx != NULL
@@ -232,17 +234,17 @@ MethodEnd
 
 ;##\
 
-CStr cInfoTreeClass, "OA32InfoTree"
+CStr cInfoTreeClass, "OA_InfoTreeClass"
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     InfoTree.Init
 ; Purpose:    Initializes a InfoTree object.
 ; Arguments:  Arg1: -> Owner object.
-;             Arg2: Parent handle.
+;             Arg2: Parent HANDLE.
 ;             Arg3: -> Definition structure.
 ; Return:     Nothing.
 
-Method InfoTree.Init, uses xbx xsi, pOwner:POINTER, hParentWnd:HANDLE, pDefStruc:POINTER
+Method InfoTree.Init, uses xbx xsi, pOwner:POINTER, hParentWnd:HANDLE, pDefStruc:PDEF_XTV
   ;DbgText "XTreeView.Init"
   SetObject xsi
   mov xbx, pDefStruc
@@ -263,8 +265,9 @@ MethodEnd
 ;             Arg2: Information type (INFO_TYPE_OBJECT or INFO_TYPE_INTERFACE).
 ; Return:     xax -> found node or NULL.
 
-Method InfoTree.FindNode, uses xbx xsi, pName:POINTER, dType:DWORD
+Method InfoTree.FindNode, uses xbx xsi, pName:PSTRINGA, dType:DWORD
   SetObject xsi
+  DbgStrA pName
   mov xbx, [xsi].pFirstChild
   xor eax, eax
   .while xbx != NULL
@@ -419,7 +422,6 @@ Method InfoTree.Startup
 
   invoke RegisterClassEx, addr WC
 MethodEnd
-
 
 ;##/
 
