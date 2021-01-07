@@ -28,7 +28,7 @@ ObjectEnd
 ;    JsonDemoApp implementation
 ; ==================================================================================================
 
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
 ; Method:     JsonDemoApp.Init
 ; Purpose:    Initialize the SDI application object.
 ; Arguments:  None.
@@ -96,7 +96,9 @@ Method JsonDemoApp.Init, uses xbx xsi
   DbgStr [xax].JSON_PROPERTY.pName
   DbgStr [xax].JSON_PROPERTY.pValue
 
-  OCall xbx::Json.GetArrayItem, pPerson, 2
+  OCall xbx::Json.GetProperty, pPerson, $OfsCStr("Tools")
+  OCall xbx::Json.GetArrayItem, xax, 2
+	OCall xbx::Json.GetProperty, xax, $OfsCStr("Name")
   DbgStr [xax].JSON_PROPERTY.pName
   DbgStr [xax].JSON_PROPERTY.pValue
 
@@ -120,7 +122,9 @@ Method JsonDemoApp.Init, uses xbx xsi
   DbgStr [xax].JSON_PROPERTY.pName
   DbgStr [xax].JSON_PROPERTY.pValue
 
-  OCall xbx::Json.GetArrayItem, pPerson, 2
+  OCall xbx::Json.GetProperty, pPerson, $OfsCStr("Tools")
+  OCall xbx::Json.GetArrayItem, xax, 2
+	OCall xbx::Json.GetProperty, xax, $OfsCStr("Name")
   DbgStr [xax].JSON_PROPERTY.pName
   DbgStr [xax].JSON_PROPERTY.pValue
 
@@ -128,16 +132,16 @@ Method JsonDemoApp.Init, uses xbx xsi
   OCall DskStream::DiskStream.Done
   
   DbgLine ;--------------------------------------------------------------------------------
-  invoke JsonEscEncodeSize, $OfsCStrW("123§")
+  invoke JsonEscEncodeSize, $OfsCStrW("123Â§")
   DbgDec eax
-  invoke JsonEscEncode, $OfsCStrW("123§"), addr wBuffer, sizeof(wBuffer)
+  invoke JsonEscEncode, $OfsCStrW("123Â§"), addr wBuffer, sizeof(wBuffer)
   DbgStr wBuffer
   invoke JsonEscDecode, addr wBuffer, addr wBuffer, sizeof(wBuffer)
   DbgStr wBuffer
 
 MethodEnd
 
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
 ; Method:     JsonDemoApp.OnCommand
 ; Purpose:    Event procedure for WM_COMMAND message.
 ; Arguments:  Arg1: First message parameter.
@@ -172,7 +176,7 @@ Method JsonDemoApp.OnCommand, uses xsi, wParam:WPARAM, lParam:LPARAM
   .endif
 MethodEnd
 
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
 ; Method:     JsonDemoApp.OnClose
 ; Purpose:    Event procedure for WM_CLOSE message.
 ; Arguments:  Arg1: First message parameter.
@@ -190,7 +194,7 @@ Method JsonDemoApp.OnClose, uses xsi, wParam:WPARAM, lParam:LPARAM
   .endif
 MethodEnd
 
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
 ; Method:     JsonDemoApp.OnPaint
 ; Purpose:    Event procedure for WM_PAINT message.
 ; Arguments:  Arg1: First message parameter.
@@ -210,7 +214,7 @@ Method JsonDemoApp.OnPaint, uses xsi, wParam:WPARAM, lParam:LPARAM
   xor eax, eax
 MethodEnd
 
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
 ; Method:     JsonDemoApp.Startup
 ; Purpose:    Register the JsonDemoApp window class with the operating system.
 ; Arguments:  None.
