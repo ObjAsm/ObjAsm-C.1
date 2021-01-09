@@ -578,13 +578,15 @@ Method DB_RecordEditor.OnCommand, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
 ;          invoke SendMessage, [xbx].$Obj(DB_RecordEditorLine).hRbnFieldName, BM_SETCHECK, \
 ;                              BST_CHECKED, 0
         .elseif eax == BST_CHECKED
-          invoke SetFocus, [xbx].$Obj(DB_RecordEditorLine).hEdtRecord
+          invoke GetParent, [xsi].hWnd
+          invoke SendMessage, xax, WM_NEXTDLGCTL, [xbx].$Obj(DB_RecordEditorLine).hEdtRecord, TRUE
         .endif
         ;Forward the WM_COMMAND to the parent
         invoke GetParent, [xsi].hWnd
         invoke SendMessage, xax, WM_COMMAND, IDC_RECORD_EDT, [xsi].hWnd
       .else
-        invoke SetFocus, [xbx].$Obj(DB_RecordEditorLine).hEdtRecord
+        invoke GetParent, [xsi].hWnd
+        invoke SendMessage, xax, WM_NEXTDLGCTL, [xbx].$Obj(DB_RecordEditorLine).hEdtRecord, TRUE
       .endif
     .endif
   .endif

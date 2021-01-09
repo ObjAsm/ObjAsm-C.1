@@ -5,6 +5,8 @@
 ; Purpose:    ObjAsm support of Dialog objects.
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
+;               - Set the focus on a Dialog (Don't use SetFocus => WM_NEXTDLGCTL):
+;                 https://devblogs.microsoft.com/oldnewthing/20040802-00/?p=38283
 ; ==================================================================================================
 
 
@@ -235,7 +237,11 @@ Method Dialog.OnInitDialog, uses xsi, wParam:WPARAM, lParam:LPARAM
     invoke MoveWindowVisible, [xsi].hWnd, [xsi].StartPos.x, [xsi].StartPos.y
   .endif
 
-  invoke SetFocus, $invoke(GetDlgItem, [xsi].hWnd, IDOK)  ;Set focus to <OK> button
+  invoke GetDlgItem, [xsi].hWnd, IDOK
+  .if xax != 0
+    invoke SendMessage, [xsi].hWnd, WM_NEXTDLGCTL, xax, TRUE
+  .endif
+
   OCall xsi.CtlsSet
 
   invoke SetForegroundWindow, [xsi].hWnd

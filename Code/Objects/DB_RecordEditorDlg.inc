@@ -96,26 +96,26 @@ Method DB_RecordEditorDlg.CtlsEnable, uses xsi, dOptions:DWORD
         .if eax == 1
           BitClr [xsi].dFlags, RDF_TOP_ENABLED or RDF_PREV_ENABLED
           invoke GetDlgItem, [xsi].hWnd, IDC_RECORD_SBR
-          invoke SetFocus, xax
+          invoke SendMessage, [xsi].hWnd, WM_NEXTDLGCTL, xax, TRUE
         .endif
         mov xcx, [xsi].pTable
         .if eax == [xcx].$Obj(DB_Table).Descriptor.dNumRecs
           BitClr [xsi].dFlags, RDF_NEXT_ENABLED or RDF_BOTTOM_ENABLED
           invoke GetDlgItem, [xsi].hWnd, IDC_RECORD_SBR
-          invoke SetFocus, xax
+          invoke SendMessage, [xsi].hWnd, WM_NEXTDLGCTL, xax, TRUE
         .endif
       .else
         OCall [xsi].pActiveIndex::DB_Index.AtTop?
         .if ecx != FALSE
           BitClr [xsi].dFlags, RDF_TOP_ENABLED or RDF_PREV_ENABLED
           invoke GetDlgItem, [xsi].hWnd, IDC_RECORD_SBR
-          invoke SetFocus, xax
+          invoke SendMessage, [xsi].hWnd, WM_NEXTDLGCTL, xax, TRUE
         .endif
         OCall [xsi].pActiveIndex::DB_Index.AtBottom?
         .if ecx != FALSE
           BitClr [xsi].dFlags, RDF_NEXT_ENABLED or RDF_BOTTOM_ENABLED
           invoke GetDlgItem, [xsi].hWnd, IDC_RECORD_SBR
-          invoke SetFocus, xax
+          invoke SendMessage, [xsi].hWnd, WM_NEXTDLGCTL, xax, TRUE
         .endif
       .endif
     .endif
