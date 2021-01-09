@@ -1,9 +1,12 @@
 ; ==================================================================================================
 ; Title:      Splitter.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Purpose:    ObjAsm support of Splitter objects.
-; Notes:      Version C.1.0, October 2017
+; Notes:      Version C.1.1, January 2021
+;               - OnPaint color bug corrected.
+;               - Color change to dMoveSysColor while moving.
+;             Version C.1.0, October 2017
 ;               - First release.
 ; ==================================================================================================
 
@@ -29,6 +32,7 @@ SPT_NO_POSITION           equ     -1
 ;             position. Splitters can be horizontal or vertical and can have different widths.
 
 Object Splitter, SplitterID, Window
+  VirtualMethod     Draw,           PRECT
   RedefineMethod    Done
   RedefineMethod    Init,           POINTER, HWND, DWORD, SDWORD, SDWORD, SDWORD
   RedefineMethod    Load,           $ObjPtr(Stream), PDESER_INFO
@@ -46,6 +50,7 @@ Object Splitter, SplitterID, Window
   VirtualEvent      OnSetCursor,    WM_SETCURSOR
 
   DefineVariable    dFlags,         DWORD,    SPT_FLAG_VERTICAL
+  DefineVariable    dMoveSysColor,  DWORD,    COLOR_ACTIVEBORDER
   DefineVariable    dHoverTime,     DWORD,    800
   DefineVariable    dThickness,     DWORD,    0
   DefineVariable    hCursor,        HCURSOR,  0
@@ -86,6 +91,50 @@ SetNewParent proc hWnd:HWND, hNewParent:HWND
   invoke MoveWindow, hWnd, WndRect.left, WndRect.top, WndRect.right, WndRect.bottom, FALSE
   ret
 SetNewParent endp
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     Splitter.Draw
+; Purpose:    Draws the Splitter in its new position.
+; Arguments:  Arg1: -> Splitter RECT.
+; Return:     Nothing.
+; Note:       The trick is to draw on the Screen DC.
+;             We use the XOR drawing mode. This way, if we draw the spiltter a 2nd time on the same
+;             place, it disappears.
+
+Method Splitter.Draw, uses xbx xsi, pRect:PRECT
+    local hBrush:HBRUSH, hPrvBrush:HBRUSH
+    local hPen:HPEN, hPrvPen:HPEN
+    local hDC:HDC, dPrvRop2:DWORD, ScnPnt:POINT
+
+    SetObject xsi
+    ;Drawing preparation
+    mov hDC, $invoke(GetDC, 0)                                    ;Get Screen DC
+    mov dPrvRop2, $32($invoke(SetROP2, hDC, R2_NOTXORPEN))        ;Set the draw mode to XOR
+    mov ebx, $32($invoke(GetSysColor, COLOR_BTNSHADOW))
+    mov hPen, $invoke(CreatePen, PS_SOLID, 1, ebx)
+    mov hPrvPen, $invoke(SelectObject, hDC, hPen)
+    mov hBrush, $invoke(CreateSolidBrush, ebx)
+    mov hPrvBrush, $invoke(SelectObject, hDC, hBrush)
+
+    ;Draw the Splitter
+    mov xbx, pRect
+    m2m ScnPnt.x, [xbx].RECT.left, ecx
+    m2m ScnPnt.y, [xbx].RECT.top, ecx
+    invoke GetParent, [xsi].hWnd
+    lea xdx, ScnPnt
+    invoke ClientToScreen, xax, xdx
+    mov eax, ScnPnt.x
+    add eax, [xbx].RECT.right
+    mov ebx, ScnPnt.y
+    add ebx, [xbx].RECT.bottom
+    invoke Rectangle, hDC, ScnPnt.x, ScnPnt.y, eax, ebx
+
+    ;Housekeeping
+    invoke DeleteObject, $invoke(SelectObject, hDC, hPrvBrush)
+    invoke DeleteObject, $invoke(SelectObject, hDC, hPrvPen)
+    invoke SetROP2, hDC, dPrvRop2
+    invoke ReleaseDC, 0, hDC
+MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Splitter.Done
@@ -200,14 +249,18 @@ MethodEnd
 ; Return:     eax = Zero (handled).
 
 Method Splitter.OnPaint, uses xsi, wParam:WPARAM, lParam:LPARAM
-  local PS:PAINTSTRUCT, CntRect:RECT
+  local PS:PAINTSTRUCT, ClientRect:RECT
 
-;  DbgText "Splitter.OnPaint"
+  DbgText "Splitter.OnPaint"
   SetObject xsi
-  invoke SendMessage, [xsi].hParent, WM_CTLCOLORSTATIC, 0, 0
   invoke BeginPaint, [xsi].hWnd, addr PS
-  invoke GetClientRect, [xsi].hWnd, addr CntRect
-  invoke FillRect, PS.hdc, addr CntRect, xax
+  invoke GetClientRect, [xsi].hWnd, addr ClientRect
+  .ifBitSet [xsi].dFlags, SPT_FLAG_MOVING
+    invoke GetSysColorBrush, [xsi].dMoveSysColor
+  .else
+    invoke SendMessage, [xsi].hParent, WM_CTLCOLORSTATIC, 0, 0    ;xax = Brush HANDLE
+  .endif
+  invoke FillRect, PS.hdc, addr ClientRect, xax
   invoke EndPaint, [xsi].hWnd, addr PS
   xor eax, eax
 MethodEnd
@@ -399,7 +452,7 @@ MethodEnd
 Method Splitter.OnMouseMove, uses xsi, wParam:WPARAM, lParam:LPARAM
   local CursorPos:POINT, WndRect:RECT, PntRect:RECT, EventTrack:TRACKMOUSEEVENT
 
-;  DbgText "Splitter.OnMouseMove"
+  DbgText "Splitter.OnMouseMove"
   SetObject xsi
   .ifBitSet [xsi].dFlags, SPT_FLAG_MOVING
     invoke GetClientRect, [xsi].hParent, addr PntRect   ;Parent client area
@@ -485,7 +538,7 @@ MethodEnd
 Method Splitter.OnNotify, uses xsi, wParam:WPARAM, lParam:LPARAM
   local CntRect:RECT, WndRect:RECT
 
-;  DbgText "Splitter.OnNotify"
+  DbgText "Splitter.OnNotify"
   SetObject xsi
   mov xax, lParam                                       ;xax -> NMHDR
   .if xax != NULL
