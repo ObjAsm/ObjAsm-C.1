@@ -196,7 +196,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=3
+MilestoneOnDateDate=10
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -231,18 +231,18 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,746,582,116931
+2=0,0,746,582,121962
 3=0,0,756,582,565
-1=453,0,453,706,548
-4=540,0,412,843,14112
+1=453,0,453,706,5316
+4=540,0,412,843,2880
 1001=0,0,0,0,460
 5=0,0,0,0,60843
 6=0,0,0,0,786
 7=0,0,0,0,80948
-8=0,0,0,0,6144
+8=0,0,0,0,890
 9=0,0,1878,628,779
 11=0,0,0,0,15543
-13=0,0,0,0,3146
+13=0,0,0,0,5408
 14=0,0,0,0,5029
 15=0,0,0,0,2527
 10=0,0,0,0,4032
@@ -258,11 +258,11 @@ ProductVer4Range=0
 24=0,0,0,0,3240
 25=0,0,0,0,8654
 26=0,0,0,0,24077
-27=0,0,0,0,9938
+27=0,0,0,0,10006
 28=0,0,0,0,460
 29=0,0,0,0
 30=0,0,1219,711,1154
-31=0,0,1219,711,144
+31=0,0,1219,711,298
 32=0,0,0,0
 33=0,0,0,0,34754
 36=0,0,0,0,2871
@@ -310,19 +310,19 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="Method Collection.DestroyItem,, pItem:POINTER"
-2="FindFinalMember"
-3="OCall [xsi].Variables::DataCollection.LastThatNot, offset FindFinalMember, xsi, NULL"
-4="MDT_FINAL"
-5="SetOcxPosition"
-6="ShowInher"
-7="VariableProperties"
-8="MethodProperties"
-9="$MemAlloc(MEMBERDATA)"
-10="MDT_SHOWDETAIL"
+1="CURSOR_SPLITVER"
+2="SPT_FLAG_MOVING"
+3="WM_MOUSEMOVE"
+4="WM_PAINT"
+5="SetROP2"
+6="WM_CTLCOLORSTATIC"
+7="Color"
+8="ObjPropWnd"
+9="Method Collection.DestroyItem,, pItem:POINTER"
+10="FindFinalMember"
 [Collapse]
 2=,,,,,,,,,57600,
-8=,,
+8=1326,67371072,14497
 1=
 5=,
 11=,
@@ -381,7 +381,7 @@ ProductVer4Range=0
 60=
 58=,
 [AutoLoad]
-AutoLoad=1,2,23,27
+AutoLoad=1,2,8,4
 [RADebugBP]
 4=
 6=
@@ -425,7 +425,8 @@ AutoLoad=1,2,23,27
 48=
 58=
 59=
+8=
 [PTimer]
-PTimer=2052650560
+PTimer=2105734434
 [GroupExpand]
 GroupExpand=1,1,1,1,1,1,0
