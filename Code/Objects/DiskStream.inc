@@ -46,6 +46,7 @@ Object DiskStream, DiskStreamID, Stream
   RedefineMethod      Seek,         QWORD, DWORD              ;Position, Mode
   RedefineMethod      Truncate
 
+  VirtualMethod       Clean   
   DefineVariable      hFile,        HANDLE,     INVALID_HANDLE_VALUE
 ObjectEnd
 
@@ -309,6 +310,20 @@ Method DiskStream.BinWrite64, uses xsi, qValue:QWORD
   .else
     xor eax, eax
   .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     DiskStream.Clean
+; Purpose:    Close open file.
+; Arguments:  None.
+; Return:     Nothing.
+
+Method DiskStream.Clean, uses xsi
+  SetObject xsi
+  .if [xsi].hFile != INVALID_HANDLE_VALUE
+    invoke CloseHandle, [xsi].hFile
+  .endif
+  m2z [xsi].hFile
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
