@@ -1,12 +1,13 @@
 ; ==================================================================================================
 ; Title:      WinPrimer.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Purpose:    ObjAsm support of WinPrimer objects.
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
+;             Version C.1.1, February 2021
+;               - Done method added. Call DestroyWindow at life end of descendents. 
 ; ==================================================================================================
-
 
 WM_GETOBJECTINSTANCE  equ   7FFFh   ;Last possible WM_USER message
 
@@ -18,7 +19,8 @@ Object WinPrimer, WinPrimerID, Streamable
   RedefineMethod    Init,         POINTER, HWND         ;-> Owner, Window HANDLE
   RedefineMethod    Load,         $ObjPtr(Stream), PDESER_INFO
   RedefineMethod    Store,        $ObjPtr(Stream)
-
+  RedefineMethod    Done   
+    
   VirtualEvent      OnGetObjectInstance,  WM_GETOBJECTINSTANCE
 
   ;Messages forwarded to child windows
@@ -155,7 +157,6 @@ MethodEnd
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     WinPrimer.Store
 ; Purpose:    Store the WinPrimer instance in a stream object. Descendant objects should redefine
-;             this method and store new members.
 ; Arguments:  Arg1: -> Stream object.
 ; Return:     Nothing.
 
@@ -163,6 +164,20 @@ Method WinPrimer.Store, uses xsi, pStream:$ObjPtr(Stream)
   SetObject xsi
   ACall xsi.Store, pStream
   OCall pStream::Stream.%BinWriteX, [xsi].hWnd
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     WinPrimer.Done
+; Purpose:    Destroy window
+; Arguments:  None
+; Return:     Nothing.
+
+Method WinPrimer.Done, uses xsi
+  SetObject xsi
+  .if [xsi].hWnd
+      invoke DestroyWindow, [xsi].hWnd 
+  .endif
+  ACall xsi.Done
 MethodEnd
 
 endif
