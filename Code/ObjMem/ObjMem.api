@@ -419,6 +419,7 @@ IsHardwareFeaturePresent, dFeature
 IsCPUFeaturePresent, dFeature
 WaitForProcess, dProcessID, dTimeout
 IsPntInRect, pPoint, pRect
+GetRawClientRect, hWnd, pRect
 IsGUIDEqual, pGUID1, pGUID2
 DisableCPUSerialNumber
 GetLogProcCount, pAffinityMaskTable
@@ -432,7 +433,7 @@ RadixSortPtrF32, pArray, dCount, dOffset, pWorkArea
 RadixSortF64, pArray, dCount, pWorkArea
 RadixSortPtrF64, pArray, dCount, dOffset, pWorkArea
 NewObjInst, dObjID
-IsScrollbarVisible, hWnd, dScrollbarType
+IsScrollBarVisible, hWnd, dScrollbarType
 GetDlgBaseUnits, hDC
 SendChildrenMessage, hWnd, MsgID, wParam, lParam
 UTF8ToWide, pDestination, pSource, dDestBufferSize

@@ -23,7 +23,7 @@
 ;  - DbgStr, DbgStrA, DbgStrW, DbgStrCA, DbgStrCW
 ;  - DbgBin, DbgDec, DbgHex, DbgFloat, DbgGUID
 ;  - DbgMem, DbgGlobalMemUsage, DbgFPU
-;  - DbgBmp
+;  - DbgBmp, DbgBmpFromDC
 ;  - DbgApiError, DbgComError, DbgMessage
 ;  - DbgObject, DbgTraceObject, DbgTraceShow
 ;  - ResGuard_Show, ResGuard_Start, ResGuard_Stop
@@ -900,14 +900,30 @@ endm
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      DbgBmp
 ; Purpose:    Output a specified bitmap on the debug device.
-; Arguments:  Arg1: -> Bitmap HANDLE.
+; Arguments:  Arg1: Bitmap HANDLE.
 ;             Arg2: Optional destination Window name.
 
-DbgBmp macro Var:req, Dest
+DbgBmp macro hBmp:req, Dest
   if DEBUGGING
-    DbgSaveContext FALSE, Var
+    DbgSaveContext FALSE, hBmp
     DbgSetDestWnd Dest
     invoke DbgOutBitmap, ??VarRBX, ??DbgDstWnd
+    DbgLoadContext
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgBmpFromDC
+; Purpose:    Output a specified bitmap on the debug device.
+; Arguments:  Arg1: DC HANDLE.
+;             Arg2: Optional destination Window name.
+
+DbgBmpFromDC macro hDC:req, Dest
+  if DEBUGGING
+    DbgSaveContext FALSE, hDC
+    DbgSetDestWnd Dest
+    invoke GetCurrentObject, hDC, OBJ_BITMAP
+    invoke DbgOutBitmap, xax, ??DbgDstWnd
     DbgLoadContext
   endif
 endm

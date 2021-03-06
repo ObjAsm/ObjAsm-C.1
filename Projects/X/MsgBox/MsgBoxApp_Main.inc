@@ -7,6 +7,7 @@
 ;               - First release.
 ; ==================================================================================================
 
+;Problem: [xsi].DrawExtent.y is not set
 
 CLSSTYLE equ CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW; or CS_DROPSHADOW
 
@@ -32,6 +33,27 @@ ObjectEnd
 ;    Application implementation
 ; ==================================================================================================
 
+
+
+MB_BTN_MAX_COUNT  equ 4       ;Max number of buttons shown on the dialog
+
+MB_ButtonInfo struc           ;Collected information of each button
+  hWnd        HWND  ?
+  Rect        RECT  {}
+MB_ButtonInfo ends
+
+MsgBoxInfo struc
+  hHook       HANDLE    ?     ;System hook
+  hDlg        HWND      ?     ;hDlg
+  pCaption    PSTRING   ?     ;Dialog caption string
+  pText       PSTRING   ?     ;Main text markup string
+  dBandHeight DWORD     ?     ;Drawing help, height of grey band at the bottom of the dialog
+  dBtnCount   DWORD     ?     ;Index into MsgBoxBtns
+  dFlags      DWORD     ?
+  Buttons     MB_ButtonInfo MB_BTN_MAX_COUNT DUP({?})       ;Button information
+MsgBoxInfo ends
+
+
 VIEW_CTRL_ID  equ 165874
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -40,24 +62,24 @@ VIEW_CTRL_ID  equ 165874
 ; Arguments:  None.
 ; Return:     Nothing.
 
-CStr cErrMsg, "{S.X 420}{S.Y 195}{P.A 20}", \
-              "[FI 55]",\
-                "[B,H +6,C #FF4F4F]Warning{#21}[~]{P}", \
-                "[H +2]Critical system failure   - ERRID 521 -  [~]", \
-                "[Info 0,F 'Webdings',H +1]{#69}[~]{P}", \
-                "[C #5F4FFF]", \
+CStr cErrMsg, "{PA20}", \
+              "[FI55]",\
+                "[B,H+6,C#FF4F4F]Warning{#21}[~]{P}", \
+                "[H+2]Critical system failure   - ERRID 521 -  [~]", \
+                "[TIP0,F'Webdings',H+1]{#69}[~]{P}", \
+                "[C#5F4FFF]", \
                   "[I]Read the instruction manual for more information  [~]", \
-                  "[Info 1,F 'Webdings',H +1]{#69}[~]", \
+                  "[TIP1,F'Webdings',H+1]{#69}[~]", \
                 "[~]", \
               "[~]"
 
 CStr cAppMsg, "Application message"
 
-CStr cHlpMsg, "{S.X 450}{S.Y 250}{P.A 20}", \
-              "[B,H +6,C #007F00]Chapter 2[~]{P}", \
-              "[H +2]Critical system failure   - ERRID 521 -  [~]{P}", \
+CStr cHlpMsg, "{PA20}", \
+              "[B,H+6,C#007F00]Chapter 2[~]{P}", \
+              "[H+2]Critical system failure   - ERRID 521 -  [~]{P}", \
               "[U]Description:[~]{P}", \ 
-              "[FI 25]", \
+              "[FI25]", \
                 "The systen is unable to perform an operation due to low{B}", \
                 "system resources. Try to free some memory closing parallel{B}", \
                 "running applications or install more memory.", \
@@ -91,7 +113,6 @@ Method Application.Init, uses xsi
   .if xax != 0
     invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0
     mov [xsi].pTextView, xax
-    OCall [xsi].pTextView::TextView.Show
   .endif
 
   invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL          ;Show the window
@@ -201,14 +222,14 @@ Method Application.OnNotify, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
   mov xax, wParam
   .if xax == 0FFFFh
     mov xdi, lParam
-    .if [xdi].NMHDR.code == TVNMC_INFO
-      .if [xdi].TVNM_INFO.dID == 0
-        c2m [xdi].TVNM_INFO.pText, $OfsCStr("ERRID 521", 13, \
-                                            "The system is not able to perform this ", \
-                                            "operation due to low system resources"), xax
-      .elseif [xdi].TVNM_INFO.dID == 1
-        c2m [xdi].TVNM_INFO.pText, $OfsCStr("Press the help button to open the", 13, \
-                                            "instruction manual at chapter 2"), xax
+    .if [xdi].NMHDR.code == TVNMC_TIP
+      .if [xdi].TVNM_TIP.dID == 0
+        c2m [xdi].TVNM_TIP.pText, $OfsCStr("ERRID 521", 13, \
+                                           "The system is not able to perform this ", \
+                                           "operation due to low system resources"), xax
+      .elseif [xdi].TVNM_TIP.dID == 1
+        c2m [xdi].TVNM_TIP.pText, $OfsCStr("Press the help button to open the", 13, \
+                                           "instruction manual at chapter 2"), xax
       .endif
     .endif
   .elseif xax == VIEW_CTRL_ID
@@ -218,8 +239,8 @@ Method Application.OnNotify, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
         New Img::Image
         OCall Img::Image.Init, xsi
         OCall Img::Image.%LoadFromRes, $OfsCStr("DISCOUNT")
-        mov DstRect.left, 185
-        mov DstRect.top, 160
+        mov DstRect.left, 170
+        mov DstRect.top, 150
         mov DstRect.right, 110
         mov DstRect.bottom, 96
         OCall Img::Image.AlphaDraw, [xdi].TVNM_DRAW.hDC, 255, addr DstRect

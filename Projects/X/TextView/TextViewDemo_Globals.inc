@@ -31,9 +31,9 @@ INFO_UPDATE   equ   1
 
 .const
 String szMarkupText,  "{Padding 20}", \
-                      "[Height 11]", \
+                      "[Height +1]", \
                         "{COVER 0}", \
-                        "[Indent 150, Align 'LEFT']", \
+                        "[Indent 150, Align.left]", \
                           "[Height +3, Bold]&ABOUT_TEXT{B}[~]", \
                           "[Italic]Version &VER_PRODUCTVERSION_STR{P}[~]", \
                           "[Color #3F3F3F]", \
@@ -43,19 +43,19 @@ String szMarkupText,  "{Padding 20}", \
                               @CatStr(<!">, %BUILD_DATE_STR, \
                                       <  -  Build: >, %BUILD_NUMBER, <->, %ASSEMBLER, <->, \
                                       %TARGET_MODE_STR, <->, %TARGET_BITNESS, <    !">), \
-                              "[Info ", @CatStr(<!">, %INFO_BUILD, <!">), ", Font 'Webdings', Height +1]{#69}[~]", \
+                              "[TIP ", @CatStr(<!">, %INFO_BUILD, <!">), ", Font 'Webdings', Height +1]{#69}[~]", \
                             "[~]{B}{B}", \
                           "[~]", \
                         "[~]"
-ExtendString            "[Indent 0, Align 'CENTER']", \
+ExtendString            "[Indent 0, Align.Center]", \
                           "[Font 'Webdings', Color #FF5F5F, Height +7]{#7E}[~]", \
                           "  Visit us at  ", \
-                          "[App ", @CatStr(<!">, %APP_VISIT, <!">), ", Color #0000FF, U]www.objasm.x10host.com[~]{B}", \
+                          "[APP ", @CatStr(<!">, %APP_VISIT, <!">), ", Color #0000FF, U]www.objasm.x10host.com[~]{B}", \
                           "[Font 'Wingdings', Color #408090, Height +1]{#2A}[~]", \
                           "   Email us to  ", \
-                          "[App ", @CatStr(<!">, %APP_EMAIL, <!">), ", Color #0000FF, U]objasm@gmx.net[~]{P}", \
-                          "[App ", @CatStr(<!">, %APP_CHECK, <!">), ", Color #0000FF, U]Check for updates[~]", \
-                          "[Info ", @CatStr(<!">, %INFO_UPDATE, <!">), ", Font 'Webdings', H +1, Color #5F5FFF]  {#69}[~]", \
+                          "[APP ", @CatStr(<!">, %APP_EMAIL, <!">), ", Color #0000FF, U]objasm@gmx.net[~]{P}", \
+                          "[APP ", @CatStr(<!">, %APP_CHECK, <!">), ", Color #0000FF, U]Check for updates[~]", \
+                          "[TIP ", @CatStr(<!">, %INFO_UPDATE, <!">), ", Font 'Webdings', H +1, Color #5F5FFF]  {#69}[~]", \
                         "[~]", \
                       "[~]"
 
@@ -81,8 +81,8 @@ endif
 
 CStr szUpdateInfo,  "Verifies the availability of a new software update."
                     
-%CStr szBuildInfo,  "Build number:", 9, @CatStr(<!">, %BUILD_NUMBER, <!">), 13, \
-                    "Assembler:   ", 9, @CatStr(<!">, %ANAME, <!">), 13, \
-                    "Version:     ", 9, @CatStr(<!">, %AVERSION, <!">), 13, \
-                    "Distribution:", 9, @CatStr(<!">, %DNAME, <!">), 13, \
-                    "Bitness:     ", 9, @CatStr(<!">, %TARGET_BITNESS, <!">)
+%CStr szBuildInfo,  "Build number: ", 9, @CatStr(<!">, %BUILD_NUMBER, <!">), 13, \
+                    "Assembler:    ", 9, @CatStr(<!">, %ANAME, <!">), 13, \
+                    "Version:      ", 9, @CatStr(<!">, %AVERSION, <!">), 13, \
+                    "Distribution: ", 9, @CatStr(<!">, %DNAME, <!">), 13, \
+                    "Bitness:      ", 9, @CatStr(<!">, %TARGET_BITNESS, <!">)

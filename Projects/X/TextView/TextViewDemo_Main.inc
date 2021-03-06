@@ -65,7 +65,7 @@ Method Application.Init, uses xsi
   .if xax != 0
     invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0
     mov [xsi].pTextView, xax
-    OCall [xsi].pTextView::TextView.Show
+;    OCall [xsi].pTextView::TextView.Show
   .endif
 
   invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL          ;Show the window
@@ -167,12 +167,12 @@ Method Application.OnNotify, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
                                        MB_ICONINFORMATION or MB_OK
       .endif
 
-    .elseif [xdi].NMHDR.code == TVNMC_INFO
-      .if [xdi].TVNM_INFO.dID == INFO_BUILD
-        c2m [xdi].TVNM_INFO.pText, offset szBuildInfo, xax
+    .elseif [xdi].NMHDR.code == TVNMC_TIP
+      .if [xdi].TVNM_TIP.dID == INFO_BUILD
+        c2m [xdi].TVNM_TIP.pText, offset szBuildInfo, xax
 
-      .elseif [xdi].TVNM_INFO.dID == INFO_UPDATE
-        c2m [xdi].TVNM_INFO.pText, offset szUpdateInfo, xax
+      .elseif [xdi].TVNM_TIP.dID == INFO_UPDATE
+        c2m [xdi].TVNM_TIP.pText, offset szUpdateInfo, xax
       .endif
 
     .elseif [xdi].NMHDR.code == TVNMC_DRAW
@@ -180,10 +180,10 @@ Method Application.OnNotify, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
         New Img::Image
         OCall Img::Image.Init, xsi
         OCall Img::Image.%LoadFromRes, $OfsCStr("OA")
-        mov DstRect.left, 35
-        mov DstRect.top, 35
-        mov DstRect.right, 100
-        mov DstRect.bottom, 100
+        mov DstRect.left, 15                            ;X-Coord. inside draw area, padding excl.
+        mov DstRect.top, 15                             ;Y-Coord. inside draw area, padding excl.
+        mov DstRect.right, 100                          ;Width
+        mov DstRect.bottom, 100                         ;Height
         OCall Img::Image.AlphaDraw, [xdi].TVNM_DRAW.hDC, 255, addr DstRect
         OCall Img::Image.Done
       .endif

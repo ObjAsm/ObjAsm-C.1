@@ -33,7 +33,7 @@ include MsgBoxApp_Main.inc
 .code
 start proc
   SysInit
-;  DbgClearAll
+  DbgClearAll
 
   invoke CoInitialize, 0
   OCall $ObjTmpl(Application)::Application.Init

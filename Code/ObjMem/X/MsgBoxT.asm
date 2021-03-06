@@ -1,15 +1,17 @@
 ; ==================================================================================================
 ; Title:      MsgBoxT.asm
 ; Author:     G. Friedrich
-; Version:    C.1.2
+; Version:    C.1.3
 ; Purpose:    ObjAsm support of MsgBox dialogs.
 ;             It displays a modified Messagebox using TextView formatted text.
-; Notes:      Version C.1.2, May 2020
+; Notes:      Version C.1.3, February 2021
+;               - TextView internal update changes. GetExtent replaced.
+;             Version C.1.2, May 2020
 ;               - First release.
 ;               - The arguments passed to the function are almost the same es the original API.
 ;               - If an icon is specified, e.g MB_ICONERROR, a text indentation of 65px is 
 ;                 recommended.
-;               - Don't use GWLP_USERDATA. It is used internally by the API.
+;               - Don't use GWLP_USERDATA. It is used internally by the MessageBox implementation.
 ; ==================================================================================================
 
 
@@ -76,52 +78,6 @@ ProcName proc uses xbx hParent:HANDLE, pText:POINTER, pCaption:POINTER, dFlags:D
 ProcName endp
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     MB_TextView.GetExtent
-; Purpose:    Return the Extent after evaluation of SIZE commands.
-;             This method only allows growing sizes.
-; Arguments:  None.
-; Return:     eax = TRUE if the extent has changed, otherwise FALSE.
-
-OA_MB_TextView_GetExtent proc private uses xbx xdi xsi, pSelf:POINTER
-  local NewExtent:POINT, dHasChanged:DWORD
-
-  SetObject xsi, TextView
-  mov dHasChanged, FALSE
-  s2s NewExtent, [xsi].Extent, xax, xcx, xmm0, xmm1, xmm2 
-  .for (ebx = 0 : ebx != [xsi].Entries.dCount: ebx++)
-    mov xdi, $OCall([xsi].Entries::DataCollection.ItemAt, ebx)
-    mov xax, [xdi].TVENTRY.pHandler
-    mov xcx, offset(TVCH_SIZE_X)
-    .if xax == xcx
-      m2m NewExtent.x, [xdi].TVENTRY.dValue, ecx
-      mov dHasChanged, TRUE
-    .else
-      mov xcx, offset(TVCH_SIZE_Y)
-      .if xax == xcx
-        m2m NewExtent.y, [xdi].TVENTRY.dValue, ecx
-        mov dHasChanged, TRUE
-      .endif
-    .endif
-  .endfor
-
-  xor eax, eax
-  .if dHasChanged != FALSE
-    mov ecx, NewExtent.x
-    mov edx, NewExtent.y
-    .if ecx > [xsi].Extent.x
-      mov [xsi].Extent.x, ecx
-      mov eax, TRUE
-    .endif
-    .if edx > [xsi].Extent.y
-      mov [xsi].Extent.y, edx
-      mov eax, TRUE
-    .endif
-  .endif
-  ReleaseObject
-  ret
-OA_MB_TextView_GetExtent endp
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  MB_WndProc
 ; Purpose:    WndProc for the customized Messagebox.
 ; Arguments:  Arg1: Dialog HANDLE.
@@ -146,10 +102,12 @@ MB_EnumDlgItems proc private uses xbx xdi hItem:HWND, lParam:LPARAM
       lea xdi, [xbx + xax].MsgBoxInfo.Buttons
       mrm [xdi].MB_ButtonInfo.hWnd, hItem, xcx
       invoke GetWindowRect, xcx, addr [xdi].MB_ButtonInfo.Rect
-      ;Calculate with, height and client position
+
+      ;Calculate with, height and client position of each button
       mov ecx, [xdi].MB_ButtonInfo.Rect.bottom
       sub ecx, [xdi].MB_ButtonInfo.Rect.top
       mov [xdi].MB_ButtonInfo.Rect.bottom, ecx
+
       mov edx, [xdi].MB_ButtonInfo.Rect.right
       sub edx, [xdi].MB_ButtonInfo.Rect.left
       mov [xdi].MB_ButtonInfo.Rect.right, edx
@@ -176,8 +134,9 @@ MB_WndProc proc private uses xbx xdi xsi hDlg:HWND, uMsg:DWORD, wParam:WPARAM, l
     mov xdi, $invoke(GetProp, hDlg, xdx)
     mov [xdi].MsgBoxInfo.dFlags, 0
 
-    ;Destroy the original static control, we don't need it anymore
-    invoke GetDlgItem, hDlg, 0FFFFh
+    ;Destroy the original static control were the messagebox text is usually displayed, 
+    ;we don't need it anymore
+    invoke GetDlgItem, hDlg, 0FFFFh                     ;0FFFFh = static control ID
     invoke DestroyWindow, xax
 
     ;Get button information
@@ -199,8 +158,8 @@ MB_WndProc proc private uses xbx xdi xsi hDlg:HWND, uMsg:DWORD, wParam:WPARAM, l
     mov TVDef.dExStyle, 0
     mov TVDef.sdPosX, 0
     mov TVDef.sdPosY, 0
-    mov TVDef.dWidth, 200
-    mov TVDef.dHeight, 100
+    mov TVDef.dWidth, 200                               ;Min TextView width
+    mov TVDef.dHeight, 100                              ;Min TextView height
     m2m TVDef.pText, [xdi].MsgBoxInfo.pText, xax
 
     ;Adjust dialog size according to the TextView size
@@ -210,13 +169,11 @@ MB_WndProc proc private uses xbx xdi xsi hDlg:HWND, uMsg:DWORD, wParam:WPARAM, l
     mov TVDef.dHeight, $uMax(eax, TVDef.dHeight)
 
     mov xbx, $New(TextView)
-    Override xbx::TextView.GetExtent, MB_TextView.GetExtent
     OCall xbx::TextView.Init, NULL, hDlg, addr TVDef
-    OCall xbx::TextView.Show
 
     ;Set TextView as parent of the static control that holds the icon.
-    ;This way it is placed on top of TextView.
-    invoke GetDlgItem, hDlg, 14h
+    ;This way it is placed on top of TextView control.
+    invoke GetDlgItem, hDlg, 14h                        ;14h = icon control ID 
     .if xax != 0
       invoke SetParent, xax, [xbx].$Obj(TextView).hWnd
     .endif
@@ -238,12 +195,13 @@ MB_WndProc proc private uses xbx xdi xsi hDlg:HWND, uMsg:DWORD, wParam:WPARAM, l
     sub ecx, WRect.top
     mov eax, [xbx].$Obj(TextView).Extent.y
     sub eax, CRect.bottom
+    add eax, [xdi].MsgBoxInfo.dBandHeight
     add ecx, eax
     mov WndSize.y, ecx
     mov CtlOfs.y, eax
     sar eax, 1
     sub WRect.top, eax
-
+    
     invoke MoveWindow, hDlg, WRect.left, WRect.top, WndSize.x, WndSize.y, FALSE
 
     ;Update TextView size

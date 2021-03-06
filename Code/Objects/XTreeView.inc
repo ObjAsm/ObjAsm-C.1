@@ -1267,12 +1267,12 @@ Method XTreeView.CreateBackBuffer, uses xsi
 
   s2s [xsi].DrawSize, [xsi].ClientSize, xax, xcx
 
-  invoke IsScrollbarVisible, [xsi].hWnd, SB_HORZ
+  invoke IsScrollBarVisible, [xsi].hWnd, SB_HORZ
   .if eax != FALSE
     mov eax, [xsi].ScrollbarMetric.y
     add [xsi].DrawSize.y, eax
   .endif
-  invoke IsScrollbarVisible, [xsi].hWnd, SB_VERT
+  invoke IsScrollBarVisible, [xsi].hWnd, SB_VERT
   .if eax != FALSE
     mov eax, [xsi].ScrollbarMetric.x
     add [xsi].DrawSize.x, eax

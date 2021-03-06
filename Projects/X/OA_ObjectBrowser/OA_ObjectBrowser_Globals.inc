@@ -14,7 +14,7 @@ include OA_ObjectBrowser_Shared.inc
 %CStr szAboutText,"&ABOUT_TEXT", 13, 10, \
                   "Version &VER_PRODUCTVERSION_STR", 13, 10, \
                   "Designed with ObjAsm", 13, 10, \
-                  "© &COPYRIGHT", 13, 10, 13, 10, \ 
+                  "© &COPYRIGHT", 13, 10, 13, 10, \
                   @CatStr(<!">, %BUILD_DATE_STR, \
                           <  -  Build: >, %BUILD_NUMBER, <->, %ASSEMBLER, <->, \
                           %TARGET_MODE_STR, <->, %TARGET_BITNESS, <!">)
@@ -23,6 +23,145 @@ INF_PRJ               equ   BIT00             ;This Info belongs to the current 
 INF_INVALID           equ   BIT01             ;This is an info about an invalid object or interface
 INF_INTREE            equ   BIT02             ;This Info is loaded into the tree
 INF_INTERFACE         equ   BIT31             ;This Info is about a COM interface
+
+
+;String szMarkupText,"{Padding 20}{AutoLineBreak}", \
+;                    "[H +3, CANVAS #FFFFFF]", \
+;                      "{LINE}", \
+;                    "[~]"
+
+
+APP_VISIT     equ   0
+APP_EMAIL     equ   1
+APP_CHECK     equ   2
+
+INFO_BUILD    equ   0
+INFO_UPDATE   equ   1
+
+String szMarkupText,  "{PA20,Z}", \
+                      "[H+2,Canvas#FFFFFF]", \
+                        "[H+1]Settings:[~]{P}", \
+                        "[FI20,HI20,C#0000F0]", \
+                          "[C#0000F0,App0][TXT0,F'Lucida Sans Unicode']?[~] Option 1[~]   [TIP", @CatStr(<!">, %INFO_UPDATE, <!">), ",F'Webdings',H-2]{#69}[~]{B}", \
+                          "[C#F00000,App1][TXT1,F'Lucida Sans Unicode']?[~] Option 2[~]{P}", \
+                          "[C#007000,App2][TXT2,F'Wingdings 2']?[~] Option 3[~]{B}", \
+                          "[C#000000,App3][TXT3,F'Wingdings 2']?[~] Option 4[~]{B}{B}", \
+                        "[~]", \
+                        "[I]Ken Carpenter[~]{B}", \
+                        "[F'Lucida Console',H-1,C#5C5C5C,BOX#CEDBE5]This example{TAB}uses the following tags: {#7B}TAB} {#5B}BOX #CEDBE5], {#7B}BREAK}, {#5B}color=#5C5C5C]{B}", \
+                        "And the following end tags: {#5B}~][~]{B}", \
+                        "[App0,C#0066D5]Google[~] test{P}", \
+                        '[I,C#5C5C5C,G#D1D1D1,AC,H+2,BOX#D1D1D1] "Man is still the most extraordinary computer of all." [~]{B}', \
+                        "- John F. Kennedy{B}", \
+                        "{LINE}", \
+                        "Click on this [App1,C#0066D5]link[~] to show a message box{P}"
+ExtendString            "[FI10,HI30]{TL30}", \
+                          "{#2981,T}List 1 - [B]First Item[~] - which is a test to see if the text in this item will properly wrap around in the next line to indent after the bullet symbol and match the indent of the first letter of the first line.{B}", \
+                          "{#2981,T}List 1 - [B]Second Item[~]{P}", \
+                          "[B]1.[~]{T}List 2 - [B]First Item[~] - which is a test to see if the text in this item will properly wrap around in the next line to indent after the bullet symbol and match the indent of the first letter of the first line.{B}", \
+                          "[B]2.[~]{T}List 2 - [B]Second Item[~]{P}"
+ExtendString              "{#2981,T}List 3 - [B]First Item[~] - which is a test to see if the text in this item will properly wrap around in the next line to indent after the bullet symbol and match the indent of the first letter of the first line.{B}", \
+                          "{#2981,T}List 3 - [B]Second Item[~]{B}", \
+                          "[FI30,HI50]{TL50}", \
+                            "{#2022,T}List 3 - Lvl 2 - [B]First Item[~] - which is a test to see if the text in this item will properly wrap around in the next line to indent after the bullet symbol and match the indent of the first letter of the first line.{B}", \
+                            "{#2022,T}List 3 - Lvl 2 - [B]Second Item[~]{B}", \
+                          "[~]", \
+                          "{#2981,T}List 3 - [B]Third Item[~]{B}", \
+                          "[TIP", @CatStr(<!">, %INFO_UPDATE, <!">), ",F'Webdings',H+1]{#69}[~]", \
+                        "[~]", \
+                      "[~]"
+
+;String szMarkupText,  "{PA20,ALB,Z}", \
+;                      "[H+1]", \
+;                        "{C0}", \
+;                        "[FI150,HI150,AL]", \
+;                          "[H+3,B]&ABOUT_TEXT{B}[~]", \
+;                          "[I]Version &VER_PRODUCTVERSION_STR{P}[~]", \
+;                          "[C#3F3F3F]", \
+;                            "Designed with ObjAsm{B}", \
+;                            "© &COPYRIGHT{P}", \
+;                            "[C#5F4FFF]", \
+;                              @CatStr(<!">, %BUILD_DATE_STR, \
+;                                      <  -  Build: >, %BUILD_NUMBER, <->, %ASSEMBLER, <->, \
+;                                      %TARGET_MODE_STR, <->, %TARGET_BITNESS, <    !">), \
+;                              "[TIP", @CatStr(<!">, %INFO_BUILD, <!">), ",F'Webdings',H+1]{#69}[~]", \
+;                            "[~]{B}{B}", \
+;                          "[~]", \
+;                        "[~]"
+;ExtendString            "[FI0,HI0,AC]", \
+;                          "[F'Webdings',C#FF5F5F,H+7]{#7E}[~]", \
+;                          "  Visit us at  ", \
+;                          "[APP", @CatStr(<!">, %APP_VISIT, <!">),",C#0000FF,U]www.objasm.x10host.com[~]{B}", \
+;                          "[F'Wingdings',C#408090,H+1]{#2A}[~]", \
+;                          "   Email us to  ", \
+;                          "[APP", @CatStr(<!">, %APP_EMAIL, <!">),",C#0000FF,U]objasm@gmx.net[~]{P}", \
+;                          "[APP", @CatStr(<!">, %APP_CHECK, <!">),",C#0000FF,U]Check for updates[~]", \
+;                          "[TIP", @CatStr(<!">, %INFO_UPDATE, <!">), ",F'Webdings',H+1,C#5F5FFF]  {#69}[~]", \
+;                        "[~]", \
+;                      "[~]"
+
+;String szMarkupText,  "{PA20,Z}", \
+;                      "[H+3,Canvas#FFFFFF]", \
+;                        "Beauty, success, truth ...{B}", \
+;                        "[I]He is blessed who has two.[~]{B}", \
+;                        "[C#C00000,B]Your program has none.[~]{P}", \
+;                        "[I]Ken Carpenter[~]{B}", \
+;                        "[F'Lucida Console',H-1,C#5C5C5C,BOX#CEDBE5]This example{TAB}uses the following tags: {#7B}TAB} {#5B}BOX #CEDBE5], {#7B}BREAK}, {#5B}color=#5C5C5C]{B}", \
+;                        "And the following end tags: {#5B}~][~]{B}", \
+;                        "[App0,C#0066D5]Google[~] test{P}", \
+;                        '[I,C#5C5C5C,G#D1D1D1,AC,H+2,BOX#D1D1D1] "Man is still the most extraordinary computer of all." [~]{B}', \
+;                        "- John F. Kennedy{B}", \
+;                        "{LINE}", \
+;                        "Click on this [App1,C#0066D5]link[~] to show a message box{P}"
+;ExtendString            "[FI10,HI30]{TL30}", \
+;                          "{#2981,T}List 1 - [B]First Item[~] - which is a test to see if the text in this item will properly wrap around in the next line to indent after the bullet symbol and match the indent of the first letter of the first line.{B}", \
+;                          "{#2981,T}List 1 - [B]Second Item[~]{P}", \
+;                          "[B]1.[~]{T}List 2 - [B]First Item[~] - which is a test to see if the text in this item will properly wrap around in the next line to indent after the bullet symbol and match the indent of the first letter of the first line.{B}", \
+;                          "[B]2.[~]{T}List 2 - [B]Second Item[~]{P}"
+;ExtendString              "{#2981,T}List 3 - [B]First Item[~] - which is a test to see if the text in this item will properly wrap around in the next line to indent after the bullet symbol and match the indent of the first letter of the first line.{B}", \
+;                          "{#2981,T}List 3 - [B]Second Item[~]{B}", \
+;                          "[FI30,HI50]{TL50}", \
+;                            "{#2022,T}List 3 - Lvl 2 - [B]First Item[~] - which is a test to see if the text in this item will properly wrap around in the next line to indent after the bullet symbol and match the indent of the first letter of the first line.{B}", \
+;                            "{#2022,T}List 3 - Lvl 2 - [B]Second Item[~]{B}", \
+;                          "[~]", \
+;                          "{#2981,T}List 3 - [B]Third Item[~]{B}", \
+;                          "[TIP", @CatStr(<!">, %INFO_UPDATE, <!">), ",F'Webdings',H+1]{#69}[~]", \
+;                        "[~]", \
+;                      "[~]"
+                      
+;CStr szMarkupText,    "{PA20,Z}", \
+;                      "{TC140}{TR220}", \
+;                      "[H+2,B,U]", \
+;                        "Description{T}Qty{T}Price{P}", \
+;                      "[~]", \
+;                      "[FI25,C#4F4FFF,H+2,I]", \
+;                          "{#2022} Item[SUB]1[~]{T}2{T}2.35[SUP]*[~]{B}", \
+;                          "{#2022} Item[SUB]2[~]{T}200.0{T}20.00[SUP]**[~]{B}", \
+;                          "{#2022} Item[SUB]3[~]{T}0.1{T}0.23{B}{P}", \
+;                      "[~]", \
+;                      "{TABCLR}{TC80}{TL95}", \
+;                      "[FI30,C#4F4F4F]", \
+;                        "Note:{T}*{T}Volume discount{B}", \
+;                        "{T}**{T}Regular discount{B}", \
+;                      "[~]", \
+;                      "{1}"
+                    
+;CStr szMarkupText,    "{Padding 20}", \
+;                      "{TABC 140}{TABR 220}", \
+;                      "[Indent 10, H +2, Bold, Underline]", \
+;                        "Description{TAB}Qty{TAB}Price{P}", \
+;                      "[~]", \
+;                      "[Indent 25, Color #4F4FFF, H +2, Italic]", \
+;                          "{#2022} Item[SUB]1[~]{TAB}2{TAB}2.35[SUP]*[~]{B}", \
+;                          "{#2022} Item[SUB]2[~]{TAB}200.0{TAB}20.00[SUP]**[~]{B}", \
+;                          "{#2022} Item[SUB]3[~]{TAB}0.1{TAB}0.23{B}{P}", \
+;                      "[~]", \
+;                      "{TABCLR}{TABC 80}{TABL 95}", \
+;                      "[Indent 30, Color #4F4F4F]", \
+;                        "Note:{TAB}*{TAB}Volume discount{B}", \
+;                        "{TAB}**{TAB}Regular discount", \
+;                      "[~]", \
+;                      "{C1}"
 
 CStr szIcoName,       "ICON_APP"
 
@@ -324,7 +463,7 @@ HTML_IMD_00_SIZE      equ $ - HTML_IMD_00
 HTML_IMD_01           CHRA  '        <tr>', 13, 10
                       CHRA  '          <td align="center"><img src="'
 HTML_IMD_01_SIZE      equ $ - HTML_IMD_01
-                      
+
 HTML_IMD_02           CHRA  '.png" /></td>', 13, 10
                       CHRA  '          <td><font face="Tahoma" size="2" '
 HTML_IMD_02_SIZE      equ $ - HTML_IMD_02

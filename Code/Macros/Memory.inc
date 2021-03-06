@@ -324,7 +324,7 @@ xBitTog equ <xBitToggle>
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      .ifBitSet
 ; Purpose:    Start a conditional clauses, that must be terminated with endif.
-;             Examinates if any of the indicated bits are set.
+;             Examine if any of the indicated bits are set.
 ; Arguments:  Arg1: Bit holding variable.
 ;             Arg2: Bit to be tested for (ie: BIT12)
 ; Returns:    Nothing.
@@ -333,12 +333,12 @@ xBitTog equ <xBitToggle>
   .if (Var & (Bit))
 endm
 
-.ifSomeBitsSet equ <.ifBitSet>
+.ifAnyBitSet equ <.ifBitSet>
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      .elseIfBitSet
-; Purpose:    Start a conditional clauses, that must be terminated with endif.
-;             Examinates if any of the indicated bits are set.
+; Purpose:    Continue a conditional clauses, that must be terminated with endif.
+;             Examine if any of the indicated bits are set.
 ; Arguments:  Arg1: Bit holding variable.
 ;             Arg2: Bit to be tested for (ie: BIT12)
 ; Returns:    Nothing.
@@ -347,12 +347,12 @@ endm
   .elseif (Var & (Bit))
 endm
 
-.elseIfSomeBitsSet equ <.elseIfBitSet>
+.elseIfAnyBitSet equ <.elseIfBitSet>
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      .ifBitClr
 ; Purpose:    Start a coditional clauses, that must be terminated with endif.
-;             Examinates if all of the indicated bits are not set.
+;             Examine if all of the indicated bits are not set.
 ; Arguments:  Arg1: Bit holding variable.
 ;             Arg2: Bit to be tested for (ie: BIT12)
 ; Returns:    Nothing.
@@ -366,7 +366,7 @@ endm
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      .elseIfBitClr
 ; Purpose:    Start a coditional clauses, that must be terminated with endif.
-;             Examinates if all of the indicated bits are not set.
+;             Examine if all of the indicated bits are not set.
 ; Arguments:  Arg1: Bit holding variable.
 ;             Arg2: Bit to be tested for (ie: BIT12)
 ; Returns:    Nothing.

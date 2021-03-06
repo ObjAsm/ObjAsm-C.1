@@ -166,7 +166,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=9
+MilestoneOnDateDate=4
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -201,17 +201,17 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=1045,608,1045,304,7717
-1=1045,304,1045,304,1082
+2=1045,608,1045,304,2615
+1=1045,304,1045,304,479
 6=0,0,1456,414,66847
-4=0,0,0,0,1251
+4=0,0,0,0,804
 31=0,0,1213,691,1416
 8=0,0,777,591,1350
 7=0,0,0,0,806
 9=0,0,0,0,108577
 10=0,0,0,0,8243
 5=0,0,0,0,34320
-3=1045,0,1045,304,988
+3=1045,0,1045,304,1056
 11=0,0,1783,588,1219
 15=0,0,0,0,3609
 14=0,0,0,0,814
@@ -227,7 +227,7 @@ ProductVer4Range=0
 25=0,0,0,0,1955
 21=0,0,0,0,575
 22=0,0,0,0,14555
-26=0,0,0,0,51353
+26=0,0,0,0,86890
 27=0,0,0,0,9336
 32=0,0,0,0,6558
 28=0,0,0,0,2959
@@ -240,7 +240,7 @@ ProductVer4Range=0
 35=0,0,0,0,421
 30=0,0,0,0,0
 41=
-42=0,0,0,0,667
+42=0,0,0,0,10146
 
 [BookMark]
 0=
@@ -259,16 +259,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="AVERSION"
-2="szBuildInfo"
-3="MsgBoxX"
-4="TVALIGN_"
-5="dLineAlignment"
-6="cHlpMsg"
-7="ProcName"
-8="[xsi].Extent.x "
-9="GetExtent"
-10="TVCH_SIZE_Y"
+1="int 3"
+2="IsDelimiterChar"
+3="DbgDec [xsi].DrawExtent.x"
+4="GetSingleTVStyleName"
+5="IsBlankChar"
+6="IsStyleNameChar"
+7="BMP_BACKGROUND"
+8=".ifBitSet eax, TVIF_EXTENT_Y_SET"
+9=".Show"
+10="Show"
 [Collapse]
 1=
 2=40973
@@ -363,7 +363,7 @@ ProductVer4Range=0
 33=,
 29=
 28=
-26=1677721600,134217798,32768,968888012,973010943,1711,
+26=1677721600,134217796,1495302144,1237323484,943519743,47,,,,
 24=
 22=
 21=
@@ -386,7 +386,7 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,2,3,26,4
 [PTimer]
-PTimer=2064492858
+PTimer=2113193985
 [GroupExpand]
 GroupExpand=1,1,1,0,0,1,1,0
 [RADebugBP]

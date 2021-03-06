@@ -822,6 +822,7 @@ GetObjectTemplate         proto :DWORD
 LoadCommonControls        proto :DWORD
 CenterForm                proto :DWORD, :DWORD
 IsPntInRect               proto :POINTER, :POINTER
+GetRawClientRect          proto :HANDLE, :PRECT
 GetBottomWindow           proto :HANDLE
 MoveWindowVisible         proto :HANDLE, :SDWORD, :SDWORD
 WndFadeIn                 proto :HANDLE, :DWORD, :DWORD, :DWORD, :DWORD
@@ -840,7 +841,7 @@ IsAdmin                   proto
 GetLogProcCount           proto :POINTER
 IsHardwareFeaturePresent  proto :BYTE
 NewObjInst                proto :DWORD
-IsScrollbarVisible        proto :HANDLE, :DWORD
+IsScrollBarVisible        proto :HANDLE, :DWORD
 GetDlgBaseUnits           proto :HANDLE
 SendChildrenMessage       proto :HANDLE, :DWORD, :WPARAM, :LPARAM
 UTF8ToWide                proto :POINTER, :POINTER, :DWORD

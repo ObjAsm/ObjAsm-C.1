@@ -24,8 +24,8 @@ SWS_RUNNING    equ    1
 
 Object StopWatch, StopWatchID, Primer
   VirtualMethod     GetTime
-  VirtualMethod     GetTimeStrA,    POINTER
-  VirtualMethod     GetTimeStrW,    POINTER
+  VirtualMethod     GetTimeStrA,    PSTRINGA
+  VirtualMethod     GetTimeStrW,    PSTRINGW
   RedefineMethod    Init,           POINTER               ;-> Owner
   VirtualMethod     Reset
   VirtualMethod     Start
@@ -77,7 +77,7 @@ MethodEnd
 ; Arguments:  Arg1: -> Buffer where the ANSI string will be written (at least 20 bytes!).
 ; Return:     Nothing.
 
-Method StopWatch.GetTimeStrA,, pResult:POINTER
+Method StopWatch.GetTimeStrA,, pResult:PSTRINGA
   SetObject xcx
   fild [xcx].qAccCount
   fmul [xcx].r8Period
@@ -92,7 +92,7 @@ MethodEnd
 ; Arguments:  Arg1: -> Buffer where the WIDE string will be written (at least 20 words!).
 ; Return:     Nothing.
 
-Method StopWatch.GetTimeStrW,, pResult:POINTER
+Method StopWatch.GetTimeStrW,, pResult:PSTRINGW
   SetObject xcx
   fild [xcx].qAccCount
   fmul [xcx].r8Period

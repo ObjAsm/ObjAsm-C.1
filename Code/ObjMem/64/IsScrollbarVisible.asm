@@ -1,5 +1,5 @@
 ; ==================================================================================================
-; Title:      IsScrollbarVisible.asm
+; Title:      IsScrollBarVisible.asm
 ; Author:     G. Friedrich
 ; Version:    C.1.0
 ; Notes:      Version C.1.0, October 2017
@@ -13,14 +13,14 @@
 .code
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  IsScrollbarVisible
+; Procedure:  IsScrollBarVisible
 ; Purpose:    Determine if a Scrollbar is currently visible. 
 ; Arguments:  Arg1: Main window HANDLE that the scrollbar belongs to.
 ;             Arg2: Scrollbar type [SB_HORZ or SB_VERT].
 ; Return:     eax = TRUE if the scrollbar is visible, otherwise FALSE.
 
 align ALIGN_CODE
-IsScrollbarVisible proc hWnd:HWND, dScrollbarType:DWORD
+IsScrollBarVisible proc hWnd:HWND, dScrollbarType:DWORD
   invoke GetWindowLongPtr, rcx, GWL_STYLE
   mov ecx, dScrollbarType
   .if ((ecx == SB_HORZ) && (eax & WS_HSCROLL)) || \
@@ -30,6 +30,6 @@ IsScrollbarVisible proc hWnd:HWND, dScrollbarType:DWORD
   .endif
   xor eax, eax
   ret
-IsScrollbarVisible endp
+IsScrollBarVisible endp
 
 end

@@ -67,10 +67,7 @@ Method Application.Init, uses xsi
                          CRect.left, CRect.top, CRect.right, CRect.bottom, \
                          [xsi].hWnd, VIEW_CTRL_ID, hInstance, 0
   .if xax != 0
-    invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0
-    mov [xsi].pTextView, xax
-    mov [xax].$Obj(TextView).dFormatFlags, TV_WORDBREAK
-    OCall [xsi].pTextView::TextView.Parse
+    mov [xsi].pTextView, $invoke(SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0)
   .endif
 
   invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL          ;Show the window
@@ -202,21 +199,6 @@ Method Application.OnSize, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
     .if xbx != NULL
       invoke SetWindowPos, [xbx].$Obj(TextView).hWnd, HWND_BOTTOM, \
                            CRect.left, CRect.top, CRect.right, CRect.bottom, SWP_NOZORDER
-      mov eax, CRect.right
-      .if eax != 0
-        mov [xbx].$Obj(TextView).Extent.x, eax
-        mov ecx, CRect.bottom
-        .if ecx < [xbx].$Obj(TextView).Extent.y
-          ;Scrollbar is visible
-          invoke GetSystemMetrics, SM_CXVSCROLL
-          sub [xbx].$Obj(TextView).Extent.x, eax
-        .endif
-        invoke CreateCompatibleBitmap, [xbx].$Obj(TextView).hMemDC, \
-                                       [xbx].$Obj(TextView).Extent.x, [xbx].$Obj(TextView).Extent.y
-        mov [xbx].$Obj(TextView).hMemBmp, xax
-        invoke DeleteObject, $invoke(SelectObject, [xbx].$Obj(TextView).hMemDC, xax)
-        OCall xbx::TextView.Render
-      .endif
     .endif  
   .endif
   xor eax, eax

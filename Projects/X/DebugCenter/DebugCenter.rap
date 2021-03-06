@@ -174,7 +174,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=17
+MilestoneOnDateDate=28
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -210,15 +210,15 @@ ProductVer4Range=0
 
 [Size]
 2=0,0,806,424,7440
-3=0,0,2127,589,5632
+3=0,0,2127,589,2778
 1=0,0,694,487,2582
 4=0,0,706,573,19658
 1001=0,0,0,0,460
-5=0,0,0,0,865
+5=0,0,0,0,24335
 6=0,0,601,582,6573
-7=0,0,0,0,14863
+7=0,0,0,0,21040
 8=0,0,0,0,25796
-11=0,0,706,600,2497
+11=0,0,706,600,813
 10=0,0,0,0,10132
 9=0,0,0,0,2776
 12=0,0,848,586,3535
@@ -227,7 +227,7 @@ ProductVer4Range=0
 15=0,0,0,0,8450
 16=0,0,0,0,30
 17=
-18=0,0,0,0,1102
+18=0,0,0,0,1069
 19=0,0,0,0,3947
 20=0,0,0,0,3179
 21=0,0,0,0,71362
@@ -282,16 +282,16 @@ ProductVer4Range=0
 0=724,30,
 
 [Find]
-1="hCBTProc"
-2="Hook"
-3="OnPaint"
-4="SetBitmap"
-5="WM_COPYDATA"
-6="DEBUG_CENTER_REGKEY"
-7="cDbgRegKey"
-8="OnCopyData"
-9="DbgMdiChild"
-10="OA98_"
+1="WM_MOUSEWHEEL"
+2="ZoomIn"
+3="hCBTProc"
+4="Hook"
+5="OnPaint"
+6="SetBitmap"
+7="WM_COPYDATA"
+8="DEBUG_CENTER_REGKEY"
+9="cDbgRegKey"
+10="OnCopyData"
 "
 [Collapse]
 7=,,
@@ -348,9 +348,9 @@ ProductVer4Range=0
 53=
 54=
 [AutoLoad]
-AutoLoad=5,2,3,13,7,18
+AutoLoad=2,3,13,5,7,18,11
 [PTimer]
-PTimer=1498551903
+PTimer=1555471356
 [RADebugBP]
 5=
 2=

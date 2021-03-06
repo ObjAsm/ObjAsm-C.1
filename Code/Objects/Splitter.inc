@@ -620,7 +620,7 @@ MethodEnd
 Method Splitter.OnPaint, uses xsi, wParam:WPARAM, lParam:LPARAM
   local PS:PAINTSTRUCT, ClientRect:RECT, hPrvBrush:HBRUSH, hPrvPen:HPEN
 
-  DbgText "Splitter.OnPaint"
+;  DbgText "Splitter.OnPaint"
   SetObject xsi
   invoke BeginPaint, [xsi].hWnd, addr PS
   invoke GetClientRect, [xsi].hWnd, addr ClientRect

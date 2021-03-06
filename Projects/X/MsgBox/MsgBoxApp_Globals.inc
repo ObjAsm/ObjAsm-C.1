@@ -30,9 +30,9 @@ INFO_UPDATE   equ   1
 
 
 
-CStr szMarkupText,  "{Padding 20}", \
+CStr szMarkupText,  "{Padding 20}{SIZE.X 330}{SIZE.Y 290}", \
                     "{TABC 140}{TABR 220}", \
-                    "[Indent 10, H +2, Bold, Underline]", \
+                    "[H +2, Indent 10, Bold, Underline]", \
                       "Description{TAB}Qty{TAB}Price{P}", \
                     "[~]", \
                     "[Indent 25, Color #4F4FFF, H +2, Italic]", \
@@ -43,6 +43,6 @@ CStr szMarkupText,  "{Padding 20}", \
                     "{TABCLR}{TABC 80}{TABL 95}", \
                     "[Indent 30, Hanging 30, Color #4F4F4F]", \
                       "Note:{TAB}*{TAB}Volume discount{B}", \
-                      "{TAB}**{TAB}Regular discount", \
+                      "{TAB}**{TAB}Regular discount{B}", \
                     "[~]", \
                     "{COVER 1}"

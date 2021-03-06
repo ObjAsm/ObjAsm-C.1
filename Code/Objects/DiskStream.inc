@@ -321,7 +321,7 @@ Method DiskStream.Done, uses xsi
   SetObject xsi
   .if [xsi].hFile != INVALID_HANDLE_VALUE
     invoke CloseHandle, [xsi].hFile
-    m2z [xsi].hFile
+    mov [xsi].hFile, INVALID_HANDLE_VALUE
   .endif
   ACall xsi.Done
 MethodEnd
