@@ -35,11 +35,9 @@ start proc
   SysInit
   DbgClearAll
 
-  invoke CoInitialize, 0
   OCall $ObjTmpl(Application)::Application.Init
   OCall $ObjTmpl(Application)::Application.Run
   OCall $ObjTmpl(Application)::Application.Done
-  invoke CoUninitialize
 
   SysDone
   invoke ExitProcess, 0

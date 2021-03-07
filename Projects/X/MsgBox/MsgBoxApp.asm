@@ -9,7 +9,7 @@
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc
-SysSetup OOP, WIN32, WIDE_STRING;, DEBUG(WND)
+SysSetup OOP, WIN64, WIDE_STRING;, DEBUG(WND)
 
 % includelib &LibPath&Windows\shell32.lib
 % includelib &LibPath&Windows\shlwapi.lib
@@ -35,7 +35,7 @@ start proc
   SysInit
   DbgClearAll
 
-  invoke CoInitialize, 0
+  invoke CoInitialize, 0                              ;Required for Image object
   OCall $ObjTmpl(Application)::Application.Init
   OCall $ObjTmpl(Application)::Application.Run
   OCall $ObjTmpl(Application)::Application.Done

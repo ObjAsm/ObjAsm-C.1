@@ -17,7 +17,7 @@ Object Application, MySdiAppID, SdiApp
   RedefineMethod    Init
   StaticMethod      Startup
   RedefineMethod    OnSize,           WPARAM, LPARAM
-  RedefineMethod    OnGetMinMaxInfo,  WPARAM, LPARAM
+;  RedefineMethod    OnGetMinMaxInfo,  WPARAM, LPARAM
 
   VirtualEvent      OnCommand,        WM_COMMAND
   VirtualEvent      OnClose,          WM_CLOSE, WM_QUERYENDSESSION
@@ -34,7 +34,7 @@ ObjectEnd
 ; ==================================================================================================
 
 VIEW_CTRL_ID    equ 165874
-WND_MAX_HEIGHT  equ 840
+WND_MAX_HEIGHT  equ 640
 
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

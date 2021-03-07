@@ -35,7 +35,7 @@ start proc
   SysInit
   DbgClearAll
 
-  invoke CoInitialize, 0
+  invoke CoInitialize, 0                                ;Required for Image object
   OCall $ObjTmpl(Application)::Application.Init
   OCall $ObjTmpl(Application)::Application.Run
   OCall $ObjTmpl(Application)::Application.Done

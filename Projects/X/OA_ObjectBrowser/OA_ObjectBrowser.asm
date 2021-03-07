@@ -69,8 +69,6 @@ start proc
 
   DbgClearAll
 
-  invoke InitCommonControls
-
   OCall $ObjTmpl(ObjectBrowser)::ObjectBrowser.Init
   OCall $ObjTmpl(ObjectBrowser)::ObjectBrowser.Run
   OCall $ObjTmpl(ObjectBrowser)::ObjectBrowser.Done

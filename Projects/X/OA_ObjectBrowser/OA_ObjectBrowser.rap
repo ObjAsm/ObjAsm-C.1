@@ -267,7 +267,7 @@ ProductVer4Range=0
 [Size]
 2=0,0,0,0,4293
 3=0,0,756,582,1559
-1=453,0,453,706,1333
+1=453,0,453,706,2321
 4=540,0,412,843,16116
 1001=0,0,0,0,460
 5=0,0,0,0,35859
@@ -326,7 +326,7 @@ ProductVer4Range=0
 59=0,0,0,0,2302
 60=0,0,0,0,5867
 58=0,0,1902,628,71355
-61=0,0,0,0,4781
+61=0,0,0,0,4494
 77=
 76=
 75=
@@ -361,16 +361,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="OnButtonDown"
-2="OnMouseMove"
-3="DbgBmpFromDC"
-4="DbgBmp"
-5="OnPaint"
-6="SendChildrenMessage"
-7="OnSettingChange"
-8="Reset"
-9="OnSetText"
-10="bHandled"
+1="PINFORMATION"
+2="OnButtonDown"
+3="OnMouseMove"
+4="DbgBmpFromDC"
+5="DbgBmp"
+6="OnPaint"
+7="SendChildrenMessage"
+8="OnSettingChange"
+9="Reset"
+10="OnSetText"
 [Collapse]
 2=
 8=302,67371072,12449
@@ -489,6 +489,6 @@ AutoLoad=1,61,34,3,58
 61=
 63=
 [PTimer]
-PTimer=3334964467
+PTimer=3363350764
 [GroupExpand]
 GroupExpand=1,1,1,1,1,1,0
