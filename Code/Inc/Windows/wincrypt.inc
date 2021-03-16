@@ -768,8 +768,8 @@ ifndef __WINCRYPT_H__
       CRYPT_AES_256_KEY_STATE struct
         Key BYTE 32 dup (?)
         IV BYTE 16 dup (?)
-        EncryptionState BYTE 16 dup (?)
-        DecryptionState BYTE 16 dup (?)
+        EncryptionState BYTE 16*15 dup (?)
+        DecryptionState BYTE 16*15 dup (?)
         Feedback BYTE 16 dup (?)
       CRYPT_AES_256_KEY_STATE ends
       _CRYPT_AES_256_KEY_STATE typedef CRYPT_AES_256_KEY_STATE
