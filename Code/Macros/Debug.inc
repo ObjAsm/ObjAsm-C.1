@@ -1574,54 +1574,54 @@ endm
 ;   ResGuard macros
 ; ==================================================================================================
 
-;; ——————————————————————————————————————————————————————————————————————————————————————————————————
-;; Macro:      ResGuard_Show
-;; Purpose:    Show the result of ResGuard system activity.
-;; Arguments:  None.
-;
-;ResGuard_Show macro
-;  if DEBUGGING and RESGUARD_LOADED
-;    DbgSaveContext
-;    invoke DbgOutTextA, $OfsCStrA("Report  "), \
-;                        DBG_COLOR_TEXT, DBG_EFFECT_BOLD, offset(szLeakReport)
-;    DbgShowSrcInfo offset(szLeakReport)
-;    invoke ResGuardShow
-;    DbgLoadContext
-;  endif
-;endm
-;
-;; ——————————————————————————————————————————————————————————————————————————————————————————————————
-;; Macro:      ResGuard_Start
-;; Purpose:    Start activity of the ResGuard system.
-;; Arguments:  None.
-;
-;ResGuard_Start macro
-;  if DEBUGGING and RESGUARD_LOADED
-;    DbgSaveContext
-;    invoke DbgOutTextA, $OfsCStrA("Started "), \
-;                        DBG_COLOR_TEXT, DBG_EFFECT_BOLD, offset(szLeakReport)
-;    DbgShowSrcInfo offset(szLeakReport)
-;    invoke ResGuardStart
-;    DbgLoadContext
-;  endif
-;endm
-;
-;; ——————————————————————————————————————————————————————————————————————————————————————————————————
-;; Macro:      ResGuard_Stop
-;; Purpose:    Stop activity of the ResGuard system.
-;; Arguments:  None.
-;
-;ResGuard_Stop macro
-;  if DEBUGGING and RESGUARD_LOADED
-;    DbgSaveContext
-;    invoke DbgOutTextA, $OfsCStrA("Stopped "), \
-;                        DBG_COLOR_TEXT, DBG_EFFECT_BOLD, offset(szLeakReport)
-;    DbgShowSrcInfo offset(szLeakReport)
-;    invoke ResGuardStop
-;    DbgLoadContext
-;  endif
-;endm
-;
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      ResGuard_Show
+; Purpose:    Show the result of ResGuard system activity.
+; Arguments:  None.
+
+ResGuard_Show macro
+  if DEBUGGING and RESGUARD_LOADED
+    DbgSaveContext
+    invoke DbgOutTextA, $OfsCStrA("Report  "), \
+                        DBG_COLOR_TEXT, DBG_EFFECT_BOLD, offset(szLeakReport)
+    DbgShowSrcInfo offset(szLeakReport)
+    invoke ResGuardShow
+    DbgLoadContext
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      ResGuard_Start
+; Purpose:    Start activity of the ResGuard system.
+; Arguments:  None.
+
+ResGuard_Start macro
+  if DEBUGGING and RESGUARD_LOADED
+    DbgSaveContext
+    invoke DbgOutTextA, $OfsCStrA("Started "), \
+                        DBG_COLOR_TEXT, DBG_EFFECT_BOLD, offset(szLeakReport)
+    DbgShowSrcInfo offset(szLeakReport)
+    invoke ResGuardStart
+    DbgLoadContext
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      ResGuard_Stop
+; Purpose:    Stop activity of the ResGuard system.
+; Arguments:  None.
+
+ResGuard_Stop macro
+  if DEBUGGING and RESGUARD_LOADED
+    DbgSaveContext
+    invoke DbgOutTextA, $OfsCStrA("Stopped "), \
+                        DBG_COLOR_TEXT, DBG_EFFECT_BOLD, offset(szLeakReport)
+    DbgShowSrcInfo offset(szLeakReport)
+    invoke ResGuardStop
+    DbgLoadContext
+  endif
+endm
+
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgComponent
 ; Purpose:    Output Componet information on the debug device.

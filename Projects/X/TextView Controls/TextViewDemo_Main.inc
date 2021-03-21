@@ -26,10 +26,10 @@ Object Application, MySdiAppID, SdiApp
 
   DefineVariable    pTextView,  $ObjPtr(TextView)
 
-  DefineVariable    dRadioBtn1,       DWORD,    TRUE  
-  DefineVariable    dRadioBtn2,       DWORD,    FALSE  
-  DefineVariable    dCheckBox1,       DWORD,    FALSE 
-  DefineVariable    dCheckBox2,       DWORD,    FALSE  
+  DefineVariable    dRadioBtn1,       DWORD,    TRUE
+  DefineVariable    dRadioBtn2,       DWORD,    FALSE
+  DefineVariable    dCheckBox1,       DWORD,    FALSE
+  DefineVariable    dCheckBox2,       DWORD,    FALSE
 ObjectEnd
 
 
@@ -58,7 +58,7 @@ Method Application.Init, uses xsi
   ACall xsi.Init
   mov dWndWidth, WND_MAX_WIDTH                          ;Default creation width
   mov dWndHeight, WND_MAX_HEIGHT                        ;Default creation height
-  
+
   mov dWndPosX, $32($invoke(CenterForm, dWndWidth,  $32($invoke(GetSystemMetrics, SM_CXSCREEN))))
   mov dWndPosY, $32($invoke(CenterForm, dWndHeight, $32($invoke(GetSystemMetrics, SM_CYSCREEN))))
 
@@ -173,14 +173,21 @@ MethodEnd
 TVCHAR_RB_CHECKED   equ   025C9h
 TVCHAR_RB_UNCHECKED equ   025CBh
 TVCHAR_CB_CHECKED   equ   00052h
-TVCHAR_CB_UNCHECKEd equ   000A3h
+TVCHAR_CB_UNCHECKED equ   000A3h
+
+;TVCHAR_CB_CHECKED   equ   02611h
+;TVCHAR_CB_UNCHECKED equ   02610h
+;TVCHAR_CB_CHECKED   equ   025E7h
+;TVCHAR_CB_UNCHECKED equ   025E8h
+;TVCHAR_CB_CHECKED   equ   025FBh
+;TVCHAR_CB_UNCHECKED equ   025FCh
 
 CStrW TVRadioBtnChecked, TVCHAR_RB_CHECKED
 CStrW TVRadioBtnUnChecked, TVCHAR_RB_UNCHECKED
 CStrW TVCheckBoxChecked, TVCHAR_CB_CHECKED
-CStrW TVCheckBoxUnChecked, TVCHAR_CB_UNCHECKEd
+CStrW TVCheckBoxUnChecked, TVCHAR_CB_UNCHECKED
 
-SetRBTextFrom proc pVariable:POINTER, ppText:POINTER 
+SetRBTextFrom proc pVariable:POINTER, ppText:POINTER
   mov xbx, ppText
   mov xdi, pVariable
   invoke StrDispose, PSTRINGW ptr [xbx]
@@ -193,7 +200,7 @@ SetRBTextFrom proc pVariable:POINTER, ppText:POINTER
   ret
 SetRBTextFrom endp
 
-SetCBTextFrom proc pVariable:POINTER, ppText:POINTER 
+SetCBTextFrom proc pVariable:POINTER, ppText:POINTER
   mov xbx, ppText
   mov xdi, pVariable
   invoke StrDispose, PSTRINGW ptr [xbx]
@@ -221,7 +228,7 @@ Method Application.OnNotify, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
         .else
           mov [xsi].dRadioBtn1, FALSE
         .endif
-        mov xbx, [xsi].pTextView 
+        mov xbx, [xsi].pTextView
         OCall xbx::TextView.Draw
         invoke RedrawWindow, [xbx].$Obj(TextView).hWnd, NULL, 0, RDW_INVALIDATE or RDW_UPDATENOW
 
@@ -232,7 +239,7 @@ Method Application.OnNotify, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
         .else
           mov [xsi].dRadioBtn2, FALSE
         .endif
-        mov xbx, [xsi].pTextView 
+        mov xbx, [xsi].pTextView
         OCall xbx::TextView.Draw
         invoke RedrawWindow, [xbx].$Obj(TextView).hWnd, NULL, 0, RDW_INVALIDATE or RDW_UPDATENOW
 
@@ -242,7 +249,7 @@ Method Application.OnNotify, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
         .else
           mov [xsi].dCheckBox1, FALSE
         .endif
-        mov xbx, [xsi].pTextView 
+        mov xbx, [xsi].pTextView
         OCall xbx::TextView.Draw
         invoke RedrawWindow, [xbx].$Obj(TextView).hWnd, NULL, 0, RDW_INVALIDATE or RDW_UPDATENOW
 
@@ -252,7 +259,7 @@ Method Application.OnNotify, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
         .else
           mov [xsi].dCheckBox2, FALSE
         .endif
-        mov xbx, [xsi].pTextView 
+        mov xbx, [xsi].pTextView
         OCall xbx::TextView.Draw
         invoke RedrawWindow, [xbx].$Obj(TextView).hWnd, NULL, 0, RDW_INVALIDATE or RDW_UPDATENOW
 
@@ -273,16 +280,15 @@ Method Application.OnNotify, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
 
     .elseif [xdi].NMHDR.code == TVNMC_TXT
       .if [xdi].TVNM_TXT.dID == 0
-        invoke SetRBTextFrom, addr [xsi].dRadioBtn1, [xdi].TVNM_TXT.ppText 
+        invoke SetRBTextFrom, addr [xsi].dRadioBtn1, [xdi].TVNM_TXT.ppText
       .elseif [xdi].TVNM_TXT.dID == 1
-        invoke SetRBTextFrom, addr [xsi].dRadioBtn2, [xdi].TVNM_TXT.ppText 
+        invoke SetRBTextFrom, addr [xsi].dRadioBtn2, [xdi].TVNM_TXT.ppText
       .elseif [xdi].TVNM_TXT.dID == 2
-        invoke SetCBTextFrom, addr [xsi].dCheckBox1, [xdi].TVNM_TXT.ppText 
+        invoke SetCBTextFrom, addr [xsi].dCheckBox1, [xdi].TVNM_TXT.ppText
       .elseif [xdi].TVNM_TXT.dID == 3
-        invoke SetCBTextFrom, addr [xsi].dCheckBox2, [xdi].TVNM_TXT.ppText 
+        invoke SetCBTextFrom, addr [xsi].dCheckBox2, [xdi].TVNM_TXT.ppText
 
       .endif
-
     .endif
   .endif
 MethodEnd
@@ -304,7 +310,7 @@ Method Application.OnSize, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
     .if xbx != NULL
       invoke SetWindowPos, [xbx].$Obj(TextView).hWnd, HWND_BOTTOM, \
                            CRect.left, CRect.top, CRect.right, CRect.bottom, SWP_NOZORDER
-    .endif  
+    .endif
   .endif
   xor eax, eax
 MethodEnd

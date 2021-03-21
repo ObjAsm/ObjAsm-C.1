@@ -37,11 +37,11 @@ proc1 proc FRAME:EHandler uses rbx rdi rsi
     DbgHex OriginalExceptContext.Rbx_
     DbgHex OriginalExceptContext.Rsi_
     DbgHex OriginalExceptContext.Rdi_
-  .endc
+  .endcatch
   .finally
     DbgLine2
     ret
-  .endfy
+  .endfinally
 proc1 endp
 
 ;Case 2 - Exception in a procedure with FRAME but without exception handler,
@@ -74,11 +74,11 @@ proc2_0 PROC FRAME:EHandler uses rsi xmm15
 ;    DbgFloat ExceptContext.Xmm15_.High_
 ;    DbgFloat OriginalExceptContext.Xmm15_.Low_
 ;    DbgFloat OriginalExceptContext.Xmm15_.High_
-  .endc
+  .endcatch
   .finally
     DbgLine2
     ret
-  .endfy
+  .endfinally
 proc2_0 endp
 
 ;Case 3 - Similar to Case 2, but when RSP is the frame pointer.
@@ -110,11 +110,11 @@ proc3_0 PROC FRAME:EHandler uses rdi rsi
     DbgHex ExceptContext.Rsi_
     DbgHex OriginalExceptContext.Rsi_
     DbgHex rsi
-  .endc
+  .endcatch
   .finally
     DbgLine2
     ret
-  .endfy
+  .endfinally
 proc3_0 endp
 
 ;Case 4 - Nested exceptions.
@@ -129,32 +129,32 @@ proc4 PROC FRAME:EHandler
         DbgHex QWORD ptr [rax]
         DbgHex ExceptRecord.ExceptionCode
         DbgHex ExceptRecord.ExceptionAddress
-      .endc
+      .endcatch
       .finally
         DbgLine2
         int 3         ;Breakpoint exception (It will pause execution under a debugger).
-      .endfy
+      .endfinally
     .catch
       DbgWarning "Exception in proc4 (B)"
       DbgHex QWORD ptr [rax]
       DbgHex ExceptRecord.ExceptionCode
       DbgHex ExceptRecord.ExceptionAddress
-    .endc
+    .endcatch
     .finally
       DbgLine2
       ;Raise a continuable exception.
       invoke RaiseException, 0FFh, 0, 0, 0
-    .endfy
+    .endfinally
   .catch
     DbgWarning "Exception in proc4 (C)"
     DbgHex QWORD ptr [rax]
     DbgHex ExceptRecord.ExceptionCode
     DbgHex ExceptRecord.ExceptionAddress
-  .endc
+  .endcatch
   .finally
     DbgLine2
     ret
-  .endfy
+  .endfinally
 proc4 endp
 
 ;Case 5 - Multiple (non-nested) exceptions in the same procedure
@@ -169,10 +169,10 @@ proc5 PROC FRAME:EHandler
     DbgHex QWORD ptr [rax]
     DbgHex ExceptRecord.ExceptionCode
     DbgHex ExceptRecord.ExceptionAddress
-  .endc
+  .endcatch
   .finally
     DbgLine2
-  .endfy
+  .endfinally
 
   .try
     hlt               ;cause another exception
@@ -181,11 +181,11 @@ proc5 PROC FRAME:EHandler
     DbgHex QWORD ptr [rax]
     DbgHex ExceptRecord.ExceptionCode
     DbgHex ExceptRecord.ExceptionAddress
-  .endc
+  .endcatch
   .finally
     DbgLine2
     ret
-  .endfy
+  .endfinally
 proc5 endp
 
 ;Case 6 - Exception in a leaf procedure, there is no Catch Block in caller,
@@ -230,7 +230,7 @@ start proc FRAME:EHandler
     DbgWarning "Exception in main"
     DbgHex ExceptRecord.ExceptionCode
     DbgHex ExceptRecord.ExceptionAddress
-  .endc
+  .endcatch
 
   .finally
     DbgLine2
@@ -238,7 +238,7 @@ start proc FRAME:EHandler
     SysDone
     invoke ExitProcess, 0
     ret
-  .endfy
+  .endfinally
 start endp
 
 end start                                           ;End of code and define the program entry point

@@ -143,9 +143,9 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,0,0,5515
+2=0,0,0,0,5647
 3=0,0,0,0,491
-1=0,0,1853,601,208
+1=0,0,1853,601,6644
 4=0,0,0,0,7226
 5=0,0,694,587,6544
 6=0,0,0,0,885
@@ -207,7 +207,7 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,2,10,7
 [PTimer]
-PTimer=408251876
+PTimer=408390595
 [GroupExpand]
 GroupExpand=1,1,1,0,0,1,0,0
 [RADebugBP]

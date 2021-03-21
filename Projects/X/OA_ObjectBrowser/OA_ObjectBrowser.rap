@@ -230,7 +230,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=6
+MilestoneOnDateDate=12
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -267,10 +267,10 @@ ProductVer4Range=0
 [Size]
 2=0,0,0,0,4293
 3=0,0,756,582,1559
-1=453,0,453,706,2321
+1=453,0,453,706,545
 4=540,0,412,843,16116
 1001=0,0,0,0,460
-5=0,0,0,0,35859
+5=0,0,0,0,62500
 6=0,0,0,0,1859
 7=0,0,0,0,119472
 8=0,0,0,0,1672
@@ -287,7 +287,7 @@ ProductVer4Range=0
 20=0,0,1878,628,343
 19=0,0,0,0,994
 22=0,0,0,0,522
-21=0,0,0,0,16270
+21=0,0,0,0,15878
 23=0,0,0,0,8215
 24=0,0,0,0,11150
 25=0,0,0,0,8654
@@ -299,8 +299,8 @@ ProductVer4Range=0
 31=0,0,1219,711,298
 32=0,0,0,0
 33=0,0,0,0,11452
-36=0,0,0,0,4541
-34=0,0,1902,628,35359
+36=0,0,0,0,6119
+34=0,0,1902,628,2534
 40=0,0,1870,591,7856
 38=0,0,0,0,5619
 39=0,0,1934,628,708
@@ -361,16 +361,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="PINFORMATION"
-2="OnButtonDown"
-3="OnMouseMove"
-4="DbgBmpFromDC"
-5="DbgBmp"
-6="OnPaint"
-7="SendChildrenMessage"
-8="OnSettingChange"
-9="Reset"
-10="OnSetText"
+1="ResGuard"
+2="IncludeAPIs"
+3="PINFORMATION"
+4="OnButtonDown"
+5="OnMouseMove"
+6="DbgBmpFromDC"
+7="DbgBmp"
+8="OnPaint"
+9="SendChildrenMessage"
+10="OnSettingChange"
 [Collapse]
 2=
 8=302,67371072,12449
@@ -440,7 +440,7 @@ ProductVer4Range=0
 67=
 66=
 [AutoLoad]
-AutoLoad=1,61,34,3,58
+AutoLoad=1,61,3,36,34,5,21
 [RADebugBP]
 4=
 6=
@@ -488,7 +488,8 @@ AutoLoad=1,61,34,3,58
 62=
 61=
 63=
+21=
 [PTimer]
-PTimer=3363350764
+PTimer=3404173748
 [GroupExpand]
 GroupExpand=1,1,1,1,1,1,0

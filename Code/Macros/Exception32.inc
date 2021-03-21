@@ -1,9 +1,11 @@
 ; ==================================================================================================
 ; Title:      Exception32.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Purpose:    ObjAsm 32 bit Exception Handling.
-; Notes:      Version C.1.0, October 2017
+; Notes:      Version C.1.1, March 2021
+;               - .endc replaced by .endcatch and .endfy by .endfinally (HSE)
+;             Version C.1.0, October 2017
 ;               - First release.
 ; ==================================================================================================
 
@@ -119,11 +121,11 @@ endm
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Macro:      .endc
+; Macro:      .endcatch
 ; Purpose:    Follow immediately instructions guarded by a .catch.
 ; Arguments:  Name of the handler which will deal with exceptions.
 
-.endc macro ExceptionHandlerName:req
+.endcatch macro ExceptionHandlerName:req
 
 @@&ExceptionHandlerName&_NoErr:
   pushcontext assumes
@@ -149,10 +151,10 @@ endm
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Macro:      .endfy
+; Macro:      .endfinally
 ; Purpose:    Follow immediately instructions guarded by a .finally.
 
-.endfy macro
+.endfinally macro
   pushcontext assumes
   assume fs:NOTHING
   pop fs:0

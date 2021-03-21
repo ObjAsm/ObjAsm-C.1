@@ -148,7 +148,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=20
+MilestoneOnDateDate=17
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -183,21 +183,21 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,1202,620,10071
+2=0,0,1202,620,2952
 1=0,0,0,0,1702
 6=0,0,0,0,90797
 4=0,0,0,0,1125
 31=0,0,1213,691,2401
 8=0,0,0,0,1911
 5=0,0,0,0,1681
-9=0,0,1838,628,30985
-7=0,0,1262,635,21775
-14=0,0,1297,620,10909
+9=0,0,1838,628,27941
+7=0,0,1262,635,13475
+14=0,0,1297,620,8942
 13=0,0,894,619,1482
 12=0,0,0,0,1927
-11=0,0,1251,559,75610
+11=0,0,1251,559,48747
 15=0,0,670,591,3197
-17=0,0,0,0,16200
+17=0,0,0,0,14722
 3=0,0,0,0,414
 16=0,0,0,0,3803
 18=0,0,1202,620
@@ -218,16 +218,16 @@ ProductVer4Range=0
 35=0,0,0,0,0
 36=
 [Find]
-1="hSupervisor"
-2="Supervisor"
-3="Super"
-4="NetComIOSockJobPool"
-5="Method NetComIOSockJobPool.NewItem, uses xsi, pOwner:POINTER, wOperation:WORD"
-6="wsprintf"
-7="OnConnect"
-8="An unhandled error has happen"
-9="int 3"
-10="DbgHex pConnection, "NetComProtocol.OnError", "&PROTOCOL_WND_NAME""
+1="getaddrinfo"
+2="GetHostName"
+3="gethostbyname"
+4="RemoteHostAddr"
+5="QueueConnect"
+6="timeval"
+7="wsaconnectbyname"
+8="wsaconnect"
+9="connect"
+10="hSupervisor"
 [Collapse]
 17=,
 14=,
@@ -275,9 +275,9 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,2,7,14,25,9,26,20
+AutoLoad=1,2,7,14,25,9,26
 [PTimer]
-PTimer=522296151
+PTimer=539345682
 [GroupExpand]
 GroupExpand=1,1,1,1,0,0,1,1,0
 [RADebugBP]

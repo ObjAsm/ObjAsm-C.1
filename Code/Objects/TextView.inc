@@ -755,7 +755,7 @@ Method TextView.Calc, uses xbx xdi xsi
 
       invoke SelectObject, [xsi].hMemDC, hFont
       invoke DrawTextW, [xsi].hMemDC, [xdi].TVENTRY.pString, -1, addr [xdi].TVENTRY.Extent, \
-                        DT_CALCRECT or DT_NOPREFIX or DT_SINGLELINE
+                        DT_CALCRECT or DT_NOPREFIX or DT_SINGLELINE or DT_NOCLIP
       mov xax, [xdi].TVENTRY.pStyle
       mov ecx, [xax].TVSTYLE.TextMetric.tmOverhang
       sub [xdi].TVENTRY.Extent.right, ecx
@@ -832,7 +832,7 @@ Method TextView.Calc, uses xbx xdi xsi
       mov xax, [xdi].TVENTRY.pStyle
       invoke SelectObject, [xsi].hMemDC,  [xax].TVSTYLE.hFont
       invoke DrawTextW, [xsi].hMemDC, [xdi].TVENTRY.pString, -1, addr [xdi].TVENTRY.Extent, \
-                        DT_CALCRECT or DT_NOPREFIX or DT_SINGLELINE
+                        DT_CALCRECT or DT_NOPREFIX or DT_SINGLELINE or DT_NOCLIP
       mov xax, [xdi].TVENTRY.pStyle
       mov ecx, [xax].TVSTYLE.TextMetric.tmOverhang
       sub [xdi].TVENTRY.Extent.right, ecx
@@ -886,7 +886,7 @@ Method TextView.Calc, uses xbx xdi xsi
         mov xax, [xdi].TVENTRY.pStyle
         invoke SelectObject, [xsi].hMemDC, [xax].TVSTYLE.hFont
         invoke DrawTextW, [xsi].hMemDC, $OfsCStr(" "), -1, addr [xdi].TVENTRY.Extent, \
-                          DT_CALCRECT or DT_NOPREFIX or DT_SINGLELINE
+                          DT_CALCRECT or DT_NOPREFIX or DT_SINGLELINE or DT_NOCLIP
         mov xdx, [xdi].TVENTRY.pStyle
         mov eax, [xdi].TVENTRY.Extent.right
         sub eax, [xdx].TVSTYLE.TextMetric.tmOverhang
@@ -1395,10 +1395,14 @@ Method TextView.Draw, uses xbx xdi xsi
           lea xax, [xdi].TVENTRY.pString
           mov TxtNotif.ppText, xax
           invoke SendMessage, [xsi].hParent, WM_NOTIFY, xCtrlID, addr TxtNotif
+
+          mov xcx, [xdi].TVENTRY.pString
         .endif
 
+;        invoke Rectangle, [xsi].hMemDC, [xdi].TVENTRY.Area.left, [xdi].TVENTRY.Area.top, \
+;                                        [xdi].TVENTRY.Area.right, [xdi].TVENTRY.Area.bottom
         invoke DrawTextW, [xsi].hMemDC, [xdi].TVENTRY.pString, -1, addr OutRect, \
-                          DT_NOPREFIX or DT_SINGLELINE
+                          DT_NOPREFIX or DT_SINGLELINE or DT_NOCLIP
         .ifBitSet [xbx].TVSTYLE.dFlags, TVSF_ACTIVE
           ;Uncomment to show the active area
 ;          invoke Rectangle, [xsi].hMemDC, [xdi].TVENTRY.Area.left, [xdi].TVENTRY.Area.top, \
@@ -2719,6 +2723,12 @@ CreateTVStyleFont macro
 ;  DbgDec [xdi].TVSTYLE.dFontSize, "Creating Font"
   invoke MulDiv, [xdi].TVSTYLE.dFontSize, [xsi].dLogPixY, -72
   mov [xdi].TVSTYLE.LogFont.lfHeight, eax
+  invoke StrComp, $OfsCStr("Wingsdings 2"), addr [xdi].TVSTYLE.LogFont.lfFaceName
+  .if eax == 0
+    mov [xdi].TVSTYLE.LogFont.lfCharSet, SYMBOL_CHARSET
+  .else
+    mov [xdi].TVSTYLE.LogFont.lfCharSet, DEFAULT_CHARSET
+  .endif
   mov [xdi].TVSTYLE.hFont, $invoke(CreateFontIndirect, addr [xdi].TVSTYLE.LogFont)
   OCall [xsi].GdiObjects::DataCollection.Insert, xax
   invoke SelectObject, [xsi].hMemDC, [xdi].TVSTYLE.hFont

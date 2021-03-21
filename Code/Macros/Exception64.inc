@@ -1,8 +1,10 @@
 ; ==================================================================================================
 ; Title:      Exception64.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Purpose:    ObjAsm 64 bit Exception Handling. See ...Code\ObjMem\64\EHandler.asm
+; Notes:      Version C.1.1, March 2021
+;               - .endc replaced by .endcatch and .endfy by .endfinally (HSE)
 ; Notes:      Version 1.0.0, October 2017
 ;               - First release.
 ; ==================================================================================================
@@ -98,13 +100,13 @@ endm
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Macro:      .endc
+; Macro:      .endcatch
 ; Purpose:    32 bit compatibility macro.
 ; Arguments:  None.
 ; Returns:    Nothing.
 ; Note:       This macro can be ommited.
 
-.endc macro
+.endcatch macro
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -133,12 +135,12 @@ endm
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Macro:      .endfy
+; Macro:      .finally
 ; Purpose:    32 bit compatibility macro.
 ; Arguments:  None.
 ; Returns:    Nothing.
 ; Note:       This macro can be ommited.
 
-.endfy macro
+.endfinally macro
 endm
 

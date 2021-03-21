@@ -16,13 +16,14 @@ CStr szApplication, "Application"
 Object Application, MySdiAppID, SdiApp
   RedefineMethod    Init
   StaticMethod      Startup
-  RedefineMethod    OnSize,           WPARAM, LPARAM
-;  RedefineMethod    OnGetMinMaxInfo,  WPARAM, LPARAM
+  RedefineMethod    OnSize,             WPARAM, LPARAM
+;  RedefineMethod    OnGetMinMaxInfo,    WPARAM, LPARAM
 
-  VirtualEvent      OnCommand,        WM_COMMAND
-  VirtualEvent      OnClose,          WM_CLOSE, WM_QUERYENDSESSION
-  VirtualEvent      OnCtlColorStatic, WM_CTLCOLORSTATIC
-  VirtualEvent      OnNotify,         WM_NOTIFY
+  VirtualEvent      OnCommand,          WM_COMMAND
+  VirtualEvent      OnClose,            WM_CLOSE, WM_QUERYENDSESSION
+  VirtualEvent      OnCtlColorStatic,   WM_CTLCOLORSTATIC
+  VirtualEvent      OnMouseWheel,       WM_MOUSEWHEEL
+  VirtualEvent      OnNotify,           WM_NOTIFY
 
   DefineVariable    pTextView,  $ObjPtr(TextView)
 ObjectEnd
@@ -151,6 +152,24 @@ Method Application.OnGetMinMaxInfo,, wParam:WPARAM, lParam:LPARAM
   mov xcx, lParam
   mov [xcx].MINMAXINFO.ptMaxTrackSize.y, WND_MAX_HEIGHT
   xor eax, eax
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     Application.OnMouseWheel
+; Purpose:    Event procedure for WM_MOUSEWHEEL message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = Zero.
+; Note:       This method was introduced for Win8, since this OS doesn't send the message to the
+;             window under the mouse. It sends it to the top level window!
+;             Win10 does it differently.
+
+Method Application.OnMouseWheel, uses xsi, wParam:WPARAM, lParam:LPARAM
+  SetObject xsi
+  mov xax, [xsi].pTextView
+  .if xax != NULL
+    invoke SendMessage, [xax].$Obj(TextView).hWnd, WM_MOUSEWHEEL, wParam, lParam
+  .endif
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
