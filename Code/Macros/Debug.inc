@@ -36,61 +36,87 @@
 ; ==================================================================================================
 
 ;Debug coloring setup
-if FALSE                                                ;Use high contrast colors
-  DBG_COLOR_TEXT        equ   $RGB(230,230,230)
-  DBG_COLOR_BACKGROUND  equ   $RGB(000,000,048)
-else
-  DBG_COLOR_TEXT        equ   $RGB(000,000,000)
-  DBG_COLOR_BACKGROUND  equ   $RGB(255,255,255)
+
+ifndef DBG_DEVICE
+  DBG_DEVICE textequ <WND>
 endif
-DBG_COLOR_COMMENT       equ   $RGB(128,128,128)
-DBG_COLOR_WARNING       equ   $RGB(192,064,064)
-DBG_COLOR_ERROR         equ   $RGB(255,000,000)
-DBG_COLOR_STRING        equ   $RGB(000,000,255)
-DBG_COLOR_MESSAGE       equ   $RGB(064,064,160)
-DBG_COLOR_OBJECT        equ   $RGB(128,128,128)
-DBG_COLOR_INTERFACE     equ   $RGB(090,090,255)
-DBG_COLOR_VMT           equ   $RGB(063,063,255)
-DBG_COLOR_FPU           equ   $RGB(050,150,050)
-DBG_COLOR_MEMORY        equ   $RGB(100,100,200)
-DBG_COLOR_RGB_RED       equ   $RGB(255,000,000)
-DBG_COLOR_RGB_GREEN     equ   $RGB(000,160,000)
-DBG_COLOR_RGB_BLUE      equ   $RGB(000,000,255)
-DBG_COLOR_DEFAULT_PRE   equ   $RGB(090,090,090)
-DBG_COLOR_DEFAULT_VAR   equ   $RGB(130,130,255)
-DBG_COLOR_LINE          equ   $RGB(150,150,255)
+
+ifidn DBG_DEVICE, <WND>
+  if FALSE                                                ;Use high contrast colors
+    DBG_COLOR_TEXT        equ   $RGB(230,230,230)
+    DBG_COLOR_BACKGROUND  equ   $RGB(000,000,048)
+  else
+    DBG_COLOR_TEXT        equ   $RGB(000,000,000)
+    DBG_COLOR_BACKGROUND  equ   $RGB(255,255,255)
+  endif
+  DBG_COLOR_COMMENT       equ   $RGB(128,128,128)
+  DBG_COLOR_WARNING       equ   $RGB(192,064,064)
+  DBG_COLOR_ERROR         equ   $RGB(255,000,000)
+  DBG_COLOR_STRING        equ   $RGB(000,000,255)
+  DBG_COLOR_MESSAGE       equ   $RGB(064,064,160)
+  DBG_COLOR_OBJECT        equ   $RGB(128,128,128)
+  DBG_COLOR_INTERFACE     equ   $RGB(090,090,255)
+  DBG_COLOR_VMT           equ   $RGB(063,063,255)
+  DBG_COLOR_FPU           equ   $RGB(050,150,050)
+  DBG_COLOR_MEMORY        equ   $RGB(100,100,200)
+  DBG_COLOR_RGB_RED       equ   $RGB(255,000,000)
+  DBG_COLOR_RGB_GREEN     equ   $RGB(000,160,000)
+  DBG_COLOR_RGB_BLUE      equ   $RGB(000,000,255)
+  DBG_COLOR_DEFAULT_PRE   equ   $RGB(090,090,090)
+  DBG_COLOR_DEFAULT_VAR   equ   $RGB(130,130,255)
+  DBG_COLOR_LINE          equ   $RGB(150,150,255)
+else
+  DBG_COLOR_TEXT          equ   $RGB(127,127,127)
+  DBG_COLOR_BACKGROUND    equ   $RGB(000,000,000)
+  DBG_COLOR_COMMENT       equ   $RGB(127,127,127)
+  DBG_COLOR_WARNING       equ   $RGB(127,000,000)
+  DBG_COLOR_ERROR         equ   $RGB(255,000,000)
+  DBG_COLOR_STRING        equ   $RGB(000,000,255)
+  DBG_COLOR_MESSAGE       equ   $RGB(127,127,255)
+  DBG_COLOR_OBJECT        equ   $RGB(127,127,127)
+  DBG_COLOR_INTERFACE     equ   $RGB(000,000,255)
+  DBG_COLOR_VMT           equ   $RGB(000,000,255)
+  DBG_COLOR_FPU           equ   $RGB(127,255,127)
+  DBG_COLOR_MEMORY        equ   $RGB(127,127,255)
+  DBG_COLOR_RGB_RED       equ   $RGB(255,000,000)
+  DBG_COLOR_RGB_GREEN     equ   $RGB(000,255,000)
+  DBG_COLOR_RGB_BLUE      equ   $RGB(000,000,255)
+  DBG_COLOR_DEFAULT_PRE   equ   $RGB(127,127,127)
+  DBG_COLOR_DEFAULT_VAR   equ   $RGB(255,255,255)
+  DBG_COLOR_LINE          equ   $RGB(127,127,127)
+endif
 
 ;Debug font
-DBG_FONT_TEXT           textequ <Courier New>
-;DBG_FONT_TEXT           textequ <Fixedsys>
+DBG_FONT_TEXT             textequ <Courier New>
+;DBG_FONT_TEXT             textequ <Fixedsys>
 
 ;Debug device
-DBG_DEV_NUL             equ   00h
-DBG_DEV_LOG             equ   01h
-DBG_DEV_CON             equ   02h
-DBG_DEV_WND             equ   03h
+DBG_DEV_NUL               equ   00h
+DBG_DEV_LOG               equ   01h
+DBG_DEV_CON               equ   02h
+DBG_DEV_WND               equ   03h
 
 ;Debug options
-DBG_OPT_NONE            equ   00h
-DBG_OPT_SHOWINFO        equ   01h
+DBG_OPT_NONE              equ   00h
+DBG_OPT_SHOWINFO          equ   01h
 
 ;Debug memory formats
-DBG_MEM_STRA            equ   100       ;ANSI String
-DBG_MEM_STRW            equ   101       ;WIDE String
-DBG_MEM_UI8             equ   102       ;Unsigned BYTE Integer in decimal format
-DBG_MEM_UI16            equ   103       ;Unsigned WORD Integer in decimal format
-DBG_MEM_UI32            equ   104       ;Unsigned DWORD Integer in decimal format
-DBG_MEM_UI64            equ   105       ;Unsigned QWORD Integer in decimal format
-DBG_MEM_I8              equ   106       ;Signed BYTE Integer in decimal format
-DBG_MEM_I16             equ   107       ;Signed WORD Integer in decimal format
-DBG_MEM_I32             equ   108       ;Signed DWORD Integer in decimal format
-DBG_MEM_I64             equ   109       ;Signed QWORD Integer in decimal format
-DBG_MEM_R4              equ   110       ;REAL4 in decimal format
-DBG_MEM_R8              equ   111       ;REAL8 in decimal format
-DBG_MEM_H8              equ   112       ;BYTE Integer in hexadecimal format
-DBG_MEM_H16             equ   113       ;WORD Integer in hexadecimal format
-DBG_MEM_H32             equ   114       ;DWORD Integer in hexadecimal format
-DBG_MEM_H64             equ   115       ;QWORD Integer in hexadecimal format
+DBG_MEM_STRA              equ   100       ;ANSI String
+DBG_MEM_STRW              equ   101       ;WIDE String
+DBG_MEM_UI8               equ   102       ;Unsigned BYTE Integer in decimal format
+DBG_MEM_UI16              equ   103       ;Unsigned WORD Integer in decimal format
+DBG_MEM_UI32              equ   104       ;Unsigned DWORD Integer in decimal format
+DBG_MEM_UI64              equ   105       ;Unsigned QWORD Integer in decimal format
+DBG_MEM_I8                equ   106       ;Signed BYTE Integer in decimal format
+DBG_MEM_I16               equ   107       ;Signed WORD Integer in decimal format
+DBG_MEM_I32               equ   108       ;Signed DWORD Integer in decimal format
+DBG_MEM_I64               equ   109       ;Signed QWORD Integer in decimal format
+DBG_MEM_R4                equ   110       ;REAL4 in decimal format
+DBG_MEM_R8                equ   111       ;REAL8 in decimal format
+DBG_MEM_H8                equ   112       ;BYTE Integer in hexadecimal format
+DBG_MEM_H16               equ   113       ;WORD Integer in hexadecimal format
+DBG_MEM_H32               equ   114       ;DWORD Integer in hexadecimal format
+DBG_MEM_H64               equ   115       ;QWORD Integer in hexadecimal format
 
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   DBG_MEM_STR equ DBG_MEM_STRA
@@ -99,28 +125,28 @@ else
 endif
 
 
-DBG_FLOAT_RESOLUTION    equ   12
-DBG_FLOAT_BUFFERSIZE    equ   24        ;(DBG_FLOAT_RESOLUTION + 9) roundup to the next 4 boundary
+DBG_FLOAT_RESOLUTION      equ   12
+DBG_FLOAT_BUFFERSIZE      equ   24        ;(DBG_FLOAT_RESOLUTION + 9) roundup to the next 4 boundary
 
 if DEBUGGING
-  CStrW szDbgErr,       "Debug Error"
-  CStrW szDbgObjErr,    "Object Error"
-  CStrW szDbgComErr,    "DebugCenter communication failed due to low system resources"
-  CStrW szLeakReport,   "Resource Leakage Report"
+  CStrW szDbgErr,         "Debug Error"
+  CStrW szDbgObjErr,      "Object Error"
+  CStrW szDbgComErr,      "DebugCenter communication failed due to low system resources"
+  CStrW szLeakReport,     "Resource Leakage Report"
 
-  CStrA szDbgInvalid,   "????"
+  CStrA szDbgInvalid,     "????"
 
-  CStrW szDbgCtrCls,    &DEBUG_CENTER_CLASS
+  CStrW szDbgCtrCls,      &DEBUG_CENTER_CLASS
 
   externdef dDbgDev:DWORD       ;Exports dDbgDev symbol, defined in SetupSys.inc
   externdef hDbgDev:HANDLE
 
   .data?
-    hDbgDev             HANDLE    ?
-    pObjIDTableStart    POINTER   ?
-    dObjIDTableCount    DWORD     ?
-    pObjErrTableStart   POINTER   ?
-    dObjErrTableCount   DWORD     ?
+    hDbgDev               HANDLE    ?
+    pObjIDTableStart      POINTER   ?
+    dObjIDTableCount      DWORD     ?
+    pObjErrTableStart     POINTER   ?
+    dObjErrTableCount     DWORD     ?
 endif
 
 

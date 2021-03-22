@@ -18,10 +18,10 @@ VER_PRODUCTVERSION            equ       2,0,0,0
 VER_PRODUCTVERSION_STR        equ       <2.0>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       104
-BUILD_DATE_STR                textequ   <20.03.2021>
+BUILD_NUMBER                  equ       105
+BUILD_DATE_STR                textequ   <22.03.2021>
 BUILD_BITNESS                 equ       64
-BUILD_MODE                    equ       DBG
+BUILD_MODE                    equ       RLS
 
 ;Menu IDs
 IDM_EXIT                      equ       1000

@@ -9,7 +9,7 @@
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc
-SysSetup OOP, WIN64, WIDE_STRING;, DEBUG(WND)
+SysSetup OOP, WIN64, ANSI_STRING, DEBUG(CON)
 
 % includelib &LibPath&Windows\shell32.lib
 % includelib &LibPath&Windows\shlwapi.lib
@@ -34,7 +34,6 @@ include TextViewDemo_Main.inc
 start proc
   SysInit
   DbgClearAll
-
   OCall $ObjTmpl(Application)::Application.Init
   OCall $ObjTmpl(Application)::Application.Run
   OCall $ObjTmpl(Application)::Application.Done

@@ -755,7 +755,7 @@ Method TextView.Calc, uses xbx xdi xsi
 
       invoke SelectObject, [xsi].hMemDC, hFont
       invoke DrawTextW, [xsi].hMemDC, [xdi].TVENTRY.pString, -1, addr [xdi].TVENTRY.Extent, \
-                        DT_CALCRECT or DT_NOPREFIX or DT_SINGLELINE or DT_NOCLIP
+                        DT_CALCRECT or DT_NOPREFIX or DT_SINGLELINE
       mov xax, [xdi].TVENTRY.pStyle
       mov ecx, [xax].TVSTYLE.TextMetric.tmOverhang
       sub [xdi].TVENTRY.Extent.right, ecx
@@ -832,7 +832,7 @@ Method TextView.Calc, uses xbx xdi xsi
       mov xax, [xdi].TVENTRY.pStyle
       invoke SelectObject, [xsi].hMemDC,  [xax].TVSTYLE.hFont
       invoke DrawTextW, [xsi].hMemDC, [xdi].TVENTRY.pString, -1, addr [xdi].TVENTRY.Extent, \
-                        DT_CALCRECT or DT_NOPREFIX or DT_SINGLELINE or DT_NOCLIP
+                        DT_CALCRECT or DT_NOPREFIX or DT_SINGLELINE
       mov xax, [xdi].TVENTRY.pStyle
       mov ecx, [xax].TVSTYLE.TextMetric.tmOverhang
       sub [xdi].TVENTRY.Extent.right, ecx
@@ -886,7 +886,7 @@ Method TextView.Calc, uses xbx xdi xsi
         mov xax, [xdi].TVENTRY.pStyle
         invoke SelectObject, [xsi].hMemDC, [xax].TVSTYLE.hFont
         invoke DrawTextW, [xsi].hMemDC, $OfsCStr(" "), -1, addr [xdi].TVENTRY.Extent, \
-                          DT_CALCRECT or DT_NOPREFIX or DT_SINGLELINE or DT_NOCLIP
+                          DT_CALCRECT or DT_NOPREFIX or DT_SINGLELINE
         mov xdx, [xdi].TVENTRY.pStyle
         mov eax, [xdi].TVENTRY.Extent.right
         sub eax, [xdx].TVSTYLE.TextMetric.tmOverhang
@@ -1402,7 +1402,7 @@ Method TextView.Draw, uses xbx xdi xsi
 ;        invoke Rectangle, [xsi].hMemDC, [xdi].TVENTRY.Area.left, [xdi].TVENTRY.Area.top, \
 ;                                        [xdi].TVENTRY.Area.right, [xdi].TVENTRY.Area.bottom
         invoke DrawTextW, [xsi].hMemDC, [xdi].TVENTRY.pString, -1, addr OutRect, \
-                          DT_NOPREFIX or DT_SINGLELINE or DT_NOCLIP
+                          DT_NOPREFIX or DT_SINGLELINE
         .ifBitSet [xbx].TVSTYLE.dFlags, TVSF_ACTIVE
           ;Uncomment to show the active area
 ;          invoke Rectangle, [xsi].hMemDC, [xdi].TVENTRY.Area.left, [xdi].TVENTRY.Area.top, \

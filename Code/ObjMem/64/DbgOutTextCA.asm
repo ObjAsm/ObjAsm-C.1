@@ -50,19 +50,31 @@ DbgOutTextCA proc pStringA:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD,
 
   .elseif eax == DBG_DEV_CON
     .if $invoke(DbgConOpen)
+      m2z wAttrib
       mov eax, dColor
-      mov wAttrib, FOREGROUND_INTENSITY
-      test eax, 000000F0h
-      .if !ZERO?
-        or wAttrib, FOREGROUND_RED
+      .ifBitSet al, BIT07 
+        or wAttrib, FOREGROUND_INTENSITY or FOREGROUND_RED
       .endif
-      test eax, 0000F000h
-      .if !ZERO?
-        or wAttrib, FOREGROUND_GREEN
+      .ifBitSet ah, BIT07 
+        or wAttrib, FOREGROUND_INTENSITY or FOREGROUND_GREEN
       .endif
-      test eax, 00F00000h
-      .if !ZERO?
-        or wAttrib, FOREGROUND_BLUE
+      shr eax, 16
+      .ifBitSet al, BIT07  
+        or wAttrib, FOREGROUND_INTENSITY or FOREGROUND_BLUE
+      .endif
+      
+      .ifBitClr wAttrib, FOREGROUND_INTENSITY
+        mov eax, dColor
+        .if al != 0h 
+          or wAttrib, FOREGROUND_RED
+        .endif
+        .if ah != 0h 
+          or wAttrib, FOREGROUND_GREEN
+        .endif
+        shr eax, 16
+        .if al != 0h 
+          or wAttrib, FOREGROUND_BLUE
+        .endif
       .endif
       invoke SetConsoleTextAttribute, hDbgDev, wAttrib
       lea r9, dBytesWritten

@@ -162,7 +162,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=20
+MilestoneOnDateDate=22
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -198,7 +198,7 @@ ProductVer4Range=0
 
 [Size]
 2=1045,608,1045,304,1086
-1=1045,304,1045,304,490
+1=1045,304,1045,304,491
 6=0,0,1456,414,100143
 4=0,0,0,0,848
 31=0,0,1213,691,1416
@@ -223,7 +223,7 @@ ProductVer4Range=0
 25=0,0,0,0,1955
 21=0,0,0,0,575
 22=0,0,0,0,14592
-26=0,0,1791,628,7828
+26=0,0,1791,628,56887
 27=0,0,0,0,9336
 32=0,0,0,0,4726
 28=0,0,0,0,2959
@@ -253,16 +253,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="OnMouseWheel"
-2="Align"
-3="OnGetFont"
-4="WM_HSCROLL"
-5="OnSize"
-6="DrawRect"
-7="dMaxHeight"
-8="dLineLastEntryIndex"
-9="DrawText"
-10="TVET_BLANK"
+1=" or DT_NOCLIP"
+2="clip"
+3="OnMouseWheel"
+4="Align"
+5="OnGetFont"
+6="WM_HSCROLL"
+7="OnSize"
+8="DrawRect"
+9="dMaxHeight"
+10="dLineLastEntryIndex"
 [Collapse]
 1=
 2=
@@ -380,7 +380,7 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,2,26,7,22
 [PTimer]
-PTimer=2327927595
+PTimer=2327983657
 [GroupExpand]
 GroupExpand=0,1,1,0,0,1,1,0
 [RADebugBP]

@@ -11,7 +11,7 @@
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc
-SysSetup OOP, WIN32, ANSI_STRING, DEBUG(WND, ResGuard)
+SysSetup OOP, WIN32, ANSI_STRING, DEBUG(WND)
 
 % includelib &LibPath&Windows\Kernel32.lib
 % includelib &LibPath&Windows\Shell32.lib
@@ -67,13 +67,13 @@ include OAB_FindInfoDlg.inc
 start proc
   SysInit
 
-  ResGuard_Start
+;  ResGuard_Start
   DbgClearAll
   OCall $ObjTmpl(ObjectBrowser)::ObjectBrowser.Init
   OCall $ObjTmpl(ObjectBrowser)::ObjectBrowser.Run
   OCall $ObjTmpl(ObjectBrowser)::ObjectBrowser.Done
-  ResGuard_Stop
-  ResGuard_Show
+;  ResGuard_Stop
+;  ResGuard_Show
   SysDone
   invoke ExitProcess, 0
 start endp
