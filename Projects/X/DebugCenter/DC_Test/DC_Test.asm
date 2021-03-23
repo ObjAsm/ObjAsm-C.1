@@ -14,6 +14,8 @@ SysSetup OOP, WIN64, WIDE_STRING, DEBUG(WND, INFO, TRACE, STKGUARD, "DC_Test Pro
 % includelib &LibPath&Windows\shell32.lib
 % includelib &LibPath&Windows\shlwapi.lib
 
+% include &MacPath&fMath.inc
+
 CStr szMyStr, "Here is my string"
 CReal4 r4MyFloat1, 12.3456789
 CReal8 r8MyFloat2, 89.2398756225
@@ -28,6 +30,7 @@ MakeObjects WinApp, SdiApp
 .code
 include DC_Test_Globals.inc
 include DC_Test_Main.inc
+
 
 pApp equ offset $ObjTmpl(DC_Test)
 

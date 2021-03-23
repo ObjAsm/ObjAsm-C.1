@@ -36,7 +36,8 @@ DbgOutTextW proc pStringW:POINTER, dColor:DWORD, dEffects:DWORD, pDest:POINTER
   .if eax == DBG_DEV_LOG
     invoke DbgLogOpen
     .if $invoke(DbgLogOpen)
-      invoke StrLengthW, pStringW
+      invoke StrSizeW, pStringW
+      sub eax, 2
       invoke WriteFile, hDbgDev, pStringW, eax, NULL, NULL
     .endif
     .ifBitSet dEffects, DBG_EFFECT_NEWLINE

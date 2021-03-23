@@ -8,8 +8,8 @@ REM   - HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Envi
 REM ----------- For my own use -----------------
 if "%COMPUTERNAME%"=="LWP-JKHC2Z2" (
   set ToolPath="C:\_MySoftware_"
-  set Linker="%ToolPath%\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\bin\Hostx64\x64\link.exe"
-  set LibraryCompiler="%ToolPath%\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\bin\Hostx64\x64\lib.exe"
+  set Linker="C:\_MySoftware_\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\bin\Hostx64\x64\link.exe"
+  set LibraryCompiler="C:\_MySoftware_\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\bin\Hostx64\x64\lib.exe"
 ) else (
   set ToolPath="%ProgramFiles(x86)%"
   set Linker="%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\VC\bin\link.exe"

@@ -37,7 +37,7 @@ DbgOutMem proc uses rbx rdi rsi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
 
   mov rsi, pStart
   mov ebx, dSize
-  .while rbx != 0
+  .while SQWORD ptr rbx > 0
     lea rdi, cBuffer
     invoke qword2hexA, rdi, esi
     invoke DbgOutTextA, rdi, $RGB(100,100,200), DBG_EFFECT_BOLD, pDest
@@ -49,7 +49,7 @@ DbgOutMem proc uses rbx rdi rsi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
 
     ;;Dump hex values:
     xor ecx, ecx
-    .while rcx < 16
+    .while SQWORD ptr rcx < 16
       .if rcx != 0
         .ifBitClr rcx, BIT01 or BIT00
           .if !rbx
@@ -100,7 +100,7 @@ DbgOutMem proc uses rbx rdi rsi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
 
       ;;Dump text output:
       xor ecx, ecx
-      .while rcx < 16
+      .while SQWORD ptr rcx < 16
         mov al, [rsi]
         .if !rbx
           mov al, " "
@@ -122,12 +122,12 @@ DbgOutMem proc uses rbx rdi rsi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
 
       ;;Dump text output:
       xor ecx, ecx
-      .while rcx < 16
+      .while SQWORD ptr rcx < 16
         mov ax, [rsi]
         .if !rbx
           mov ax, " "
         .else
-          sub rbx, 2
+          dec rbx
           add rsi, 2
           .if ax < " " || ax > 255                      ;Not printable
             mov ax, "."
@@ -143,7 +143,7 @@ DbgOutMem proc uses rbx rdi rsi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add rdi, 4
 
       xor ecx, ecx
-      .while rcx < 16
+      .while SQWORD ptr rcx < 16
         mov al, [rsi]
         .if !rbx
           mov al, " "
@@ -173,7 +173,7 @@ DbgOutMem proc uses rbx rdi rsi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add rdi, 4
 
       xor ecx, ecx
-      .while rcx < 8
+      .while SQWORD ptr rcx < 8
         mov ax, [rsi]
 
         .if rbx && (rbx < 2)
@@ -206,7 +206,7 @@ DbgOutMem proc uses rbx rdi rsi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add rdi, 4
 
       xor ecx, ecx
-      .while rcx < 4
+      .while SQWORD ptr rcx < 4
         mov rax, [rsi]
 
         .if rbx && (rbx < 4)
@@ -239,7 +239,7 @@ DbgOutMem proc uses rbx rdi rsi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add rdi, 4
 
       xor ecx, ecx
-      .while rcx < 16
+      .while SQWORD ptr rcx < 16
         mov al, [rsi]
         .if !rbx
           mov al, " "
@@ -269,7 +269,7 @@ DbgOutMem proc uses rbx rdi rsi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add rdi, 4
 
       xor ecx, ecx
-      .while rcx < 8
+      .while SQWORD ptr rcx < 8
         mov ax, [rsi]
 
         .if rbx && (rbx < 2)
@@ -302,7 +302,7 @@ DbgOutMem proc uses rbx rdi rsi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add rdi, 4
 
       xor ecx, ecx
-      .while rcx < 4
+      .while SQWORD ptr rcx < 4
         mov rax, [rsi]
 
         .if rbx && (rbx < 4)
@@ -335,7 +335,7 @@ DbgOutMem proc uses rbx rdi rsi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add rdi, 4
 
       xor ecx, ecx
-      .while rcx < 4
+      .while SQWORD ptr rcx < 4
         mov rax, rsi
 
         .if rbx && (rbx < 4)
@@ -371,7 +371,7 @@ DbgOutMem proc uses rbx rdi rsi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add rdi, 4
 
       xor ecx, ecx
-      .while rcx < 2
+      .while SQWORD ptr rcx < 2
         mov rax, rsi
 
         .if rbx && (rbx < 8)
@@ -407,7 +407,7 @@ DbgOutMem proc uses rbx rdi rsi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add rdi, 4
 
       xor ecx, ecx
-      .while rcx < 16
+      .while SQWORD ptr rcx < 16
         mov al, [rsi]
         .if !rbx
           mov al, " "
@@ -437,7 +437,7 @@ DbgOutMem proc uses rbx rdi rsi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add rdi, 4
 
       xor ecx, ecx
-      .while rcx < 8
+      .while SQWORD ptr rcx < 8
         mov ax, [rsi]
 
         .if rbx && (rbx < 2)
@@ -470,7 +470,7 @@ DbgOutMem proc uses rbx rdi rsi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add rdi, 4
 
       xor ecx, ecx
-      .while rcx < 4
+      .while SQWORD ptr rcx < 4
         mov rax, [rsi]
 
         .if rbx && (rbx < 4)

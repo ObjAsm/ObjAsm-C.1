@@ -38,7 +38,7 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
 
   mov esi, pStart
   mov ebx, dSize
-  .while ebx != 0
+  .while SDWORD ptr ebx > 0
     lea edi, cBuffer
     invoke dword2hexA, edi, esi
     m2z BYTE ptr [edi + 8]
@@ -51,7 +51,7 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
 
     ;;Dump hex values:
     xor ecx, ecx
-    .while ecx < 16
+    .while SDWORD ptr ecx < 16
       .if ecx != 0
         .ifBitClr ecx, BIT01 or BIT00
           .if !ebx
@@ -102,7 +102,7 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
 
       ;;Dump text output:
       xor ecx, ecx
-      .while ecx < 16
+      .while SDWORD ptr ecx < 16
         mov al, [esi]
         .if !ebx
           mov al, " "
@@ -124,12 +124,12 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
 
       ;;Dump text output:
       xor ecx, ecx
-      .while ecx < 16
+      .while SDWORD ptr ecx < 16
         mov ax, [esi]
         .if !ebx
           mov ax, " "
         .else
-          sub ebx, 2
+          dec ebx
           add esi, 2
           .if ax < " " || ax > 255                      ;Not printable
             mov ax, "."
@@ -145,7 +145,7 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add edi, 4
 
       xor ecx, ecx
-      .while ecx < 16
+      .while SDWORD ptr ecx < 16
         mov al, [esi]
         .if !ebx
           mov al, " "
@@ -175,7 +175,7 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add edi, 4
 
       xor ecx, ecx
-      .while ecx < 8
+      .while SDWORD ptr ecx < 8
         mov ax, [esi]
 
         .if ebx && (ebx < 2)
@@ -208,7 +208,7 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add edi, 4
 
       xor ecx, ecx
-      .while ecx < 4
+      .while SDWORD ptr ecx < 4
         mov eax, [esi]
 
         .if ebx && (ebx < 4)
@@ -241,7 +241,7 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add edi, 4
 
       xor ecx, ecx
-      .while ecx < 16
+      .while SDWORD ptr ecx < 16
         mov al, [esi]
         .if !ebx
           mov al, " "
@@ -271,7 +271,7 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add edi, 4
 
       xor ecx, ecx
-      .while ecx < 8
+      .while SDWORD ptr ecx < 8
         mov ax, [esi]
 
         .if ebx && (ebx < 2)
@@ -304,7 +304,7 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add edi, 4
 
       xor ecx, ecx
-      .while ecx < 4
+      .while SDWORD ptr ecx < 4
         mov eax, [esi]
 
         .if ebx && (ebx < 4)
@@ -337,7 +337,7 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add edi, 4
 
       xor ecx, ecx
-      .while ecx < 4
+      .while SDWORD ptr ecx < 4
         mov eax, esi
 
         .if ebx && (ebx < 4)
@@ -373,7 +373,7 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add edi, 4
 
       xor ecx, ecx
-      .while ecx < 2
+      .while SDWORD ptr ecx < 2
         mov eax, esi
 
         .if ebx && (ebx < 8)
@@ -409,7 +409,7 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add edi, 4
 
       xor ecx, ecx
-      .while ecx < 16
+      .while SDWORD ptr ecx < 16
         mov al, [esi]
         .if !ebx
           mov al, " "
@@ -439,7 +439,7 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add edi, 4
 
       xor ecx, ecx
-      .while ecx < 8
+      .while SDWORD ptr ecx < 8
         mov ax, [esi]
 
         .if ebx && (ebx < 2)
@@ -472,7 +472,7 @@ DbgOutMem proc uses ebx edi esi, pStart:POINTER, dSize:DWORD, dVCode:DWORD, pDes
       add edi, 4
 
       xor ecx, ecx
-      .while ecx < 4
+      .while SDWORD ptr ecx < 4
         mov eax, [esi]
 
         .if ebx && (ebx < 4)

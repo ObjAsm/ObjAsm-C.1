@@ -66,7 +66,7 @@ ifidn DBG_DEVICE, <WND>
   DBG_COLOR_DEFAULT_VAR   equ   $RGB(130,130,255)
   DBG_COLOR_LINE          equ   $RGB(150,150,255)
 else
-  DBG_COLOR_TEXT          equ   $RGB(127,127,127)
+  DBG_COLOR_TEXT          equ   $RGB(255,255,255)
   DBG_COLOR_BACKGROUND    equ   $RGB(000,000,000)
   DBG_COLOR_COMMENT       equ   $RGB(127,127,127)
   DBG_COLOR_WARNING       equ   $RGB(127,000,000)
@@ -463,7 +463,12 @@ DbgLine macro Dest
   if DEBUGGING
     DbgSaveContext
     DbgSetDestWnd Dest
-    invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, ??DbgDstWnd
+    ifidn DBG_DEVICE, <WND>
+      invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, ??DbgDstWnd
+    else
+      invoke DbgOutTextA, $OfsCStrA("-------------------------------------------------------"), \
+                          DBG_COLOR_LINE, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+    endif
     DbgLoadContext
   endif
 endm
@@ -477,7 +482,12 @@ DbgLine2 macro Dest
   if DEBUGGING
     DbgSaveContext
     DbgSetDestWnd Dest
-    invoke DbgOutCmd, DBG_CMD_DOUBLE_LINE, ??DbgDstWnd
+    ifidn DBG_DEVICE, <WND>
+      invoke DbgOutCmd, DBG_CMD_DOUBLE_LINE, ??DbgDstWnd
+    else
+      invoke DbgOutTextA, $OfsCStrA("======================================================="), \
+                          DBG_COLOR_LINE, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+    endif
     DbgLoadContext
   endif
 endm
@@ -509,7 +519,7 @@ endm
 ; Purpose:    Output formated a text on the debug device.
 ; Arguments:  Arg1: Optional destination Window name.
 ;             Arg2: Optional text color.
-;             Arg3: Text.
+;             Arg3: Format text.
 ;             Arg4: Text paramters.
 ; Example:    DbgTextF "Output", $RGB(0,0,0), "Data = '%s'", xax
 
@@ -544,10 +554,10 @@ DbgWarning macro DispText, Dest
     DbgSaveContext
     DbgSetDestWnd Dest
     ifb <&Var>
-      invoke DbgOutText, $OfsCStr($Esc("WARNING\:")), \
+      invoke DbgOutTextA, $OfsCStrA($Esc("WARNING\:")), \
                           DBG_COLOR_WARNING, DBG_EFFECT_NORMAL, ??DbgDstWnd
     else
-      invoke DbgOutText, $OfsCStr($Esc(<DispText>)), \
+      invoke DbgOutTextA, $OfsCStrA($Esc(<DispText>)), \
                           DBG_COLOR_WARNING, DBG_EFFECT_NORMAL, ??DbgDstWnd
     endif
     DbgShowSrcInfo ??DbgDstWnd
@@ -931,10 +941,12 @@ endm
 
 DbgBmp macro hBmp:req, Dest
   if DEBUGGING
-    DbgSaveContext FALSE, hBmp
-    DbgSetDestWnd Dest
-    invoke DbgOutBitmap, ??VarRBX, ??DbgDstWnd
-    DbgLoadContext
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext FALSE, hBmp
+      DbgSetDestWnd Dest
+      invoke DbgOutBitmap, ??VarRBX, ??DbgDstWnd
+      DbgLoadContext
+    endif
   endif
 endm
 
@@ -946,11 +958,13 @@ endm
 
 DbgBmpFromDC macro hDC:req, Dest
   if DEBUGGING
-    DbgSaveContext FALSE, hDC
-    DbgSetDestWnd Dest
-    invoke GetCurrentObject, hDC, OBJ_BITMAP
-    invoke DbgOutBitmap, xax, ??DbgDstWnd
-    DbgLoadContext
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext FALSE, hDC
+      DbgSetDestWnd Dest
+      invoke GetCurrentObject, hDC, OBJ_BITMAP
+      invoke DbgOutBitmap, xax, ??DbgDstWnd
+      DbgLoadContext
+    endif
   endif
 endm
 
@@ -1500,10 +1514,12 @@ endm
 
 DbgCloseBmp macro Dest
   if DEBUGGING
-    DbgSaveContext
-    DbgSetDestWnd Dest
-    invoke DbgOutCmd, DBG_CMD_CLOSE_BMP, ??DbgDstWnd
-    DbgLoadContext
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      DbgSetDestWnd Dest
+      invoke DbgOutCmd, DBG_CMD_CLOSE_BMP, ??DbgDstWnd
+      DbgLoadContext
+    endif
   endif
 endm
 
