@@ -130,8 +130,8 @@ endif
 ; Purpose:    Load and configure standard modules.
 ; Arguments:  Support level: OOP, WIN, LIB
 ;             Debug Switches : SHOWINFO, TRACE, RESGUARD, STKGUARD
-;             Source identif.: SRC="..."
-;             Default string : ANSI_STRING or WIDE_STRING
+;             Source identification: "..." (also used as LOG file name)
+;             Default string type: ANSI_STRING or WIDE_STRING
 ; Return:     Nothing.
 
 DEBUG macro DbgArgs:vararg

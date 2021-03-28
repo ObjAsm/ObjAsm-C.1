@@ -12,6 +12,7 @@
 ;               - DbgLoadContext simplified.
 ;               - DbgStr bug corrected.
 ;               - DbgTextF added.
+;               - DbgClosexxx and DbgClearxxx do not open DbgCenter if closed.
 ; ==================================================================================================
 
 ;Supported debugging macros:
@@ -909,18 +910,18 @@ DbgARGB macro Var:req, InfoText, Dest
     mov edi, ebx
     shr ebx, 24
     DbgOutHex <Var = [A:>, DBG_COLOR_TEXT, al, DBG_COLOR_TEXT, ??DbgDstWnd
-    invoke DbgOutTextA, $OfsCStrA(", "),DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextA, $OfsCStrA(", "), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
     mov ebx, edi
     DbgOutHex <R:>, DBG_COLOR_RGB_RED, al, DBG_COLOR_RGB_RED, ??DbgDstWnd
-    invoke DbgOutTextA, $OfsCStrA(", "),DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextA, $OfsCStrA(", "), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
     mov ebx, edi
     shr ebx, 8
     DbgOutHex <G:>, DBG_COLOR_RGB_GREEN, al, DBG_COLOR_RGB_GREEN, ??DbgDstWnd
-    invoke DbgOutTextA, $OfsCStrA(", "),DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextA, $OfsCStrA(", "), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
     mov ebx, edi
     shr ebx, 16
     DbgOutHex <B:>, DBG_COLOR_RGB_BLUE, al, DBG_COLOR_RGB_BLUE, ??DbgDstWnd
-    invoke DbgOutTextA, $OfsCStrA("]"),DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextA, $OfsCStrA("]"), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
 
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
@@ -941,12 +942,15 @@ endm
 
 DbgBmp macro hBmp:req, Dest
   if DEBUGGING
+    DbgSaveContext FALSE, hBmp
+    DbgSetDestWnd Dest
     ifidn DBG_DEVICE, <WND>
-      DbgSaveContext FALSE, hBmp
-      DbgSetDestWnd Dest
       invoke DbgOutBitmap, ??VarRBX, ??DbgDstWnd
-      DbgLoadContext
+    else
+      invoke DbgOutTextA, $OfsCStrA("Bitmap can not be shown on this device..."), \
+                          DBG_COLOR_ERROR, DBG_EFFECT_NEWLINE, ??DbgDstWnd
     endif
+    DbgLoadContext
   endif
 endm
 
@@ -958,13 +962,16 @@ endm
 
 DbgBmpFromDC macro hDC:req, Dest
   if DEBUGGING
+    DbgSaveContext FALSE, hDC
+    DbgSetDestWnd Dest
     ifidn DBG_DEVICE, <WND>
-      DbgSaveContext FALSE, hDC
-      DbgSetDestWnd Dest
       invoke GetCurrentObject, hDC, OBJ_BITMAP
       invoke DbgOutBitmap, xax, ??DbgDstWnd
-      DbgLoadContext
+    else
+      invoke DbgOutTextA, $OfsCStrA("Bitmap can not be shown on this device..."), \
+                          DBG_COLOR_ERROR, DBG_EFFECT_NEWLINE, ??DbgDstWnd
     endif
+    DbgLoadContext
   endif
 endm
 
@@ -1487,9 +1494,14 @@ endm
 
 DbgCloseAll macro
   if DEBUGGING
-    DbgSaveContext
-    invoke DbgOutCmd, DBG_CMD_CLOSE_ALL, NULL
-    DbgLoadContext
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      invoke IsWindow, hDbgDev                          ;;Is it a valid window handle?
+      .if eax != FALSE
+        invoke DbgOutCmd, DBG_CMD_CLOSE_ALL, NULL
+      .endif
+      DbgLoadContext
+    endif
   endif
 endm
 
@@ -1500,10 +1512,15 @@ endm
 
 DbgCloseTxt macro Dest
   if DEBUGGING
-    DbgSaveContext
-    DbgSetDestWnd Dest
-    invoke DbgOutCmd, DBG_CMD_CLOSE_TXT, ??DbgDstWnd
-    DbgLoadContext
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      DbgSetDestWnd Dest
+      invoke IsWindow, hDbgDev                          ;;Is it a valid window handle?
+      .if eax != FALSE
+        invoke DbgOutCmd, DBG_CMD_CLOSE_TXT, ??DbgDstWnd
+      .endif
+      DbgLoadContext
+    endif
   endif
 endm
 
@@ -1517,7 +1534,10 @@ DbgCloseBmp macro Dest
     ifidn DBG_DEVICE, <WND>
       DbgSaveContext
       DbgSetDestWnd Dest
-      invoke DbgOutCmd, DBG_CMD_CLOSE_BMP, ??DbgDstWnd
+      invoke IsWindow, hDbgDev                          ;;Is it a valid window handle?
+      .if eax != FALSE
+        invoke DbgOutCmd, DBG_CMD_CLOSE_BMP, ??DbgDstWnd
+      .endif
       DbgLoadContext
     endif
   endif
@@ -1530,9 +1550,14 @@ endm
 
 DbgClearAll macro
   if DEBUGGING
-    DbgSaveContext
-    invoke DbgOutCmd, DBG_CMD_CLEAR_ALL, NULL
-    DbgLoadContext
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      invoke IsWindow, hDbgDev                          ;;Is it a valid window handle?
+      .if eax != FALSE
+        invoke DbgOutCmd, DBG_CMD_CLEAR_ALL, NULL
+      .endif
+      DbgLoadContext
+    endif
   endif
 endm
 
@@ -1543,10 +1568,15 @@ endm
 
 DbgClearTxt macro Dest
   if DEBUGGING
-    DbgSaveContext
-    DbgSetDestWnd Dest
-    invoke DbgOutCmd, DBG_CMD_CLEAR_TXT, ??DbgDstWnd
-    DbgLoadContext
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      DbgSetDestWnd Dest
+      invoke IsWindow, hDbgDev                          ;;Is it a valid window handle?
+      .if eax != FALSE
+        invoke DbgOutCmd, DBG_CMD_CLEAR_TXT, ??DbgDstWnd
+      .endif
+      DbgLoadContext
+    endif
   endif
 endm
 
@@ -1557,10 +1587,15 @@ endm
 
 DbgClearBmp macro Dest
   if DEBUGGING
-    DbgSaveContext
-    DbgSetDestWnd Dest
-    invoke DbgOutCmd, DBG_CMD_CLEAR_BMP, ??DbgDstWnd
-    DbgLoadContext
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      DbgSetDestWnd Dest
+      invoke IsWindow, hDbgDev                          ;;Is it a valid window handle?
+      .if eax != FALSE
+        invoke DbgOutCmd, DBG_CMD_CLEAR_BMP, ??DbgDstWnd
+      .endif
+      DbgLoadContext
+    endif
   endif
 endm
 

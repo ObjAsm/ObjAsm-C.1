@@ -115,6 +115,7 @@ start proc
 ;  DbgClearBmp "BMP1"
 
   SysDone
+
   invoke ExitProcess, 0
 start endp
 
