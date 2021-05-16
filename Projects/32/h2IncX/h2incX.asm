@@ -23,6 +23,7 @@
 ; ==================================================================================================
 
 
+;todo: EncryptionState[15][16] is not translated correctly: SHORT Weights[2][32][3][2] ==> Weights WORD 2*32*3*2 dup(?)
 ;todo: numerical constants beginning with 0 (not 0x) are octals! Not used yet on the header set.
 ;todo: Comment list: AddComment adds a string to the stack, while PrintComment writes all strings to
 ;      the output stream

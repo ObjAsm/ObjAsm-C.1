@@ -1,6 +1,6 @@
 ; ==================================================================================================
 ; Title:      Array.inc
-; Author:     G. Friedrich 
+; Author:     G. Friedrich
 ; Version:    C.1.0
 ; Purpose:    ObjAsm support of array objects.
 ; Notes:      Version C.1.0, November 2017
@@ -14,13 +14,13 @@ ARR_PRESERVE     equ     BIT02     ;Preserve data.
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Object:   Array
-; Purpose:  Implementation of a multidimensional data storage. The stored data should not exceed a 
-;           a runtime predefined size. 
-;           
+; Purpose:  Implementation of a multidimensional data storage. The stored data should not exceed a
+;           a runtime predefined size.
+;
 ; Notes:    - The item storage place is accessed through zero based dimension indices in the range
 ;             [0..DimesionSize].
 ;           - Since this object is a descendant of Streamable, it is also capable of storing itself
-;             on a stream.    
+;             on a stream.
 ;           - Array and all descendants are thread safe using the ObjAsm multithreading support.
 
 Object Array, ArrayID, Streamable
@@ -262,7 +262,7 @@ Method Array.ItemAt, uses xbx xdi xsi, dIndex:VARARG
       mul DWORD ptr [xcx]
       mov edi, eax
     .else
-      OCall xsi::Array.ErrorReport, NULL, ARR_INDEXOUTOFRANGE
+      OCall xsi::Array.ErrorReport, NULL, ARR_INDEX_OUT_OF_RANGE
       xor eax, eax
       jmp @@EOM
     .endif

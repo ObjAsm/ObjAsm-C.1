@@ -59,7 +59,7 @@ AddErrMsg COL_SETUP_ERROR,            "Configuration parameter error (Check Init
 ;Array
 ERROR_BASE = BIT29 + 60
 AddErrMsg ARR_OUT_OF_MEMORY,          "No more memory available"
-AddErrMsg ARR_INDEXOUTOFRANGE,        "Index not in range"
+AddErrMsg ARR_INDEX_OUT_OF_RANGE,     "Index not in range"
 
 ;RegKey
 ERROR_BASE = BIT29 + 80
@@ -81,11 +81,11 @@ AddErrMsg RKY_SET_QW_FAILED,          "Writing a QWORD failed"
 
 ;Matrix
 ERROR_BASE = BIT29 + 100
-AddErrMsg MTX_SRC_COL_DIF,            "Source matrix has an uncompatible column number"
-AddErrMsg MTX_SRC_ROW_DIF,            "Source matrix has an uncompatible row number"
-AddErrMsg MTX_DST_COL_DIF,            "Destination matrix has an uncompatible column number"
-AddErrMsg MTX_DST_ROW_DIF,            "Destination matrix has an uncompatible row number"
-AddErrMsg MTX_DIFCOLROW,              "Rows and columns not equal"
+AddErrMsg MTX_SRC_COL_DIF,            "Source matrix has an invalid column number"
+AddErrMsg MTX_SRC_ROW_DIF,            "Source matrix has an invalid row number"
+AddErrMsg MTX_DST_COL_DIF,            "Destination matrix has an invalid column number"
+AddErrMsg MTX_DST_ROW_DIF,            "Destination matrix has an invalid row number"
+AddErrMsg MTX_DIF_COL_ROW,            "Rows and columns are not equal"
 AddErrMsg MTX_SR_BAD_ASCII,           "Bad ASCII matrix format"
 AddErrMsg MTX_INVALID_TYPE,           "Matrix Type is not acceptable"
 AddErrMsg MTX_NO_UNIQUE_SOLUTION,     "Matrix is a parametric type with infinite solutions (no unique solution to be found)"

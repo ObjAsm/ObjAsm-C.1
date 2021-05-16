@@ -162,7 +162,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=6
+MilestoneOnDateDate=15
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -197,8 +197,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=1045,608,1045,304,6758
-1=1045,304,1045,304,1292
+2=1045,608,1045,304,2671
+1=1045,304,1045,304,490
 6=0,0,1456,414,100143
 4=0,0,0,0,1983
 31=0,0,1213,691,1416
@@ -207,7 +207,7 @@ ProductVer4Range=0
 9=0,0,0,0,108577
 10=0,0,0,0,8243
 5=0,0,0,0,4378
-3=1045,0,1045,304,2286
+3=1045,0,1045,304,2849
 11=0,0,1783,588,115
 15=0,0,0,0,5955
 14=0,0,0,0,814
@@ -223,7 +223,7 @@ ProductVer4Range=0
 25=0,0,0,0,1955
 21=0,0,0,0,575
 22=0,0,0,0,13883
-26=0,0,1316,522,26310
+26=0,0,1316,522,61504
 27=0,0,0,0,9336
 32=0,0,0,0,4726
 28=0,0,0,0,2959
@@ -253,16 +253,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="Build number"
-2="OnNotify"
-3="dHangingFlag"
-4="dHanging"
-5="HANGING"
-6="TVSTYLE.dIndent"
-7="Indent"
-8="cTextViewClass"
-9="szTextViewClass"
-10="64W"
+1="Init"
+2="WM_CREATE"
+3="Build number"
+4="OnNotify"
+5="dHangingFlag"
+6="dHanging"
+7="HANGING"
+8="TVSTYLE.dIndent"
+9="Indent"
+10="cTextViewClass"
 [Collapse]
 1=
 2=
@@ -380,7 +380,7 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,2,3,26
 [PTimer]
-PTimer=1861785183
+PTimer=1868822198
 [GroupExpand]
 GroupExpand=0,1,1,0,0,1,1,0
 [RADebugBP]

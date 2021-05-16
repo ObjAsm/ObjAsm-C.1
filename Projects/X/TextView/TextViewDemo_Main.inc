@@ -65,11 +65,9 @@ Method Application.Init, uses xsi
   .if xax != 0
     invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0
     mov [xsi].pTextView, xax
-;    OCall [xsi].pTextView::TextView.Show
+    invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL        ;Show the window
+    invoke UpdateWindow, [xsi].hWnd                     ;Update if necessary
   .endif
-
-  invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL          ;Show the window
-  invoke UpdateWindow, [xsi].hWnd                       ;Update if necessary
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

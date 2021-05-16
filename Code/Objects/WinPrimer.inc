@@ -1,10 +1,12 @@
 ; ==================================================================================================
 ; Title:      WinPrimer.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Purpose:    ObjAsm support of WinPrimer objects.
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
+;             Version C.1.1, February 2021
+;               - Done method added. Call DestroyWindow at life end of descendents.
 ; ==================================================================================================
 
 
@@ -15,6 +17,7 @@ WM_GETOBJECTINSTANCE  equ   7FFFh   ;Last possible WM_USER message
 ; Purpose:    Implement a base object for windows user interface descendant objects.
 
 Object WinPrimer, WinPrimerID, Streamable
+  RedefineMethod    Done
   RedefineMethod    Init,         POINTER, HWND         ;-> Owner, Window HANDLE
   RedefineMethod    Load,         $ObjPtr(Stream), PDESER_INFO
   RedefineMethod    Store,        $ObjPtr(Stream)
@@ -34,6 +37,20 @@ ObjectEnd
 ; ==================================================================================================
 
 if IMPLEMENT
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     WinPrimer.Done
+; Purpose:    Destroy the window.
+; Arguments:  None
+; Return:     Nothing.
+
+Method WinPrimer.Done, uses xsi
+  SetObject xsi
+  .if [xsi].hWnd != 0
+    invoke DestroyWindow, [xsi].hWnd 
+  .endif
+  ACall xsi.Done
+MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     WinPrimer.Init

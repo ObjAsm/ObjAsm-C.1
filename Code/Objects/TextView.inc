@@ -828,9 +828,10 @@ Method TextView.Calc, uses xbx xdi xsi
         mov DCHRW ptr cChars[0], eax
         mov [xdi].TVENTRY.dCharCount, 1
       .endif
+
       mov [xdi].TVENTRY.pString, $invoke(StrNewW, addr cChars)
       mov xax, [xdi].TVENTRY.pStyle
-      invoke SelectObject, [xsi].hMemDC,  [xax].TVSTYLE.hFont
+      invoke SelectObject, [xsi].hMemDC, [xax].TVSTYLE.hFont
       invoke DrawTextW, [xsi].hMemDC, [xdi].TVENTRY.pString, -1, addr [xdi].TVENTRY.Extent, \
                         DT_CALCRECT or DT_NOPREFIX or DT_SINGLELINE
       mov xax, [xdi].TVENTRY.pStyle
@@ -1297,6 +1298,12 @@ Method TextView.Draw, uses xbx xdi xsi
       mov eax, dCurEntryIdx
       .break .if eax > dLineEndEntryIdx
       mov xdi, $OCall([xsi].Entries::DataCollection.ItemAt, dCurEntryIdx)
+
+      mov xax, [xdi].TVENTRY.pString
+      .if xax != NULL && WORD ptr [xax] == 080h
+;        int 3
+      .endif
+
       mov xax, [xdi].TVENTRY.pTag
       test xax, xax
       jz @@EndHandler
@@ -2723,12 +2730,7 @@ CreateTVStyleFont macro
 ;  DbgDec [xdi].TVSTYLE.dFontSize, "Creating Font"
   invoke MulDiv, [xdi].TVSTYLE.dFontSize, [xsi].dLogPixY, -72
   mov [xdi].TVSTYLE.LogFont.lfHeight, eax
-  invoke StrComp, $OfsCStr("Wingsdings 2"), addr [xdi].TVSTYLE.LogFont.lfFaceName
-  .if eax == 0
-    mov [xdi].TVSTYLE.LogFont.lfCharSet, SYMBOL_CHARSET
-  .else
-    mov [xdi].TVSTYLE.LogFont.lfCharSet, DEFAULT_CHARSET
-  .endif
+  mov [xdi].TVSTYLE.LogFont.lfCharSet, DEFAULT_CHARSET
   mov [xdi].TVSTYLE.hFont, $invoke(CreateFontIndirect, addr [xdi].TVSTYLE.LogFont)
   OCall [xsi].GdiObjects::DataCollection.Insert, xax
   invoke SelectObject, [xsi].hMemDC, [xdi].TVSTYLE.hFont

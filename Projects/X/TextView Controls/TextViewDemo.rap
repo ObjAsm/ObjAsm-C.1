@@ -162,7 +162,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=22
+MilestoneOnDateDate=14
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -197,8 +197,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=1045,608,1045,304,6938
-1=1045,304,1045,304,545
+2=1045,608,1045,304,6965
+1=1045,304,1045,304,546
 6=0,0,1456,414,100143
 4=0,0,0,0,848
 31=0,0,1213,691,1416
@@ -207,7 +207,7 @@ ProductVer4Range=0
 9=0,0,0,0,50681
 10=0,0,0,0,8243
 5=0,0,0,0,1535
-3=1045,0,1045,304,984
+3=1045,0,1045,304,1984
 11=0,0,1783,588,115
 15=0,0,0,0,5955
 14=0,0,0,0,834
@@ -223,7 +223,7 @@ ProductVer4Range=0
 25=0,0,0,0,1955
 21=0,0,0,0,575
 22=0,0,0,0,14212
-26=0,0,1791,628,102441
+26=0,0,1791,628,110615
 27=0,0,0,0,9153
 32=0,0,0,0,4726
 28=0,0,0,0,2959
@@ -253,16 +253,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="DBG_COLOR_WARNING"
-2="DBG_COLOR_ERROR"
-3="CreateTVStyleFont"
-4="LogFont"
-5="lfFaceName"
-6="Font"
-7="CreateFont"
-8="check"
-9="checked"
-10="Courier New"
+1="TVCHAR_RB_CHECKED"
+2="#F"
+3="#0"
+4="int 3"
+5="OnCreate"
+6="#2"
+7="#20"
+8="#1"
+9="#0A"
+10="#A0"
 [Collapse]
 1=
 2=
@@ -357,7 +357,7 @@ ProductVer4Range=0
 33=,
 29=
 28=
-26=1073741824,448,100663296,943718400,832,,278528,,,
+26=1073741824,1574852,100663296,488772676,2464,,139264,,,
 24=
 22=
 21=
@@ -378,9 +378,9 @@ ProductVer4Range=0
 37=
 38=,
 [AutoLoad]
-AutoLoad=1,2,26,3,22
+AutoLoad=1,2,26,3,4
 [PTimer]
-PTimer=2438910017
+PTimer=2617010706
 [GroupExpand]
 GroupExpand=0,1,1,0,0,1,1,0
 [RADebugBP]

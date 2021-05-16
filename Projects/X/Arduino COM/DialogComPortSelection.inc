@@ -238,6 +238,8 @@ Method DialogComPortSelection.OnCommand, uses xsi, wParam:WPARAM, lParam:LPARAM
             mov [xsi].ComPortSetup.COMPORT_SETUP.bFlowControl, COM_FLOWCTRL_XON_XOFF
           .endif
         .endif
+      .else
+        DbgWarning "Cannot open this port"
       .endif
     .endif
 

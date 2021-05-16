@@ -204,7 +204,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=13
+MilestoneOnDateDate=4
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -239,14 +239,14 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,1177,636,8554
+2=0,0,1177,636,8063
 3=0,0,0,0,3751
 1=0,0,694,487,2245
 4=0,0,1202,621,7086
 1001=0,0,0,0,460
 8=0,0,0,0,6676
 7=0,0,0,0
-5=0,0,1862,628,3615
+5=0,0,1862,628,6850
 6=0,0,0,0,8786
 9=0,0,0,0,2689
 11=0,0,0,0,422
@@ -254,7 +254,7 @@ ProductVer4Range=0
 12=0,0,0,0,468
 13=0,0,0,0,2139
 14=0,0,1862,628,32364
-15=0,0,1838,628,5971
+15=0,0,1838,628,11185
 16=0,0,0,0,2974
 17=
 23=0,0,0,0,126844
@@ -273,7 +273,7 @@ ProductVer4Range=0
 36=
 40=0,0,1167,599,13086
 39=0,0,0,0,2317
-38=0,0,0,0,10926
+38=0,0,0,0,7953
 42=0,0,0,0,1968
 41=0,0,0,0
 43=0,0,0,0,2495
@@ -320,19 +320,19 @@ ProductVer4Range=0
 0=724,30,
 
 [Find]
-1="IDS_MENU_CHECK_MTD"
-2="szColorButton"
-3="OATF_TEST_ANNOT"
-4="OATF_TEST_ANOT"
-5="ANOT"
-6="OAT_App.ExecuteChecks"
-7="IDM_MENU_CHECK"
-8="CheckDroppedFiles"
-9="IDS_CHECK_"
-10="IDS_CHECK_MTD_REG"
+1="StatusbarHelp"
+2="pSBHelp"
+3="Init"
+4="IDS_TOOL_FILTER_NAME_0"
+5="IDS_SELECTION_FILE_NAME"
+6="IDLANG_GERMAN"
+7="IDS_MENU_CHECK_MTD"
+8="szColorButton"
+9="OATF_TEST_ANNOT"
+10="OATF_TEST_ANOT"
 [Collapse]
 4=
-2=3995947,1413820672,2092993211,513
+2=3995947,1413820672,2092993195,513
 6=,
 7=,
 14=,,872431616,2147451227,1048555271,239
@@ -363,7 +363,7 @@ ProductVer4Range=0
 36=
 40=,,
 39=
-38=424978
+38=423954
 42=
 41=
 43=
@@ -391,9 +391,9 @@ ProductVer4Range=0
 64=
 51=
 [AutoLoad]
-AutoLoad=38,61,48
+AutoLoad=38,61,48,5,15,2
 [PTimer]
-PTimer=1930464082
+PTimer=1950455754
 [GroupExpand]
 GroupExpand=1,1,0,1,1,1,1,0
 [RADebugBP]

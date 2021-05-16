@@ -75,10 +75,9 @@ Method Application.Init, uses xsi
                          [xsi].hWnd, VIEW_CTRL_ID, hInstance, 0
   .if xax != 0
     mov [xsi].pTextView, $invoke(SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0)
+    invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL        ;Show the window
+    invoke UpdateWindow, [xsi].hWnd                     ;Update if necessary
   .endif
-
-  invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL          ;Show the window
-  invoke UpdateWindow, [xsi].hWnd                       ;Update if necessary
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -172,15 +171,13 @@ MethodEnd
 
 TVCHAR_RB_CHECKED   equ   025C9h
 TVCHAR_RB_UNCHECKED equ   025CBh
-TVCHAR_CB_CHECKED   equ   00052h
-TVCHAR_CB_UNCHECKED equ   000A3h
 
-;TVCHAR_CB_CHECKED   equ   02611h
-;TVCHAR_CB_UNCHECKED equ   02610h
-;TVCHAR_CB_CHECKED   equ   025E7h
-;TVCHAR_CB_UNCHECKED equ   025E8h
-;TVCHAR_CB_CHECKED   equ   025FBh
-;TVCHAR_CB_UNCHECKED equ   025FCh
+;If you use symbol fonts, you habe to "and 0F000h" each character in order that DrawText can render
+;the symbol properly. For unkown reasons, that API appies a mapping for this type of fonts from
+;range 00020-000FFh to 0F020-0F0FFh.
+;http://masm32.com/board/index.php?topic=8524.msg102726#msg102726
+TVCHAR_CB_CHECKED   equ   0F052h
+TVCHAR_CB_UNCHECKED equ   0F0A3h
 
 CStrW TVRadioBtnChecked, TVCHAR_RB_CHECKED
 CStrW TVRadioBtnUnChecked, TVCHAR_RB_UNCHECKED

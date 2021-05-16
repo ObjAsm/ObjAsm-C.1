@@ -9,12 +9,13 @@
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc
-SysSetup OOP, WIN64, ANSI_STRING, DEBUG(CON)
+SysSetup OOP, WIN64, ANSI_STRING;, DEBUG(WND)
 
 % includelib &LibPath&Windows\shell32.lib
 % includelib &LibPath&Windows\shlwapi.lib
 % includelib &LibPath&Windows\Ole32.lib
 % includelib &LibPath&Windows\Msimg32.lib
+% includelib &LibPath&Windows\Comctl32.lib
 
 % include &COMPath&COM.inc                              ;COM basic support
 % include &IncPath&Windows\CommCtrl.inc
@@ -34,10 +35,10 @@ include TextViewDemo_Main.inc
 start proc
   SysInit
   DbgClearAll
+  DbgText "Hello"
   OCall $ObjTmpl(Application)::Application.Init
   OCall $ObjTmpl(Application)::Application.Run
   OCall $ObjTmpl(Application)::Application.Done
-
   SysDone
   invoke ExitProcess, 0
 start endp
