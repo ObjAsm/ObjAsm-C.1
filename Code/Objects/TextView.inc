@@ -44,6 +44,7 @@
 ;         BOLD                B     Bold style.
 ;         BOX #000000         X     Box with background color indicated by the RGB hex value.
 ;         COLOR #000000       C     Text foreground color indicated by the RGB hex value.
+;         CANVAS #000000      N     Control background color indicated by the RGB hex value.
 ;         FONT 'Font Name'    F     Font face.
 ;         HANGING 000         HI    Set hanging text indentation.
 ;         HEIGHT 00           H     Font size in logical units. If + or - is prepended, then the
@@ -286,11 +287,11 @@ ObjectEnd
 ;     if Extent.x not defined
 ;       Extend.x = RawClient.x
 ;       DrawExtent.x = Extend.x - Padding
-;       Calc 1. try
+;       Calc, 1. try
 ;       if Failed
 ;         Extend.x = RawClient.x - CxScrollBar
 ;         DrawExtent.x = Extend.x - Padding
-;         Calc 2. try
+;         Calc, 2. try
 ;       endif
 ;       Draw
 ;     endif
@@ -505,6 +506,7 @@ TVTAG_STYLES label TVSTAG
   DefineStyleTag "G",             BGCOLOR               ;Background color
   DefineStyleTag "H",             HEIGHT                ;Font height
   DefineStyleTag "I",             ITALIC                ;Italic
+  DefineStyleTag "N",             CANVAS                ;Canvas color
   DefineStyleTag "O",             STRIKEOUT             ;Strikeout
   DefineStyleTag "U",             UNDERLINE             ;Underline
   DefineStyleTag "X",             BOX                   ;Boxed
@@ -2178,13 +2180,13 @@ Method TextView.OnPaint, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   invoke BitBlt, hDC, [xsi].Padding.left, [xsi].Padding.top, edi, ebx, \
                  [xsi].hMemDC, [xsi].Origin.x, [xsi].Origin.y, SRCCOPY
 
+  mov FRect.top, 0
+  m2m FRect.bottom, [xsi].ClientRect.bottom, ecx
   ;Fill the left vertical padding strip
   mov eax, [xsi].Padding.left
   .if SDWORD ptr eax > 0
     mov FRect.left, 0
-    mov FRect.top, 0
     mov FRect.right, eax
-    m2m FRect.bottom, [xsi].ClientRect.bottom, ecx
     invoke FillRect, hDC, addr FRect, [xsi].hCanvasBrush
   .endif
 
@@ -2199,12 +2201,12 @@ Method TextView.OnPaint, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   .endif
 
   ;Fill the top horizontal padding strip
+  mov edx, [xsi].Padding.left
+  add edi, edx
+  mov FRect.left, edx
+  mov FRect.right, edi
   mov ecx, [xsi].Padding.top
   .if SDWORD ptr ecx > 0
-    mov edx, [xsi].Padding.left
-    add edi, edx
-    mov FRect.left, edx
-    mov FRect.right, edi
     mov FRect.bottom, ecx
     invoke FillRect, hDC, addr FRect, [xsi].hCanvasBrush
   .endif
@@ -2323,11 +2325,12 @@ Method TextView.OnSetFont, uses xsi, wParam:WPARAM, lParam:LPARAM
 ;  DbgText "TextView.OnSetFont"
   SetObject xsi
   invoke GetObject, wParam, sizeof(LogFont), addr LogFont
-  .if eax != 0
+  .if xax != 0
     invoke StrDispose, [xsi].pDefaultFontFace
     mov [xsi].pDefaultFontFace, $invoke(StrNew, addr LogFont.lfFaceName)
     OCall xsi.Reset
     OCall xsi.Parse
+    OCall xsi.Calc
     .if lParam != FALSE
       OCall xsi.Draw
     .endif
@@ -2349,6 +2352,7 @@ Method TextView.OnSetText, uses xsi, wParam:WPARAM, lParam:LPARAM
   mov [xsi].pMarkupText, $invoke(StrNew, lParam)
   OCall xsi.Reset
   OCall xsi.Parse
+  OCall xsi.Calc
   Pnt2Reg32 eax, ([xsi].ClientRect.right).POINT
   invoke SendMessage, [xsi].hWnd, WM_SIZE, SIZE_RESTORED, eax
 MethodEnd
@@ -2367,6 +2371,7 @@ Method TextView.OnSettingChange, uses xsi, wParam:WPARAM, lParam:LPARAM
   OCall xsi.Reset
   OCall xsi.Parse                             ;Required to rebuild all styles
   OCall xsi.SetExtent
+  OCall xsi.Calc
   Pnt2Reg32 eax, ([xsi].ClientRect.right).POINT
   invoke SendMessage, [xsi].hWnd, WM_SIZE, SIZE_RESTORED, eax
   invoke RedrawWindow, [xsi].hWnd, NULL, 0, RDW_INVALIDATE or RDW_UPDATENOW

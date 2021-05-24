@@ -12,7 +12,7 @@ DEF_LISTVIEW struc
   xCtlID        XWORD     ?   ;Contol ID
   dStyle        DWORD     ?   ;Style
   dExStyle      DWORD     ?   ;Extended style
-  pTitle        PSTRING   ?   ;-> Window title
+  pTitle        PSTRING   ?   ;-> Window caption
   sdPosX        SDWORD    ?   ;X position
   sdPosY        SDWORD    ?   ;Y position
   dWidth        DWORD     ?   ;Width
@@ -61,15 +61,13 @@ Method ListView.CheckItem, uses xsi, dItemIndex:DWORD, dAction:DWORD
   local LVI:LV_ITEM
 
   SetObject xsi
-  invoke SendMessage, [xsi].hWnd, LVM_GETITEMSTATE, dItemIndex, LVIS_STATEIMAGEMASK
-  mov LVI.state, eax
   mov LVI.stateMask, LVIS_STATEIMAGEMASK
   .if dAction == FALSE
     BitSet LVI.state, BIT12
-    BitClr LVI.state, BIT13
+    BitClr LVI.state, BIT13 or BIT14 or BIT15
   .else
-    BitClr LVI.state, BIT12
     BitSet LVI.state, BIT13
+    BitClr LVI.state, BIT12 or BIT14 or BIT15
   .endif
   invoke SendMessage, [xsi].hWnd, LVM_SETITEMSTATE, dItemIndex, addr LVI
 MethodEnd
@@ -218,9 +216,10 @@ MethodEnd
 ; Return:     eax = HDN_GETDISPINFO return vaue.
 
 Method ListView.OnNotify, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "ListView.OnNotify"
   SetObject xsi
   mov xax, lParam
-  .if [xax].NMHDR.code == HDN_GETDISPINFOW
+  .if [xax].NMHDR.code == HDN_GETDISPINFO
     ;Send this message to the LV parent
     ;Note: some versions of Common Controls doesn't forward the HDN_GETDISPINFO notification to
     ;      the parent window! Since version 6.0 there is not an issue.
@@ -247,7 +246,7 @@ MethodEnd
 ; Note:       Window handle is passed in pSelf (hidden parameter).
 
 Method ListView.WndProc,, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-;  DbgMessage uMsg, , "ListView Messages"
+  ;DbgMessage uMsg, , "ListView Messages"
   GetSubclassingInst ListView, pSelf
   OCall xax::ListView.Dispatch, pSelf, uMsg, wParam, lParam
 MethodEnd

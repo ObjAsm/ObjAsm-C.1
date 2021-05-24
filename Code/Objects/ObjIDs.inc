@@ -433,3 +433,6 @@ JsonID                            equ     0000012540
 
 ;HttpServer
 HttpServerID                      equ     0000012550
+
+;WindowBackground
+WindowBackgroundID                equ     0000012560

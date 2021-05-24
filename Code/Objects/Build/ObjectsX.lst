@@ -32,6 +32,7 @@ SharedMemoryObject
 Splash
 StopWatch
 TickCounter
+WndBackground
 
 COM_Primers
 ClassFactory

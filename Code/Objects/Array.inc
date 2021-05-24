@@ -28,7 +28,7 @@ Object Array, ArrayID, Streamable
   VirtualMethod     DimResize,      DWORD, DWORD, DWORD
   RedefineMethod    Done
   RedefineMethod    Init,           POINTER, DWORD
-  VirtualMethod     ItemAt,         ?
+  VirtualMethod     ItemAt,         DWORD, DWORD, DWORD, DWORD, ?
   RedefineMethod    Load,           $ObjPtr(Stream)
   VirtualMethod     MemLoad,        POINTER
   VirtualMethod     MemStore,       POINTER
@@ -239,7 +239,7 @@ MethodEnd
 ; Arguments:  Arg1..n: Indexes of the array item.
 ; Return:     xax -> Item or NULL if failed.
 
-Method Array.ItemAt, uses xbx xdi xsi, dIndex:VARARG
+Method Array.ItemAt, uses xbx xdi xsi, dDummy1:DWORD, dDummy2:DWORD, dDummy3:DWORD, dDummy4:DWORD, dIndex:VARARG
   local xOffset:XWORD
 
   SetObject xsi

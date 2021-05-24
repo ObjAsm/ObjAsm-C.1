@@ -19,7 +19,7 @@ DEF_BUTTON struc
   xCtlID    XWORD     ?   ;Contol ID
   dStyle    DWORD     ?   ;Style
   dExStyle  DWORD     ?   ;Extended style
-  pTitle    PSTRING   ?   ;-> Window title
+  pTitle    PSTRING   ?   ;-> Button text
   sdPosX    SDWORD    ?   ;X position
   sdPosY    SDWORD    ?   ;Y position
   dWidth    DWORD     ?   ;Width
@@ -128,6 +128,7 @@ MethodEnd
 ; Return:     eax = Zero.
 
 Method Button.OnEnable, uses xsi, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "Button.OnEnable"
   SetObject xsi
   .if wParam == FALSE
     BitSet [xsi].dState, mask BS_Disabled
@@ -147,6 +148,7 @@ MethodEnd
 ; Return:     eax = Value indicating type of control and input type the application processes.
 
 Method Button.OnGetDlgCode, uses xsi, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "Button.OnGetDlgCode"
   SetObject xsi
   invoke GetWindowLongPtr, [xsi].hWnd, GWL_STYLE
   .ifBitSet eax, BS_DEFPUSHBUTTON
@@ -163,13 +165,10 @@ MethodEnd
 ;             Arg2: Second message parameter.
 ; Return:     eax = Requested font handle.
 
-Method Button.OnGetFont, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
-  SetObject xsi
-  invoke GetStockObject, SYSTEM_FONT                    ;Use a dummy font
-  invoke SelectObject, [xsi].hMemDC, xax                ;Select it, returns the searched value
-  mov xbx, xax                                          ;Save it on the stack
-  invoke SelectObject, [xsi].hMemDC, xax                ;Select it again
-  mov xax, xbx                                          ;Return in eax
+Method Button.OnGetFont,, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "Button.OnGetFont"
+  SetObject xcx
+  invoke GetCurrentObject, [xcx].hMemDC, OBJ_FONT
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -180,6 +179,7 @@ MethodEnd
 ; Return:     eax = The return value is the number of characters copied including zero termnator.
 
 Method Button.OnGetText,, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "Button.OnGetText"
   SetObject xdx
   .if (lParam != NULL) && (wParam > 0)
     mov xax, wParam
@@ -200,6 +200,7 @@ MethodEnd
 ; Return:     eax = Zero if handled.
 
 Method Button.OnKeyDown, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "Button.OnKeyDown"
   SetObject xsi
   mov xax, wParam
   .if al == " "                                         ;Space was pressed!
@@ -219,6 +220,7 @@ MethodEnd
 ; Return:     eax = Zero.
 
 Method Button.OnKillFocus, uses xsi, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "Button.OnKillFocus"
   SetObject xsi
   BitClr [xsi].dState, (mask BS_Focused or mask BS_Hovered)
   invoke RedrawWindow, [xsi].hWnd, NULL, NULL, RDW_UPDATENOW or RDW_INVALIDATE
@@ -235,6 +237,7 @@ MethodEnd
 Method Button.OnLButtonDown, uses xsi, wParam:WPARAM, lParam:LPARAM
   local Pnt:POINT
 
+  ;DbgText "Button.OnLButtonDown"
   SetObject xsi
   .ifBitClr [xsi].dState, mask BS_Disabled
     PntS2Pnt Pnt, lParam
@@ -258,6 +261,7 @@ MethodEnd
 Method Button.OnLButtonUp, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   local Pnt:POINT
 
+  ;DbgText "Button.OnLButtonUp"
   SetObject xsi
   .ifBitClr [xsi].dState, mask BS_Disabled
     invoke ReleaseCapture
@@ -286,6 +290,7 @@ MethodEnd
 Method Button.OnMouseMove, uses xsi, wParam:WPARAM, lParam:LPARAM
   local Pnt:POINT
 
+  ;DbgText "Button.OnMouseMove"
   SetObject xsi
   .ifBitClr [xsi].dState, mask BS_Disabled
     PntS2Pnt Pnt, lParam
@@ -314,6 +319,7 @@ MethodEnd
 ; Return:     eax = Zero.
 
 Method Button.OnUpdateUIState, uses xsi, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "Button.OnUpdateUIState"
   SetObject xsi
   .ifBitSet wParam, BIT01
     BitSet [xsi].dState, mask BS_ShowShortCut
@@ -332,6 +338,7 @@ MethodEnd
 ; Return:     eax = Zero.
 
 Method Button.OnNcDestroy, uses xsi, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "Button.OnNcDestroy"
   SetObject xsi
   invoke SetWindowLongPtr, [xsi].hWnd, GWLP_USERDATA, NULL
   .ifBitSet [xsi].dState, mask BS_Resource
@@ -348,6 +355,7 @@ MethodEnd
 ; Return:     eax = Zero.
 
 Method Button.OnSetFont, uses xsi, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "Button.OnSetFont"
   SetObject xsi
   invoke DeleteObject, $invoke(SelectObject, [xsi].hMemDC, wParam)
   .if lParam != FALSE
@@ -364,6 +372,7 @@ MethodEnd
 ; Return:     eax = TRUE.
 
 Method Button.OnSetText, uses xsi, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "Button.OnSetText"
   SetObject xsi
   mov [xsi].pTextBuffer, $invoke(StrNew, lParam)
   invoke RedrawWindow, [xsi].hWnd, NULL, NULL, RDW_UPDATENOW or RDW_INVALIDATE
@@ -378,6 +387,7 @@ MethodEnd
 ; Return:     eax = Zero.
 
 Method Button.OnSetFocus, uses xsi, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "Button.OnSetFocus"
   SetObject xsi
   BitSet [xsi].dState, mask BS_Focused
   invoke RedrawWindow, [xsi].hWnd, NULL, NULL, RDW_UPDATENOW or RDW_INVALIDATE

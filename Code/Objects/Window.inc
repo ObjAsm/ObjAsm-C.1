@@ -89,7 +89,7 @@ Object Window, WindowID, WinPrimer
   VirtualEvent      OnGetMinMaxInfo,  WM_GETMINMAXINFO
   VirtualEvent      OnSize,           WM_SIZE
 
-  DefineVariable    pDynamicLayout, PDL_HEADER, NULL
+  DefineVariable    pDynamicLayout,   PDL_HEADER, NULL
 ObjectEnd
 
 

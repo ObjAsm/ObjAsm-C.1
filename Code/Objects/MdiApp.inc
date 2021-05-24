@@ -17,8 +17,10 @@ IDM_FIRSTCHILD equ 50000                                ;Must be larger than any
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-Object MdiChildWnd, MdiChildWndID, WinPrimer            ;Child window of MdiApp.
-  VirtualMethod     WndProc,        DWORD, WPARAM, LPARAM
+Object MdiChildWnd, MdiChildWndID, Window               ;Child window of MdiApp.
+  RedefineMethod    OnGetMinMaxInfo,WPARAM, LPARAM 
+  RedefineMethod    WndProc,        DWORD, WPARAM, LPARAM
+  RedefineMethod    OnSize,         WPARAM, LPARAM
 
   VirtualEvent      OnNCDestroy,    WM_NCDESTROY
 ObjectEnd
@@ -117,7 +119,7 @@ if IMPLEMENT
 ;  mov dWndPosY, $invoke(CenterForm, dWndHeight, $invoke(GetSystemMetrics, SM_CYSCREEN))
 ;
 ;  invoke CreateWindowEx, WS_EX_OVERLAPPEDWINDOW or WS_EX_APPWINDOW, \
-;                         offset cMdiApp, offset szAppTitle, WS_OVERLAPPEDWINDOW, \
+;                         offset cMdiApp, offset cAppTitle, WS_OVERLAPPEDWINDOW, \
 ;                         dWndPosX, dWndPosY, dWndWidth, dWndHeight, NULL, NULL, hInstance, pSelf
 ;  mov [xsi].pClientWnd, $New(MdiClientWnd)
 ;  OCall [xsi].pClientWnd::MdiClientWnd).Init, xsi
@@ -292,6 +294,20 @@ MethodEnd
 CStr cMdiChild, "MdiChild"     ;Used by Startup
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:    MdiChildWnd.OnGetMinMaxInfo
+; Purpose:   Event procedure for WM_GETMINMAXINFO message.
+; Arguments: Arg1: First message parameter.
+;            Arg2: Second message parameter.
+; Return:    eax = Zero.
+
+Method MdiChildWnd.OnGetMinMaxInfo, uses xsi, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "MdiChildWnd.OnGetMinMaxInfo"
+  SetObject xsi
+  ACall xsi.OnGetMinMaxInfo, wParam, lParam
+  invoke DefMDIChildProc, [xsi].hWnd, WM_GETMINMAXINFO, wParam, lParam 
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     MdiChildWnd.OnNCDestroy
 ; Purpose:    Event procedure for WM_NCDESTROY message.
 ; Arguments:  Arg1: First message parameter.
@@ -299,10 +315,25 @@ CStr cMdiChild, "MdiChild"     ;Used by Startup
 ; Return:     eax = Zero if handled.
 
 Method MdiChildWnd.OnNCDestroy, uses xsi, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "MdiChildWnd.OnNCDestroy"
   SetObject xsi
   invoke SetWindowLongPtr, [xsi].hWnd, GWLP_USERDATA, NULL
   Destroy xsi                                           ;Self destruction!!!
   xor eax, eax
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     MdiChildWnd.OnSize
+; Purpose:    Event procedure for WM_SIZE message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = Zero if handled.
+
+Method MdiChildWnd.OnSize, uses xsi, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "MdiChildWnd.OnSize"
+  SetObject xsi
+  ACall xsi.OnSize, wParam, lParam
+  invoke DefMDIChildProc, [xsi].hWnd, WM_SIZE, wParam, lParam 
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

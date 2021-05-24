@@ -1680,7 +1680,7 @@ sMaxi macro Var1:req, Var2:req
       mov xax, Var1
     endif
     sub xax, Var2                                       ;;a=a-b
-    cdo                                                 ;;Sign-extend of eax => edx::eax
+    cdq                                                 ;;Sign-extend of eax => edx::eax
     not xdx                                             ;;d=0 if a<b,  d=-1  if a>=b
     and xax, xdx                                        ;;a=0 if a<b,  a=a-b if a>=b
     add xax, Var2                                       ;;a=b if a<b,  a=a   if a>=b

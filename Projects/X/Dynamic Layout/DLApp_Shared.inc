@@ -18,8 +18,8 @@ VER_PRODUCTVERSION            equ       2,0,0,0
 VER_PRODUCTVERSION_STR        equ       <2.0>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       95
-BUILD_DATE_STR                textequ   <29.11.2020>
+BUILD_NUMBER                  equ       96
+BUILD_DATE_STR                textequ   <22.05.2021>
 BUILD_BITNESS                 equ       64
 BUILD_MODE                    equ       RLS
 

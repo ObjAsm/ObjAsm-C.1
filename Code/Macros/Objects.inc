@@ -1,9 +1,11 @@
 ; ==================================================================================================
 ; Title:      Objects.inc
 ; Author:     G. Friedrich
-; Version:    C.1.2
+; Version:    C.1.3
 ; Purpose:    ObjAsm object support using MASM compatible assembers (UASM, ASMC, JWASM, ML)
-; Notes:      Version C.1.2, December 2020
+; Notes:      Version C.1.3, Mya 2021
+;               - VARARG stack correction bug corrected.
+;             Version C.1.2, December 2020
 ;               - $MethodAddr can handle addresses of embedded objects.
 ;             Version C.1.1, September 2019
 ;               - Method "uses": skip 64 bit registers in 32 bit mode.
@@ -2818,21 +2820,17 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      SetVarargPassedParams
-; Purpose:    Helper macro that sets the parameter count in a register.
+; Purpose:    Helper macro that sets the total parameter count (excluded pSelf) in the eax register.
 ; Arguments:  Arg1: Method arguments.
 
 SetVarargPassedParams macro Args
-  ;;Only if vararg, we load eax with the number of passed arguments
-  if $$DeclaredParamCount lt 0                        ;;If negative => vararg
+  ;;Only if VARARG, we load eax with the total number of passed arguments
+  if $$DeclaredParamCount lt 0                          ;;If negative => VARARG
     $$PassedParamCount = $GetParamCount(Args)
     if $$PassedParamCount eq 0
       xor eax, eax
     else
-      if TARGET_BITNESS eq 32
-        mov eax, $$StackCorr/sizeof(DWORD)              ;;eax = Total number of passed DWORDs
-      else
-        mov eax, $$PassedParamCount                     ;;eax = Total number of passed arguments (always QWORDs)
-      endif
+      mov eax, $$PassedParamCount                       ;;eax = Total number of passed arguments, 
     endif
   endif
 endm
@@ -2911,7 +2909,7 @@ MethodInvoke macro UseTPL, InsName:req, MglObjName:req, MglMtdName:req, Args:var
                 SetVarargPassedParams <Args>
                 call @CatStr(%??ImpObj, MglMtdName)
                 if $$StackCorr gt 0
-                  add esp, $$StackCorr                  ;;Correct the stack
+                  add esp, sizeof(DWORD)*($$PassedParamCount + 1)  ;;Correct the stack in case of vararg
                 endif
               else
                 if type(InsName) ne @WordSize
@@ -2952,7 +2950,7 @@ MethodInvoke macro UseTPL, InsName:req, MglObjName:req, MglMtdName:req, Args:var
                     call ($$Txo ptr [$$SName]).&MglMtdName
                   endif
                   if $$StackCorr gt 0
-                    add esp, $$StackCorr                ;;Correct the stack in case of vararg
+                    add esp, sizeof(DWORD)*($$PassedParamCount + 1)  ;;Correct the stack in case of vararg
                   endif
                 else
                   GetInstance64 InsName
@@ -2988,7 +2986,7 @@ MethodInvoke macro UseTPL, InsName:req, MglObjName:req, MglMtdName:req, Args:var
                     call ($$Txo ptr [$$SName]).&MglMtdName
                   endif
                   if $$StackCorr gt 0
-                    add esp, $$StackCorr                ;;Correct the stack in case of vararg
+                    add esp, sizeof(DWORD)*($$PassedParamCount + 1)  ;;Correct the stack in case of vararg
                   endif
                 else
                   GetInstance64 InsName
