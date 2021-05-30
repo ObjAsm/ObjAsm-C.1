@@ -141,6 +141,7 @@ Method IconButton.OnPaint, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   local PS:PAINTSTRUCT, cBuffer[256]:CHR, hBgBrush:HBRUSH
   local dPrevColor:DWORD, dPrevBackMode:DWORD, Rct:RECT, dState:DWORD
 
+  ;DbgText "IconButton.OnPaint"
   SetObject xsi
   invoke GetParent, [xsi].hWnd
   invoke SendMessage, xax, WM_CTLCOLORSTATIC, [xsi].hMemDC, [xsi].hWnd
@@ -301,7 +302,7 @@ MethodEnd
 ; Note:       Window handle passed in pSelf (hidden parameter).
 
 Method IconButton.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-  ;DbgMessage uMsg
+  ;DbgMessage uMsg,, "IconButton" 
   .if uMsg == WM_NCCREATE
     mov xax, lParam
     .if [xax].CREATESTRUCT.lpCreateParams == NULL

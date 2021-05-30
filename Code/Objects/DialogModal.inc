@@ -55,6 +55,7 @@ Method DialogModal.Show, uses xsi
   if DEBUGGING
     .if eax == -1
       DbgWarning "DialogModal.Show failed"
+      DbgDec [xsi].pTemplate
       DbgApiError
     .endif
   endif

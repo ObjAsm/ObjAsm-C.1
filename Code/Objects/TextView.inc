@@ -80,9 +80,9 @@
 ;         PADDING.TOP 000     PT    Set top margin.
 ;         PARA                P     Paragraph.
 ;         TAB                 T     Perform a tab.
-;         TABL 00             TL    Set a left tabstop.
-;         TABC 00             TC    Set a center tabstop.
-;         TABR 00             TR    Set a right tabstop.
+;         TABL 00             TL    Set a left tabstop. Text is on the right of the tab.
+;         TABC 00             TC    Set a center tabstop. Text is placed on the tab center.
+;         TABR 00             TR    Set a right tabstop. Test is on the left of the tab.
 ;         TABCLR                    Reset all tabstops.
 ;         SIZE.X 000          SX    Set MemBitmap width.
 ;         SIZE.Y 000          SY    Set MemBitmap heigth.
@@ -149,13 +149,13 @@ Object TextView, TextViewID, Window
   StaticMethod      Draw
   RedefineMethod    Init,               POINTER, HWND, PDEF_TEXTVIEW
   StaticMethod      GetEntryFrom,       $ObjPtr(XWCollection), POINTS
-  StaticMethod      GetNextTextOrTab,   DWORD
   RedefineMethod    OnSettingChange,    WPARAM, LPARAM
   RedefineMethod    OnSize,             WPARAM, LPARAM
   StaticMethod      Parse
   StaticMethod      Reset
   VirtualMethod     SetExtent
   StaticMethod      Startup
+  StaticMethod      WidthToNextStop,    DWORD
   RedefineMethod    WndProc,            DWORD, WPARAM, LPARAM
 
   VirtualEvent      OnButtonDown,       WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN
@@ -554,7 +554,7 @@ endm
   TVCTAG <<0, NULL>, TVCCH_CHAR, TVCDH_CHAR>            ;Character
 
 TVTAG_CMDS label TVCTAG
-  DefineCmdTag ,          "B",        BREAK             ;Line Break (soft break)
+  DefineCmdTag BREAK_S,   "B",        BREAK             ;Line Break (soft break)
   DefineCmdTag ,          "C",        COVER             ;Draw the foreground
   DefineCmdTag ,          "D",        DRAW              ;Draw the background
   DefineCmdTag PARA_S,    "P",        PARA              ;Paragraph
@@ -570,7 +570,7 @@ TVTAG_CMDS label TVCTAG
   DefineCmdTag ,          "TABC",     TABC              ;Set center Tabstop
   DefineCmdTag ,          "TABL",     TABL              ;Set left Tabstop
   DefineCmdTag ,          "TABR",     TABR              ;Set right Tabstop
-  DefineCmdTag ,          "BREAK",    BREAK             ;Line break (soft break)
+  DefineCmdTag BREAK,     "BREAK",    BREAK             ;Line break (soft break)
   DefineCmdTag ,          "COVER",    COVER             ;Cover drawing
   DefineCmdTag ,          "TABCLR",   TABCLR            ;Reset all tabstops
   DWORD 0                                               ;End marker
@@ -703,7 +703,7 @@ MethodEnd
 
 Method TextView.Calc, uses xbx xdi xsi
   local dLineLength:DWORD, dLineAlignment:DWORD, TVTabStop:TVTABSTOP, pEntry:PTVENTRY
-  local dHangingFlag:DWORD, dLineIndent:DWORD, dAdjacentTextItems:DWORD
+  local dHangingFlag:DWORD, dLineIndent:DWORD, dAdjacentTextItems:DWORD, dWidth:DWORD
   local dLastAscent:DWORD, dMaxAscent:DWORD, dMaxDescent:DWORD, dMaxHeight:DWORD, dMaxExtLeading:DWORD
   local dCurEntryIdx:DWORD, dLineEntryIdx:DWORD, dLineBegEntryIdx:DWORD, dLineEndEntryIdx:DWORD
   local CurLinePos:POINT, cChars[10]:CHR
@@ -736,9 +736,41 @@ Method TextView.Calc, uses xbx xdi xsi
   OCall [xsi].LineInfos::DataCollection.DisposeAll
   OCall [xsi].TabStops::SortedDataCollection.DisposeAll
 
-  ;Evaluate the width of all text and blank areas
+  ;Evaluate the width of all text and blank areas and convert CHAR commands to text
   .for (ebx = 0 : ebx != [xsi].Entries.dCount : ebx++)
     mov xdi, $OCall([xsi].Entries::DataCollection.ItemAt, ebx)
+    mov xax, [xdi].TVENTRY.pTag
+    .if xax == TVCTAG_CHAR 
+      mov xax, [xdi].TVENTRY.xValue
+      .if eax > 0FFFFh                                  ;Character > BMP
+        mov edx, eax
+        mov cx, ax
+        shr edx, 6
+        shr cx, 18
+        mov dh, al
+        and cx, 00000111y
+        shr eax, 12
+        and edx, 0011111100111111y
+        add cx, 11110000y
+        add edx, 1000000010000000y
+        and eax, 00111111y
+        shl edx, 16
+        mov dl, cl
+        add al, 10000000y
+        mov dh, al
+        mov DCHRW ptr cChars[0], edx
+        m2z CHRW ptr cChars[4]                          ;mov edx, 0D834DD1Eh  mov DCHR ptr cChars[0], edx
+        mov [xdi].TVENTRY.dCharCount, 2                 ;m2z CHR ptr cChars[4]
+      .else
+        mov DCHRW ptr cChars[0], eax
+        mov [xdi].TVENTRY.dCharCount, 1
+      .endif
+
+      mov [xdi].TVENTRY.pString, $invoke(StrNewW, addr cChars)
+      mov [xdi].TVENTRY.dType, TVET_TEXT                ;Mutate from TVET_CMD to TVET_TEXT
+      m2z [xdi].TVENTRY.pTag
+    .endif
+    
     .if [xdi].TVENTRY.pString != NULL
       mov xax, [xdi].TVENTRY.pStyle
       m2m hFont, [xax].TVSTYLE.hFont, edx
@@ -804,44 +836,6 @@ Method TextView.Calc, uses xbx xdi xsi
       ;             xdi -> TVENTRY
       ; Note:       ebx can be used in the command routines.
       ;##\
-    TVCCH_CHAR::
-;      DbgText "CHR"
-      mov xax, [xdi].TVENTRY.xValue
-      .if eax > 0FFFFh                                  ;Character > BMP
-        mov edx, eax
-        mov cx, ax
-        shr edx, 6
-        shr cx, 18
-        mov dh, al
-        and cx, 00000111y
-        shr eax, 12
-        and edx, 0011111100111111y
-        add cx, 11110000y
-        add edx, 1000000010000000y
-        and eax, 00111111y
-        shl edx, 16
-        mov dl, cl
-        add al, 10000000y
-        mov dh, al
-        mov DCHRW ptr cChars[0], edx
-        m2z CHRW ptr cChars[4]                          ;mov edx, 0D834DD1Eh  mov DCHR ptr cChars[0], edx
-        mov [xdi].TVENTRY.dCharCount, 2                 ;m2z CHR ptr cChars[4]
-      .else
-        mov DCHRW ptr cChars[0], eax
-        mov [xdi].TVENTRY.dCharCount, 1
-      .endif
-
-      mov [xdi].TVENTRY.pString, $invoke(StrNewW, addr cChars)
-      mov xax, [xdi].TVENTRY.pStyle
-      invoke SelectObject, [xsi].hMemDC, [xax].TVSTYLE.hFont
-      invoke DrawTextW, [xsi].hMemDC, [xdi].TVENTRY.pString, -1, addr [xdi].TVENTRY.Extent, \
-                        DT_CALCRECT or DT_NOPREFIX or DT_SINGLELINE
-      mov xax, [xdi].TVENTRY.pStyle
-      mov ecx, [xax].TVSTYLE.TextMetric.tmOverhang
-      sub [xdi].TVENTRY.Extent.right, ecx
-      mov [xdi].TVENTRY.dType, TVET_TEXT                ;Mutate from TVET_CMD to TVET_TEXT
-      m2z [xdi].TVENTRY.pTag
-      jmp @@EndHandler
 
     TVCCH_TAB::
 ;      DbgText "TAB"
@@ -852,6 +846,7 @@ Method TextView.Calc, uses xbx xdi xsi
       ;Scale it using the current zoom factor
       invoke MulDiv, ecx, TVZOOM_BASE, [xsi].dZoomFactor
       ;Search in the TabStop collection
+      inc eax                                           ;Search beginning from the next position
       mov TVTabStop.dPosition, eax
       OCall [xsi].TabStops::SortedDataCollection.Search, addr TVTabStop
       .if ecx != [xsi].TabStops.dCount
@@ -868,20 +863,16 @@ Method TextView.Calc, uses xbx xdi xsi
           sub eax, dLineIndent
         .else
           mov xbx, xax
-          OCall xsi.GetNextTextOrTab, dCurEntryIdx      ;Returns -> TVENTRY
-          .if xax != NULL
-            mov pEntry, xax
+          OCall xsi.WidthToNextStop, dCurEntryIdx      ;Returns eax = cummulated width
+          .if eax != 0
+            mov dWidth, eax
             invoke MulDiv, [xbx].TVTABSTOP.dPosition, [xsi].dZoomFactor, TVZOOM_BASE
-            mov xcx, pEntry
-            mov edx, [xcx].TVENTRY.Extent.right
             .if [xbx].TVTABSTOP.bType == TVTAB_TYPE_CENTER
-              shr edx, 1
+              shr dWidth, 1
             .endif
-            sub eax, edx
+            sub eax, dWidth
             sub eax, dLineIndent
             sub eax, dLineLength
-          .else
-            xor eax, eax
           .endif
         .endif
       .else
@@ -939,6 +930,7 @@ Method TextView.Calc, uses xbx xdi xsi
       mov dHangingFlag, FALSE
       .break                                            ;Exit line
 
+    TVCCH_CHAR::
     TVCCH_COVER::                                       ;Evaluated in Draw method
     TVCCH_DRAW::                                        ;Evaluated in Draw method
 
@@ -1503,32 +1495,6 @@ Method TextView.GetEntryFrom, uses xbx xdi xsi, pCollection:$ObjPtr(XWCollection
     .endif
   .endif
   xor eax, eax                                          ;Return NULL
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     TextView.GetNextTextOrTab
-; Purpose:    Return the next TVENTRY of type TVET_TEXT or TAB command.
-; Arguments:  Arg1: Current TVENTRY index.
-; Return:     xax -> TVENTRY or NULL.
-
-Method TextView.GetNextTextOrTab, uses xbx xsi, dEntryIndex:DWORD
-  SetObject xsi
-  mov ebx, dEntryIndex
-  inc ebx
-  xor eax, eax
-  .while ebx < [xsi].Entries.dCount
-    OCall [xsi].Entries::DataCollection.ItemAt, ebx
-    mov edx, [xax].TVENTRY.dType
-    .break .if edx == TVET_TEXT
-    .if edx == TVET_CMD
-      mov xcx, [xax].TVENTRY.pTag
-      mov xax, TVCTAG_TAB
-      mov xdx, TVCTAG_TAB_S
-      .break .if xcx == xax || xcx == xdx
-    .endif
-    xor eax, eax
-    inc ebx
-  .endw
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -3680,6 +3646,39 @@ Method TextView.Startup
   m2z WC.hIconSm
 
   invoke RegisterClassEx, addr WC
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     TextView.WidthToNextStop
+; Purpose:    Return the next TVENTRY of type TVET_TEXT or TAB command.
+; Arguments:  Arg1: Current TVENTRY index.
+; Return:     eax = cummulated width to next stop (TAB, BREAK or PARA)
+
+Method TextView.WidthToNextStop, uses xbx xdi xsi, dEntryIndex:DWORD
+  SetObject xsi
+  mov ebx, dEntryIndex
+  inc ebx
+  xor edi, edi
+  .while ebx < [xsi].Entries.dCount
+    OCall [xsi].Entries::DataCollection.ItemAt, ebx
+    mov edx, [xax].TVENTRY.dType
+    .if edx == TVET_CMD
+      mov xcx, [xax].TVENTRY.pTag
+      mov xax, TVCTAG_TAB
+      mov xdx, TVCTAG_TAB_S
+      .break .if xcx == xax || xcx == xdx
+      mov xax, TVCTAG_BREAK
+      mov xdx, TVCTAG_BREAK_S
+      .break .if xcx == xax || xcx == xdx
+      mov xax, TVCTAG_PARA
+      mov xdx, TVCTAG_PARA_S
+      .break .if xcx == xax || xcx == xdx
+    .elseif edx == TVET_TEXT || edx == TVET_BLANK
+      add edi, [xax].TVENTRY.Extent.right
+    .endif
+    inc ebx
+  .endw
+  mov eax, edi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

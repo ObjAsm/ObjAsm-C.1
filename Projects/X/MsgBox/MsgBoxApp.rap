@@ -166,7 +166,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=6
+MilestoneOnDateDate=26
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -201,7 +201,7 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=1045,608,1045,304,2615
+2=1045,608,1045,304,2694
 1=1045,304,1045,304,465
 6=0,0,1456,414,66847
 4=0,0,0,0,804
@@ -259,16 +259,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="int 3"
-2="IsDelimiterChar"
-3="DbgDec [xsi].DrawExtent.x"
-4="GetSingleTVStyleName"
-5="IsBlankChar"
-6="IsStyleNameChar"
-7="BMP_BACKGROUND"
-8=".ifBitSet eax, TVIF_EXTENT_Y_SET"
-9=".Show"
-10="Show"
+1="cErrMsg"
+2="int 3"
+3="IsDelimiterChar"
+4="DbgDec [xsi].DrawExtent.x"
+5="GetSingleTVStyleName"
+6="IsBlankChar"
+7="IsStyleNameChar"
+8="BMP_BACKGROUND"
+9=".ifBitSet eax, TVIF_EXTENT_Y_SET"
+10=".Show"
 [Collapse]
 1=
 2=40973
@@ -386,7 +386,7 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,2,3,26,4
 [PTimer]
-PTimer=2113350485
+PTimer=2117046251
 [GroupExpand]
 GroupExpand=1,1,1,0,0,1,1,0
 [RADebugBP]
