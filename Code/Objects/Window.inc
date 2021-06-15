@@ -36,6 +36,8 @@
 ;   The gripper is not controlled by the resizing rules. Check always that it doesn't overlap
 ;   other controls.
 ; - Layout information is not serialized. It can be reconstructed during initialization.
+; - Set CS_HREDRAW and CS_VREDRAW flags in the WNDCLASSEX to redraw the complete client area.
+;   this avoids flicker when resized from the left edge (WM_MOVE!! + WM_SIZE).
 
 
 ;Dynamic Layout flags

@@ -137,7 +137,7 @@ MethodEnd
 ; Purpose:    Initialaize a DialogComPortSelection object.
 ; Arguments:  Arg1: -> Owner object.
 ;             Arg2: -> Parent window HANDLE.
-;             Arg3:
+;             Arg3: -> COMPORT_SETUP.
 ; Return:     Nothing.
 
 Method DialogComPortSelection.Init, uses xsi, pOwner:POINTER, hParent:HWND, \
@@ -166,7 +166,7 @@ Method DialogComPortSelection.OnCommand, uses xsi, wParam:WPARAM, lParam:LPARAM
   .if ax == IDC_BTN_OK
     OCall xsi.CtlsGet
     mov xax, [xsi].pComPortSetup
-    s2s COMPORT_SETUP ptr [xax], [xsi].ComPortSetup, xcx, xdx, xmm1, xmm2  ;Ret persistant settings
+    s2s COMPORT_SETUP ptr [xax], [xsi].ComPortSetup, xcx, xdx, xmm1, xmm2  ;Set persistant settings
     OCall xsi.DestroyDialog, wParam
 
   .elseif ax == IDC_BTN_CANCEL

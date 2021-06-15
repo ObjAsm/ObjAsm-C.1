@@ -47,7 +47,7 @@ ObjectEnd
 ; Note:     Frame window handle is stored in hWnd.
 ;
 ;         —————————————————————————————————————————————————————————
-;        | @ Application title                              _ [] X |
+;        | @ Application caption                            _ [] X |
 ;        |—————————————————————————————————————————————————————————|
 ;        | File  Edit  ...  ...  Window  Help                     <------ Frame Window
 ;        |—————————————————————————————————————————————————————————|      Main Menu

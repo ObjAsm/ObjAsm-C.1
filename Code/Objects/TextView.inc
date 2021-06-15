@@ -93,7 +93,7 @@
 ;
 ;
 ; Supported otions:
-; TVO_AUTO_LINEBREAK:If a word extends past the edge of the output view, it breaks the line
+; TVO_AUTO_LINEBREAK:If a word extend past the edge of the output view, it breaks the line
 ;                    automatically between the words.
 ;
 ; ****************** NOT IMPLEMENTED YET *******************
@@ -116,6 +116,8 @@
 ;  - The DRAW command sends a notification to the parent window to perform a drawing operation
 ;    once all other text related drawing tasks are finished. This ensures that the control
 ;    background is completely drawn before the drawing operation is started.
+;  - Fist Indent {FI} and Hanging Indent {HI} control the indentation of the first line and the 
+;    following lines respectively. {B} or {P} initiate a new indentation sequence.
 
 
 DEF_TEXTVIEW struc
@@ -740,7 +742,8 @@ Method TextView.Calc, uses xbx xdi xsi
   .for (ebx = 0 : ebx != [xsi].Entries.dCount : ebx++)
     mov xdi, $OCall([xsi].Entries::DataCollection.ItemAt, ebx)
     mov xax, [xdi].TVENTRY.pTag
-    .if xax == TVCTAG_CHAR 
+    mov xcx, TVCTAG_CHAR
+    .if xax == xcx 
       mov xax, [xdi].TVENTRY.xValue
       .if eax > 0FFFFh                                  ;Character > BMP
         mov edx, eax
@@ -1253,6 +1256,14 @@ Method TextView.Draw, uses xbx xdi xsi
   mov eax, [xsi].DrawExtent.y
   mov DrawRect.right, edx
   mov DrawRect.bottom, eax
+
+  ;Never create a zero sized bitmap
+  .if edx == 0
+    inc edx
+  .endif
+  .if eax == 0
+    inc eax
+  .endif
   mov [xsi].hMemBmp, $invoke(CreateCompatibleBitmap, [xsi].hMemDC, edx, eax)
   invoke DeleteObject, $invoke(SelectObject, [xsi].hMemDC, xax)
 
@@ -1646,8 +1657,7 @@ Method TextView.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
   mov hDC, $invoke(GetDC, [xsi].hParent)
   mov [xsi].hMemDC, $invoke(CreateCompatibleDC, hDC)
   invoke SetBkMode, [xsi].hMemDC, TRANSPARENT
-  invoke CreateCompatibleBitmap, hDC, 1, 1              ;Create a minimal Bitmap
-  mov [xsi].hMemBmp, xax
+  mov [xsi].hMemBmp, $invoke(CreateCompatibleBitmap, hDC, 1, 1)     ;Create a minimal Bitmap
   invoke ReleaseDC, [xsi].hParent, hDC
   mov [xsi].hPrvBmp, $invoke(SelectObject, [xsi].hMemDC, [xsi].hMemBmp)
   mov [xsi].hPrvFont, $invoke(GetCurrentObject, [xsi].hMemDC, OBJ_FONT)
@@ -2311,16 +2321,18 @@ MethodEnd
 ; Return:     Nothing.
 
 Method TextView.OnSetText, uses xsi, wParam:WPARAM, lParam:LPARAM
-;  DbgText "TextView.OnSetText"
+  ;DbgText "TextView.OnSetText"
   SetObject xsi
   invoke DefWindowProc, [xsi].hWnd, WM_SETTEXT, wParam, lParam
   invoke StrDispose, [xsi].pMarkupText
   mov [xsi].pMarkupText, $invoke(StrNew, lParam)
   OCall xsi.Reset
   OCall xsi.Parse
+  OCall xsi.SetExtent
   OCall xsi.Calc
   Pnt2Reg32 eax, ([xsi].ClientRect.right).POINT
   invoke SendMessage, [xsi].hWnd, WM_SIZE, SIZE_RESTORED, eax
+  invoke RedrawWindow, [xsi].hWnd, NULL, 0, RDW_INVALIDATE or RDW_UPDATENOW
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -2335,7 +2347,7 @@ Method TextView.OnSettingChange, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   ACall xsi.OnSettingChange, wParam, lParam
   OCall xsi.Reset
-  OCall xsi.Parse                             ;Required to rebuild all styles
+  OCall xsi.Parse
   OCall xsi.SetExtent
   OCall xsi.Calc
   Pnt2Reg32 eax, ([xsi].ClientRect.right).POINT
@@ -3691,7 +3703,7 @@ MethodEnd
 ;             Window HANDLE is passed in pSelf (hidden parameter).
 
 Method TextView.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-;  DbgMessage uMsg,, "TextView.WndProc"
+  ;DbgMessage uMsg,, "TextView.WndProc"
   .if uMsg == WM_NCCREATE
     mov xax, lParam
     .if [xax].CREATESTRUCT.lpCreateParams == NULL

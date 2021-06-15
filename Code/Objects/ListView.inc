@@ -94,7 +94,7 @@ MethodEnd
 ; Return:     Nothing.
 
 Method ListView.HeaderSetFontStyle, uses xsi, dFontStyle:DWORD
-  local hHeader:HANDLE, hFont:HFONT, LF:LOGFONT
+  local hHeader:HANDLE, hFont:HFONT, LogFont:LOGFONT
 
   SetObject xsi
   mov hHeader, $invoke(SendMessage, [xsi].hWnd, LVM_GETHEADER, 0, 0)
@@ -103,37 +103,37 @@ Method ListView.HeaderSetFontStyle, uses xsi, dFontStyle:DWORD
   .else
     m2m hFont, [xsi].hHeaderFont, xax
   .endif
-  invoke GetObject, hFont, sizeof LF, addr LF
+  invoke GetObject, hFont, sizeof LogFont, addr LogFont
   .if xax != 0
     .ifBitSet dFontStyle, LVHDRFONTBOLD
-      mov LF.lfWeight, FW_BOLD
+      mov LogFont.lfWeight, FW_BOLD
     .else
-      mov LF.lfWeight, FW_NORMAL
+      mov LogFont.lfWeight, FW_NORMAL
     .endif
 
     .ifBitSet dFontStyle, LVHDRFONTITALIC
-      mov LF.lfItalic, TRUE
+      mov LogFont.lfItalic, TRUE
     .else
-      m2z LF.lfItalic
+      m2z LogFont.lfItalic
     .endif
 
     .ifBitSet dFontStyle, LVHDRFONTUNDERLINE
-      mov LF.lfUnderline, TRUE
+      mov LogFont.lfUnderline, TRUE
     .else
-      m2z LF.lfUnderline
+      m2z LogFont.lfUnderline
     .endif
 
     .ifBitSet dFontStyle, LVHDRFONTSTRIKEOUT
-      mov LF.lfStrikeOut, TRUE
+      mov LogFont.lfStrikeOut, TRUE
     .else
-      m2z LF.lfStrikeOut
+      m2z LogFont.lfStrikeOut
     .endif
 
     .if [xsi].hHeaderFont != 0
       invoke DeleteObject, [xsi].hHeaderFont
     .endif
 
-    mov [xsi].hHeaderFont, $invoke(CreateFontIndirect, addr LF)
+    mov [xsi].hHeaderFont, $invoke(CreateFontIndirect, addr LogFont)
     invoke SendMessage, hHeader, WM_SETFONT, [xsi].hHeaderFont, TRUE
   .endif
 MethodEnd

@@ -47,6 +47,10 @@ PQCHR     typedef ptr QCHR                              ;Generic quadruple chara
 PSTRING   typedef ptr CHR                               ;Generic string POINTER type
 
 
+CR   equ 13
+LF   equ 10
+CRLF equ <13,10>
+
 ;Now include ANSI and WIDE string support
 
 % include &MacPath&WStrings.inc

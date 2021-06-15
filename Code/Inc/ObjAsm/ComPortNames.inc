@@ -8,11 +8,11 @@
 ; ==================================================================================================
 
 
-COMPORT_NAME_LEN        equ   8       ;"COMxxx" + ZTC + 1 padding
+COMPORT_NAME_LEN    equ   8       ;"COMxxx" + ZTC + 1 padding
 
 COMPORT_INFO struct
-  cName         CHR           COMPORT_NAME_LEN DUP(?)
-  pFriendlyName PSTRING       ?
+  cName         CHR       COMPORT_NAME_LEN DUP(?)
+  pFriendlyName PSTRING   ?
 COMPORT_INFO ends
 PCOMPORT_INFO typedef ptr COMPORT_INFO
 

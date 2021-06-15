@@ -1,15 +1,17 @@
 ; ==================================================================================================
 ; Title:      MsgBoxT.asm
 ; Author:     G. Friedrich
-; Version:    C.1.3
+; Version:    C.1.4
 ; Purpose:    ObjAsm support of MsgBox dialogs.
 ;             It displays a modified Messagebox using TextView formatted text.
-; Notes:      Version C.1.3, February 2021
+; Notes:      Version C.1.4, June 2021
+;               - Header added to transfer caption to properly identify the MsgBox window.
+;             Version C.1.3, February 2021
 ;               - TextView internal update changes. GetExtent replaced.
 ;             Version C.1.2, May 2020
 ;               - First release.
 ;               - The arguments passed to the function are almost the same es the original API.
-;               - If an icon is specified, e.g MB_ICONERROR, a text indentation of 65px is 
+;               - If an icon is specified, e.g MB_ICONERROR, a text indentation of 65px is
 ;                 recommended.
 ;               - Don't use GWLP_USERDATA. It is used internally by the MessageBox implementation.
 ; ==================================================================================================
@@ -49,6 +51,9 @@ MsgBoxInfo struc
   Buttons     MB_ButtonInfo MB_BTN_MAX_COUNT DUP({?})       ;Button information
 MsgBoxInfo ends
 
+MsgBoxCaptionHeader     equ <MsgBoxData@>
+MsgBoxCaptionHeaderSize equ 11
+
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  MsgBoxA / MsgBoxW
 ; Purpose:    Customized MessageBox.
@@ -57,9 +62,11 @@ MsgBoxInfo ends
 ;             Arg3: -> Caption text.
 ;             Arg4: Flags.
 ; Return:     eax = Zero if failed, otherwise pressed button ID.
+; Note:       Caption, text etc. are transferred via a caption string which contains a header and
+;             the address of a MsgBoxInfo structure in text form.
 
 ProcName proc uses xbx hParent:HANDLE, pText:POINTER, pCaption:POINTER, dFlags:DWORD
-  local cTransfer[(2*sizeof(POINTER) + 1)]:CHR
+  local cTransfer[2*sizeof(POINTER) + MsgBoxCaptionHeaderSize + 1]:CHR
 
   ;Set system hook
   mov xbx, $MemAlloc(sizeof(MsgBoxInfo))
@@ -69,7 +76,8 @@ ProcName proc uses xbx hParent:HANDLE, pText:POINTER, pCaption:POINTER, dFlags:D
   ;Prepare information to pass to the MessageBox dialog.
   m2m [xbx].MsgBoxInfo.pText, pText, xcx
   m2m [xbx].MsgBoxInfo.pCaption, pCaption, xdx
-  invoke xword2hex, addr cTransfer, xbx
+  FillWord cTransfer, MsgBoxCaptionHeader
+  invoke xword2hex, addr [cTransfer + MsgBoxCaptionHeaderSize*sizeof(CHR)], xbx
 
   ;Use the caption to pass the pointer to MsgBoxInfo in form of a string.
   ;MessageBoxIndirect can be used for more options.
@@ -134,7 +142,7 @@ MB_WndProc proc private uses xbx xdi xsi hDlg:HWND, uMsg:DWORD, wParam:WPARAM, l
     mov xdi, $invoke(GetProp, hDlg, xdx)
     mov [xdi].MsgBoxInfo.dFlags, 0
 
-    ;Destroy the original static control were the messagebox text is usually displayed, 
+    ;Destroy the original static control were the messagebox text is usually displayed,
     ;we don't need it anymore
     invoke GetDlgItem, hDlg, 0FFFFh                     ;0FFFFh = static control ID
     invoke DestroyWindow, xax
@@ -173,7 +181,7 @@ MB_WndProc proc private uses xbx xdi xsi hDlg:HWND, uMsg:DWORD, wParam:WPARAM, l
 
     ;Set TextView as parent of the static control that holds the icon.
     ;This way it is placed on top of TextView control.
-    invoke GetDlgItem, hDlg, 14h                        ;14h = icon control ID 
+    invoke GetDlgItem, hDlg, 14h                        ;14h = icon control ID
     .if xax != 0
       invoke SetParent, xax, [xbx].$Obj(TextView).hWnd
     .endif
@@ -201,7 +209,7 @@ MB_WndProc proc private uses xbx xdi xsi hDlg:HWND, uMsg:DWORD, wParam:WPARAM, l
     mov CtlOfs.y, eax
     sar eax, 1
     sub WRect.top, eax
-    
+
     invoke MoveWindow, hDlg, WRect.left, WRect.top, WndSize.x, WndSize.y, FALSE
 
     ;Update TextView size
@@ -279,24 +287,27 @@ MB_WndProc endp
 ; Return:     eax = Zero if handled.
 
 MB_HookProc proc private uses xbx xdi dCode:DWORD, wParam:WPARAM, lParam:LPARAM
-  local cTransfer[(2*sizeof(POINTER) + 1)]:CHR
+  local cTransfer[2*sizeof(POINTER) + MsgBoxCaptionHeaderSize + 1]:CHR
 
-  .if dCode == HC_ACTION                                ;Ignore the rest
+  .if dCode == HC_ACTION                               ;Ignore the rest
     mov xbx, lParam
     ;The first recieved WM_NCCALCSIZE corresponds to the dialog window.
     ;It is the first dialog message that has the caption set
     .if [xbx].CWPSTRUCT.message == WM_NCCALCSIZE
       invoke GetWindowText, [xbx].CWPSTRUCT.hwnd, addr cTransfer, lengthof(cTransfer)
-      mov xdi, $invoke(hex2xword, addr cTransfer)
-      ;Save a pointer to MsgBoxInfo as a window property
-      %mov xdx, offset cMsgBoxProp&TARGET_SUFFIX
-      invoke SetProp, [xbx].CWPSTRUCT.hwnd, xdx, xdi
-      ;Release the hook
-      invoke UnhookWindowsHookEx, [xdi].MsgBoxInfo.hHook
-      ;Set correct caption
-      invoke SetWindowText, [xbx].CWPSTRUCT.hwnd, [xdi].MsgBoxInfo.pCaption
-      ;Set the new WndProc
-      invoke SetWindowLongPtr, [xbx].CWPSTRUCT.hwnd, GWLP_WNDPROC, offset MB_WndProc
+      DbgStr cTransfer
+      .if $DoesWordMatch?(cTransfer, MsgBoxCaptionHeader)
+        mov xdi, $invoke(hex2xword, addr [cTransfer + MsgBoxCaptionHeaderSize*sizeof(CHR)])
+        ;Save a pointer to MsgBoxInfo as a window property
+        %mov xdx, offset cMsgBoxProp&TARGET_SUFFIX
+        invoke SetProp, [xbx].CWPSTRUCT.hwnd, xdx, xdi
+        ;Release the hook
+        invoke UnhookWindowsHookEx, [xdi].MsgBoxInfo.hHook
+        ;Set correct caption
+        invoke SetWindowText, [xbx].CWPSTRUCT.hwnd, [xdi].MsgBoxInfo.pCaption
+        ;Set the new WndProc
+        invoke SetWindowLongPtr, [xbx].CWPSTRUCT.hwnd, GWLP_WNDPROC, offset MB_WndProc
+      .endif
     .endif
   .endif
   mov eax, 1

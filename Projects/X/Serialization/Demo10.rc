@@ -183,8 +183,8 @@ BEGIN
 
   IDLANG_ENGLISH + 10, "&Language|Language selection"
   IDLANG_ENGLISH + 11, "&English|English language"
-  IDLANG_ENGLISH + 12, "&German|German language"
-  IDLANG_ENGLISH + 13, "&Spanish|Spanish language"
+  IDLANG_ENGLISH + 12, "&Deutsch|Deutsche Sprache"
+  IDLANG_ENGLISH + 13, "&Español|Idioma español"
 
   IDLANG_ENGLISH + 20, "&Color|Color selection"
   IDLANG_ENGLISH + 21, "&Black|Draws black text"
@@ -218,9 +218,9 @@ BEGIN
   IDLANG_GERMAN  + 07, "Bee&nden...~Strg+X|Endet die Anwendung"
 
   IDLANG_GERMAN  + 10, "&Sprache|Sprachenauswahl"
-  IDLANG_GERMAN  + 11, "&Englisch|Englische Sprache"
+  IDLANG_GERMAN  + 11, "&English|English language"
   IDLANG_GERMAN  + 12, "&Deutsch|Deutsche Sprache"
-  IDLANG_GERMAN  + 13, "&Spanisch|Spanische Sprache"
+  IDLANG_GERMAN  + 13, "&Español|Idioma español"
 
   IDLANG_GERMAN  + 20, "Far&be|Farbenauswahl"
   IDLANG_GERMAN  + 21, "&Schwarz|Druckt Text in schwarz"
@@ -254,8 +254,8 @@ BEGIN
   IDLANG_SPANISH + 07, "&Finalizar...~Ctrl+X|Finaliza la aplicación"
 
   IDLANG_SPANISH + 10, "&Idioma|Selección de idioma"
-  IDLANG_SPANISH + 11, "&Inglés|Idioma inglés"
-  IDLANG_SPANISH + 12, "&Alemán|Idioma alemán"
+  IDLANG_SPANISH + 11, "&English|English language"
+  IDLANG_SPANISH + 12, "&Deutsch|Deutsche Sprache"
   IDLANG_SPANISH + 13, "&Español|Idioma español"
 
   IDLANG_SPANISH + 20, "&Color|Selección de colores"
