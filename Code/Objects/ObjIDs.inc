@@ -85,8 +85,9 @@ SdiAppID                          equ     0000000161
 MdiAppID                          equ     0000000162
 MdiClientWndID                    equ     0000000163
 MdiChildWndID                     equ     0000000164
-WindowID                          equ     0000000165
-DlgAppID                          equ     0000000166
+MdiChildDlgID                     equ     0000000165
+WindowID                          equ     0000000166
+DlgAppID                          equ     0000000167
 
 MySdiAppID                        equ     0000000170      ;for test or demo purposes only!
 MyMdiAppID                        equ     0000000171      ;for test or demo purposes only!

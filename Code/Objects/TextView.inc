@@ -1303,12 +1303,6 @@ Method TextView.Draw, uses xbx xdi xsi
       mov eax, dCurEntryIdx
       .break .if eax > dLineEndEntryIdx
       mov xdi, $OCall([xsi].Entries::DataCollection.ItemAt, dCurEntryIdx)
-
-      mov xax, [xdi].TVENTRY.pString
-      .if xax != NULL && WORD ptr [xax] == 080h
-;        int 3
-      .endif
-
       mov xax, [xdi].TVENTRY.pTag
       test xax, xax
       jz @@EndHandler

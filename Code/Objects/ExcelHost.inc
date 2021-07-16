@@ -28,6 +28,7 @@ Object ExcelHost, ExcelHostID, Primer
   StaticMethod      CloseBook,                POINTER
   StaticMethod      DeleteSheet,              POINTER
   RedefineMethod    Done
+  StaticMethod      GetBook,                  DWORD
   StaticMethod      GetCell,                  POINTER, DWORD, DWORD, POINTER, WORD
   StaticMethod      GetRange,                 POINTER, BSTR
   StaticMethod      GetSheet,                 POINTER, BSTR
@@ -39,8 +40,11 @@ Object ExcelHost, ExcelHostID, Primer
   StaticMethod      Open,                     BSTR
   StaticMethod      SaveAs,                   POINTER, BSTR
   StaticMethod      SelectRange,              POINTER
+  StaticMethod      SetCalculation,           SDWORD
   StaticMethod      SetCell,                  POINTER, DWORD, DWORD, BSTR
   StaticMethod      SetColumnWidth,           POINTER, BSTR, REAL4
+  StaticMethod      SetDisplayAlerts,         BOOL
+  StaticMethod      SetScreenUpdating,        BOOL
 
   StaticMethod      GetBorder,                POINTER
   StaticMethod      SetBorderAttr,            POINTER, DWORD, DWORD, DWORD
@@ -164,7 +168,7 @@ Method ExcelHost.SetChartSeriesAttr,, pIXlSeries:POINTER, dXlStyle:DWORD, dXlSiz
   local vArg:VARIANT
 
   .if pIXlSeries == NULL
-    mov eax, 080000005h                               ;Invalid POINTER
+    mov eax, 080000005h                                 ;Invalid POINTER
   .else
     mov vArg.vt, VT_I4
     m2m vArg.lVal, dXlStyle, edx
@@ -211,7 +215,7 @@ Method ExcelHost.SetChartSeriesData,, pIXlSeries:POINTER, pXlName:BSTR, \
   local vArg:VARIANT
 
   .if pIXlSeries == NULL
-    mov eax, 080000005h                               ;Invalid POINTER
+    mov eax, 080000005h                                 ;Invalid POINTER
   .else
     mov vArg.vt, VT_BSTR
     m2m vArg.bstrVal, pXlName, xdx
@@ -341,7 +345,7 @@ Method ExcelHost.SetFontAttr,, pIXlFont:POINTER, pXlName:BSTR, dXlStyle:DWORD, d
   local vArg:VARIANT
 
   .if pIXlFont == NULL
-    mov eax, 080000005h                               ;Invalid POINTER
+    mov eax, 080000005h                                 ;Invalid POINTER
   .else
     mov vArg.vt, VT_BSTR
     m2m vArg.bstrVal, pXlName, edx
@@ -459,17 +463,17 @@ Method ExcelHost.SetInteriorAttr,, pIXlInterior:POINTER, dXlColor:DWORD, dXlPatt
   local vArg:VARIANT
 
   .if pIXlInterior == NULL
-    mov eax, 080000005h                               ;Invalid POINTER
+    mov eax, 080000005h                                 ;Invalid POINTER
   .else
-    mov vArg.vt, VT_I4                                ;Setup argument Variant
+    mov vArg.vt, VT_I4                                  ;Setup argument Variant
     m2m vArg.lVal, dXlColor, edx
     COM_Dispatch pIXlInterior::Interior.put_Color, addr vArg
     .if SUCCEEDED(eax)
-      mov vArg.vt, VT_I4                              ;Setup argument Variant
+      mov vArg.vt, VT_I4                                ;Setup argument Variant
       m2m vArg.lVal, dXlPatternStyle, edx
       COM_Dispatch pIXlInterior::Interior.put_Pattern, addr vArg
       .if SUCCEEDED(eax)
-        mov vArg.vt, VT_I4                            ;Setup argument Variant
+        mov vArg.vt, VT_I4                              ;Setup argument Variant
         m2m vArg.lVal, dXlPatternColor, edx
         COM_Dispatch pIXlInterior::Interior.put_PatternColor, addr vArg
       .endif
@@ -557,6 +561,33 @@ Method ExcelHost.Done, uses xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ExcelHost.GetBook
+; Purpose:    Get an existing Workbook from the Excel Application.
+; Arguments:  Arg1: Workbook index.
+; Return:     xax -> Workbook interface or NULL.
+
+Method ExcelHost.GetBook, uses xbx, dIndex:DWORD
+  local pIXlWorkbooks:POINTER, pIXlWorkbook:POINTER, vArg:VARIANT
+
+  SetObject xcx
+  ICall [xcx].pIExcelApp::_Application.get_Workbooks, addr pIXlWorkbooks
+  .if SUCCEEDED(eax)
+    mov vArg.vt, VT_I4
+    m2m vArg.lVal, dIndex, edx
+    ICall pIXlWorkbooks::Workbooks.get_Item, vArg, addr pIXlWorkbook
+    .if SUCCEEDED(eax)
+      mov xbx, pIXlWorkbook
+    .else
+      xor ebx, ebx
+    .endif
+    ICall pIXlWorkbooks::Workbooks.Release
+    mov xax, xbx
+  .else
+    xor eax, eax
+  .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     ExcelHost.GetCell
 ; Purpose:    Return the value from a specific Cell.
 ; Arguments:  Arg1: -> Range interface.
@@ -585,7 +616,7 @@ Method ExcelHost.GetCell, uses xbx, pIXlRange:POINTER, dXlRow:DWORD, dXlCol:DWOR
     m2m pIXlCurRange, pIXlRange, xax
   .endif
 
-  mov XGC.vRow.vt, VT_I4                          ;Setup argument Variants
+  mov XGC.vRow.vt, VT_I4                                ;Setup argument Variants
   m2m XGC.vRow.lVal, dXlRow, edx
   mov XGC.vCol.vt, VT_I4
   m2m XGC.vCol.lVal, dXlCol, edx
@@ -629,7 +660,7 @@ Method ExcelHost.GetRange,, pIXlWorksheet:POINTER, pCellStr:BSTR
     m2m pICurWorksheet, pIXlWorksheet, xax
   .endif
 
-  mov XGR.vAddr.vt, VT_BSTR                   ;Setup argument Variants
+  mov XGR.vAddr.vt, VT_BSTR                             ;Setup argument Variants
   m2m XGR.vAddr.bstrVal, pCellStr, xax
   mov XGR.vDummy.vt, VT_BSTR
   m2m XGR.vDummy.bstrVal, pCellStr, xax
@@ -668,7 +699,7 @@ Method ExcelHost.GetSheet,, pIXlWorkbook:POINTER, pName:BSTR
 
   ICall pICurWorkbook::_Workbook.get_Sheets, addr pIXlWorksheets
 
-  mov vName.vt, VT_BSTR                       ;Setup argument Variant
+  mov vName.vt, VT_BSTR                                 ;Setup argument Variant
   m2m vName.bstrVal, pName, xax
   ICall pIXlWorksheets::Sheets.get_Item, vName, addr pIXlWorksheet
 
@@ -771,7 +802,7 @@ MethodEnd
 ;             Arg3: BSTR where to position the chart ("My Worksheet").
 ; Return:     xax -> Chart interface or NULL.
 
-XLH_NEW_CHART_ARG struc   ;Arguments are passed in REVERSE order
+XLH_NEW_CHART_ARG struc                                 ;Arguments are passed in REVERSE order
   vArg3   VARIANT   {}
   vArg2   VARIANT   {}
   vArg1   VARIANT   {}
@@ -816,7 +847,7 @@ MethodEnd
 ;             Arg2: BSTR Name.
 ; Return:     xax -> Worksheet interface.
 
-XLH_NEW_SHEET_ARG struc   ;Arguments are passed in REVERSE order
+XLH_NEW_SHEET_ARG struc                                 ;Arguments are passed in REVERSE order
   vArg4   VARIANT   {}
   vArg3   VARIANT   {}
   vArg2   VARIANT   {}
@@ -867,32 +898,46 @@ MethodEnd
 ; Method:     ExcelHost.Open
 ; Purpose:    Open a Workbook from a file.
 ; Arguments:  Arg1: -> Filename.
-; Return:     xax -> Workbook interface or NULL.
+; Return:     xax -> Workbook interface or NULL. CAUTION: the returned interface may be of another
+;             thing. Instead, get the active book.
+;             https://stackoverflow.com/questions/13019981/workbooks-open-returns-different-file
+;             -than-filename
 
-Method ExcelHost.Open, uses xbx, pXlFileName:BSTR
-  local pIXlWorkbooks:POINTER, vWorkbook:VARIANT
-  local vFileName:VARIANT, vReadOnly:VARIANT, vArg03:VARIANT, vArg04:VARIANT
-  local vArg05:VARIANT, vArg06:VARIANT, vArg07:VARIANT, vArg08:VARIANT
-  local vArg09:VARIANT, vArg10:VARIANT, vArg11:VARIANT, vArg12:VARIANT
-  local vArg13:VARIANT, vArg14:VARIANT, vArg15:VARIANT
+XLH_OPEN_ARG struc                                      ;Arguments are passed in REVERSE order
+  vCorruptLoad  VARIANT   {}
+  vLocal        VARIANT   {}
+  vAddToMru     VARIANT   {}
+  vConverter    VARIANT   {}
+  vNotify       VARIANT   {}
+  vEditable     VARIANT   {}
+  vDelimiter    VARIANT   {}
+  vOrigin       VARIANT   {}
+  vIgnoreReadOnly   VARIANT   {}
+  vWriteResPassword VARIANT   {}
+  vPassword     VARIANT   {}
+  vFormat       VARIANT   {}
+  vReadOnly     VARIANT   {}
+  vUpdateLinks  VARIANT   {}
+  vFileName     VARIANT   {}
+XLH_OPEN_ARG ends
+
+Method ExcelHost.Open,, pXlFileName:BSTR
+  local Args:XLH_OPEN_ARG, vWorkbook:VARIANT, pIXlWorkbooks:POINTER
 
   SetObject xcx
   ICall [xcx].pIExcelApp::_Application.get_Workbooks, addr pIXlWorkbooks
   .if SUCCEEDED(eax)
-    mov vFileName.vt, VT_BSTR
-    m2m vFileName.bstrVal, pXlFileName, xax
-    mov vReadOnly.vt, VT_BOOL
-    m2z vReadOnly.boolVal
-    TypeMissing vArg03, vArg04, vArg05, vArg06, vArg07, vArg08, vArg09
-    TypeMissing vArg10, vArg11, vArg12, vArg13, vArg14, vArg15
-    COM_Dispatch pIXlWorkbooks::Workbooks.Open, addr vArg15, addr vWorkbook
-    .if SUCCEEDED(eax)
-      mov xbx, vWorkbook.pdispVal
-    .else
-      xor ebx, ebx
-    .endif
+    mov Args.vFileName.vt, VT_BSTR
+    m2m Args.vFileName.bstrVal, pXlFileName, xax
+    mov Args.vReadOnly.vt, VT_BOOL
+    m2z Args.vReadOnly.boolVal
+    TypeMissing Args.vUpdateLinks, Args.vFormat, Args.vPassword, Args.vWriteResPassword
+    TypeMissing Args.vIgnoreReadOnly, Args.vOrigin, Args.vDelimiter, Args.vEditable
+    TypeMissing Args.vNotify, Args.vConverter, Args.vAddToMru, Args.vLocal, Args.vCorruptLoad
+    m2z vWorkbook.punkVal
+    COM_Dispatch pIXlWorkbooks::Workbooks.Open, addr Args, addr vWorkbook
     ICall pIXlWorkbooks::Workbooks.Release
-    mov xax, xbx
+    mov xax, vWorkbook.punkVal                            ;Return -> _Workbook interface
   .else
     xor eax, eax
   .endif
@@ -905,11 +950,23 @@ MethodEnd
 ;             Arg2: -> File name.
 ; Return:     eax = Error code.
 
+XLH_SAVEAS_ARG struc                                      ;Arguments are passed in REVERSE order
+  vLocal            VARIANT   {}
+  vTextVisualLayout VARIANT   {}
+  vTextCodepage     VARIANT   {}
+  vAddToMru         VARIANT   {}
+  vConflictResol    VARIANT   {}
+  vAccessMode       VARIANT   {}
+  vCreateBackup     VARIANT   {}
+  vReadOnlyRecom    VARIANT   {}
+  vWriteResPassword VARIANT   {}
+  vPassword         VARIANT   {}
+  vFileFormat       VARIANT   {}
+  vFileName         VARIANT   {}
+XLH_SAVEAS_ARG ends
+
 Method ExcelHost.SaveAs, uses xbx, pIXlWorkbook:POINTER, pName:BSTR
-  local vFileName:VARIANT, vFileFormat:VARIANT, vPassword:VARIANT, vWriteResPassword:VARIANT
-  local vReadOnlyRecommended:VARIANT, vCreateBackup:VARIANT
-  local vVal1:VARIANT, vVal2:VARIANT, vVal3:VARIANT, vVal4:VARIANT, vVal5:VARIANT, vVal6:VARIANT
-  local pICurWorkbook:POINTER
+  local Args:XLH_SAVEAS_ARG, pICurWorkbook:POINTER
 
   .if pIXlWorkbook == NULL
     SetObject xcx
@@ -922,19 +979,16 @@ Method ExcelHost.SaveAs, uses xbx, pIXlWorkbook:POINTER, pName:BSTR
     m2m pICurWorkbook, pIXlWorkbook, xax
   .endif
 
-  mov vFileName.vt, VT_BSTR
-  m2m vFileName.bstrVal, pName, xax
-  mov vFileFormat.vt, VT_I4
-  mov vFileFormat.lVal, xlNormal
-  mov vPassword.vt, VT_NULL
-  mov vWriteResPassword.vt, VT_NULL
-  mov vReadOnlyRecommended.vt, VT_BOOL
-  m2z vReadOnlyRecommended.boolVal
-  mov vCreateBackup.vt, VT_BOOL
-  m2z vCreateBackup.boolVal
-  TypeMissing vVal1, vVal2, vVal3, vVal4, vVal5, vVal6
+  mov Args.vFileName.vt, VT_BSTR
+  m2m Args.vFileName.bstrVal, pName, xax
+  mov Args.vConflictResol.vt, VT_I4
+  mov Args.vConflictResol.lVal, xlLocalSessionChanges 
+  
+  TypeMissing Args.vLocal, Args.vTextVisualLayout, Args.vTextCodepage, Args.vAddToMru
+  TypeMissing Args.vAccessMode, Args.vCreateBackup, Args.vReadOnlyRecom
+  TypeMissing Args.vWriteResPassword, Args.vPassword, Args.vFileFormat
 
-  COM_Dispatch pICurWorkbook::_Workbook.SaveAs, addr vVal6
+  COM_Dispatch pICurWorkbook::_Workbook.SaveAs, addr Args
 
   .if pIXlWorkbook == NULL
     mov ebx, eax
@@ -962,6 +1016,17 @@ Method ExcelHost.SelectRange,, pIXlRange:POINTER
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ExcelHost.SetCalculation
+; Purpose:    Sets Calculation property.
+; Arguments:  Arg1: xlCalculationAutomatic, xlCalculationManual, xlCalculationSemiautomatic
+; Return:     eax = Error code.
+
+Method ExcelHost.SetCalculation,, sdCalcMode:SDWORD
+  SetObject xcx
+  ICall [xcx].pIExcelApp::_Application.put_Calculation, LOCALE_SYSTEM_DEFAULT, sdCalcMode
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     ExcelHost.SetCell
 ; Purpose:    Write a string into a specific Cell.
 ; Arguments:  Arg1: Column.
@@ -969,14 +1034,14 @@ MethodEnd
 ;             Arg3: -> string
 ; Return:     eax = Error code.
 
-XLH_SET_CELL_ARG struc    ;Arguments are passed in REVERSE order
+XLH_SET_CELL_ARG struc                                  ;Arguments are passed in REVERSE order
   vArg  VARIANT   {}
   vCol  VARIANT   {}
   vRow  VARIANT   {}
 XLH_SET_CELL_ARG ends
 
 Method ExcelHost.SetCell, uses xbx, pIXlRange:POINTER, dXlRow:DWORD, dXlCol:DWORD, pBStr:BSTR
-  local XSC:XLH_SET_CELL_ARG, pIXlCurRange:POINTER
+  local Args:XLH_SET_CELL_ARG, pIXlCurRange:POINTER
 
   .if pIXlRange == NULL
     SetObject xcx
@@ -989,13 +1054,13 @@ Method ExcelHost.SetCell, uses xbx, pIXlRange:POINTER, dXlRow:DWORD, dXlCol:DWOR
     m2m pIXlCurRange, pIXlRange, xax
   .endif
 
-  mov XSC.vRow.vt, VT_I4                                  ;Setup argument Variants
-  m2m XSC.vRow.lVal, dXlRow, eax
-  mov XSC.vCol.vt, VT_I4
-  m2m XSC.vCol.lVal, dXlCol, eax
-  mov XSC.vArg.vt, VT_BSTR
-  m2m XSC.vArg.bstrVal, pBStr, xax
-  COM_Dispatch pIXlCurRange::Range.put_Item, addr XSC
+  mov Args.vRow.vt, VT_I4                                  ;Setup argument Variants
+  m2m Args.vRow.lVal, dXlRow, eax
+  mov Args.vCol.vt, VT_I4
+  m2m Args.vCol.lVal, dXlCol, eax
+  mov Args.vArg.vt, VT_BSTR
+  m2m Args.vArg.bstrVal, pBStr, xax
+  COM_Dispatch pIXlCurRange::Range.put_Item, addr Args
 
   .if pIXlRange == NULL
     mov ebx, eax
@@ -1020,8 +1085,7 @@ XLH_SET_COL_WIDTH_ARG struc                             ;Arguments are passed in
 XLH_SET_COL_WIDTH_ARG ends
 
 Method ExcelHost.SetColumnWidth, uses xbx, pIXlWorksheet:POINTER, pXlColStr:BSTR, r4XlWidth:REAL4
-  local XSCW:XLH_SET_COL_WIDTH_ARG
-  local pICurWorksheet:POINTER
+  local Args:XLH_SET_COL_WIDTH_ARG, pICurWorksheet:POINTER
 
   .if pIXlWorksheet == NULL
     SetObject xcx
@@ -1034,24 +1098,46 @@ Method ExcelHost.SetColumnWidth, uses xbx, pIXlWorksheet:POINTER, pXlColStr:BSTR
     m2m pICurWorksheet, pIXlWorksheet, xax
   .endif
 
-  mov XSCW.vColStr.vt, VT_BSTR                        ;Setup argument Variants
-  m2m XSCW.vColStr.bstrVal, pXlColStr, xax
-  mov XSCW.vDummy.vt, VT_BSTR
-  m2m XSCW.vDummy.bstrVal, pXlColStr, xax
-  mov XSCW.vColRange.vt, VT_EMPTY
-  COM_Dispatch pICurWorksheet::_Worksheet.get_Range, addr XSCW.vDummy, addr XSCW.vColRange
+  mov Args.vColStr.vt, VT_BSTR                        ;Setup argument Variants
+  m2m Args.vColStr.bstrVal, pXlColStr, xax
+  mov Args.vDummy.vt, VT_BSTR
+  m2m Args.vDummy.bstrVal, pXlColStr, xax
+  mov Args.vColRange.vt, VT_EMPTY
+  COM_Dispatch pICurWorksheet::_Worksheet.get_Range, addr Args.vDummy, addr Args.vColRange
   .if SUCCEEDED(eax)
-    mov XSCW.vWidth.vt, VT_R4
-    m2m XSCW.vWidth.fltVal, r4XlWidth, eax
-    COM_Dispatch XSCW.vColRange.pdispVal::Range.put_ColumnWidth, addr XSCW.vWidth
+    mov Args.vWidth.vt, VT_R4
+    m2m Args.vWidth.fltVal, r4XlWidth, eax
+    COM_Dispatch Args.vColRange.pdispVal::Range.put_ColumnWidth, addr Args.vWidth
     mov ebx, eax
-    ICall XSCW.vColRange.pdispVal::IUnknown.Release
+    ICall Args.vColRange.pdispVal::IUnknown.Release
     mov eax, ebx
   .endif
 
   .if pIXlWorksheet == NULL
     ICall pICurWorksheet::_Worksheet.Release
   .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ExcelHost.SetDisplayAlerts
+; Purpose:    Sets DisplayAlerts.
+; Arguments:  Arg1: TRUE/FALSE
+; Return:     eax = Error code.
+
+Method ExcelHost.SetDisplayAlerts,, dSwitch:BOOL
+  SetObject xcx
+  ICall [xcx].pIExcelApp::_Application.put_DisplayAlerts, LOCALE_SYSTEM_DEFAULT, dSwitch
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ExcelHost.SetScreenUpdating
+; Purpose:    Sets ScreenUpdating.
+; Arguments:  Arg1: TRUE/FALSE
+; Return:     eax = Error code.
+
+Method ExcelHost.SetScreenUpdating,, dSwitch:BOOL
+  SetObject xcx
+  ICall [xcx].pIExcelApp::_Application.put_ScreenUpdating, LOCALE_SYSTEM_DEFAULT, dSwitch
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -1149,13 +1235,13 @@ MethodEnd
 ;             Arg3: Axis group.
 ; Return:     xax -> Axis interface.
 
-XLH_GET_CHART_AXIS_ARG struc   ;Arguments are passed in REVERSE order
+XLH_GET_CHART_AXIS_ARG struc                            ;Arguments are passed in REVERSE order
   vXlAxisGroup  VARIANT   {}
   vXlAxisType   VARIANT   {}
 XLH_GET_CHART_AXIS_ARG ends
 
 Method ExcelHost.GetChartAxis,, pIXlChart:POINTER, dXlAxisType:DWORD, dXlAxisGroup:DWORD
-  local XGCA:XLH_GET_CHART_AXIS_ARG, pIXlCurChart:POINTER, vXlAxis:VARIANT
+  local Args:XLH_GET_CHART_AXIS_ARG, pIXlCurChart:POINTER, vXlAxis:VARIANT
 
   .if pIXlChart == NULL
     SetObject xcx
@@ -1169,11 +1255,11 @@ Method ExcelHost.GetChartAxis,, pIXlChart:POINTER, dXlAxisType:DWORD, dXlAxisGro
     m2m pIXlCurChart, pIXlChart, xax
   .endif
 
-  mov XGCA.vXlAxisType.vt, VT_I4
-  m2m XGCA.vXlAxisType.lVal, dXlAxisType, eax
-  mov XGCA.vXlAxisGroup.vt, VT_I4
-  m2m XGCA.vXlAxisGroup.lVal, dXlAxisGroup, eax
-  COM_Dispatch pIXlCurChart::_Chart.Axes, addr XGCA, addr vXlAxis
+  mov Args.vXlAxisType.vt, VT_I4
+  m2m Args.vXlAxisType.lVal, dXlAxisType, eax
+  mov Args.vXlAxisGroup.vt, VT_I4
+  m2m Args.vXlAxisGroup.lVal, dXlAxisGroup, eax
+  COM_Dispatch pIXlCurChart::_Chart.Axes, addr Args, addr vXlAxis
   .if SUCCEEDED(eax)
     mov xax, vXlAxis.pdispVal
   .else
@@ -1476,8 +1562,7 @@ XLH_SET_CHART_DATA_ARG struc   ;Arguments are passed in REVERSE order
 XLH_SET_CHART_DATA_ARG ends
 
 Method ExcelHost.SetChartData, uses xbx, pIXlChart:POINTER, pIXlDataRange:POINTER, dXlDataOrientation:DWORD
-  local XSCD:XLH_SET_CHART_DATA_ARG
-  local pIXlCurChart:POINTER
+  local Args:XLH_SET_CHART_DATA_ARG, pIXlCurChart:POINTER
 
   .if pIXlChart == NULL
     SetObject xcx
@@ -1490,11 +1575,11 @@ Method ExcelHost.SetChartData, uses xbx, pIXlChart:POINTER, pIXlDataRange:POINTE
     m2m pIXlCurChart, pIXlChart, xax
   .endif
 
-  mov XSCD.vArg1.vt, VT_DISPATCH
-  m2m XSCD.vArg1.pdispVal, pIXlDataRange, xax
-  mov XSCD.vArg2.vt, VT_I4
-  m2m XSCD.vArg2.lVal, dXlDataOrientation, eax
-  COM_Dispatch pIXlCurChart::_Chart.SetSourceData, addr XSCD
+  mov Args.vArg1.vt, VT_DISPATCH
+  m2m Args.vArg1.pdispVal, pIXlDataRange, xax
+  mov Args.vArg2.vt, VT_I4
+  m2m Args.vArg2.lVal, dXlDataOrientation, eax
+  COM_Dispatch pIXlCurChart::_Chart.SetSourceData, addr Args
 
   .if pIXlChart == NULL
     mov ebx, eax
@@ -1623,7 +1708,7 @@ XLH_SET_ROW_HEIGHT_ARG struc                            ;Arguments are passed in
 XLH_SET_ROW_HEIGHT_ARG ends
 
 Method ExcelHost.SetRowHeight, uses xbx, pIXlWorksheet:POINTER, pXlRowStr:BSTR, dXlHeight:REAL4
-  local XSRH:XLH_SET_ROW_HEIGHT_ARG, pICurWorksheet:POINTER
+  local Args:XLH_SET_ROW_HEIGHT_ARG, pICurWorksheet:POINTER
 
   .if pIXlWorksheet == NULL
     SetObject xcx
@@ -1636,18 +1721,18 @@ Method ExcelHost.SetRowHeight, uses xbx, pIXlWorksheet:POINTER, pXlRowStr:BSTR, 
     m2m pICurWorksheet, pIXlWorksheet, xax
   .endif
 
-  mov XSRH.vRowStr.vt, VT_BSTR                         ;Setup argument Variants
-  m2m XSRH.vRowStr.bstrVal, pXlRowStr, xax
-  mov XSRH.vDummy.vt, VT_BSTR
-  m2m XSRH.vDummy.bstrVal, pXlRowStr, xax
-  mov XSRH.vRowRange.vt, VT_EMPTY
-  COM_Dispatch pICurWorksheet::_Worksheet.get_Range, addr XSRH.vDummy, addr XSRH.vRowRange
+  mov Args.vRowStr.vt, VT_BSTR                         ;Setup argument Variants
+  m2m Args.vRowStr.bstrVal, pXlRowStr, xax
+  mov Args.vDummy.vt, VT_BSTR
+  m2m Args.vDummy.bstrVal, pXlRowStr, xax
+  mov Args.vRowRange.vt, VT_EMPTY
+  COM_Dispatch pICurWorksheet::_Worksheet.get_Range, addr Args.vDummy, addr Args.vRowRange
   .if SUCCEEDED(eax)
-    mov XSRH.vHeight.vt, VT_R4
-    m2m XSRH.vHeight.fltVal, dXlHeight, eax
-    COM_Dispatch XSRH.vRowRange.pdispVal::Range.put_RowHeight, addr XSRH.vHeight
+    mov Args.vHeight.vt, VT_R4
+    m2m Args.vHeight.fltVal, dXlHeight, eax
+    COM_Dispatch Args.vRowRange.pdispVal::Range.put_RowHeight, addr Args.vHeight
     mov ebx, eax
-    ICall XSRH.vRowRange.pdispVal::IUnknown.Release
+    ICall Args.vRowRange.pdispVal::IUnknown.Release
     mov eax, ebx
   .endif
 
@@ -1762,7 +1847,7 @@ MethodEnd
 
 Method ExcelHost.SetVisible,, dVisibility:DWORD
   SetObject xcx
-  ICall [xcx].pIExcelApp::_Application.put_Visible, 0, dVisibility
+  ICall [xcx].pIExcelApp::_Application.put_Visible, LOCALE_SYSTEM_DEFAULT, dVisibility
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

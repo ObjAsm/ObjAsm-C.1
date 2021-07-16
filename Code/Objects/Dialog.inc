@@ -153,7 +153,7 @@ MethodEnd
 ; Note:       Window HANDLE passed in pSelf (hidden parameter).
 
 Method Dialog.DlgProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-;  DbgMessage uMsg, "Dialog.DlgProc"
+  DbgMessage uMsg,, "Dialog.DlgProc"
   .if uMsg == WM_INITDIALOG
     mov xsi, lParam                                     ;lParam -> object instance
     mrm [xsi].$Obj(Dialog).hWnd, pSelf, xcx             ;pSelf = hWnd

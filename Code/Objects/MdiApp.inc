@@ -291,8 +291,6 @@ MethodEnd
 ;    MdiChildWnd implementation
 ; ==================================================================================================
 
-CStr cMdiChild, "MdiChild"     ;Used by Startup
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:    MdiChildWnd.OnGetMinMaxInfo
 ; Purpose:   Event procedure for WM_GETMINMAXINFO message.

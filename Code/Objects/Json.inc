@@ -1,7 +1,7 @@
 ; ==================================================================================================
 ; Title:      Json.inc
 ; Author:     G. Friedrich
-; Version:    C.1.2
+; Version:    C.1.3
 ; Purpose:    ObjAsm support of JSON (JavaScript Object Notation) objects.
 ; Links:      https://www.json.org/json-en.html
 ;             https://www.ietf.org/rfc/rfc4627.txt
@@ -9,7 +9,10 @@
 ;             https://www.w3schools.com/js/js_json.asp
 ;             https://jsonformatter.curiousconcept.com/#
 ; References: RFC8259, RFC7159, RFC4627, EMCA-404
-; Notes:      Version C.1.2, December 2020.
+; Notes:      Version C.1.3, June 2021.
+;               - Booleans were saved now in double quotes.
+;               - Comments added.
+;             Version C.1.2, December 2020.
 ;               - First release.
 ; ==================================================================================================
 
@@ -24,10 +27,9 @@ JSON_TYPE_ERROR     equ -1
 
 INDENTATION_STEP    equ 2
 
-CStrW JSON_TRUE,  "true"
-CStrW JSON_FALSE, "false"
-CStrW JSON_NULL,  "null"
-
+CStr JSON_TRUE,  "true"                   ;Returned strings matching the target string type
+CStr JSON_FALSE, "false"
+CStr JSON_NULL,  "null"
 
 PJSON_PROPERTY typedef ptr JSON_PROPERTY
 JSON_PROPERTY struc
@@ -44,9 +46,14 @@ JSON_PROPERTY ends
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Object:     Json
 ; Purpose:    This object provides the functionality read and write information in JSON format.
-; Note:       Numeric and Boolean values are recognized when reading, but not translated into
-;             a value. It is up to the host to interpret the string value and convert it to the
-;             desired format, e.g. BYTE, WORD, DWORD, QWORD, REAL4, REAL8 etc.
+; Notes:      - Numeric and Boolean values are recognized when reading, but not translated into
+;               a value. It is up to the host to interpret the string value and convert it to the
+;               desired format, e.g. BYTE, WORD, DWORD, QWORD, REAL4, REAL8 etc.
+;             - JSON may be represented using UTF-8/16/32. The default encoding is UTF-8.
+;               This implementation uses WIDE strings internally, regardless of the target string
+;               type.
+;             - In this implementation, a propety is a Key/Value pair. 
+;             - The root property is always unnamed.
 
 Object Json, JsonID, Streamable
   VirtualMethod     AddArray,         PJSON_PROPERTY, PSTRING
@@ -62,7 +69,7 @@ Object Json, JsonID, Streamable
   VirtualMethod     Write,            $ObjPtr(Stream)
   VirtualMethod     WriteProperty,    $ObjPtr(Stream), PJSON_PROPERTY, POINTER
 
-  DefineVariable    RootProperty,     JSON_PROPERTY,  {, {}, JSON_TYPE_OBJECT, NULL}
+  DefineVariable    RootProperty,     JSON_PROPERTY,  {, {}, JSON_TYPE_ERROR, NULL}
 ObjectEnd
 
 
@@ -579,7 +586,7 @@ MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Json.Read
-; Purpose:    Read a JSON object from stream (also known as Parse).
+; Purpose:    Read a JSON object from stream (also known as "Parse" operation).
 ; Arguments:  Arg1: -> Stream.
 ; Return:     TRUE if succeeded, otherwise FALSE.
 
@@ -629,7 +636,7 @@ JsonGetObject proc pParent:PJSON_PROPERTY
       ret
     .endif
 
-    .if ax == '"'
+    .if ax == '"'                                       ;Get the name
       add xsi, sizeof(CHRW)
       mov pBegin, xsi
       invoke JsonGetStringEnd
@@ -892,7 +899,7 @@ JsonGetValue proc pParent:PJSON_PROPERTY, pName:PSTRING
     jmp @@Exit
   .endif
 
-  DoesWordMatch? [xsi], <true>
+  DoesWordMatchW? [xsi], <true>
   .if ZERO?
     mov [xdi].JSON_PROPERTY.dType, JSON_TYPE_BOOLEAN
     mov [xdi].JSON_PROPERTY.pValue, $invoke(StrNew, offset JSON_TRUE)
@@ -902,7 +909,7 @@ JsonGetValue proc pParent:PJSON_PROPERTY, pName:PSTRING
     jmp @@Exit
   .endif
 
-  DoesWordMatch? [xsi], <false>
+  DoesWordMatchW? [xsi], <false>
   .if ZERO?
     mov [xdi].JSON_PROPERTY.dType, JSON_TYPE_BOOLEAN
     mov [xdi].JSON_PROPERTY.pValue, $invoke(StrNew, offset JSON_FALSE)
@@ -912,7 +919,7 @@ JsonGetValue proc pParent:PJSON_PROPERTY, pName:PSTRING
     jmp @@Exit
   .endif
 
-  DoesWordMatch? [xsi], <null>
+  DoesWordMatchW? [xsi], <null>
   .if ZERO?
     mov [xdi].JSON_PROPERTY.dType, JSON_TYPE_NULL
     mov [xdi].JSON_PROPERTY.pValue, $invoke(StrNew, offset JSON_NULL)
@@ -951,7 +958,7 @@ Method Json.Read, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
 
           mov [xdi].RootProperty.JSON_PROPERTY.Siblings.pLinkFwrd, NULL
           mov [xdi].RootProperty.JSON_PROPERTY.Siblings.pLinkBack, NULL
-          mov [xdi].RootProperty.JSON_PROPERTY.dType, 0
+          mov [xdi].RootProperty.JSON_PROPERTY.dType, JSON_TYPE_ERROR
           mov [xdi].RootProperty.JSON_PROPERTY.Children.pFirstMember, NULL
           mov [xdi].RootProperty.JSON_PROPERTY.Children.pLastMember, NULL
 
@@ -1054,23 +1061,25 @@ Method Json.WriteProperty, uses xbx xdi xsi, pStream:$ObjPtr(Stream), pProperty:
     IndentNow
     OCall pStream::Stream.BinWrite8, "]"
 
-  .elseif [xbx].JSON_PROPERTY.dType == JSON_TYPE_STRING
+  .elseif [xbx].JSON_PROPERTY.dType == JSON_TYPE_STRING || [xbx].JSON_PROPERTY.dType == JSON_TYPE_BOOLEAN
     OCall pStream::Stream.BinWrite8, '"'
-    invoke StrSize, [xbx].JSON_PROPERTY.pValue
-    if TARGET_STR_TYPE eq STR_TYPE_WIDE
-      shl eax, 1                                        ;Each UTF8 char can have at max 4 bytes
-      mov xsi, $MemAlloc(eax)
-      invoke WideToUTF8, xsi, [xbx].JSON_PROPERTY.pValue, -1
-      dec eax                                           ;Discard ZTC
-      OCall pStream::Stream.BinWrite, xsi, eax
-      MemFree xsi
-    else
-      dec eax                                           ;Discard ZTC
-      OCall pStream::Stream.BinWrite, [xbx].JSON_PROPERTY.pValue, eax
-    endif
+    .if [xbx].JSON_PROPERTY.pValue != NULL
+      invoke StrSize, [xbx].JSON_PROPERTY.pValue
+      if TARGET_STR_TYPE eq STR_TYPE_WIDE
+        shl eax, 1                                        ;Each UTF8 char can have at max 4 bytes
+        mov xsi, $MemAlloc(eax)
+        invoke WideToUTF8, xsi, [xbx].JSON_PROPERTY.pValue, -1
+        dec eax                                           ;Discard ZTC
+        OCall pStream::Stream.BinWrite, xsi, eax
+        MemFree xsi
+      else
+        dec eax                                           ;Discard ZTC
+        OCall pStream::Stream.BinWrite, [xbx].JSON_PROPERTY.pValue, eax
+      endif
+    .endif
     OCall pStream::Stream.BinWrite8, '"'
 
-  .elseif [xbx].JSON_PROPERTY.dType == JSON_TYPE_NUMBER || [xbx].JSON_PROPERTY.dType == JSON_TYPE_BOOLEAN
+  .elseif [xbx].JSON_PROPERTY.dType == JSON_TYPE_NUMBER
     invoke StrSize, [xbx].JSON_PROPERTY.pValue
     if TARGET_STR_TYPE eq STR_TYPE_WIDE
       shl eax, 1                                        ;Each UTF8 char can have at max 4 bytes
