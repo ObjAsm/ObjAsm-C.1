@@ -158,7 +158,7 @@ CallDispatch proc pIDispatch:POINTER, dDispID:DWORD, wDispType:WORD, dArgNum:DWO
 
   ;Setup the DISPPARAMS structure
   m2m DispParams.cArgs, dArgNum, eax
-  m2m DispParams.rgvarg, pVarArgs, ecx
+  m2m DispParams.rgvarg, pVarArgs, xcx
 
   .if ((wDispType == DISPATCH_PROPERTYPUT) || (wDispType == DISPATCH_PROPERTYPUTREF))
     mov dPropPutID, DISPID_PROPERTYPUT

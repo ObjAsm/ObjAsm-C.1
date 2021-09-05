@@ -916,7 +916,7 @@ ifndef _WINGDI_
         _TEXTMETRIC_DEFINED equ <>
         include pshpack4.inc
         if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP or WINAPI_PARTITION_SYSTEM)
-          TEXTMETRICA struct
+          TEXTMETRICA struct 4
             tmHeight LONG ?
             tmAscent LONG ?
             tmDescent LONG ?
@@ -944,7 +944,7 @@ ifndef _WINGDI_
           NPTEXTMETRICA typedef ptr TEXTMETRICA
           LPTEXTMETRICA typedef ptr TEXTMETRICA
           
-          TEXTMETRICW struct
+          TEXTMETRICW struct 4
             tmHeight LONG ?
             tmAscent LONG ?
             tmDescent LONG ?
@@ -997,7 +997,7 @@ ifndef _WINGDI_
       NTM_DSIG equ 00200000h
       include pshpack4.inc
       if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
-        NEWTEXTMETRICA struct
+        NEWTEXTMETRICA struct 4
           tmHeight LONG ?
           tmAscent LONG ?
           tmDescent LONG ?
@@ -1029,7 +1029,7 @@ ifndef _WINGDI_
         NPNEWTEXTMETRICA typedef ptr NEWTEXTMETRICA
         LPNEWTEXTMETRICA typedef ptr NEWTEXTMETRICA
         
-        NEWTEXTMETRICW struct
+        NEWTEXTMETRICW struct 4
           tmHeight LONG ?
           tmAscent LONG ?
           tmDescent LONG ?
@@ -1076,13 +1076,13 @@ ifndef _WINGDI_
       include poppack.inc
       if (WINVER ge 0400h)
         if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
-          NEWTEXTMETRICEXA struct
+          NEWTEXTMETRICEXA struct 4
             ntmTm NEWTEXTMETRICA <>
             ntmFontSig FONTSIGNATURE <>
           NEWTEXTMETRICEXA ends
 
           tagNEWTEXTMETRICEXA typedef NEWTEXTMETRICEXA
-          NEWTEXTMETRICEXW struct
+          NEWTEXTMETRICEXW struct 4
             ntmTm NEWTEXTMETRICW <>
             ntmFontSig FONTSIGNATURE <>
           NEWTEXTMETRICEXW ends

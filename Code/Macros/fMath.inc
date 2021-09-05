@@ -117,10 +117,6 @@ f_INFN              equ   3
 f_NAN               equ   4
 f_DENOR             equ   5
 
-f_PRECISION_24BIT   equ   0
-f_PRECISION_53BIT   equ   BIT09
-f_PRECISION_64BIT   equ   BIT08 or BIT09
-
 f_NOR               equ   0
 f_SCI               equ   BIT00
 f_TRIM              equ   BIT01
@@ -376,13 +372,24 @@ endm
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      fSetPrecision
 ; Purpose:    Set the precision bits in the control register.
-; Arguments:  Arg1: Precision mask.
+; Arguments:  Arg1: Precision (REAL4, REAL8, REAL10).
 ; Returns:    Nothing.
+; Notes:      00 = 24 bits (REAL4)
+;             01 = Not used
+;             10 = 53 bits (REAL8)
+;             11 = 64 bits (REAL10) (this is the initialized state)
 
-fSetPrecision macro PrecisionMask:req
+fSetPrecision macro Precision:req
   sub xsp, @WordSize                                    ;;Reserve stack place
   fstcw WORD ptr [xsp]                                  ;;Store FPU control word
-  BitSet WORD ptr [xsp], PrecisionMask                  ;;Set precision bits
+  ifidni <Precision>, <REAL4>                           ;;Set precision bits
+    BitClr WORD ptr [xsp], BIT09 or BIT08
+  elseifidni <Precision>, <REAL8>
+    BitClr WORD ptr [xsp], BIT08
+    BitSet WORD ptr [xsp], BIT09
+  else
+    BitSet WORD ptr [xsp], BIT09 or BIT08
+  endif
   fldcw WORD ptr [xsp]                                  ;;Restore FPU control word
   add xsp, @WordSize                                    ;;Restore stack
 endm
@@ -1091,7 +1098,7 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      fjg
-; Purpose:    Jump to label if the result of the previous fcmp instruction indicates greater.
+; Purpose:    Jump to label if the result of the previous fcom instruction indicates greater.
 ; Arguments:  Arg1: Destination label.
 ; Returns:    Nothing.
 
@@ -1102,7 +1109,7 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      fjl
-; Purpose:    Jump to label if the result of the previous fcmp instruction indicates less.
+; Purpose:    Jump to label if the result of the previous fcom instruction indicates less.
 ; Arguments:  Arg1: Destination label.
 ; Returns:    Nothing.
 
@@ -1113,7 +1120,7 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      fje
-; Purpose:    Jump to label if the result of the previous fcmp instruction indicates equal.
+; Purpose:    Jump to label if the result of the previous fcom instruction indicates equal.
 ; Arguments:  Arg1: Destination label.
 ; Returns:    Nothing.
 
@@ -1124,7 +1131,7 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      fjne
-; Purpose:    Jump to label if the result of the previous fcmp instruction indicates not equal.
+; Purpose:    Jump to label if the result of the previous fcom instruction indicates not equal.
 ; Arguments:  Arg1: Destination label.
 ; Returns:    Nothing.
 
@@ -1135,7 +1142,7 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      fjge
-; Purpose:    Jump to label if the result of the previous fcmp instruction indicates greater
+; Purpose:    Jump to label if the result of the previous fcom instruction indicates greater
 ;             or equal.
 ; Arguments:  Arg1: Destination label.
 ; Returns:    Nothing.
@@ -1147,7 +1154,7 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      fjle
-; Purpose:    Jump to label if the result of the previous fcmp instruction indicates less
+; Purpose:    Jump to label if the result of the previous fcom instruction indicates less
 ;             or equal.
 ; Arguments:  Arg1: Destination label.
 ; Returns:    Nothing.
@@ -1159,7 +1166,7 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      fjnc
-; Purpose:    Jump to label if the result of the previous fcmp instruction indicates that the
+; Purpose:    Jump to label if the result of the previous fcom instruction indicates that the
 ;             arguments are non-comparable.
 ; Arguments:  Arg1: Destination label.
 ; Returns:    Nothing.

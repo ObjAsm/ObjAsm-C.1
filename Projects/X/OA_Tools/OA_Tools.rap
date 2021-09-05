@@ -204,7 +204,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=15
+MilestoneOnDateDate=5
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -239,9 +239,9 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,1177,636,8063
+2=0,0,1177,636,47698
 3=0,0,0,0,3751
-1=0,0,694,487,2245
+1=0,0,694,487,3102
 4=0,0,1202,621,7086
 1001=0,0,0,0,460
 8=0,0,0,0,6676
@@ -265,13 +265,13 @@ ProductVer4Range=0
 28=0,0,0,0,755
 30=0,0,0,0,8613
 29=0,0,0,0,93143
-31=0,0,0,0,8868
+31=0,0,0,0,5936
 19=0,0,0,0,3448
 32=0,0,0,0,70384
 34=
 35=
 36=
-40=0,0,1167,599,13086
+40=0,0,1167,599,15488
 39=0,0,0,0,2317
 38=0,0,0,0,10733
 42=0,0,0,0,1968
@@ -298,7 +298,7 @@ ProductVer4Range=0
 60=0,0,0,0,3191
 59=
 61=0,0,0,0,0
-62=0,0,0,0,2284
+62=0,0,0,0,3135
 33=
 63=0,0,0,0,3315
 64=0,0,0,0,459
@@ -320,16 +320,16 @@ ProductVer4Range=0
 0=724,30,
 
 [Find]
-1="OnCommand"
-2="WS_EX_CONTROLPARENT"
-3="OAT_Setup"
-4="Tab1"
-5="StatusbarHelp"
-6="pSBHelp"
-7="Init"
-8="IDS_TOOL_FILTER_NAME_0"
-9="IDS_SELECTION_FILE_NAME"
-10="IDLANG_GERMAN"
+1="LF"
+2=".Run"
+3="Run"
+4="OnCommand"
+5="WS_EX_CONTROLPARENT"
+6="OAT_Setup"
+7="Tab1"
+8="StatusbarHelp"
+9="pSBHelp"
+10="Init"
 [Collapse]
 4=
 2=3995947,1413820672,2092993195,513
@@ -393,7 +393,7 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=38,61
 [PTimer]
-PTimer=1961866707
+PTimer=1962337098
 [GroupExpand]
 GroupExpand=1,1,0,1,1,1,1,0
 [RADebugBP]

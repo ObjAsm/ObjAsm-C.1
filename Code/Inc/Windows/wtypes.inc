@@ -273,7 +273,7 @@ ifndef __wtypes_h__
     endif
     ifndef _TEXTMETRIC_DEFINED
       _TEXTMETRIC_DEFINED equ <>
-      TEXTMETRICW struct
+      TEXTMETRICW struct 4
         tmHeight LONG ?
         tmAscent LONG ?
         tmDescent LONG ?

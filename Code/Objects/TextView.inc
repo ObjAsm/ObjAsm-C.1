@@ -388,7 +388,7 @@ TVZOOM_MAX          equ   5*TVZOOM_BASE
 TVZOOM_STEP         equ   TVZOOM_BASE/16
 
 ;TextView Internal Flags
-TVIF_WND_CREATE     equ   BIT00           ;Control was created by CreateWindow
+TVIF_SELF_INST      equ   BIT00           ;Object was instanced by CreateWindowEx
 TVIF_EXTENT_X_SET   equ   BIT01           ;Extent.x was defined with a SIZE.X command
 TVIF_EXTENT_Y_SET   equ   BIT02           ;Extent.y was defined with a SIZE.Y command
 TVIF_SHOW_SB_HORZ   equ   BIT04           ;Horz ScrollBar is shown
@@ -3709,7 +3709,7 @@ Method TextView.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
         invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0 ;Get instance POINTER of the parent object
       .endif
       ACall xsi::TextView.Init, xax, pSelf              ;Window.Init
-      BitSet [xsi].$Obj(TextView).dFlags, TVIF_WND_CREATE
+      BitSet [xsi].$Obj(TextView).dFlags, TVIF_SELF_INST
     .else
       ;Init call
       mov xsi, [xax].CREATESTRUCT.lpCreateParams
@@ -3725,7 +3725,7 @@ Method TextView.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
       mov xsi, xax
       OCall xsi::TextView.Dispatch, pSelf, uMsg, wParam, lParam
       .if uMsg == WM_NCDESTROY
-        .ifBitSet [xsi].$Obj(TextView).dFlags, TVIF_WND_CREATE
+        .ifBitSet [xsi].$Obj(TextView).dFlags, TVIF_SELF_INST
           Destroy xsi
         .endif
       .endif

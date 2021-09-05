@@ -1,10 +1,12 @@
 ; ==================================================================================================
 ; Title:      Array.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Purpose:    ObjAsm support of array objects.
 ; Notes:      Version C.1.0, November 2017
 ;               - First release.
+;             Version C.1.1 August 2021
+;               - Indexing bug in 64 bit corrected.
 ; ==================================================================================================
 
 
@@ -28,7 +30,7 @@ Object Array, ArrayID, Streamable
   VirtualMethod     DimResize,      DWORD, DWORD, DWORD
   RedefineMethod    Done
   RedefineMethod    Init,           POINTER, DWORD
-  VirtualMethod     ItemAt,         DWORD, DWORD, DWORD, DWORD, ?
+  VirtualMethod     ItemAt,         ?
   RedefineMethod    Load,           $ObjPtr(Stream)
   VirtualMethod     MemLoad,        POINTER
   VirtualMethod     MemStore,       POINTER
@@ -38,7 +40,7 @@ Object Array, ArrayID, Streamable
 
   DefineVariable    pData,          POINTER,      NULL
   DefineVariable    dItemSize,      DWORD,        0
-  DefineVariable    pDims,          POINTER,      NULL
+  DefineVariable    pDims,          POINTER,      NULL    ;-> Sequence of DWORDs
   DefineVariable    dDimCount,      DWORD,        0
   DefineVariable    ObjLock,        OBJECT_LOCK,  {}
 ObjectEnd
@@ -50,7 +52,7 @@ if IMPLEMENT
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Array.CalcMemReq
-; Purpose:    Compute the array memory requirement.
+; Purpose:    Compute the memory requirement to store the array data.
 ; Arguments:  None.
 ; Return:     Nothing.
 
@@ -74,7 +76,7 @@ MethodEnd
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Array.DimAppend
 ; Purpose:    Append a new dimension to the array object.
-; Arguments:  Arg1: Index width.
+; Arguments:  Arg1: Dimension size (max. number of elements that fits in this dimension).
 ;             Arg2: Initialization flags. (Valid flags: ARR_MEM_NO_ALLOC, ARR_MEM_ZERO, ARR_PRESERVE)
 ; Return:     eax = Zero based index of the new dimension or -1 if failed.
 
@@ -239,19 +241,22 @@ MethodEnd
 ; Arguments:  Arg1..n: Indexes of the array item.
 ; Return:     xax -> Item or NULL if failed.
 
-Method Array.ItemAt, uses xbx xdi xsi, dDummy1:DWORD, dDummy2:DWORD, dDummy3:DWORD, dDummy4:DWORD, dIndex:VARARG
+Method Array.ItemAt, uses xbx xdi xsi, dIndex:VARARG
   local xOffset:XWORD
 
   SetObject xsi
-  mov edi, 1                                            ;edi: Multiplicator
+  mov edi, 1                                            ;edi: multiplicator, initially = 1
   xor ebx, ebx
   mov xOffset, xbx
 
   .while ebx < [xsi].dDimCount
     mov xcx, xbx
     lea xdx, dIndex                                     ;Get pointer to Indexes
-    shl xcx, $Log2(sizeof(DWORD))
+    shl xcx, $Log2(sizeof(XWORD))                       ;Arguments are XWORD aligned
     add xdx, xcx
+    if TARGET_BITNESS eq 64
+      shr ecx, 1
+    endif
     add xcx, [xsi].pDims
     mov eax, DWORD ptr [xdx]
     .if eax < DWORD ptr [xcx]                           ;Check index range

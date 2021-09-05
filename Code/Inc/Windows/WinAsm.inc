@@ -450,6 +450,7 @@ ifndef _INC_WINASM
     ??Interface CatStr <IName>, <Vtbl>
 
     ??Interface struct
+      AName&Vtbl {}
   endm
 
   ; ——————————————————————————————————————————————————————————————————————————————————————————————————

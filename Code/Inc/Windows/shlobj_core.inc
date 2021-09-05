@@ -759,16 +759,16 @@ if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
   endif
   INTERFACE equ <IProgressDialog>
   DECLARE_INTERFACE_IID_ IProgressDialog, IUnknown, "EBBC7C04-315E-11d2-B62F-006097DF5BD4"
-    STD_METHOD StartProgressDialog, :THIS_, :ptr IUnknown, :DWORD, :LPCVOID
+    STD_METHOD StartProgressDialog, :THIS_, :HWND, :ptr IUnknown, :DWORD, :LPCVOID
     STD_METHOD StopProgressDialog, :THIS_
-    STD_METHOD SetTitle, :THIS_
-    STD_METHOD SetAnimation, :THIS_, :UINT
+    STD_METHOD SetTitle, :THIS_, :PCWSTR
+    STD_METHOD SetAnimation, :THIS_, :HINSTANCE, :UINT
     STD_METHOD HasUserCancelled, :THIS_
-    STD_METHOD SetProgress, :THIS_, :DWORD
-    STD_METHOD SetProgress64, :THIS_, :ULONGLONG
-    STD_METHOD SetLine, :THIS_, :PCWSTR, :BOOL, :LPCVOID
-    STD_METHOD SetCancelMsg, :THIS_, :LPCVOID
-    STD_METHOD Timer, :THIS_, :LPCVOID
+    STD_METHOD SetProgress, :THIS_, :DWORD, :DWORD
+    STD_METHOD SetProgress64, :THIS_, :ULONGLONG, :ULONGLONG
+    STD_METHOD SetLine, :THIS_, :DWORD, :PCWSTR, :BOOL, :LPCVOID
+    STD_METHOD SetCancelMsg, :THIS_, :PCWSTR, :LPCVOID
+    STD_METHOD Timer, :THIS_, :DWORD, :LPCVOID
   END_DECLARE_INTERFACE_IID_
   INTERFACE equ <IDockingWindowSite>
   DECLARE_INTERFACE_IID_ IDockingWindowSite, IOleWindow, "2a342fc2-7b26-11d0-8ca9-00a0c92dbfe8"

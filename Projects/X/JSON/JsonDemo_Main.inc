@@ -62,6 +62,7 @@ Method JsonDemoApp.Init, uses xbx xsi
   DbgLine ;--------------------------------------------------------------------------------
   mov xbx, $New(Json)
   OCall xbx::Json.Init, xsi
+  mov [xbx].$Obj(Json).RootProperty.dType, JSON_TYPE_OBJECT
 
   OCall xbx::Json.AddObject, addr [xbx].$Obj(Json).RootProperty, $OfsCStr("Person")
   mov pPerson, xax

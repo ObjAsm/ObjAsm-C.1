@@ -52,6 +52,7 @@ Object DbgMdiChildTxt, DbgMdiChildTxtID, DbgMdiChild
   RedefineMethod    Done
   RedefineMethod    Init,             POINTER, PSTRINGW, HFONT  ;-> Owner, -> Title, hFont
   RedefineMethod    OnMdiActivate,    WPARAM, LPARAM
+  RedefineMethod    OnSize,           WPARAM, LPARAM
   RedefineMethod    Open,             PSTRING
   RedefineMethod    Print
   RedefineMethod    SaveAs,           PSTRING, PSTRING          ;-> Filter, -> Def. extension
@@ -63,7 +64,6 @@ Object DbgMdiChildTxt, DbgMdiChildTxtID, DbgMdiChild
 
   VirtualEvent      OnCreate,         WM_CREATE
   VirtualEvent      OnNotify,         WM_NOTIFY
-  VirtualEvent      OnSize,           WM_SIZE
 
   DefineVariable    hEdit,            HWND,               0
   DefineVariable    pEdtIptor,        $ObjPtr(REdtIptor), NULL
@@ -383,7 +383,7 @@ MethodEnd
 
 Method DbgMdiChildTxt.Print, uses xbx xdi xsi
   local PrtDlg:PRINTDLG, DocInfo:DOCINFO
-  local LF:LOGFONT, hFont:HFONT, hPrvFont:HFONT, dLineCount:DWORD
+  local LogFnt:LOGFONT, hFont:HFONT, hPrvFont:HFONT, dLineCount:DWORD
   local cPrtBuffer[256]:CHR, dPosY:DWORD, TM:TEXTMETRIC
   local LogPix:POINT, PageSize:POINT, PageOffset:POINT, PrintSize:POINT
 
@@ -455,23 +455,23 @@ Method DbgMdiChildTxt.Print, uses xbx xdi xsi
       invoke DeleteObject, xbx
 
       ;Set DC font
-      FillString LF.lfFaceName, <Courier New>
+      FillString LogFnt.lfFaceName, <Courier New>
       invoke GetDeviceCaps, PrtDlg.hDC, LOGPIXELSY
       invoke MulDiv, 10, eax, -72
-      mov LF.lfHeight, eax
-      m2z LF.lfWidth
-      m2z LF.lfEscapement
-      m2z LF.lfOrientation
-      mov LF.lfWeight, FW_DONTCARE
-      m2z LF.lfItalic
-      m2z LF.lfUnderline
-      m2z LF.lfStrikeOut
-      mov LF.lfCharSet, DEFAULT_CHARSET
-      mov LF.lfOutPrecision, OUT_DEFAULT_PRECIS
-      mov LF.lfClipPrecision, CLIP_DEFAULT_PRECIS
-      mov LF.lfQuality, CLEARTYPE_QUALITY
-      mov LF.lfPitchAndFamily, DEFAULT_PITCH or FF_DONTCARE
-      mov hFont, $invoke(CreateFontIndirect, addr LF)
+      mov LogFnt.lfHeight, eax
+      m2z LogFnt.lfWidth
+      m2z LogFnt.lfEscapement
+      m2z LogFnt.lfOrientation
+      mov LogFnt.lfWeight, FW_DONTCARE
+      m2z LogFnt.lfItalic
+      m2z LogFnt.lfUnderline
+      m2z LogFnt.lfStrikeOut
+      mov LogFnt.lfCharSet, DEFAULT_CHARSET
+      mov LogFnt.lfOutPrecision, OUT_DEFAULT_PRECIS
+      mov LogFnt.lfClipPrecision, CLIP_DEFAULT_PRECIS
+      mov LogFnt.lfQuality, CLEARTYPE_QUALITY
+      mov LogFnt.lfPitchAndFamily, DEFAULT_PITCH or FF_DONTCARE
+      mov hFont, $invoke(CreateFontIndirect, addr LogFnt)
 
       ;Start printing
       invoke StartDoc, PrtDlg.hDC, addr DocInfo

@@ -428,7 +428,7 @@ MethodEnd
 ; Return:     eax = Zero.
 
 Method ScriptHostApp.OnInitDialog, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
-  local LF:LOGFONT, hDC:HDC
+  local LogFnt:LOGFONT, hDC:HDC
 
   SetObject xsi
   OCall [xsi].SplitterHor::Splitter.Init, xsi, [xsi].hWnd, SPT_FLAG_HORIZONTAL, 250, 50, 50
@@ -451,24 +451,24 @@ Method ScriptHostApp.OnInitDialog, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   .endif
 
   ;Set the Editbox font to "Lucida Console" 10pt normal
-  FillString LF.lfFaceName, <Lucida Console>
+  FillString LogFnt.lfFaceName, <Lucida Console>
   mov hDC, $invoke(GetDC, [xsi].hWnd)
   invoke GetDeviceCaps, hDC, LOGPIXELSY
   invoke MulDiv, 10, eax, -72
-  mov LF.lfHeight, eax
-  m2z LF.lfWidth
-  m2z LF.lfEscapement
-  m2z LF.lfOrientation
-  mov LF.lfWeight, FW_DONTCARE
-  m2z LF.lfItalic
-  m2z LF.lfUnderline
-  m2z LF.lfStrikeOut
-  mov LF.lfCharSet, DEFAULT_CHARSET
-  mov LF.lfOutPrecision, OUT_DEFAULT_PRECIS
-  mov LF.lfClipPrecision, CLIP_DEFAULT_PRECIS
-  mov LF.lfQuality, CLEARTYPE_QUALITY
-  mov LF.lfPitchAndFamily, DEFAULT_PITCH or FF_DONTCARE
-  mov [xsi].hEditFont, $invoke(CreateFontIndirect, addr LF)
+  mov LogFnt.lfHeight, eax
+  m2z LogFnt.lfWidth
+  m2z LogFnt.lfEscapement
+  m2z LogFnt.lfOrientation
+  mov LogFnt.lfWeight, FW_DONTCARE
+  m2z LogFnt.lfItalic
+  m2z LogFnt.lfUnderline
+  m2z LogFnt.lfStrikeOut
+  mov LogFnt.lfCharSet, DEFAULT_CHARSET
+  mov LogFnt.lfOutPrecision, OUT_DEFAULT_PRECIS
+  mov LogFnt.lfClipPrecision, CLIP_DEFAULT_PRECIS
+  mov LogFnt.lfQuality, CLEARTYPE_QUALITY
+  mov LogFnt.lfPitchAndFamily, DEFAULT_PITCH or FF_DONTCARE
+  mov [xsi].hEditFont, $invoke(CreateFontIndirect, addr LogFnt)
   invoke ReleaseDC, [xsi].hWnd, hDC
   invoke SendDlgItemMessage, [xsi].hWnd, IDC_RED_SCRIPT, WM_SETFONT, [xsi].hEditFont, FALSE
 

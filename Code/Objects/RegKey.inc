@@ -98,7 +98,7 @@ Object RegKey, RegKeyID, Primer
   DefineVariable    dErrorCodeEx,       DWORD,        0
   DefineVariable    hKey,               HKEY,         0
   DefineVariable    hParentKey,         HKEY,         0
-  DefineVariable    cKeyName,           CHR,          MAX_KEY_LENGTH dup (0)
+  DefineVariable    cKeyName,           CHR,          MAX_KEY_LENGTH dup(0)
 ObjectEnd
 
 if TARGET_STR_TYPE eq STR_TYPE_ANSI

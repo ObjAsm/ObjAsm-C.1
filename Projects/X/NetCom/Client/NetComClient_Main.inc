@@ -24,7 +24,7 @@ Object SendDlg,, DialogModal
 
   DefineVariable    ServerAddr,     NETCOMADDR, {}    
   DefineVariable    dRepetitions,   DWORD,      1
-  DefineVariable    cText,          CHR,        BUFFERSIZE dup (0)
+  DefineVariable    cText,          CHR,        BUFFERSIZE dup(0)
   DefineVariable    dConnections,   DWORD,      1
   
   Embed   Connections,    Collection                    ;For simplicity in place of the linked list

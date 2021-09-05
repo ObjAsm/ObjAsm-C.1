@@ -49,7 +49,7 @@ SetAboutItemString macro hItem:req, sID:req
 endm
 
 Method OAT_About.OnInitDialog, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
-  local cBuffer[MAX_PATH]:CHR, LF:LOGFONT
+  local cBuffer[MAX_PATH]:CHR, LogFnt:LOGFONT
 
   SetObject xsi
   
@@ -63,17 +63,17 @@ Method OAT_About.OnInitDialog, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
 
   invoke SendMessage, [xsi].hWnd, WM_GETFONT, 0, 0
   mov xcx, xax
-  invoke GetObject, xcx, sizeof LF, addr LF
-  mov LF.lfWeight, FW_SEMIBOLD
-  shl LF.lfHeight, 1
-  mov [xsi].hFontApplication, $invoke(CreateFontIndirect, addr LF)
+  invoke GetObject, xcx, sizeof LogFnt, addr LogFnt
+  mov LogFnt.lfWeight, FW_SEMIBOLD
+  shl LogFnt.lfHeight, 1
+  mov [xsi].hFontApplication, $invoke(CreateFontIndirect, addr LogFnt)
   invoke SendMessage, [xsi].hStcApplication, WM_SETFONT, xax, TRUE
 
   invoke SendMessage, [xsi].hWnd, WM_GETFONT, 0, 0
   mov xcx, xax
-  invoke GetObject, xcx, sizeof LF, addr LF
-  mov LF.lfWeight, FW_SEMIBOLD
-  mov [xsi].hFontVersion, $invoke(CreateFontIndirect, addr LF)
+  invoke GetObject, xcx, sizeof LogFnt, addr LogFnt
+  mov LogFnt.lfWeight, FW_SEMIBOLD
+  mov [xsi].hFontVersion, $invoke(CreateFontIndirect, addr LogFnt)
   invoke SendMessage, [xsi].hStcVersion, WM_SETFONT, xax, TRUE
 
   ;Set sttrings in the selected language

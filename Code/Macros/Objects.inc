@@ -3,7 +3,7 @@
 ; Author:     G. Friedrich
 ; Version:    C.1.3
 ; Purpose:    ObjAsm object support using MASM compatible assembers (UASM, ASMC, JWASM, ML)
-; Notes:      Version C.1.3, Mya 2021
+; Notes:      Version C.1.3, May 2021
 ;               - VARARG stack correction bug corrected.
 ;             Version C.1.2, December 2020
 ;               - $MethodAddr can handle addresses of embedded objects.
@@ -1175,11 +1175,15 @@ CreateDynamicTemplate macro MglObjName:req, Init:=<TRUE>
         $$sz1 $$sz2 $$sz3
       else
         if @InStr(1, %$$sz3, <{>) eq 1
-%          $$sz1 $$sz2 {}
+%         $$sz1 $$sz2 {}
         else
           $$sz4 textequ <$Lower($$sz3)>                 ;;Convert symbol to lowercase
           if @InStr(1, %$$sz4, < dup>) gt 0
-            $$sz1 $$sz2 @CatStr(@SubStr(%$$sz3, 1, @InStr(1, %$$sz4, < dup>)), <dup (?)>)
+            if @InStr(1, %$$sz4, <{>) gt 0
+              $$sz1 $$sz2 @CatStr(@SubStr(%$$sz3, 1, @InStr(1, %$$sz4, < dup(>)), < dup({})>)
+            else
+              $$sz1 $$sz2 @CatStr(@SubStr(%$$sz3, 1, @InStr(1, %$$sz4, < dup(>)), < dup(?)>)
+            endif
           else
             $$sz1 $$sz2 ?
           endif
@@ -1496,96 +1500,6 @@ endm
 ;                 - Nsp:Obj
 ;                 - Obj
 
-;New macro Expression:req, MemSize:=<$$DynamicTemplateSize>
-;  PreParseExpr Expression
-;
-;  ;;Get ??MtdExpr
-;  if ??Pos3 ne 0
-;    .err <New - no method allowed: Expression>
-;    exitm
-;  endif
-;
-;  ;;Get ??ObjExpr
-;  if ??Pos1 ne 0
-;    if ??Pos2 ne 0
-;      ??ObjExpr CatStr @SubStr(<Expression>, ??Pos1 + 2, ??Pos2 - ??Pos1 - 2), \
-;                       ??ObjPfxSep, \
-;                       @SubStr(<Expression>, ??Pos2 + 1)
-;    else
-;      ??ObjExpr CatStr ??ObjPfx, @SubStr(<Expression>, ??Pos1 + 2)
-;    endif
-;  else
-;    if ??Pos2 ne 0
-;      ??ObjExpr CatStr @SubStr(<Expression>, 1, ??Pos2 - 1), \
-;                       ??ObjPfxSep, \
-;                       @SubStr(<Expression>, ??Pos2 + 1)
-;    else
-;      ??ObjExpr CatStr ??ObjPfx, <Expression>
-;    endif
-;  endif
-;
-;  ;;Get ??InsExpr
-;  if ??Pos1 ne 0
-;    ??InsExpr SubStr <Expression>, 1, ??Pos1 - 1
-;  endif
-;
-;  %ifdef ??ObjExpr
-;    if @CatStr(%??ObjExpr, <_Error>) eq ??OBJERR_NONE
-;      $$DynamicTemplateSize = sizeof(??ObjExpr)
-;      %ifb <??InsExpr>
-;        push xdi
-;        push xsi
-;        if TARGET_BITNESS eq 64
-;          sub rsp, 20h
-;        endif
-;        MemAlloc MemSize
-;        if TARGET_BITNESS eq 64
-;          add rsp, 20h
-;        endif
-;      else
-;        %if type(??InsExpr) eq @WordSize
-;          %ifdifi <??InsExpr>, <xax>
-;            %mov xax, ??InsExpr
-;          endif
-;        else
-;          %$$Attributes = opattr(??InsExpr)
-;          if ($$Attributes eq (OAT_NO_ERROR or OAT_RELOCATABLE)) or \
-;             ($$Attributes eq (OAT_SS_RELATIVE or OAT_NO_ERROR or OAT_RELOCATABLE))
-;            %lea xax, ??InsExpr
-;          else
-;            %mov xax, offset(??InsExpr)
-;          endif
-;        endif
-;        push xdi
-;        push xsi
-;      endif
-;      mov xsi, offset(@CatStr(<TPL_>, %??ObjExpr))
-;      mov xcx, $$DynamicTemplateSize/@WordSize          ;;TemplateSize is always > @WordSize
-;      %ifdifi <??InsExpr>, <xdi>
-;        mov xdi, xax
-;      endif
-;      if TARGET_BITNESS eq 64
-;        rep movsq                                       ;;Copy all possible QWORDs
-;        if ($$DynamicTemplateSize and 4) eq 4
-;          movsd
-;        endif
-;      else
-;        rep movsd                                       ;;Copy all possible DWORDs
-;      endif
-;      if ($$DynamicTemplateSize and 2) eq 2
-;        movsw
-;      endif
-;      if ($$DynamicTemplateSize and 1) eq 1
-;        movsb
-;      endif
-;      pop xsi
-;      pop xdi
-;    endif
-;  else
-;    .err <New - undefined object: Expression>
-;  endif
-;endm                                                    ;;xax -> allocated object instance
-
 New macro Expression:req, MemSize:=<$$DynamicTemplateSize>
   PreParseExpr Expression
 
@@ -1646,11 +1560,7 @@ New macro Expression:req, MemSize:=<$$DynamicTemplateSize>
         endif
       endif
       ;Use all volatile registers except xax, which is used as return register
-      if TARGET_BITNESS eq 32
-        s2s ??ObjExpr ptr [eax], @CatStr(<TPL_>, %??ObjExpr), xmm7, xmm6, xmm5, xmm4, xmm3, xmm2, xmm1, xmm0, ecx, edx
-      else
-        s2s ??ObjExpr ptr [rax], @CatStr(<TPL_>, %??ObjExpr), xmm7, xmm6, xmm5, xmm4, xmm3, xmm2, xmm1, xmm0, rcx, rdx
-      endif
+      s2s ??ObjExpr ptr [xax], @CatStr(<TPL_>, %??ObjExpr), xmm7, xmm6, xmm5, xmm4, xmm3, xmm2, xmm1, xmm0, xcx, xdx
     endif
   else
     .err <New - undefined object: Expression>

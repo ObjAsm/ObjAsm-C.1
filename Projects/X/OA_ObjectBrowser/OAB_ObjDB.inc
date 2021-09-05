@@ -68,7 +68,7 @@ Object OA_ObjDB, OA_ObjDBID, Primer
   StaticMethod      ScanDirFiles,       POINTER
 
   DefineVariable    ObjLock,            OBJECT_LOCK,  {}
-  DefineVariable    cStmFileName,       CHR,          MAX_PATH dup (0)
+  DefineVariable    cStmFileName,       CHR,          MAX_PATH dup(0)
   DefineVariable    dScanOn,            DWORD,        SCAN_OFF
   DefineVariable    dDoSave,            DWORD,        FALSE
 

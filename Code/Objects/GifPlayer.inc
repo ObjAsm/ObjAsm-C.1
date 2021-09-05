@@ -70,7 +70,7 @@ Object GifFrame, GifFrameID, Streamable
   DefineVariable    dDelayTime,           DWORD,    0
   DefineVariable    bDisposalMethod,      BYTE,     0
   DefineVariable    bHasTransparency,     BYTE,     FALSE
-  DefineVariable    dTransparentColor,    DWORD,    $RGB(0,0,0)  ;RGBQUAD
+  DefineVariable    TransparentColor,     COLORREF, $RGB(000,000,000)
 ObjectEnd
 
 
@@ -276,7 +276,7 @@ Method GifPlayer.BreakoutFrames, uses xbx xdi xsi, pData:POINTER, dDataSize:DWOR
         mov eax, BmpInfo.ColorTable[sizeof(RGBQUAD)*xcx]
         bswap eax                                       ;eax: RR GG BB ??
         shr eax, 8                                      ;eax: 00 RR GG BB (RGBQUAD)
-        mov [xbx].$Obj(GifFrame).dTransparentColor, eax
+        mov [xbx].$Obj(GifFrame).TransparentColor, eax
       .endif
 
       ;------ Set Bitmap information -----------------
@@ -809,7 +809,7 @@ Method GifPlayer.OnTimer, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
 ;            invoke BitBlt, [xsi].hMemDC, 0, 0, [xsi].ClientRect.right, [xsi].ClientRect.bottom,
 ;                           [xsi].hBackDC, 0, 0, SRCCOPY
           invoke DrawTransparentBitmap, [xsi].hMemDC, [xdi].hBmp, [xdi].dLeft, [xdi].dTop, \
-                                        [xdi].dTransparentColor
+                                        [xdi].TransparentColor
         .else
           mov [xsi].hPrevGifBmp, $invoke(SelectObject, [xsi].hGifDC, [xdi].hBmp)
           invoke BitBlt, [xsi].hMemDC, [xdi].dLeft, [xdi].dTop, [xsi].ClientRect.right, \

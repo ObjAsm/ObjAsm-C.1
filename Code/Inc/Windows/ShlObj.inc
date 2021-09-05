@@ -108,9 +108,9 @@ ifndef _SHLOBJ_H_
     endif
     INTERFACE equ <INewShortcutHookA>
     DECLARE_INTERFACE_IID_ INewShortcutHookA, IUnknown, "000214e1-0000-0000-c000-000000000046"
-      STD_METHOD QueryInterface, :THIS_, :ptr ptr
-      STD_METHOD AddRef, :THIS_
-      STD_METHOD Release, :THIS_
+;      STD_METHOD QueryInterface, :THIS_, :ptr ptr
+;      STD_METHOD AddRef, :THIS_
+;      STD_METHOD Release, :THIS_
       STD_METHOD SetReferent, :THIS_, :HWND
       STD_METHOD GetReferent, :THIS_, :SDWORD
       STD_METHOD SetFolder, :THIS_
@@ -120,9 +120,9 @@ ifndef _SHLOBJ_H_
     END_DECLARE_INTERFACE_IID_
     INTERFACE equ <INewShortcutHookW>
     DECLARE_INTERFACE_IID_ INewShortcutHookW, IUnknown, "000214f7-0000-0000-c000-000000000046"
-      STD_METHOD QueryInterface, :THIS_, :ptr ptr
-      STD_METHOD AddRef, :THIS_
-      STD_METHOD Release, :THIS_
+;      STD_METHOD QueryInterface, :THIS_, :ptr ptr
+;      STD_METHOD AddRef, :THIS_
+;      STD_METHOD Release, :THIS_
       STD_METHOD SetReferent, :THIS_, :HWND
       STD_METHOD GetReferent, :THIS_, :SDWORD
       STD_METHOD SetFolder, :THIS_
@@ -254,9 +254,9 @@ ifndef _SHLOBJ_H_
       include poppack.inc
       INTERFACE equ <IEnumShellImageStore>
       DECLARE_INTERFACE_IID_ IEnumShellImageStore, IUnknown, "6DFD582B-92E3-11D1-98A3-00C04FB687DA"
-        STD_METHOD QueryInterface, :THIS_, :ptr ptr
-        STD_METHOD AddRef, :THIS_
-        STD_METHOD Release, :THIS_
+;        STD_METHOD QueryInterface, :THIS_, :ptr ptr
+;        STD_METHOD AddRef, :THIS_
+;        STD_METHOD Release, :THIS_
         STD_METHOD Reset, :THIS_
         STD_METHOD Next, :THIS_, :ptr PENUMSHELLIMAGESTOREDATA, :ptr ULONG
         STD_METHOD Skip, :THIS_
@@ -267,9 +267,9 @@ ifndef _SHLOBJ_H_
       SHIMSTCAPFLAG_PURGEABLE equ 0002h
       INTERFACE equ <IShellImageStore>
       DECLARE_INTERFACE_IID_ IShellImageStore, IUnknown, "48C8118C-B924-11D1-98D5-00C04FB687DA"
-        STD_METHOD QueryInterface, :THIS_, :ptr ptr
-        STD_METHOD AddRef, :THIS_
-        STD_METHOD Release, :THIS_
+;        STD_METHOD QueryInterface, :THIS_, :ptr ptr
+;        STD_METHOD AddRef, :THIS_
+;        STD_METHOD Release, :THIS_
         STD_METHOD Open, :THIS_, :ptr DWORD
         STD_METHOD Create, :THIS_, :ptr DWORD
         STD_METHOD ReleaseLock, :ptr THIS_
@@ -362,9 +362,9 @@ ifndef _SHLOBJ_H_
     SCHEME_CREATE equ 0080h
     INTERFACE equ <IActiveDesktopP>
     DECLARE_INTERFACE_IID_ IActiveDesktopP, IUnknown, "52502EE0-EC80-11D0-89AB-00C04FC2972D"
-      STD_METHOD QueryInterface, :THIS_, :ptr ptr
-      STD_METHOD AddRef, :THIS_
-      STD_METHOD Release, :THIS_
+;      STD_METHOD QueryInterface, :THIS_, :ptr ptr
+;      STD_METHOD AddRef, :THIS_
+;      STD_METHOD Release, :THIS_
       STD_METHOD SetSafeMode, :THIS_
       STD_METHOD EnsureUpdateHTML, :THIS_
       STD_METHOD SetScheme, :THIS_, :DWORD
@@ -374,9 +374,9 @@ ifndef _SHLOBJ_H_
     GADOF_DIRTY equ 00000001h
     INTERFACE equ <IADesktopP2>
     DECLARE_INTERFACE_IID_ IADesktopP2, IUnknown, "B22754E2-4574-11d1-9888-006097DEACF9"
-      STD_METHOD QueryInterface, :THIS_, :ptr ptr
-      STD_METHOD AddRef, :THIS_
-      STD_METHOD Release, :THIS_
+;      STD_METHOD QueryInterface, :THIS_, :ptr ptr
+;      STD_METHOD AddRef, :THIS_
+;      STD_METHOD Release, :THIS_
       STD_METHOD ReReadWallpaper, :THIS_
       STD_METHOD GetADObjectFlags, :ptr THIS_, :DWORD
       STD_METHOD UpdateAllDesktopSubscriptions, :THIS_
@@ -420,9 +420,9 @@ ifndef _SHLOBJ_H_
     include poppack.inc
     INTERFACE equ <IColumnProvider>
     DECLARE_INTERFACE_IID_ IColumnProvider, IUnknown, "E8025004-1C42-11d2-BE2C-00A0C9A83DA1"
-      STD_METHOD QueryInterface, :THIS_, :ptr ptr
-      STD_METHOD AddRef, :THIS_
-      STD_METHOD Release, :THIS_
+;      STD_METHOD QueryInterface, :THIS_, :ptr ptr
+;      STD_METHOD AddRef, :THIS_
+;      STD_METHOD Release, :THIS_
       STD_METHOD Initialize, :THIS_
       STD_METHOD GetColumnInfo, :THIS_, :ptr SHCOLUMNINFO
       STD_METHOD GetItemData, :THIS_, :LPCSHCOLUMNDATA, :ptr VARIANT

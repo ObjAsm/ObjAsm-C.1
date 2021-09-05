@@ -41,6 +41,7 @@ St0ToStrA proc uses xdi xsi pBuffer:POINTER, dPadding:DWORD, dDecimals:DWORD, dF
   .endif
 
   ;Check first if value on FPU is valid or equal to zero
+  fclex
   ftst                                                  ;Test value on FPU
   fstsw wStatusWord                                     ;Get result
   fwait
@@ -119,7 +120,7 @@ St0ToStrA proc uses xdi xsi pBuffer:POINTER, dPadding:DWORD, dDecimals:DWORD, dF
   fbstp tBCD                                            ;-> TBYTE containing the packed digits
   fstsw wStatusWord                                     ;Retrieve exception flags from FPU
   fwait
-  test wStatusWord, 1                                   ;Test for invalid operation
+  test wStatusWord, BIT00                               ;Test for invalid operation
   jnz @@Error                                           ;Clean-up and return error
 
   ;Unpack BCD, the 10 bytes returned by the FPU being in the little-endian style

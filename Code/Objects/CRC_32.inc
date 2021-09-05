@@ -19,7 +19,7 @@ Object CRC_32, CRC_32ID, Primer
   VirtualMethod   Reset
 
   DefineVariable  dValue,   DWORD,    -1                ;Initial Value
-  DefineVariable  Table,    DWORD,    256 dup (0)       ;CRC lookup table
+  DefineVariable  Table,    DWORD,    256 dup(0)        ;CRC lookup table
 ObjectEnd
 
 POLYNOMIAL_ANSI     equ   0EDB88320h                    ;ANSI X3.66

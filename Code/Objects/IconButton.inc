@@ -121,13 +121,13 @@ MethodEnd
 ; Return:     eax = Zero.
 
 Method IconButton.OnDestroy, uses xsi, wParam:WPARAM, lParam:LPARAM
-    SetObject xsi
-    invoke DeleteObject, $invoke(SelectObject, [xsi].hMemDC, [xsi].hPrevBmp)
-    invoke DeleteDC, [xsi].hMemDC
-    .if [xsi].hIcon != 0
-      invoke DestroyIcon, [xsi].hIcon
-    .endif
-    xor eax, eax
+  SetObject xsi
+  invoke DeleteObject, $invoke(SelectObject, [xsi].hMemDC, [xsi].hPrevBmp)
+  invoke DeleteDC, [xsi].hMemDC
+  .if [xsi].hIcon != 0
+    invoke DestroyIcon, [xsi].hIcon
+  .endif
+  xor eax, eax
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -158,20 +158,20 @@ Method IconButton.OnPaint, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
     .ifBitSet ebx, BS_FLAT
       invoke GetWindowLongPtr, [xsi].hWnd, GWL_EXSTYLE
       .ifBitSet eax, IBS_EX_HOOVER
-        .ifBitSet [xsi].dState, mask BS_Hovered
+        .ifBitSet [xsi].dFlags, BTF_HOVERED
           invoke DrawEdge, [xsi].hMemDC, addr Rct, BDR_RAISEDINNER, BF_RECT
-        .elseIfBitSet [xsi].dState, mask BS_Pressed
+        .elseIfBitSet [xsi].dFlags, BTF_PRESSED
           invoke DrawEdge, [xsi].hMemDC, addr Rct, BDR_SUNKENOUTER, BF_RECT
         .endif
       .else
-        .ifBitSet [xsi].dState, mask BS_Pressed
+        .ifBitSet [xsi].dFlags, BTF_PRESSED
           invoke DrawEdge, [xsi].hMemDC, addr Rct, BDR_SUNKENOUTER, BF_RECT
         .else
           invoke DrawEdge, [xsi].hMemDC, addr Rct, BDR_RAISEDINNER, BF_RECT
         .endif
       .endif
     .else
-      .ifBitSet [xsi].dState, mask BS_Pressed
+      .ifBitSet [xsi].dFlags, BTF_PRESSED
         invoke DrawFrameControl, [xsi].hMemDC, addr Rct, DFC_BUTTON, \
                                                          DFCS_BUTTONPUSH or DFCS_PUSHED
       .else
@@ -191,9 +191,9 @@ Method IconButton.OnPaint, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
       mov dState, PBS_NORMAL
     .endif
 
-    .ifBitSet [xsi].dState, mask BS_Hovered
+    .ifBitSet [xsi].dFlags, BTF_HOVERED
       mov dState, PBS_HOT
-    .elseIfBitSet [xsi].dState, mask BS_Pressed
+    .elseIfBitSet [xsi].dFlags, BTF_PRESSED
       mov dState, PBS_PRESSED
     .endif
 
@@ -205,7 +205,7 @@ Method IconButton.OnPaint, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   mov edx, [xsi].IconRect.bottom
   sub edx, 16
   shr edx, 1
-  .ifBitSet [xsi].dState, mask BS_Pressed
+  .ifBitSet [xsi].dFlags, BTF_PRESSED
     inc edx
   .endif
   invoke DrawIconEx, [xsi].hMemDC, edx, edx, [xsi].hIcon, 16, 16, 0, 0, DI_NORMAL
@@ -213,11 +213,11 @@ Method IconButton.OnPaint, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   mov xax, [xsi].pTextBuffer
   .if (xax != NULL) && (BYTE ptr [xax] != 0)
     mov dPrevBackMode, $32($invoke(SetBkMode, [xsi].hMemDC, TRANSPARENT))
-    .ifBitClr [xsi].dState, mask BS_Disabled
+    .ifBitClr [xsi].dFlags, BTF_DISABLED
       ;Enabled
       invoke GetSysColor, COLOR_BTNTEXT
       mov dPrevColor, $32($invoke(SetTextColor, [xsi].hMemDC, eax))
-      .ifBitSet [xsi].dState, mask BS_ShowShortCut
+      .ifBitSet [xsi].dFlags, BTF_SHOW_SHORTCUT
         invoke DrawTextEx, [xsi].hMemDC, [xsi].pTextBuffer, -1, \
                            addr [xsi].TextRect, DT_CENTER or DT_VCENTER or DT_SINGLELINE, NULL
       .else
@@ -231,7 +231,7 @@ Method IconButton.OnPaint, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
         invoke DrawTextEx, [xsi].hMemDC, addr cBuffer, -1, \
                            addr [xsi].TextRect, DT_CENTER or DT_VCENTER or DT_SINGLELINE, NULL
       .endif
-      .ifBitSet [xsi].dState, mask BS_Focused
+      .ifBitSet [xsi].dFlags, BTF_FOCUSED
         invoke MemClone, addr Rct, addr [xsi].TextRect, sizeof(RECT)
         invoke DrawTextEx, [xsi].hMemDC, [xsi].pTextBuffer, -1, \
                            addr Rct, DT_CALCRECT or DT_CENTER or DT_VCENTER or DT_SINGLELINE, NULL
@@ -302,7 +302,7 @@ MethodEnd
 ; Note:       Window handle passed in pSelf (hidden parameter).
 
 Method IconButton.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-  ;DbgMessage uMsg,, "IconButton" 
+  ;DbgMessage uMsg,, "IconButton"
   .if uMsg == WM_NCCREATE
     mov xax, lParam
     .if [xax].CREATESTRUCT.lpCreateParams == NULL

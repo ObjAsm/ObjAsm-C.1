@@ -54,11 +54,11 @@ Object RgnButton, RgnButtonID, WinPrimer
   DefineVariable    hRgnEnabled,    HRGN,       0           ;Enabled Button region
   DefineVariable    hRgnHovered,    HRGN,       0           ;Hovered Button region
   DefineVariable    hRgnPressed,    HRGN,       0           ;Pressed Button region
-  DefineVariable    dRgnColor,      DWORD,      0           ;Region delimiter color
-  DefineVariable    dState,         DWORD,      0           ;RegButtonState
+  DefineVariable    RgnColor,       COLORREF,   $RGB(000,000,000) ;Region delimiter color
+  DefineVariable    dFlags,         DWORD,      0           ;RegButtonState
   DefineVariable    pTooltipText,   PSTRING,    NULL        ;-> Tooltip text
   DefineVariable    pButtonText,    PSTRING,    NULL        ;-> Button text
-  DefineVariable    dTextColor,     DWORD,      0           ;Text color
+  DefineVariable    TextColor,      COLORREF,   $RGB(000,000,000) ;Text color
   DefineVariable    hFont,          HFONT,      0           ;Control font handle
   DefineVariable    dFirstDraw,     DWORD,      TRUE        ;Drawing flag
 
@@ -68,18 +68,21 @@ ObjectEnd
 
 if IMPLEMENT
 
-RegButtonState record  RBS_Unused:2 = 0, \
-                       RBS_Resource:1 = FALSE, RBS_ShowShortCut:1 = FALSE, RBS_Disabled:1 = FALSE, \
-                       RBS_Hovered:1 = FALSE, RBS_Focused:1 = FALSE, RBS_Pressed:1 =FALSE
+RBF_SELF_INST       equ   BIT00                         ;Object was instanced by CreateWindowEx
+RBF_SHOW_SHORTCUT   equ   BIT01
+RBF_DISABLED        equ   BIT02
+RBF_HOVERED         equ   BIT03
+RBF_FOCUSED         equ   BIT04
+RBF_PRESSED         equ   BIT05
 
 RGNBTNRESDATA struc
-  dRgnColor       DWORD     ?   ;Color that delimits the button region
+  RgnColor        COLORREF  ?   ;Color that delimits the button region
   dBmpEnabledID   DWORD     ?   ;Button enabled bitmap resource ID
   dBmpHoveredID   DWORD     ?   ;Button hovered bitmap resource ID
   dBmpPressedID   DWORD     ?   ;Button pressed bitmap resource ID
   dBmpDisabledID  DWORD     ?   ;Button disabled bitmap resource ID
   dButtonTextID   DWORD     ?   ;Button string resource ID
-  dTextColor      DWORD     ?   ;Button Text Color
+  TextColor       COLORREF  ?   ;Button Text Color
   dTooltipTextID  DWORD     ?   ;Tooltip string resource ID
 RGNBTNRESDATA ends
 PRGNBTNRESDATA typedef ptr RGNBTNRESDATA
@@ -161,7 +164,7 @@ Method RgnButton.InitRes, uses xsi, hWnd:HWND
 
 ;  DbgText "RgnButton.InitRes"
   SetObject xsi
-  BitSet [xsi].dState, mask RBS_Resource
+  BitSet [xsi].dFlags, RBF_SELF_INST
   ACall xsi.Init, NULL, hWnd
   invoke GetObject, [xsi].hBmpEnabled, sizeof BmpInfo, addr BmpInfo
 
@@ -203,35 +206,35 @@ Method RgnButton.OnCreate, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
     .if xax == NULL
       OCall ErrorReport, NULL, RGB_RES_ERROR
     .else
-      m2m [xsi].dRgnColor, [xbx].RGNBTNRESDATA.dRgnColor, edx
-      m2m [xsi].dTextColor, [xbx].RGNBTNRESDATA.dTextColor, eax
+      m2m [xsi].RgnColor, [xbx].RGNBTNRESDATA.RgnColor, edx
+      m2m [xsi].TextColor, [xbx].RGNBTNRESDATA.TextColor, eax
       mov edx, [xbx].RGNBTNRESDATA.dBmpEnabledID
       mov [xsi].hBmpEnabled, $invoke(LoadBitmap, hInstance, xdx)
       .if xax == NULL
         OCall ErrorReport, NULL, RGB_RES_BMP_ERROR
       .else
-        mov [xsi].hRgnEnabled, $invoke(Bmp2Rgn, xax, [xsi].dRgnColor)
+        mov [xsi].hRgnEnabled, $invoke(Bmp2Rgn, xax, [xsi].RgnColor)
       .endif
       mov edx, [xbx].RGNBTNRESDATA.dBmpHoveredID
       mov [xsi].hBmpHovered, $invoke(LoadBitmap, hInstance, xdx)
       .if xax == NULL
         OCall ErrorReport, NULL, RGB_RES_BMP_ERROR
       .else
-        mov [xsi].hRgnHovered, $invoke(Bmp2Rgn, xax, [xsi].dRgnColor)
+        mov [xsi].hRgnHovered, $invoke(Bmp2Rgn, xax, [xsi].RgnColor)
       .endif
       mov edx, [xbx].RGNBTNRESDATA.dBmpPressedID
       mov [xsi].hBmpPressed, $invoke(LoadBitmap, hInstance, xdx)
       .if xax == NULL
         OCall ErrorReport, NULL, RGB_RES_BMP_ERROR
       .else
-        mov [xsi].hRgnPressed, $invoke(Bmp2Rgn, xax, [xsi].dRgnColor)
+        mov [xsi].hRgnPressed, $invoke(Bmp2Rgn, xax, [xsi].RgnColor)
       .endif
       mov edx, [xbx].RGNBTNRESDATA.dBmpDisabledID
       mov [xsi].hBmpDisabled, $invoke(LoadBitmap, hInstance, xdx)
       .if xax == NULL
         OCall ErrorReport, NULL, RGB_RES_BMP_ERROR
       .else
-        mov [xsi].hRgnDisabled, $invoke(Bmp2Rgn, xax, [xsi].dRgnColor)
+        mov [xsi].hRgnDisabled, $invoke(Bmp2Rgn, xax, [xsi].RgnColor)
       .endif
 
       invoke LoadString, hInstance, [xbx].RGNBTNRESDATA.dButtonTextID, \
@@ -283,11 +286,11 @@ MethodEnd
 
 Method RgnButton.OnEnable, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi, RgnButton
-  BitClr [xsi].dState, (mask RBS_Hovered or mask RBS_Pressed)
+  BitClr [xsi].dFlags, (RBF_HOVERED or RBF_PRESSED)
   .if wParam == FALSE
-    BitSet [xsi].dState, mask RBS_Disabled
+    BitSet [xsi].dFlags, RBF_DISABLED
   .else
-    BitClr [xsi].dState, mask RBS_Disabled
+    BitClr [xsi].dFlags, RBF_DISABLED
   .endif
   invoke RedrawWindow, [xsi].hWnd, NULL, NULL, RDW_UPDATENOW or RDW_INVALIDATE
   xor eax, eax
@@ -331,17 +334,17 @@ MethodEnd
 
 Method RgnButton.OnMouseMove, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi, RgnButton
-  .ifBitClr [xsi].dState, mask RBS_Disabled
+  .ifBitClr [xsi].dFlags, RBF_DISABLED
     PntS2Regs lParam, ebx
     .if $invoke(PtInRegion, [xsi].hRgnEnabled, eax, ebx) != FALSE
-      .ifBitClr [xsi].dState, (mask RBS_Pressed or mask RBS_Hovered)
+      .ifBitClr [xsi].dFlags, (RBF_PRESSED or RBF_HOVERED)
         invoke SetCapture, [xsi].hWnd
-        BitSet [xsi].dState, mask RBS_Hovered
+        BitSet [xsi].dFlags, RBF_HOVERED
         invoke RedrawWindow, [xsi].hWnd, NULL, NULL, RDW_UPDATENOW or RDW_INVALIDATE
       .endif
     .else
-      .ifBitClr [xsi].dState, mask RBS_Pressed
-        BitClr [xsi].dState, mask RBS_Hovered
+      .ifBitClr [xsi].dFlags, RBF_PRESSED
+        BitClr [xsi].dFlags, RBF_HOVERED
         invoke ReleaseCapture
         invoke RedrawWindow, [xsi].hWnd, NULL, NULL, RDW_UPDATENOW or RDW_INVALIDATE
       .endif
@@ -359,9 +362,9 @@ MethodEnd
 
 Method RgnButton.OnLButtonDown, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi, RgnButton
-  .ifBitClr [xsi].dState, mask RBS_Disabled
-    BitSet [xsi].dState, mask RBS_Pressed
-    BitClr [xsi].dState, mask RBS_Hovered
+  .ifBitClr [xsi].dFlags, RBF_DISABLED
+    BitSet [xsi].dFlags, RBF_PRESSED
+    BitClr [xsi].dFlags, RBF_HOVERED
     invoke SetCapture, [xsi].hWnd
     invoke RedrawWindow, [xsi].hWnd, NULL, NULL, RDW_UPDATENOW or RDW_INVALIDATE
   .endif
@@ -377,9 +380,9 @@ MethodEnd
 
 Method RgnButton.OnLButtonUp, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi, RgnButton
-  .ifBitClr [xsi].dState, mask RBS_Disabled
-    .ifBitSet [xsi].dState, mask RBS_Pressed
-      BitClr [xsi].dState, (mask RBS_Pressed or mask RBS_Hovered)
+  .ifBitClr [xsi].dFlags, RBF_DISABLED
+    .ifBitSet [xsi].dFlags, RBF_PRESSED
+      BitClr [xsi].dFlags, (RBF_PRESSED or RBF_HOVERED)
       invoke ReleaseCapture
       PntS2Regs lParam, ebx
       .if $invoke(PtInRegion, [xsi].hRgnPressed, eax, ebx) != FALSE
@@ -405,7 +408,7 @@ MethodEnd
 Method RgnButton.OnNcDestroy, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   invoke SetWindowLongPtr, [xsi].hWnd, GWLP_USERDATA, NULL
-  .ifBitSet [xsi].dState, mask RBS_Resource
+  .ifBitSet [xsi].dFlags, RBF_SELF_INST
     Destroy xsi
   .endif
   xor eax, eax
@@ -443,16 +446,16 @@ Method RgnButton.OnPaint, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   mov hPrvBmp, $invoke(SelectObject, [xsi].hMemDC, xax)
   invoke BitBlt, [xsi].hMemDC, 0, 0, BmpInfo.bmWidth, BmpInfo.bmHeight, hTmpDC, 0, 0, SRCCOPY
 
-  .ifBitSet [xsi].dState, mask RBS_Disabled
+  .ifBitSet [xsi].dFlags, RBF_DISABLED
     mov xbx, [xsi].hBmpDisabled
-  .elseIfBitSet [xsi].dState, mask RBS_Hovered
+  .elseIfBitSet [xsi].dFlags, RBF_HOVERED
     mov xbx, [xsi].hBmpHovered
-  .elseIfBitSet [xsi].dState, mask RBS_Pressed
+  .elseIfBitSet [xsi].dFlags, RBF_PRESSED
     mov xbx, [xsi].hBmpPressed
   .else
     mov xbx, [xsi].hBmpEnabled
   .endif
-  invoke DrawTransparentBitmap, [xsi].hMemDC, xbx, 0, 0, [xsi].dRgnColor
+  invoke DrawTransparentBitmap, [xsi].hMemDC, xbx, 0, 0, [xsi].RgnColor
 
   invoke BitBlt, hDC, 0, 0, BmpInfo.bmWidth, BmpInfo.bmHeight, [xsi].hMemDC, 0, 0, SRCCOPY
 
@@ -461,14 +464,14 @@ Method RgnButton.OnPaint, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   m2z Rct.top
   m2m Rct.bottom, BmpInfo.bmHeight, eax
   sub Rct.bottom, 3
-  .ifBitSet [xsi].dState, mask RBS_Pressed
+  .ifBitSet [xsi].dFlags, RBF_PRESSED
     inc Rct.top
     inc Rct.bottom
     inc Rct.left
     inc Rct.right
   .endif
   mov dPrvBkMode, $32($invoke(SetBkMode, hDC, TRANSPARENT))
-  mov dPrvTextColor, $32($invoke(SetTextColor, hDC, [xsi].dTextColor))
+  mov dPrvTextColor, $32($invoke(SetTextColor, hDC, [xsi].TextColor))
   mov hPrvFont, $invoke(SelectObject, hDC, [xsi].hFont)
   invoke DrawText, hDC, [xsi].pButtonText, -1, addr Rct, \
                    DT_CENTER or DT_VCENTER or DT_SINGLELINE or DT_END_ELLIPSIS

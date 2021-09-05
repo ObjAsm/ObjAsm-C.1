@@ -11,19 +11,30 @@
 BM_GETCOLOR     equ     WM_USER + 100   ;Used to get the color of the ColorButton object
 BM_SETCOLOR     equ     WM_USER + 101   ;Used to set the color of the ColorButton object
 
-ButtonState     record  BS_Unused:2 = 0, \
-                        BS_Resource:1 = FALSE, BS_ShowShortCut:1 = FALSE, BS_Disabled:1 = FALSE, \
-                        BS_Hovered:1 = FALSE, BS_Focused:1 = FALSE, BS_Pressed:1 = FALSE
+;ButtonState     record  BS_Unused:2 = 0, \
+;                        BS_Resource:1 = FALSE, BS_ShowShortCut:1 = FALSE, BS_Disabled:1 = FALSE, \
+;                        BS_Hovered:1 = FALSE, BS_Focused:1 = FALSE, BS_Pressed:1 = FALSE
+BTF_SELF_INST       equ   BIT00                         ;Object was instanced by CreateWindowEx
+BTF_SHOW_SHORTCUT   equ   BIT01
+BTF_DISABLED        equ   BIT02
+BTF_HOVERED         equ   BIT03
+BTF_FOCUSED         equ   BIT04
+BTF_PRESSED         equ   BIT05
 
 DEF_BUTTON struc
-  xCtlID    XWORD     ?   ;Contol ID
-  dStyle    DWORD     ?   ;Style
-  dExStyle  DWORD     ?   ;Extended style
-  pTitle    PSTRING   ?   ;-> Button text
-  sdPosX    SDWORD    ?   ;X position
-  sdPosY    SDWORD    ?   ;Y position
-  dWidth    DWORD     ?   ;Width
-  dHeight   DWORD     ?   ;Height
+  xCtlID        XWORD     ?                             ;Contol ID
+  dStyle        DWORD     ?                             ;Style
+  dExStyle      DWORD     ?                             ;Extended style
+  pTitle        PSTRING   ?                             ;-> Button text
+  union
+    rect        RECT      {}
+    struct
+      sdPosX    SDWORD  ?                               ;X position
+      sdPosY    SDWORD  ?                               ;Y position
+      dWidth    DWORD   ?                               ;Width
+      dHeight   DWORD   ?                               ;Height
+    ends
+  ends
 DEF_BUTTON ends
 PDEF_BUTTON typedef ptr DEF_BUTTON
 
@@ -64,7 +75,7 @@ Object Button, ButtonID, WinPrimer
   DefineVariable    hMemDC,         HDC,        0           ;Memory DC
   DefineVariable    hMemBmp,        HBITMAP,    0           ;Memory DC bitmap
   DefineVariable    hPrevBmp,       HBITMAP,    0           ;Previous hMemDC bitmap
-  DefineVariable    dState,         DWORD,      0           ;ButtonState
+  DefineVariable    dFlags,         DWORD,      0
   DefineVariable    FaceRect,       RECT,       {}          ;Face RECT
   DefineVariable    IconRect,       RECT,       {}          ;Button RECT
   DefineVariable    TextRect,       RECT,       {}          ;Text RECT
@@ -112,7 +123,7 @@ MethodEnd
 
 Method Button.InitRes, uses xsi, hWnd:HWND
   SetObject xsi
-  BitSet [xsi].dState, mask BS_Resource
+  BitSet [xsi].dFlags, BTF_SELF_INST
   invoke GetParent, hWnd
   .if xax != 0
     invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0 ;Get instance POINTER of the parent object
@@ -131,11 +142,11 @@ Method Button.OnEnable, uses xsi, wParam:WPARAM, lParam:LPARAM
   ;DbgText "Button.OnEnable"
   SetObject xsi
   .if wParam == FALSE
-    BitSet [xsi].dState, mask BS_Disabled
+    BitSet [xsi].dFlags, BTF_DISABLED
   .else
-    BitClr [xsi].dState, mask BS_Disabled
+    BitClr [xsi].dFlags, BTF_DISABLED
   .endif
-  BitClr [xsi].dState, (mask BS_Hovered or mask BS_Focused or mask BS_Pressed)
+  BitClr [xsi].dFlags, BTF_HOVERED or BTF_FOCUSED or BTF_PRESSED
   invoke RedrawWindow, [xsi].hWnd, NULL, NULL, RDW_UPDATENOW or RDW_INVALIDATE
   xor eax, eax
 MethodEnd
@@ -222,7 +233,7 @@ MethodEnd
 Method Button.OnKillFocus, uses xsi, wParam:WPARAM, lParam:LPARAM
   ;DbgText "Button.OnKillFocus"
   SetObject xsi
-  BitClr [xsi].dState, (mask BS_Focused or mask BS_Hovered)
+  BitClr [xsi].dFlags, BTF_FOCUSED or BTF_HOVERED
   invoke RedrawWindow, [xsi].hWnd, NULL, NULL, RDW_UPDATENOW or RDW_INVALIDATE
   xor eax, eax
 MethodEnd
@@ -239,12 +250,12 @@ Method Button.OnLButtonDown, uses xsi, wParam:WPARAM, lParam:LPARAM
 
   ;DbgText "Button.OnLButtonDown"
   SetObject xsi
-  .ifBitClr [xsi].dState, mask BS_Disabled
+  .ifBitClr [xsi].dFlags, BTF_DISABLED
     PntS2Pnt Pnt, lParam
     .if $invoke(PtInRect, addr [xsi].FaceRect, Pnt) != FALSE
       invoke SetFocus, [xsi].hWnd
-      BitSet [xsi].dState, (mask BS_Pressed or BS_Focused)
-      BitClr [xsi].dState, mask BS_Hovered
+      BitSet [xsi].dFlags, BTF_PRESSED or BTF_FOCUSED
+      BitClr [xsi].dFlags, BTF_HOVERED
       invoke RedrawWindow, [xsi].hWnd, NULL, NULL, RDW_UPDATENOW or RDW_INVALIDATE
     .endif
   .endif
@@ -263,10 +274,10 @@ Method Button.OnLButtonUp, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
 
   ;DbgText "Button.OnLButtonUp"
   SetObject xsi
-  .ifBitClr [xsi].dState, mask BS_Disabled
+  .ifBitClr [xsi].dFlags, BTF_DISABLED
     invoke ReleaseCapture
-    .ifBitSet [xsi].dState, mask BS_Pressed
-      BitClr [xsi].dState, (mask BS_Pressed or mask BS_Hovered)
+    .ifBitSet [xsi].dFlags, BTF_PRESSED
+      BitClr [xsi].dFlags, BTF_PRESSED or BTF_HOVERED
       PntS2Pnt Pnt, lParam
       .if $invoke(PtInRect, addr [xsi].FaceRect, Pnt) != FALSE
         invoke GetParent, [xsi].hWnd
@@ -292,17 +303,17 @@ Method Button.OnMouseMove, uses xsi, wParam:WPARAM, lParam:LPARAM
 
   ;DbgText "Button.OnMouseMove"
   SetObject xsi
-  .ifBitClr [xsi].dState, mask BS_Disabled
+  .ifBitClr [xsi].dFlags, BTF_DISABLED
     PntS2Pnt Pnt, lParam
     .if $invoke(PtInRect, addr [xsi].FaceRect, Pnt) != FALSE
-      .ifBitClr [xsi].dState, (mask BS_Pressed or mask BS_Hovered)
+      .ifBitClr [xsi].dFlags, BTF_PRESSED or BTF_HOVERED
         invoke SetCapture, [xsi].hWnd
-        BitSet [xsi].dState, mask BS_Hovered
+        BitSet [xsi].dFlags, BTF_HOVERED
         invoke RedrawWindow, [xsi].hWnd, NULL, NULL, RDW_UPDATENOW or RDW_INVALIDATE
       .endif
     .else
-      .ifBitClr [xsi].dState, mask BS_Pressed
-        BitClr [xsi].dState, mask BS_Hovered
+      .ifBitClr [xsi].dFlags, BTF_PRESSED
+        BitClr [xsi].dFlags, BTF_HOVERED
         invoke ReleaseCapture
         invoke RedrawWindow, [xsi].hWnd, NULL, NULL, RDW_UPDATENOW or RDW_INVALIDATE
       .endif
@@ -322,9 +333,9 @@ Method Button.OnUpdateUIState, uses xsi, wParam:WPARAM, lParam:LPARAM
   ;DbgText "Button.OnUpdateUIState"
   SetObject xsi
   .ifBitSet wParam, BIT01
-    BitSet [xsi].dState, mask BS_ShowShortCut
+    BitSet [xsi].dFlags, BTF_SHOW_SHORTCUT
   .else
-    BitClr [xsi].dState, mask BS_ShowShortCut
+    BitClr [xsi].dFlags, BTF_SHOW_SHORTCUT
   .endif
   invoke RedrawWindow, [xsi].hWnd, NULL, NULL, RDW_UPDATENOW or RDW_INVALIDATE
   xor eax, eax
@@ -341,7 +352,7 @@ Method Button.OnNcDestroy, uses xsi, wParam:WPARAM, lParam:LPARAM
   ;DbgText "Button.OnNcDestroy"
   SetObject xsi
   invoke SetWindowLongPtr, [xsi].hWnd, GWLP_USERDATA, NULL
-  .ifBitSet [xsi].dState, mask BS_Resource
+  .ifBitSet [xsi].dFlags, BTF_SELF_INST
     Destroy xsi
   .endif
   xor eax, eax
@@ -389,7 +400,7 @@ MethodEnd
 Method Button.OnSetFocus, uses xsi, wParam:WPARAM, lParam:LPARAM
   ;DbgText "Button.OnSetFocus"
   SetObject xsi
-  BitSet [xsi].dState, mask BS_Focused
+  BitSet [xsi].dFlags, BTF_FOCUSED
   invoke RedrawWindow, [xsi].hWnd, NULL, NULL, RDW_UPDATENOW or RDW_INVALIDATE
   xor eax, eax
 MethodEnd

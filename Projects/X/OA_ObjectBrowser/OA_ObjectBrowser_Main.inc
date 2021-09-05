@@ -61,12 +61,12 @@ Object PropWnd, PropWndID, MdiChildWnd                  ;MDI base child window.
   StaticMethod      InitContainer,      PSTRING
   VirtualAbstract   EmitHtml
   VirtualAbstract   Gather
+  RedefineMethod    OnSize,             WPARAM, LPARAM
 
   VirtualEvent      OnClose,            WM_CLOSE
-  VirtualEvent      OnSize,             WM_SIZE
 
   DefineVariable    pInfo,              PINFORMATION, NULL
-  DefineVariable    pName,              PSTRING,    NULL
+  DefineVariable    pName,              PSTRING,      NULL
 
   DefineVariable    pTextView,          $ObjPtr(TextView), NULL
   DefineVariable    dInitialized,       DWORD,      FALSE

@@ -115,12 +115,12 @@ Method ColorButton.OnLButtonDown, uses xsi, wParam:WPARAM, lParam:LPARAM
   local Pnt:POINT
 
   SetObject xsi
-  .ifBitClr [xsi].dState, mask BS_Disabled
+  .ifBitClr [xsi].dFlags, BTF_DISABLED
     PntS2Pnt Pnt, lParam
-    .if $invoke(PtInRect, addr [xsi].IconRect, Pnt) == TRUE
+    .if $invoke(PtInRect, addr [xsi].IconRect, Pnt) != FALSE
       invoke SetFocus, [xsi].hWnd
-      BitSet [xsi].dState, (mask BS_Pressed or BS_Focused)
-      BitClr [xsi].dState, mask BS_Hovered
+      BitSet [xsi].dFlags, (BTF_PRESSED or BTF_FOCUSED)
+      BitClr [xsi].dFlags, BTF_HOVERED
       invoke RedrawWindow, [xsi].hWnd, NULL, NULL, RDW_UPDATENOW or RDW_INVALIDATE
     .endif
   .endif
@@ -138,12 +138,12 @@ Method ColorButton.OnLButtonUp, uses xsi, wParam:WPARAM, lParam:LPARAM
   local Pnt:POINT, hParent:HWND
 
   SetObject xsi
-  .ifBitClr [xsi].dState, mask BS_Disabled
+  .ifBitClr [xsi].dFlags, BTF_DISABLED
     PntS2Pnt Pnt, lParam
-    .ifBitSet [xsi].dState, mask BS_Pressed
-      BitClr [xsi].dState, (mask BS_Pressed or mask BS_Hovered)
-      .if $invoke(PtInRect, addr [xsi].FaceRect, Pnt) == TRUE
-        .if $invoke(PtInRect, addr [xsi].IconRect, Pnt) == TRUE
+    .ifBitSet [xsi].dFlags, BTF_PRESSED
+      BitClr [xsi].dFlags, (BTF_PRESSED or BTF_HOVERED)
+      .if $invoke(PtInRect, addr [xsi].FaceRect, Pnt) != FALSE
+        .if $invoke(PtInRect, addr [xsi].IconRect, Pnt) != FALSE
           mov hParent, $invoke(GetParent, [xsi].hWnd)
           invoke GetWindowLongPtr, [xsi].hWnd, GWLP_ID
           invoke SendMessage, hParent, WM_COMMAND, eax, [xsi].hWnd
@@ -172,9 +172,9 @@ Method ColorButton.OnPaint, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
   invoke SendMessage, xax, WM_CTLCOLORSTATIC, [xsi].hMemDC, [xsi].hWnd
   invoke FillRect, [xsi].hMemDC, addr [xsi].FaceRect, xax
 
-  .ifBitSet [xsi].dState, mask BS_Hovered
+  .ifBitSet [xsi].dFlags, BTF_HOVERED
     invoke DrawEdge, [xsi].hMemDC, addr [xsi].IconRect, BDR_RAISEDINNER, BF_RECT or BF_MIDDLE
-  .elseIfBitSet [xsi].dState, mask BS_Pressed
+  .elseIfBitSet [xsi].dFlags, BTF_PRESSED
     invoke DrawEdge, [xsi].hMemDC, addr [xsi].IconRect, BDR_SUNKENOUTER, BF_RECT or BF_MIDDLE
   .endif
 
@@ -182,7 +182,7 @@ Method ColorButton.OnPaint, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
   mov edi, [xsi].IconRect.bottom
   sub edi, 16
   shr edi, 1
-  .ifBitSet [xsi].dState, mask BS_Pressed
+  .ifBitSet [xsi].dFlags, BTF_PRESSED
     inc edi
   .endif
   invoke DrawIconEx, [xsi].hMemDC, edi, edi, xax, 16, 16, 0, 0, DI_NORMAL
@@ -195,13 +195,13 @@ Method ColorButton.OnPaint, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
   mov xax, [xsi].pTextBuffer
   .if (xax != NULL) && (BYTE ptr [xax] != 0)
     mov dPrevBackMode, $32($invoke(SetBkMode, [xsi].hMemDC, TRANSPARENT))
-    .ifBitClr [xsi].dState, mask BS_Disabled
+    .ifBitClr [xsi].dFlags, BTF_DISABLED
       ;Enabled
       invoke GetSysColor, COLOR_WINDOWTEXT
       mov dPrevColor, $32($invoke(SetTextColor, [xsi].hMemDC, eax))
       invoke DrawTextEx, [xsi].hMemDC, [xsi].pTextBuffer, -1, \
                          addr [xsi].TextRect, DT_LEFT or DT_VCENTER or DT_SINGLELINE, NULL
-      .ifBitSet [xsi].dState, mask BS_Focused
+      .ifBitSet [xsi].dFlags, BTF_FOCUSED
         invoke MemClone, addr Rct, addr [xsi].TextRect, sizeof(RECT)
         invoke DrawTextEx, [xsi].hMemDC, [xsi].pTextBuffer, -1, \
                addr Rct, DT_CALCRECT or DT_LEFT or DT_VCENTER or DT_SINGLELINE, NULL

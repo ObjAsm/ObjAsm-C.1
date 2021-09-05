@@ -74,6 +74,9 @@ Statusbar
 SimpleImageList
 MaskedImageList
 Ribbon
+ChartSeries
+ChartFlat
+ChartXY
 
 Dialog
 DialogAbout

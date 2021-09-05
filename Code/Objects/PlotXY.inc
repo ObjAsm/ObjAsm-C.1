@@ -1,6 +1,6 @@
 ; ==================================================================================================
 ; Title:      PlotXY.inc
-; Author:     G. Friedrich 
+; Author:     G. Friedrich
 ; Version:    C.1.0
 ; Purpose:    ObjAsm support of PlotXY objects.
 ; Notes:      Version 1.0.0, October 2017
@@ -61,11 +61,11 @@ COLOR_CONFIG ends
 PCOLOR_CONFIG typedef ptr COLOR_CONFIG
 
 PLOTXY_DATA struc
-  pCollDataX    POINTER     NULL                        ;Collection of X-Data
-  pCollDataY    POINTER     NULL                        ;Collection of Y-Data
-  ScaleX        SCALE_DATA  {}                          ;
-  ScaleY        SCALE_DATA  {}                          ;
-  Colors        COLOR_CONFIG {}                          ;
+  pCollDataX    $ObjPtr(Collection)   NULL              ;Collection of X-Data
+  pCollDataY    $ObjPtr(Collection)   NULL              ;Collection of Y-Data
+  ScaleX        SCALE_DATA    {}                        ;
+  ScaleY        SCALE_DATA    {}                        ;
+  Colors        COLOR_CONFIG  {}                        ;
 PLOTXY_DATA ends
 PPLOTXY_DATA typedef ptr PLOTXY_DATA
 
@@ -132,8 +132,8 @@ Object DataBufferXY, DataBufferXYID, Array
   DefineVariable    dLineWidth,         DWORD,      1
   DefineVariable    dDateStamp,         DWORD,      0
   DefineVariable    dTimeStamp,         DWORD,      0
-  DefineVariable    dMaxIndex,          DWORD,      -1              ;biggest data element index
-  DefineVariable    dMinIndex,          DWORD,      -1              ;smallest data element index
+  DefineVariable    dMaxIndex,          DWORD,      -1              ;Biggest data element index
+  DefineVariable    dMinIndex,          DWORD,      -1              ;Smallest data element index
 ObjectEnd
 
 
@@ -651,7 +651,7 @@ MethodEnd
 
 LABEL_INFO struc
   dPosition   DWORD   ?
-  r8Value     REAL8   ?   
+  r8Value     REAL8   ?
 LABEL_INFO ends
 PLABEL_INFO typedef ptr LABEL_INFO
 
@@ -831,7 +831,7 @@ Method PlotXY.Frame, uses xbx xdi xsi, hDC:HDC, bUseColor:BYTE
   mov eax, TextSize.y
   shr eax, 1
   add dTickMjrEnd, eax
-  
+
   .while TRUE
     lea xax, LabelInfo
     .break .if pCurLabelInfo < xax
@@ -851,7 +851,7 @@ Method PlotXY.Frame, uses xbx xdi xsi, hDC:HDC, bUseColor:BYTE
       else
         lea xax, cBuffer
       endif
-      invoke VarBstrFromDate, r8TimeCurrent, 0, LOCALE_NOUSEROVERRIDE, xax 
+      invoke VarBstrFromDate, r8TimeCurrent, 0, LOCALE_NOUSEROVERRIDE, xax
       if TARGET_STR_TYPE eq STR_TYPE_ANSI
         invoke WideCharToMultiByte, CP_ACP, 0, pTimeCurrent, -1, \
                                     addr cBuffer, lengthof cBuffer, NULL, NULL
@@ -1028,7 +1028,7 @@ Method PlotXY.Frame, uses xbx xdi xsi, hDC:HDC, bUseColor:BYTE
   mov eax, TextSize.y
   shr eax, 1
   sub dTickMjrEnd, eax
-  
+
   .while TRUE
     lea xax, LabelInfo
     .break .if pCurLabelInfo < xax
@@ -1072,9 +1072,9 @@ MethodEnd
 ; Return:    Nothing.
 
 Method PlotXY.Init, uses xbx xsi xdi, pOwner:POINTER, hWnd:HWND, pData:PPLOTXY_DATA
-  local LF:LOGFONT, hDC:HDC, dCount:DWORD
+  local LogFnt:LOGFONT, hDC:HDC, dCount:DWORD
   local r4LastMIN:REAL4, r4LastMAX:REAL4
-  local pDataBufferX:POINTER, pDataBufferY:POINTER
+  local pDataBufferX:$ObjPtr(DataBufferXY), pDataBufferY:$ObjPtr(DataBufferXY)
 
   SetObject xsi
   ACall xsi.Init, pOwner, hWnd, offset szPlotXYProp
@@ -1084,41 +1084,46 @@ Method PlotXY.Init, uses xbx xsi xdi, pOwner:POINTER, hWnd:HWND, pData:PPLOTXY_D
   mov xdi, [xsi].PlotXYData.pCollDataX
 
   .ifBitSet [xsi].PlotXYData.ScaleX.bOptions, mask AutoMax or mask AutoMin
-    m2m dCount, [xdi].$Obj(Collection).dCount, ecx
-    xor ebx, ebx
-    .while (ebx < dCount)
-      fld r4LastMAX                             ; st(1)
-      mov pDataBufferX, $OCall(xdi::Collection.ItemAt, ebx)
-      OCall pDataBufferX::DataBufferXY.ItemAt, [xax].$Obj(DataBufferXY).dMaxIndex
-      .if ebx
-        fld REAL4 ptr [xax]                     ; st(0)
-        fcomip st(0), st(1)
-        .if !CARRY?                             ; st(0) > st(1)
-        @@:
-          m2m r4LastMAX, REAL4 ptr [xax], edx
+    mrm dCount, [xdi].$Obj(Collection).dCount, ecx
+    .if ecx != 0
+      xor ebx, ebx
+      .while (ebx < dCount)
+        mov pDataBufferX, $OCall(xdi::Collection.ItemAt, ebx)
+        mov xcx, [xax].$Obj(DataBufferXY).pDims
+        .if DWORD ptr [xcx] != 0
+          fld r4LastMAX                                 ; st(1)
+          OCall pDataBufferX::DataBufferXY.ItemAt, [xax].$Obj(DataBufferXY).dMaxIndex
+          .if ebx != 0
+            fld REAL4 ptr [xax]                         ; st(0)
+            fcomip st(0), st(1)
+            .if !CARRY?                                 ; st(0) > st(1)
+            @@:
+              m2m r4LastMAX, REAL4 ptr [xax], edx
+            .endif
+          .else
+            jmp @B
+          .endif
+          fUnload 1                                     ;Unload FPU stack
+    
+          fld r4LastMIN                                 ; st(1)
+          mov pDataBufferX, $OCall(xdi::Collection.ItemAt, ebx)
+          OCall pDataBufferX::DataBufferXY.ItemAt, [xax].$Obj(DataBufferXY).dMinIndex
+          .if ebx
+            fld REAL4 ptr [xax]                         ; st(0)
+            fcomip st(0), st(1)
+            .if CARRY?                                  ; st(0) < st(1)
+            @@:
+              m2m r4LastMIN, REAL4 ptr [xax], edx
+            .endif
+          .else
+            jmp @B
+          .endif
+          fUnload 1                                     ;Unload FPU stack
         .endif
-      .else
-        jmp @B
-      .endif
-      fUnload 1                                 ;Unload FPU stack
-
-      fld r4LastMIN                             ; st(1)
-      mov pDataBufferX, $OCall(xdi::Collection.ItemAt, ebx)
-      OCall pDataBufferX::DataBufferXY.ItemAt, [xax].$Obj(DataBufferXY).dMinIndex
-      .if ebx
-        fld REAL4 ptr [xax]                     ; st(0)
-        fcomip st(0), st(1)
-        .if CARRY?                              ; st(0) < st(1)
-        @@:
-          m2m r4LastMIN, REAL4 ptr [xax], edx
-        .endif
-      .else
-        jmp @B
-      .endif
-      fUnload 1                                 ;Unload FPU stack
-
-      inc ebx
-    .endw
+  
+        inc ebx
+      .endw
+    .endif
   .endif
 
   lea xbx, [xsi].PlotXYData.ScaleX
@@ -1137,41 +1142,46 @@ Method PlotXY.Init, uses xbx xsi xdi, pOwner:POINTER, hWnd:HWND, pData:PPLOTXY_D
   mov xdi, [xsi].PlotXYData.pCollDataY
 
   .ifBitSet [xsi].PlotXYData.ScaleY.bOptions, mask AutoMax or mask AutoMin
-    m2m dCount, [xdi].$Obj(Collection).dCount, ecx
-    xor ebx, ebx
-    .while (ebx < dCount)
-      fld r4LastMAX
-      mov pDataBufferY, $OCall(xdi::Collection.ItemAt, ebx)
-      OCall pDataBufferY::DataBufferXY.ItemAt, [xax].$Obj(DataBufferXY).dMaxIndex
-      .if ebx
-        fld REAL4 ptr [xax]                     ; st(0)
-        fcomip st(0), st(1)
-        .if !CARRY?                             ; st(0) > st(1)
-        @@:
-          m2m r4LastMAX, REAL4 ptr [xax], edx
+    mrm dCount, [xdi].$Obj(Collection).dCount, ecx
+    .if ecx != 0
+      xor ebx, ebx
+      .while (ebx < dCount)
+        mov pDataBufferY, $OCall(xdi::Collection.ItemAt, ebx)
+        mov xcx, [xax].$Obj(DataBufferXY).pDims
+        .if DWORD ptr [xcx] != 0
+          OCall pDataBufferY::DataBufferXY.ItemAt, [xax].$Obj(DataBufferXY).dMaxIndex
+          fld r4LastMAX
+          .if ebx != 0
+            fld REAL4 ptr [xax]                         ; st(0)
+            fcomip st(0), st(1)
+            .if !CARRY?                                 ; st(0) > st(1)
+            @@:
+              m2m r4LastMAX, REAL4 ptr [xax], edx
+            .endif
+          .else
+            jmp @B
+          .endif
+          fUnload 1                                     ;Unload FPU stack
+    
+          fld r4LastMIN
+          mov pDataBufferY, $OCall(xdi::Collection.ItemAt, ebx)
+          OCall pDataBufferY::DataBufferXY.ItemAt, [xax].$Obj(DataBufferXY).dMinIndex
+          .if ebx
+            fld REAL4 ptr [xax]                         ; st(0)
+            fcomip st(0), st(1)
+            .if CARRY?                                  ; st(0) < st(1)
+            @@:
+              m2m r4LastMIN, REAL4 ptr [xax], edx
+            .endif
+          .else
+            jmp @B
+          .endif
+          fUnload 1                                     ;Unload FPU stack
         .endif
-      .else
-        jmp @B
-      .endif
-      fUnload 1                                 ;Unload FPU stack
-
-      fld r4LastMIN
-      mov pDataBufferY, $OCall(xdi::Collection.ItemAt, ebx)
-      OCall pDataBufferY::DataBufferXY.ItemAt, [xax].$Obj(DataBufferXY).dMinIndex
-      .if ebx
-        fld REAL4 ptr [xax]                     ; st(0)
-        fcomip st(0), st(1)
-        .if CARRY?                              ; st(0) < st(1)
-        @@:
-          m2m r4LastMIN, REAL4 ptr [xax], edx
-        .endif
-      .else
-        jmp @B
-      .endif
-      fUnload 1                                 ;Unload FPU stack
-
-      inc ebx
-    .endw
+  
+        inc ebx
+      .endw
+    .endif
   .endif
 
   lea xbx, [xsi].PlotXYData.ScaleY
@@ -1186,27 +1196,27 @@ Method PlotXY.Init, uses xbx xsi xdi, pOwner:POINTER, hWnd:HWND, pData:PPLOTXY_D
   mov [xsi].PlotXYData.ScaleY.pDesc, $invoke(StrNew, [xbx].$Obj(DataBufferXY).pDesc)
   mov [xsi].PlotXYData.ScaleY.pUnit, $invoke(StrNew, [xbx].$Obj(DataBufferXY).pUnit)
 
-  FillString LF.lfFaceName, <Arial>
+  FillString LogFnt.lfFaceName, <Arial>
   mov hDC, $invoke(GetDC, hWnd)
   invoke GetDeviceCaps, hDC, LOGPIXELSY
   invoke MulDiv, 8, eax, -72
-  mov LF.lfHeight, eax
-  m2z LF.lfWidth
-  m2z LF.lfEscapement
-  m2z LF.lfOrientation
-  mov LF.lfWeight, FW_DONTCARE
-  m2z LF.lfItalic
-  m2z LF.lfUnderline
-  m2z LF.lfStrikeOut
-  mov LF.lfCharSet, DEFAULT_CHARSET
-  mov LF.lfOutPrecision, OUT_DEFAULT_PRECIS
-  mov LF.lfClipPrecision, CLIP_DEFAULT_PRECIS
-  mov LF.lfQuality, DEFAULT_QUALITY
-  mov LF.lfPitchAndFamily, DEFAULT_PITCH or FF_DONTCARE
-  mov [xsi].hFontHorz, $invoke(CreateFontIndirect, addr LF)
+  mov LogFnt.lfHeight, eax
+  m2z LogFnt.lfWidth
+  m2z LogFnt.lfEscapement
+  m2z LogFnt.lfOrientation
+  mov LogFnt.lfWeight, FW_DONTCARE
+  m2z LogFnt.lfItalic
+  m2z LogFnt.lfUnderline
+  m2z LogFnt.lfStrikeOut
+  mov LogFnt.lfCharSet, DEFAULT_CHARSET
+  mov LogFnt.lfOutPrecision, OUT_DEFAULT_PRECIS
+  mov LogFnt.lfClipPrecision, CLIP_DEFAULT_PRECIS
+  mov LogFnt.lfQuality, DEFAULT_QUALITY
+  mov LogFnt.lfPitchAndFamily, DEFAULT_PITCH or FF_DONTCARE
+  mov [xsi].hFontHorz, $invoke(CreateFontIndirect, addr LogFnt)
 
-  mov LF.lfEscapement, 900
-  mov [xsi].hFontVert, $invoke(CreateFontIndirect, addr LF)
+  mov LogFnt.lfEscapement, 900
+  mov [xsi].hFontVert, $invoke(CreateFontIndirect, addr LogFnt)
   invoke ReleaseDC, hWnd, hDC
 MethodEnd
 
@@ -1420,7 +1430,7 @@ Method PlotXY.Plot, uses xbx xdi xsi, hDC:HDC, bUseColor:BYTE
   local hRgn:HRGN, hPrevRgn:HRGN;, hPrevPen:HPEN
   local pPoints:POINTER, pCurPoint:POINTER, dCount:DWORD, dCountX:DWORD, dPointCount:DWORD
   local dFirstX:DWORD, dLastX:DWORD
-  local pDataBufferX:POINTER, pDataBufferY:POINTER
+  local pDataBufferX:$ObjPtr(DataBufferXY), pDataBufferY:$ObjPtr(DataBufferXY)
   local hPrvPen:HPEN
 
   SetObject xsi
@@ -1493,7 +1503,7 @@ Method PlotXY.Plot, uses xbx xdi xsi, hDC:HDC, bUseColor:BYTE
     .if xax != NULL
       mov pPoints, xax
       mov pCurPoint, xax
-  
+
       fld [xsi].PlotXYData.ScaleX.r4ScaleFactor
       fld [xsi].PlotXYData.ScaleY.r4ScaleFactor
       fld [xsi].PlotXYData.ScaleX.r4ScaleMin
@@ -1504,13 +1514,13 @@ Method PlotXY.Plot, uses xbx xdi xsi, hDC:HDC, bUseColor:BYTE
         ;st(0)=y, st(1)=YScaleMin, st(2)=XScaleMin, st(3)=YScaleFactor, st(4)=XScaleFactor
         fsub st(0), st(1)
         fmul st(0), st(3)
-        
+
         mov xcx, pCurPoint
         fistp SDWORD ptr [xcx].POINT.y
         neg SDWORD ptr [xcx].POINT.y
         mov eax, [xsi].PlotRect.bottom
         add [xcx].POINT.y, eax
-  
+
         OCall pDataBufferX::DataBufferXY.ItemAt, edi
         fld REAL4 ptr [xax]
         ;st(0)=x, st(1)=YScaleMin, st(2)=XScaleMin, st(3)=YScaleFactor, st(4)=XScaleFactor
@@ -1521,13 +1531,13 @@ Method PlotXY.Plot, uses xbx xdi xsi, hDC:HDC, bUseColor:BYTE
         mov eax, [xsi].PlotRect.left
         add SDWORD ptr [xcx].POINT.x, eax
         add pCurPoint, sizeof POINT
-  
+
         dec edi
       .endw
       fUnload 4                                         ;Unload FPU stack
-  
+
       invoke Polyline, hDC, pPoints, dPointCount
-      
+
       MemFree pPoints
     .endif
 
@@ -1631,7 +1641,7 @@ MethodEnd
 
 Method DataBufferXY.Init, uses xsi, pOwner:POINTER, dCapacity:DWORD, dDataSize:DWORD
   SetObject xsi
-  ACall xsi.Init, xsi, dDataSize
+  ACall xsi.Init, pOwner, dDataSize
   OCall xsi.DimAppend, dCapacity, ARR_MEM_ZERO
 MethodEnd
 
@@ -1877,7 +1887,7 @@ Method DialogSetupScale.CtlsSet, uses xbx xdi xsi
     else
       lea xax, cBuffer
     endif
-    invoke VarBstrFromDate, r8TimeCurrent, 0, LOCALE_NOUSEROVERRIDE, xax 
+    invoke VarBstrFromDate, r8TimeCurrent, 0, LOCALE_NOUSEROVERRIDE, xax
     if TARGET_STR_TYPE eq STR_TYPE_ANSI
       invoke WideCharToMultiByte, CP_ACP, 0, pTimeCurrent, -1, xbx, lengthof cBuffer, NULL, NULL
       invoke SysFreeString, pTimeCurrent
@@ -1911,7 +1921,7 @@ Method DialogSetupScale.CtlsSet, uses xbx xdi xsi
     else
       lea xax, cBuffer
     endif
-    invoke VarBstrFromDate, r8TimeCurrent, 0, LOCALE_NOUSEROVERRIDE, xax 
+    invoke VarBstrFromDate, r8TimeCurrent, 0, LOCALE_NOUSEROVERRIDE, xax
     if TARGET_STR_TYPE eq STR_TYPE_ANSI
       invoke WideCharToMultiByte, CP_ACP, 0, pTimeCurrent, -1, xbx, lengthof cBuffer, NULL, NULL
       invoke SysFreeString, pTimeCurrent

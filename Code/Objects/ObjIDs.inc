@@ -123,10 +123,13 @@ XMdiMenuID                        equ     0000000262
 XMenuSelectDlgID                  equ     0000000263
 
 ;Data buffering objects
-DataBufferXYID                    equ     0000000270
+ChartSeriesID                     equ     0000000270
+DataBufferXYID                    equ     0000000271                  ;deprecated
 
 ;Plot objects
-PlotXYID                          equ     0000000280
+ChartFlatID                       equ     0000000280
+ChartXYID                         equ     0000000281
+PlotXYID                          equ     0000000285                  ;deprecated
 
 ;Buttons objects
 ButtonID                          equ     0000000300

@@ -138,8 +138,9 @@ Object OAT_Child, OAT_CHILD_ID, MdiChildWnd             ;MDI child window.
   VirtualMethod     ClpBrdSetBtns
   RedefineMethod    Done
   RedefineMethod    Init,               POINTER, PSTRING, DWORD    ;-> Owner, -> FileName, Flags
-  VirtualMethod     SelectAll
+  RedefineMethod    OnSize,             WPARAM, LPARAM
   VirtualMethod     Run
+  VirtualMethod     SelectAll
   StaticMethod      Startup
   VirtualMethod     WriteA,             PSTRINGA, COLORREF, DWORD  ;-> ANSI string, Color, Effects
   VirtualMethod     WriteW,             PSTRINGW, COLORREF, DWORD  ;-> WIDE string, Color, Effects
@@ -151,7 +152,7 @@ Object OAT_Child, OAT_CHILD_ID, MdiChildWnd             ;MDI child window.
   VirtualEvent      OnCreate,           WM_CREATE
   VirtualEvent      OnEraseBkgnd,       WM_ERASEBKGND
   VirtualEvent      OnNotify,           WM_NOTIFY
-  VirtualEvent      OnSize,             WM_SIZE
+
 
   DefineVariable    pFileName,          PSTRING
   DefineVariable    dFlags,             DWORD,      0

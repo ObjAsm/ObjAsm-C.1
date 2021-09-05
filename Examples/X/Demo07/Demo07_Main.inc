@@ -48,10 +48,10 @@ CStr szDemoChild07, "DemoChild07"                       ;Used by Startup and Shu
 Object DemoChild07, , MdiChildWnd                       ;MDI child window.
   RedefineMethod    Done
   RedefineMethod    Init,               POINTER, PSTRING  ;-> Owner, -> Title
+  RedefineMethod    OnGetMinMaxInfo,    WPARAM, LPARAM
   StaticMethod      Startup
 
   VirtualEvent      OnCreate,           WM_CREATE
-  VirtualEvent      OnGetMinMaxInfo,    WM_GETMINMAXINFO
   VirtualEvent      OnPaint,            WM_PAINT
 
   DefineVariable    pPlotXY,            $ObjPtr(PlotXY),    NULL

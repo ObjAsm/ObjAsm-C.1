@@ -76,10 +76,7 @@ ObjectEnd
 
 if IMPLEMENT
 
-HyperlinkState record  HLS_Unused:1 = 0, \
-                    HLS_Visited:1 = FALSE, HLS_Resource:1 = FALSE, HLS_ShowShortCut:1 = FALSE, \
-                    HLS_Disabled:1 = FALSE, HLS_Hovered:1 = FALSE, \
-                    HLS_Focused:1 = FALSE, HLS_Pressed:1 =FALSE
+HLF_VISITED   equ   BIT06
 
 HYPERLINK_CHAR_LITERAL    equ   "|"    ;Literal marker character.
 HYPERLINK_CHAR_RESOURCE   equ   "¦"    ;Resource redirctor character.
@@ -95,15 +92,15 @@ CStr szHyperlinkClassName, "Hyperlink"
 ; Return:     Nothing.
 
 Method Hyperlink.CreateUFont, uses xsi
-  local LF:LOGFONT
+  local LogFnt:LOGFONT
 
   SetObject xsi
   .if [xsi].hUFont
     invoke DeleteObject, [xsi].hUFont                   ;Delete previous font
   .endif
-  invoke GetObject, [xsi].hFont, sizeof(LF), addr LF    ;Retrieve attributes of normal font
-  mov LF.lfUnderline, TRUE                              ;Set Undeline flag
-  mov [xsi].hUFont, $invoke(CreateFontIndirect, addr LF)  ;Create the undelined font
+  invoke GetObject, [xsi].hFont, sizeof(LogFnt), addr LogFnt  ;Retrieve attributes of normal font
+  mov LogFnt.lfUnderline, TRUE                                ;Set Undeline flag
+  mov [xsi].hUFont, $invoke(CreateFontIndirect, addr LogFnt)  ;Create the undelined font
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -152,7 +149,7 @@ Method Hyperlink.Execute, uses xsi
   SetObject xsi
   ;No parent set to allow mantaining open the browser while closeing the application.
   invoke ShellExecute, 0, $OfsCStr("open"), [xsi].pLinkCommand, NULL, NULL, SW_SHOWDEFAULT
-  BitSet [xsi].dState, mask HLS_Visited
+  BitSet [xsi].dFlags, HLF_VISITED
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -342,12 +339,12 @@ Method Hyperlink.OnLButtonDown, uses xsi, wParam:WPARAM, lParam:LPARAM
   local Pnt:POINT
 
   SetObject xsi
-  .ifBitClr [xsi].dState, mask HLS_Disabled
+  .ifBitClr [xsi].dFlags, BTF_DISABLED
     PntS2Pnt Pnt, lParam
     .if $invoke(PtInRect, addr [xsi].FaceRect, Pnt) != FALSE
       invoke SetFocus, [xsi].hWnd
-      BitSet [xsi].dState, (mask HLS_Pressed or HLS_Focused)
-      BitClr [xsi].dState, mask HLS_Hovered
+      BitSet [xsi].dFlags, (BTF_PRESSED or BTF_FOCUSED)
+      BitClr [xsi].dFlags, BTF_HOVERED
       invoke RedrawWindow, [xsi].hWnd, NULL, NULL, RDW_UPDATENOW or RDW_INVALIDATE
     .endif
   .endif
@@ -365,9 +362,9 @@ Method Hyperlink.OnLButtonUp, uses xsi, wParam:WPARAM, lParam:LPARAM
   local Pnt:POINT
 
   SetObject xsi
-  .ifBitClr [xsi].dState, mask HLS_Disabled
-    .ifBitSet [xsi].dState, mask HLS_Pressed
-      BitClr [xsi].dState, (mask HLS_Pressed or mask HLS_Hovered)
+  .ifBitClr [xsi].dFlags, BTF_DISABLED
+    .ifBitSet [xsi].dFlags, BTF_PRESSED
+      BitClr [xsi].dFlags, (BTF_PRESSED or BTF_HOVERED)
       PntS2Pnt Pnt, lParam
       .if $invoke(PtInRect, addr [xsi].FaceRect, Pnt) != FALSE
         OCall xsi.Execute
@@ -408,8 +405,8 @@ Method Hyperlink.OnPaint, uses xsi, wParam:WPARAM, lParam:LPARAM
   invoke DrawIconEx, [xsi].hMemDC, edx, edx, [xsi].hIcon, 16, 16, 0, 0, DI_NORMAL
   invoke SetBkMode, [xsi].hMemDC, TRANSPARENT
   mov dPrvBackMode, eax
-  .ifBitClr [xsi].dState, mask HLS_Disabled
-    .ifBitClr [xsi].dState, mask HLS_Visited
+  .ifBitClr [xsi].dFlags, BTF_DISABLED
+    .ifBitClr [xsi].dFlags, HLF_VISITED
       mov eax, [xsi].dColor1
     .else
       mov eax, [xsi].dColor2
@@ -417,14 +414,14 @@ Method Hyperlink.OnPaint, uses xsi, wParam:WPARAM, lParam:LPARAM
     invoke SetTextColor, [xsi].hMemDC, eax
     mov dPrvColor, eax
 
-    .ifBitClr [xsi].dState, (mask HLS_Hovered or mask HLS_Pressed or mask HLS_Focused)
+    .ifBitClr [xsi].dFlags, (BTF_HOVERED or BTF_PRESSED or BTF_FOCUSED)
       mov xax, [xsi].hFont
     .else
       mov xax, [xsi].hUFont
     .endif
     mov hPrvFont, $invoke(SelectObject, [xsi].hMemDC, xax)
     invoke DrawTextEx, [xsi].hMemDC, [xsi].pLinkText, -1, addr [xsi].TextRect, HS_STYLE, NULL
-;    .ifBitSet [xsi].dState, mask LS_Focused
+;    .ifBitSet [xsi].dFlags, BTF_FOCUSED
 ;      invoke MemClone, addr [xsi].TextRect, addr [xsi].TextRect, sizeof(RECT)
 ;      invoke DrawTextEx, [xsi].hMemDC, [xsi].pLinkText, -1, addr [xsi].TextRect, \
 ;                         DT_CALCRECT or HS_STYLE, NULL

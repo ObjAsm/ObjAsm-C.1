@@ -219,16 +219,9 @@ if IMPLEMENT
 ExterndefMethod pepe::DisplayInfoColl.DestroyItem
 
 .data
-if TARGET_STR_TYPE eq STR_TYPE_WIDE
-  XPT_LogFontText LOGFONTW <0, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, \
-                           OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, \
-                           DEFAULT_PITCH or FF_DONTCARE, {"A","R","I","A","L",0}>
-else
-  XPT_LogFontText LOGFONTA <0, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, \
-                           OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, \
-                           DEFAULT_PITCH or FF_DONTCARE, {"A","R","I","A","L",0}>
-endif
-
+XPT_LogFontText LOGFONT <0, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, \
+                         OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, \
+                         DEFAULT_PITCH or FF_DONTCARE, {"A","R","I","A","L",0}>
 
 .const
 String cClassNameXPT,     "XPropertyTree"
