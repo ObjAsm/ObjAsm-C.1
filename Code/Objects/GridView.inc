@@ -17,14 +17,19 @@ CStr szGridViewClass, "GridViewClass", "&$ToStr(%TARGET_BITNESS)", "&TARGET_STR_
 GVWF_RESOURCE      equ   BIT00
 
 DEF_GRIDVIEW struc
-  xCtlID            XWORD       ?         ;Contol ID
-  dStyle            DWORD       ?         ;Style
-  dExStyle          DWORD       ?         ;Extended style
-  pTitle            PSTRING     ?         ;-> Window text
-  sdPosX            SDWORD      ?         ;X position
-  sdPosY            SDWORD      ?         ;Y position
-  dWidth            DWORD       ?         ;Width
-  dHeight           DWORD       ?         ;Height
+  xCtlID        XWORD     ?         ;Contol ID
+  dStyle        DWORD     ?         ;Style
+  dExStyle      DWORD     ?         ;Extended style
+  pTitle        PSTRING   ?         ;-> Window text
+  union
+    rect        RECT      {}
+    struct
+      sdPosX    SDWORD    ?         ;X position
+      sdPosY    SDWORD    ?         ;Y position
+      dWidth    DWORD     ?         ;Width
+      dHeight   DWORD     ?         ;Height
+    ends
+  ends
 DEF_GRIDVIEW ends
 PDEF_GRIDVIEW typedef ptr DEF_GRIDVIEW
 

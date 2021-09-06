@@ -13,10 +13,15 @@ DEF_LISTVIEW struc
   dStyle        DWORD     ?   ;Style
   dExStyle      DWORD     ?   ;Extended style
   pTitle        PSTRING   ?   ;-> Window caption
-  sdPosX        SDWORD    ?   ;X position
-  sdPosY        SDWORD    ?   ;Y position
-  dWidth        DWORD     ?   ;Width
-  dHeight       DWORD     ?   ;Height
+  union
+    rect        RECT      {}
+    struct
+      sdPosX    SDWORD    ?   ;X position
+      sdPosY    SDWORD    ?   ;Y position
+      dWidth    DWORD     ?   ;Width
+      dHeight   DWORD     ?   ;Height
+    ends
+  ends
   dColumnCount  DWORD     ?   ;Number of columns in the ListView control
 DEF_LISTVIEW ends
 PDEF_LISTVIEW typedef ptr DEF_LISTVIEW

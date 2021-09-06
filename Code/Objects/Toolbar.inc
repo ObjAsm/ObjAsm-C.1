@@ -9,15 +9,20 @@
 
 
 DEF_TOOLBAR struc
-  xCtlID    XWORD     ?   ;Control ID
-  dStyle    DWORD     ?   ;Style
-  dExStyle  DWORD     ?   ;Extended style
-  pTitle    PSTRING   ?   ;-> Window caption
-  sdPosX    SDWORD    ?   ;X position
-  sdPosY    SDWORD    ?   ;Y position
-  dWidth    DWORD     ?   ;Width
-  dHeight   DWORD     ?   ;Height
-  dCount    DWORD     ?   ;Button count
+  xCtlID        XWORD     ?   ;Control ID
+  dStyle        DWORD     ?   ;Style
+  dExStyle      DWORD     ?   ;Extended style
+  pTitle        PSTRING   ?   ;-> Window caption
+  union
+    rect        RECT      {}
+    struct
+      sdPosX    SDWORD    ?   ;X position
+      sdPosY    SDWORD    ?   ;Y position
+      dWidth    DWORD     ?   ;Width
+      dHeight   DWORD     ?   ;Height
+    ends
+  ends
+  dCount        DWORD     ?   ;Button count
 DEF_TOOLBAR ends
 PDEF_TOOLBAR typedef ptr DEF_TOOLBAR
 

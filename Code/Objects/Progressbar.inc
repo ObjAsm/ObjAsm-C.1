@@ -9,16 +9,21 @@
 
 
 DEF_PROGRESSBAR struc
-  xCtlID      XWORD     ?   ;Control ID
-  sdPosX      SDWORD    ?   ;X position
-  sdPosY      SDWORD    ?   ;Y position
-  dWidth      DWORD     ?   ;Width
-  dHeight     DWORD     ?   ;Height
-  dRangeMin   DWORD     ?   ;Min range.
-  dRangeMax   DWORD     ?   ;Max range.
-  dStepWidth  DWORD     ?   ;Step width.
-  dStyle      DWORD     ?   ;Control style.
-  pTipText    PSTRING   ?   ;-> Tooltip string.
+  xCtlID        XWORD     ?   ;Control ID
+  union
+    rect        RECT      {}
+    struct
+      sdPosX    SDWORD    ?   ;X position
+      sdPosY    SDWORD    ?   ;Y position
+      dWidth    DWORD     ?   ;Width
+      dHeight   DWORD     ?   ;Height
+    ends
+  ends
+  dRangeMin     DWORD     ?   ;Min range.
+  dRangeMax     DWORD     ?   ;Max range.
+  dStepWidth    DWORD     ?   ;Step width.
+  dStyle        DWORD     ?   ;Control style.
+  pTipText      PSTRING   ?   ;-> Tooltip string.
 DEF_PROGRESSBAR ends
 PDEF_PROGRESSBAR typedef ptr DEF_PROGRESSBAR
 

@@ -57,7 +57,7 @@ OFN         OPENFILENAME    {}                          ;OPENFILENAMEW = OPENFIL
 BI_Main     BROWSEINFO      {}                          ;BROWSEINFOW = BROWSEINFOA
 BI_Setting  BROWSEINFO      {}                          ;BROWSEINFOW = BROWSEINFOA
 CC          CHOOSECOLOR     {}                          ;CHOOSECOLORW = CHOOSECOLORA
-ColorRef    DWORD           16 dup (0)
+ColorRef    DWORD           16 dup(0)
 
 
 

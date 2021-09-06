@@ -116,19 +116,24 @@
 ;  - The DRAW command sends a notification to the parent window to perform a drawing operation
 ;    once all other text related drawing tasks are finished. This ensures that the control
 ;    background is completely drawn before the drawing operation is started.
-;  - Fist Indent {FI} and Hanging Indent {HI} control the indentation of the first line and the 
+;  - Fist Indent {FI} and Hanging Indent {HI} control the indentation of the first line and the
 ;    following lines respectively. {B} or {P} initiate a new indentation sequence.
 
 
 DEF_TEXTVIEW struc
-  xCtlID            XWORD       ?         ;Contol ID
-  dStyle            DWORD       ?         ;Style
-  dExStyle          DWORD       ?         ;Extended style
-  pText             PSTRING     ?         ;-> Markup text passed as caption
-  sdPosX            SDWORD      ?         ;X position
-  sdPosY            SDWORD      ?         ;Y position
-  dWidth            DWORD       ?         ;Width
-  dHeight           DWORD       ?         ;Height
+  xCtlID        XWORD       ?             ;Contol ID
+  dStyle        DWORD       ?             ;Style
+  dExStyle      DWORD       ?             ;Extended style
+  pText         PSTRING     ?             ;-> Markup text passed as caption
+  union
+    rect        RECT        {}
+    struct
+      sdPosX    SDWORD      ?             ;X position
+      sdPosY    SDWORD      ?             ;Y position
+      dWidth    DWORD       ?             ;Width
+      dHeight   DWORD       ?             ;Height
+    ends
+  ends
 DEF_TEXTVIEW ends
 PDEF_TEXTVIEW typedef ptr DEF_TEXTVIEW
 
@@ -743,7 +748,7 @@ Method TextView.Calc, uses xbx xdi xsi
     mov xdi, $OCall([xsi].Entries::DataCollection.ItemAt, ebx)
     mov xax, [xdi].TVENTRY.pTag
     mov xcx, TVCTAG_CHAR
-    .if xax == xcx 
+    .if xax == xcx
       mov xax, [xdi].TVENTRY.xValue
       .if eax > 0FFFFh                                  ;Character > BMP
         mov edx, eax
@@ -773,7 +778,7 @@ Method TextView.Calc, uses xbx xdi xsi
       mov [xdi].TVENTRY.dType, TVET_TEXT                ;Mutate from TVET_CMD to TVET_TEXT
       m2z [xdi].TVENTRY.pTag
     .endif
-    
+
     .if [xdi].TVENTRY.pString != NULL
       mov xax, [xdi].TVENTRY.pStyle
       m2m hFont, [xax].TVSTYLE.hFont, edx

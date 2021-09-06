@@ -60,10 +60,15 @@ DEF_XTV struc
   dStyle        DWORD     ?         ;Style
   dExStyle      DWORD     ?         ;Extended style
   pTitle        PSTRING   ?         ;-> Control caption
-  sdPosX        SDWORD    ?         ;X position
-  sdPosY        SDWORD    ?         ;Y position
-  dWidth        DWORD     ?         ;Width
-  dHeight       DWORD     ?         ;Height
+  union
+    rect        RECT      {}
+    struct
+      sdPosX    SDWORD    ?         ;X position
+      sdPosY    SDWORD    ?         ;Y position
+      dWidth    DWORD     ?         ;Width
+      dHeight   DWORD     ?         ;Height
+    ends
+  ends
 DEF_XTV ends
 PDEF_XTV typedef ptr DEF_XTV
 
