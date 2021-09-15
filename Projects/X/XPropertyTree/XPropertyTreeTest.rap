@@ -118,7 +118,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=3
+MilestoneOnDateDate=9
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -153,7 +153,7 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,480,367,763
+2=0,0,480,367,605
 3=0,0,0,0,319
 1=480,488,480,244,1123
 4=0,0,0,0,1893
@@ -247,6 +247,6 @@ AutoLoad=1,2,16,9,8
 3=
 12=
 [PTimer]
-PTimer=1146274591
+PTimer=1146313185
 [GroupExpand]
 GroupExpand=1,1,1,0,0,1,1,0

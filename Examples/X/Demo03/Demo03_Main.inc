@@ -16,7 +16,7 @@ SBSTYLE     equ     WS_CHILD or WS_VISIBLE or SBARS_SIZEGRIP or SBARS_TOOLTIPS
 
 .const
 ToolbarFile DEF_TOOLBAR {IDC_TOOLBARFILE, TBSTYLE, TBSTYLE_EX_MIXEDBUTTONS, \
-                         $OfsTStr("File operations"), 0, 0, 0, 0, 5}
+                         $OfsTStr("File operations"), {<0,0,0,0>}, 5}
   TBBUTTON {IDB_FILE_NEW,    IDM_FILE_NEW,    TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("New")}
   TBBUTTON {0,               -1,              TBSTATE_ENABLED, TBSTYLE_SEP}
   TBBUTTON {IDB_FILE_OPEN,   IDM_FILE_OPEN,   TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("Open")}
@@ -24,7 +24,7 @@ ToolbarFile DEF_TOOLBAR {IDC_TOOLBARFILE, TBSTYLE, TBSTYLE_EX_MIXEDBUTTONS, \
   TBBUTTON {IDB_FILE_SAVEAS, IDM_FILE_SAVEAS, TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("Save as")}
 
 ToolbarEdit DEF_TOOLBAR {IDC_TOOLBAREDIT, TBSTYLE, TBSTYLE_EX_MIXEDBUTTONS, \
-                         $OfsTStr("Edit operations"), 0, 0, 0, 0, 3}
+                         $OfsTStr("Edit operations"), {<0,0,0,0>}, 3}
   TBBUTTON {IDB_EDIT_CUT,    IDM_EDIT_CUT,    TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("Cut")}
   TBBUTTON {IDB_EDIT_COPY,   IDM_EDIT_COPY,   TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("Copy")}
   TBBUTTON {IDB_EDIT_PASTE,  IDM_EDIT_PASTE,  TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("Paste")}

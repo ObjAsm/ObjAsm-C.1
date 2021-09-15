@@ -18,11 +18,11 @@ NODE_WIDTH    equ  146
 
 .const
 ToolbarFile DEF_TOOLBAR {IDC_TOOLBARFILE, TBSTYLE, TBSTYLE_EX_MIXEDBUTTONS, \
-                         $OfsTStr("File commands"), 0, 0, 0, 0, 1}
+                         $OfsTStr("File commands"), {<0,0,0,0>}, 1}
   TBBUTTON {IDB_FILE_SETUP,     IDM_FILE_SETUP,    TBSTATE_ENABLED, TBSTYLE_BUTTON}
 
 ToolbarWindow DEF_TOOLBAR {IDC_TOOLBARWINDOW, TBSTYLE, TBSTYLE_EX_MIXEDBUTTONS, \
-                           $OfsTStr("Window commands"), 0, 0, 0, 0, 9}
+                           $OfsTStr("Window commands"), {<0,0,0,0>}, 9}
   TBBUTTON {IDB_WIND_CASCADE,   IDM_WIND_CASCADE,  TBSTATE_ENABLED, TBSTYLE_BUTTON}
   TBBUTTON {IDB_WIND_TILE_HORZ, IDM_WIND_TILE_HOR, TBSTATE_ENABLED, TBSTYLE_BUTTON}
   TBBUTTON {IDB_WIND_TILE_VERT, IDM_WIND_TILE_VER, TBSTATE_ENABLED, TBSTYLE_BUTTON}

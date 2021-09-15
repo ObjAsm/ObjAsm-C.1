@@ -12,7 +12,7 @@
 STSTYLE   equ   WS_CHILD or WS_VISIBLE or WS_TABSTOP or TCS_TABS or TCS_HOTTRACK; or TCS_FOCUSNEVER;
 
 .const
-SetupTabCtrl DEF_TABCONTROL {100, STSTYLE, WS_EX_CONTROLPARENT, NULL, 4, 3, 268, 176}
+SetupTabCtrl DEF_TABCONTROL {100, STSTYLE, WS_EX_CONTROLPARENT, NULL, {<4,3,268,200>}}
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Object:     Tab1
@@ -285,14 +285,12 @@ MethodEnd
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method OAT_Setup.OnCommand, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
+Method OAT_Setup.OnCommand, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
-  mov xdi, [xsi].pOwner                                 ;xdi -> OAT_App
   LoWord(wParam)
   .if ax == IDOK
     OCall xsi.CtlsGet
-    mov xcx, [xsi].pOwner                               ;xcx -> OAT_App
-    OCall xcx::OAT_App.SetToolMenu
+    OCall [xsi].pOwner::OAT_App.SetToolMenu
   .endif
   OCall xsi.DestroyDialog, wParam
 MethodEnd

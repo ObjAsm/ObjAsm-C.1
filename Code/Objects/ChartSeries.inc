@@ -10,6 +10,12 @@
 CHT_FLOAT   textequ <REAL8>
 PCHT_FLOAT  typedef ptr CHT_FLOAT
 
+CHT_SERIES_SHOW_LINE    equ   BIT00
+CHT_SERIES_SHOW_MARKER  equ   BIT01
+CHT_SERIES_SHOW_TAB     equ   BIT02                     ;Show series tab on the setup dialog 
+
+CHT_SERIES_DEFAULT_FLAGS  equ  CHT_SERIES_SHOW_LINE or CHT_SERIES_SHOW_MARKER or CHT_SERIES_SHOW_TAB
+
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Object:  ChartSeries
 ; Purpose: Implement a data series for plot usage.
@@ -30,23 +36,20 @@ Object ChartSeries, ChartSeriesID, Array
   DefineVariable    dDataMaxYIndex,     DWORD,      -1              ;Biggest data element index
   DefineVariable    dDataMinYIndex,     DWORD,      -1              ;Smallest data element index
 
-  DefineVariable    dFlags,             DWORD,      0
+  DefineVariable    dFlags,             DWORD,      CHT_SERIES_DEFAULT_FLAGS
   DefineVariable    pName,              PSTRING,    NULL            ;-> Series name
-  DefineVariable    pDesc,              PSTRING,    NULL            ;-> Series description
+  DefineVariable    pDescription,       PSTRING,    NULL            ;-> Series description
 
-  DefineVariable    LineColor,          COLORREF,   $RGB(000,000,000)
   DefineVariable    dLineWidth,         DWORD,      1
   DefineVariable    dLineStyle,         DWORD,      PS_SOLID
-  DefineVariable    LineFillColor,      COLORREF,   $RGB(255,255,255)
+  DefineVariable    LineColor,          COLORREF,   $RGB(000,000,000)
+  ;DefineVariable    LineFillColor,      COLORREF,   $RGB(255,255,255)
 
-  DefineVariable    MarkerBorderColor,  COLORREF,   $RGB(000,000,000)
-  DefineVariable    dMarkerBorderWidth, DWORD,      1
-  DefineVariable    MarkerFillColor,    COLORREF,   $RGB(255,255,255)
   DefineVariable    dMarkerSize,        DWORD,      11
   DefineVariable    dMarkerShape,       DWORD,      0
-
-  DefineVariable    dDateStamp,         DWORD,      0
-  DefineVariable    dTimeStamp,         DWORD,      0
+  DefineVariable    MarkerFillColor,    COLORREF,   $RGB(255,255,255)
+  DefineVariable    MarkerBorderColor,  COLORREF,   $RGB(000,000,000)
+  DefineVariable    dMarkerBorderWidth, DWORD,      1
 ObjectEnd
 
 
@@ -68,7 +71,7 @@ if IMPLEMENT
 Method ChartSeries.Done, uses xsi
   SetObject xsi
   invoke StrDispose, [xsi].pName
-  invoke StrDispose, [xsi].pDesc
+  invoke StrDispose, [xsi].pDescription
   ACall xsi.Done
 MethodEnd
 
@@ -96,10 +99,7 @@ Method ChartSeries.Load, uses xsi, pStream:$ObjPtr(Stream)
   SetObject xsi
 
   mov [xsi].pName, $OCall(pStream::Stream.StrRead)
-  mov [xsi].pDesc, $OCall(pStream::Stream.StrRead)
-
-  mov [xsi].dDateStamp, $32($OCall(pStream::Stream.BinRead32))
-  mov [xsi].dTimeStamp, $32($OCall(pStream::Stream.BinRead32))
+  mov [xsi].pDescription, $OCall(pStream::Stream.StrRead)
 
   mov [xsi].dDataMaxXIndex, $32($OCall(pStream::Stream.BinRead32))
   mov [xsi].dDataMinXIndex, $32($OCall(pStream::Stream.BinRead32))
@@ -206,10 +206,7 @@ MethodEnd
 Method ChartSeries.Store, uses xsi, pStream:$ObjPtr(Stream)
   SetObject xsi
   OCall pStream::Stream.%StrWrite, [xsi].pName
-  OCall pStream::Stream.%StrWrite, [xsi].pDesc
-
-  OCall pStream::Stream.BinWrite32, [xsi].dDateStamp
-  OCall pStream::Stream.BinWrite32, [xsi].dTimeStamp
+  OCall pStream::Stream.%StrWrite, [xsi].pDescription
 
   OCall pStream::Stream.BinWrite32, [xsi].dDataMaxXIndex
   OCall pStream::Stream.BinWrite32, [xsi].dDataMinXIndex

@@ -12,6 +12,7 @@ SortedCollection
 SortedDataCollection
 SortedStrCollectionA
 SortedStrCollectionW
+DWCollection
 XWCollection
 DataPool
 IniFile

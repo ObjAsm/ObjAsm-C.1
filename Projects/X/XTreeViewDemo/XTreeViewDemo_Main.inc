@@ -14,7 +14,7 @@ CStr szXTVDemoApp, "XTVDemoApp"
 
 .const
 XTV_Def DEF_XTV {100, WS_CLIPSIBLINGS, WS_EX_ACCEPTFILES or WS_EX_NOPARENTNOTIFY or WS_EX_CONTROLPARENT,
-                 $OfsTStr("Title"), 0, 0, 200, 300}
+                 $OfsTStr("Title"), {<0,0,200,300>}}
 
 
 Object XTVDemoApp, MySdiAppID, SdiApp

@@ -75,6 +75,7 @@ MethodEnd
 Method IconButton.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
   local hDC:HDC, hParent:HWND, pBuffer:POINTER, pPos:POINTER
 
+  ;DbgText "IconButton.OnCreate"
   SetObject xsi
   mov xax, lParam
   mov pBuffer, $invoke(StrNew, [xax].CREATESTRUCT.lpszName)

@@ -12,28 +12,24 @@
 ; ==================================================================================================
 
 
-CHTXY_SERIES_SHOW_LINE    equ   BIT00
-CHTXY_SERIES_SHOW_MARKER  equ   BIT01
-
-CHTXY_MARKER_NONE         equ   0
-CHTXY_MARKER_SQUARE       equ   1
-CHTXY_MARKER_RECT_HOR     equ   2
-CHTXY_MARKER_RECT_VER     equ   3
-CHTXY_MARKER_CIRCLE       equ   4
-CHTXY_MARKER_ELLIPSE_HOR  equ   5
-CHTXY_MARKER_ELLIPSE_VER  equ   6
-CHTXY_MARKER_RHOMBUS      equ   7
-CHTXY_MARKER_RHOMBUS_HOR  equ   8
-CHTXY_MARKER_RHOMBUS_VER  equ   9
-CHTXY_MARKER_CROSS        equ   10
-CHTXY_MARKER_STAR_4       equ   11
-CHTXY_MARKER_STAR_8       equ   12
+CHTXY_MARKER_SQUARE       equ   0
+CHTXY_MARKER_RECT_HOR     equ   1
+CHTXY_MARKER_RECT_VER     equ   2
+CHTXY_MARKER_CIRCLE       equ   3
+CHTXY_MARKER_ELLIPSE_HOR  equ   4
+CHTXY_MARKER_ELLIPSE_VER  equ   5
+CHTXY_MARKER_RHOMBUS      equ   6
+CHTXY_MARKER_RHOMBUS_HOR  equ   7
+CHTXY_MARKER_RHOMBUS_VER  equ   8
+CHTXY_MARKER_CROSS        equ   9
+CHTXY_MARKER_STAR_4       equ   10
+CHTXY_MARKER_STAR_8       equ   11
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Object:  ChartXY
 ; Purpose: This object draws a XY plot on a surface. It works using the ChartSeries object, that
 ;          holds the information for each data line on the plot. 2 specialized dialogs,
-;          DialogSetupChartScale and DialogSetupChartColors are used to customize the drawing.
+;          DialogChartScaleSetup and DialogChartSetup are used to customize the drawing.
 ;          They are called when the user doubleclicks on some plot element.
 ;          Simple drag mouse movements moves the plot area, while pressing the SHIFT key, the plot
 ;          area is resized.
@@ -74,8 +70,7 @@ Method ChartXY.DrawMarkerAt, uses xbx xdi xsi, hDC:HDC, pSeries:$ObjPtr(ChartSer
 
   SetObject xsi
   mov xdi, pSeries
-  .if xdi != NULL && [xdi].$Obj(ChartSeries).dMarkerSize != 0 && \
-                     [xdi].$Obj(ChartSeries).dMarkerShape != CHTXY_MARKER_NONE
+  .if xdi != NULL && [xdi].$Obj(ChartSeries).dMarkerSize != 0
     .if [xdi].$Obj(ChartSeries).dMarkerShape == CHTXY_MARKER_SQUARE
       mov edx, [xdi].$Obj(ChartSeries).dMarkerSize
       mov eax, edx
@@ -437,18 +432,26 @@ Method ChartXY.DrawSeries, uses xbx xdi xsi, hDC:HDC, pSeries:$ObjPtr(ChartSerie
   local hRgn:HRGN, hPrevRgn:HRGN, hPrvPen:HPEN, hPrvBrush:HBRUSH
   local fXdelta:CHT_FLOAT, fYdelta:CHT_FLOAT
   local fX0:CHT_FLOAT, fY0:CHT_FLOAT, fX1:CHT_FLOAT, fY1:CHT_FLOAT
-  local p0:POINT, p1:POINT
-  local MarkerRect:RECT, MarkerIntersection:RECT
+  local Pnt0:POINT, Pnt1:POINT, PrvPnt0:POINT, PrvPnt1:POINT
 
   SetObject xsi
   mov xdi, pSeries
   assume xdi:$ObjPtr(ChartSeries)
+  
+  ;Clip drowing to the plotarea
   invoke GetClipRgn, hDC, hPrevRgn
   mov hRgn, $invoke(CreateRectRgn, [xsi].PlotRect.left,  [xsi].PlotRect.top, \
                                    [xsi].PlotRect.right, [xsi].PlotRect.bottom)
   invoke SelectClipRgn, hDC, hRgn
+
+  ;Reset all PrvPnt
+  xor eax, eax
+  mov PrvPnt0.x, eax
+  mov PrvPnt0.y, eax
+  mov PrvPnt1.x, eax
+  mov PrvPnt1.y, eax
   
-  .ifBitSet [xdi].dFlags, CHTXY_SERIES_SHOW_LINE
+  .ifBitSet [xdi].dFlags, CHT_SERIES_SHOW_LINE
     .ifBitSet [xsi].dFlags, CHT_FLAG_COLOR
       mov eax, [xdi].LineColor
     .else
@@ -473,16 +476,16 @@ Method ChartXY.DrawSeries, uses xbx xdi xsi, hDC:HDC, pSeries:$ObjPtr(ChartSerie
       jae @F
       fcomi st(0), st(3)
       jb @NextLine4                                     ;=> fUnload 4
-  @@:
+    @@:
       fcomip st(0), st(2)                               ;xa, xmax, xmin
       jbe @F
       fcomi st(0), st(1)                                ;xa, xmax, xmin
       ja @NextLine3                                     ;=> fUnload 3
-  @@:
+    @@:
       fUnload 3
 
-      fld [xsi].ScaleY.fScaleMin
-      fld [xsi].ScaleY.fScaleMax
+      fld [xsi].ScaleY1.fScaleMin
+      fld [xsi].ScaleY1.fScaleMax
       fld CHT_FLOAT ptr [xax - 1*sizeof(CHT_FLOAT)]     ;ya, ymax, ymin
       fst fY0
       fcomi st(0), st(2)
@@ -491,12 +494,12 @@ Method ChartXY.DrawSeries, uses xbx xdi xsi, hDC:HDC, pSeries:$ObjPtr(ChartSerie
       jae @F
       fcomi st(0), st(3)
       jb @NextLine4                                     ;=> fUnload 4
-  @@:
+    @@:
       fcomip st(0), st(2)                               ;ya, ymax, ymin
       jbe @F
       fcomi st(0), st(1)                                ;ya, ymax, ymin
       ja @NextLine3                                     ;=> fUnload 3
-  @@:
+    @@:
       fUnload 1                                         ;ymax, ymin
       ;If we are here, we excluded all obvious lines outside the clipping rectangle
 
@@ -520,7 +523,7 @@ Method ChartXY.DrawSeries, uses xbx xdi xsi, hDC:HDC, pSeries:$ObjPtr(ChartSerie
       fstp fX0                                          ;ymin
       fUnload
       jmp @1C
-  @@: 
+    @@: 
       fcomi st(0), st(2)                                ;fY0, ymax, ymin
       jae @1B                                            
       ;Calc intersection on bottom edge
@@ -532,9 +535,9 @@ Method ChartXY.DrawSeries, uses xbx xdi xsi, hDC:HDC, pSeries:$ObjPtr(ChartSerie
       fadd CHT_FLOAT ptr [xax - 0*sizeof(CHT_FLOAT)]    ;(fXdelta/fYdelta)(ymin - fYb) + fXb
       fstp fX0
       jmp @1C
-  @1B:
+    @1B:
       fUnload 3
-  @1C:
+    @1C:
       fld [xsi].ScaleX.fScaleMin
       fld [xsi].ScaleX.fScaleMax
       fld fX0                                           ;fX0, xmax, xmin
@@ -549,7 +552,7 @@ Method ChartXY.DrawSeries, uses xbx xdi xsi, hDC:HDC, pSeries:$ObjPtr(ChartSerie
       fadd CHT_FLOAT ptr [xax + 1*sizeof(CHT_FLOAT)]
       fstp fY0
       jmp @2A                                           ;xmin
-  @@: 
+    @@: 
       fcomi st(0), st(2)                                ;fX0, xmax, xmin
       fUnload 2                                         ;xmin
       jae @2A
@@ -560,11 +563,11 @@ Method ChartXY.DrawSeries, uses xbx xdi xsi, hDC:HDC, pSeries:$ObjPtr(ChartSerie
       fdiv fXdelta
       fadd CHT_FLOAT ptr [xax + 1*sizeof(CHT_FLOAT)]
       fst fY0
-  @2A:
+    @2A:
       fUnload
 
-      fld [xsi].ScaleY.fScaleMin
-      fld [xsi].ScaleY.fScaleMax
+      fld [xsi].ScaleY1.fScaleMin
+      fld [xsi].ScaleY1.fScaleMax
       fld fY1                                           ;fY1, ymax, ymin
       fcomi st(0), st(1)
       jbe @F
@@ -578,7 +581,7 @@ Method ChartXY.DrawSeries, uses xbx xdi xsi, hDC:HDC, pSeries:$ObjPtr(ChartSerie
       fstp fX1                                          ;ymin
       fUnload
       jmp @2C
-  @@: 
+    @@: 
       fcomi st(0), st(2)                                ;fY1, ymax, ymin
       jae @2B                                            
       ;Calc intersection on bottom edge
@@ -590,9 +593,9 @@ Method ChartXY.DrawSeries, uses xbx xdi xsi, hDC:HDC, pSeries:$ObjPtr(ChartSerie
       fadd CHT_FLOAT ptr [xax - 0*sizeof(CHT_FLOAT)]    ;(fXdelta/fYdelta)(ymin - fYb) + fXb
       fstp fX1
       jmp @2C
-  @2B:
+    @2B:
       fUnload 3
-  @2C:
+    @2C:
       fld [xsi].ScaleX.fScaleMin
       fld [xsi].ScaleX.fScaleMax
       fld fX1                                           ;fX1, xmax, xmin
@@ -607,7 +610,7 @@ Method ChartXY.DrawSeries, uses xbx xdi xsi, hDC:HDC, pSeries:$ObjPtr(ChartSerie
       fadd CHT_FLOAT ptr [xax + 1*sizeof(CHT_FLOAT)]
       fstp fY1
       jmp @3                                            ;xmin
-  @@: 
+    @@: 
       fcomi st(0), st(2)
       fUnload 2                                         ;xmin
       jae @3
@@ -618,7 +621,7 @@ Method ChartXY.DrawSeries, uses xbx xdi xsi, hDC:HDC, pSeries:$ObjPtr(ChartSerie
       fdiv fXdelta
       fadd CHT_FLOAT ptr [xax + 1*sizeof(CHT_FLOAT)]
       fst fX1
-  @3:
+    @3:
       fUnload
       ;If we are here, we will check our results
 
@@ -630,58 +633,86 @@ Method ChartXY.DrawSeries, uses xbx xdi xsi, hDC:HDC, pSeries:$ObjPtr(ChartSerie
       jae @F
       fcomi st(0), st(3)
       jb @NextLine4                                     ;=> fUnload 4
-  @@:
+    @@:
       fcomip st(0), st(2)                               ;fX0, xmax, xmin
       jbe @F
       fcomi st(0), st(1)                                ;xa, xmax, xmin
       ja @NextLine3                                     ;=> fUnload 3
-  @@:
+    @@:
       fUnload 3
 
       ;If we are here, we will draw finally our line
       fld fX0
       fsub [xsi].ScaleX.fScaleMin
       fmul [xsi].ScaleX.fScaleFactor
-      fistp p0.x
+      fistp Pnt0.x
       mov edx, [xsi].PlotRect.left
-      add p0.x, edx
+      add Pnt0.x, edx
       fld fY0
-      fsub [xsi].ScaleY.fScaleMin
-      fmul [xsi].ScaleY.fScaleFactor
-      fistp p0.y
-      neg p0.y
+      fsub [xsi].ScaleY1.fScaleMin
+      fmul [xsi].ScaleY1.fScaleFactor
+      fistp Pnt0.y
+      neg Pnt0.y
       mov edx, [xsi].PlotRect.bottom
-      add p0.y, edx
-      invoke MoveToEx, hDC, p0.x, p0.y, NULL
+      add Pnt0.y, edx
       
       fld fX1
       fsub [xsi].ScaleX.fScaleMin
       fmul [xsi].ScaleX.fScaleFactor
-      fistp p1.x
+      fistp Pnt1.x
       mov edx, [xsi].PlotRect.left
-      add p1.x, edx
+      add Pnt1.x, edx
       fld fY1
-      fsub [xsi].ScaleY.fScaleMin
-      fmul [xsi].ScaleY.fScaleFactor
-      fistp p1.y
-      neg p1.y
+      fsub [xsi].ScaleY1.fScaleMin
+      fmul [xsi].ScaleY1.fScaleFactor
+      fistp Pnt1.y
+      neg Pnt1.y
       mov edx, [xsi].PlotRect.bottom
-      add p1.y, edx
-      invoke LineTo, hDC, p1.x, p1.y
+      add Pnt1.y, edx
 
+      ;Avoid drawing the same line again.
+      ;If the previous line has the same endpoints, then skip it
+      mov eax, Pnt1.x
+      mov ecx, Pnt1.y
+      cmp eax, PrvPnt0.x
+      jne @F
+      cmp ecx, PrvPnt0.y
+      lea xdx, PrvPnt1                          ;If we have a match with PrvPnt0 => check only PrvPnt1 
+      je @@CheckNextPnt
+    @@:
+      cmp eax, PrvPnt1.x
+      jne @@DrawLine
+      cmp ecx, PrvPnt1.y
+      jne @@DrawLine
+      lea xdx, PrvPnt0                          ;We have a match with PrvPnt1 => check only PrvPnt0
+      
+    @@CheckNextPnt:
+      mov eax, Pnt0.x
+      mov ecx, Pnt0.y
+      cmp eax, [xdx].POINT.x
+      jne @@DrawLine
+      cmp ecx, [xdx].POINT.y
+      jne @@DrawLine
+      je @F                                     ;Line match found => skip this line
+
+    @@DrawLine:
+      invoke MoveToEx, hDC, Pnt0.x, Pnt0.y, NULL
+      invoke LineTo, hDC, Pnt1.x, Pnt1.y
+      s2s PrvPnt0, Pnt0, xax, xcx, xmm0
+      s2s PrvPnt1, Pnt1, xax, xcx, xmm0
       jmp @F
-@NextLine4:
+    @NextLine4:
       fUnload
-@NextLine3:
+    @NextLine3:
       fUnload 3
-@@:
+    @@:
       dec ebx
     .endw
     invoke DeleteObject, $invoke(SelectObject, hDC, hPrvPen)
   .endif
 
   ;Draw the markers
-  .ifBitSet [xdi].dFlags, CHTXY_SERIES_SHOW_MARKER
+  .ifBitSet [xdi].dFlags, CHT_SERIES_SHOW_MARKER
     .ifBitSet [xsi].dFlags, CHT_FLAG_COLOR
       mov eax, [xdi].MarkerBorderColor
     .else
@@ -706,36 +737,36 @@ Method ChartXY.DrawSeries, uses xbx xdi xsi, hDC:HDC, pSeries:$ObjPtr(ChartSerie
       fld CHT_FLOAT ptr [xax]
       fsub [xsi].ScaleX.fScaleMin
       fmul [xsi].ScaleX.fScaleFactor
-      fistp p0.x
+      fistp Pnt0.x
       mov edx, [xsi].PlotRect.left
-      add p0.x, edx
+      add Pnt0.x, edx
       fld CHT_FLOAT ptr [xax + sizeof(CHT_FLOAT)]
-      fsub [xsi].ScaleY.fScaleMin
-      fmul [xsi].ScaleY.fScaleFactor
-      fistp p0.y
-      neg p0.y
+      fsub [xsi].ScaleY1.fScaleMin
+      fmul [xsi].ScaleY1.fScaleFactor
+      fistp Pnt0.y
+      neg Pnt0.y
       mov edx, [xsi].PlotRect.bottom
-      add p0.y, edx
-      
-      ;Build marker rectangle
-      mov ecx, p0.x
-      mov edx, [xdi].dMarkerSize
-      shr edx, 1
-      lea eax, [ecx + edx]
-      mov MarkerRect.right, eax
-      sub ecx, edx
-      mov MarkerRect.left, ecx
-      mov ecx, p0.y
-      lea eax, [ecx + edx]
-      mov MarkerRect.bottom, eax
-      sub ecx, edx
-      mov MarkerRect.top, ecx
+      add Pnt0.y, edx
       
       ;Check if any part of the marker is visible
-      invoke IntersectRect, addr MarkerIntersection, addr MarkerRect, addr [xsi].PlotRect
-      .if eax
-        OCall xsi.DrawMarkerAt, hDC, xdi, p0.x, p0.y
-      .endif
+      mov ecx, Pnt0.x
+      mov edx, [xdi].dMarkerSize
+      shr edx, 1
+      lea eax, [ecx + edx]                              ;eax = marker right border
+      cmp eax, [xsi].PlotRect.left
+      jl @F
+      sub ecx, edx                                      ;ecx = marker left border
+      cmp ecx, [xsi].PlotRect.right
+      jg @F
+      mov ecx, Pnt0.y
+      lea eax, [ecx + edx]                              ;eax = marker bottom border
+      cmp eax, [xsi].PlotRect.top
+      jl @F
+      sub ecx, edx                                      ;eax = marker top border
+      cmp ecx, [xsi].PlotRect.bottom
+      jg @F
+      OCall xsi.DrawMarkerAt, hDC, xdi, Pnt0.x, Pnt0.y
+    @@:
       dec ebx
     .endw
     invoke DeleteObject, $invoke(SelectObject, hDC, hPrvPen)

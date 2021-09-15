@@ -43,6 +43,7 @@ Object TabCtrl, TabCtrlID, WinControl   ;Class "SysTabControl32"
   RedefineMethod    Done
   RedefineMethod    Init,               POINTER, HWND, $ObjPtr(MaskedImageList), PDEF_TABCONTROL
   VirtualMethod     Insert,             DWORD, HWND, POINTER, DWORD
+  VirtualMethod     SetPadding,         DWORD, DWORD
   RedefineMethod    WndProc,            DWORD, WPARAM, LPARAM
 
   Embed    Iptor,  TabIptor
@@ -122,6 +123,21 @@ Method TabCtrl.Insert,, dIndex:DWORD, hWnd:HWND, pText:POINTER, dImage:DWORD
   m2m TCI.iImage, dImage, edx
   m2m TCI.lParam, hWnd, xax
   invoke SendMessage, [xcx].hWnd, TCM_INSERTITEM, dIndex, addr TCI
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     TabCtrl.SetPadding
+; Purpose:    Set horizontal and vertical padding.
+; Arguments:  Arg1: Horizontal padding in pixel.
+;             Arg2: Vertical padding in pixel.
+; Return:     Nothing.
+
+Method TabCtrl.SetPadding,, dHorzPadding:DWORD, dVertPadding:DWORD
+  SetObject xcx
+  mov eax, dVertPadding
+  shl eax, 16
+  mov ax, WORD ptr dHorzPadding
+  invoke SendMessage, [xcx].hWnd, TCM_SETPADDING , 0, eax
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

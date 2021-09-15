@@ -25,7 +25,7 @@ Object ColorButton, ColorButtonID, Button
   VirtualEvent      OnSetColor,     BM_SETCOLOR
   VirtualEvent      OnGetColor,     BM_GETCOLOR
 
-  DefineVariable    dColor,         DWORD,      $RGB(0,0,255)
+  DefineVariable    Color,          COLORREF,       $RGB(000,000,255)
 ObjectEnd
 
 
@@ -67,6 +67,7 @@ MethodEnd
 Method ColorButton.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
   local hDC:HDC, hParent:HWND
 
+  ;DbgText "ColorButton.OnCreate"
   SetObject xsi
   mov xax, lParam
   mov [xsi].pTextBuffer, $invoke(StrNew, [xax].CREATESTRUCT.lpszName)
@@ -75,7 +76,6 @@ Method ColorButton.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
   invoke MemClone, addr [xsi].TextRect, addr [xsi].FaceRect, sizeof(RECT)
 
   m2m [xsi].IconRect.right, [xsi].IconRect.bottom, xdx
-
   m2m [xsi].TextRect.left, [xsi].IconRect.right, xdx
   GrowRect [xsi].TextRect, -4
 
@@ -186,7 +186,7 @@ Method ColorButton.OnPaint, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
     inc edi
   .endif
   invoke DrawIconEx, [xsi].hMemDC, edi, edi, xax, 16, 16, 0, 0, DI_NORMAL
-  invoke CreateSolidBrush, [xsi].dColor
+  invoke CreateSolidBrush, [xsi].Color
   mov hPrevBrush, $invoke(SelectObject, [xsi].hMemDC, xax)
   add edi, 8                                            ;Move to the center of the 16x16 icon
   invoke FloodFill, [xsi].hMemDC, edi, edi, $RGB(0, 0, 0)
@@ -241,7 +241,7 @@ MethodEnd
 
 Method ColorButton.OnGetColor,, wParam:WPARAM, lParam:LPARAM
   SetObject xcx
-  mov eax, [xcx].dColor
+  mov eax, [xcx].Color
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -253,7 +253,7 @@ MethodEnd
 
 Method ColorButton.OnSetColor,, wParam:WPARAM, lParam:LPARAM
   SetObject xcx
-  m2m [xcx].dColor, DWORD ptr lParam, edx               ;dColor is passed in lParam
+  m2m [xcx].Color, DWORD ptr lParam, edx                ;Color is passed in lParam
   invoke RedrawWindow, [xcx].hWnd, NULL, NULL, RDW_UPDATENOW or RDW_INVALIDATE
   xor eax, eax
 MethodEnd

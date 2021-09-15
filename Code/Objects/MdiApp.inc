@@ -177,8 +177,8 @@ Method MdiApp.Run, uses xbx xdi xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Macro:    	$PreLinesMdiFrameWndProc
-; Purpose:  	Pass an additional pre line to the DispatchEvent macro.
+; Macro:      $PreLinesMdiFrameWndProc
+; Purpose:    Pass an additional pre line to the DispatchEvent macro.
 
 $PreLinesMdiFrameWndProc macro
   mov xax, [xsi].$Obj(MdiApp).pClientWnd                ;;These lines expand before @@DefProc label
