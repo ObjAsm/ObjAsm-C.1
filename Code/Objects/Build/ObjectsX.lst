@@ -12,8 +12,10 @@ SortedCollection
 SortedDataCollection
 SortedStrCollectionA
 SortedStrCollectionW
-DWCollection
 XWCollection
+ByteVector
+WordVector
+DWordVector
 DataPool
 IniFile
 IDL
@@ -33,7 +35,7 @@ SharedMemoryObject
 Splash
 StopWatch
 TickCounter
-WndBackground
+WindowBackground
 
 COM_Primers
 ClassFactory
@@ -75,9 +77,6 @@ Statusbar
 SimpleImageList
 MaskedImageList
 Ribbon
-ChartSeries
-ChartFlat
-ChartXY
 
 Dialog
 DialogAbout
@@ -93,6 +92,10 @@ WinApp
 DlgApp
 MdiApp
 SdiApp
+
+ChartSeries
+ChartFlat
+ChartXY
 
 D3Engine
 

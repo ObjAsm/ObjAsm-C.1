@@ -174,7 +174,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=9
+MilestoneOnDateDate=19
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -209,9 +209,9 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,806,424,2737
+2=0,0,806,424,46361
 3=0,0,2127,589,2778
-1=0,0,694,487,2582
+1=0,0,694,487,1089
 4=0,0,706,573,19658
 1001=0,0,0,0,460
 5=0,0,0,0,18655
@@ -221,8 +221,8 @@ ProductVer4Range=0
 11=0,0,706,600,813
 10=0,0,0,0,10132
 9=0,0,0,0,2776
-12=0,0,848,586,3535
-13=0,0,738,582,1357
+12=0,0,848,586,552
+13=0,0,738,582,59568
 14=
 15=0,0,0,0,8450
 16=0,0,0,0,30
@@ -282,16 +282,16 @@ ProductVer4Range=0
 0=724,30,
 
 [Find]
-1="DECLARE_INTERFACE_IID_"
-2="LF"
-3="WM_MOUSEWHEEL"
-4="ZoomIn"
-5="hCBTProc"
-6="Hook"
-7="OnPaint"
-8="SetBitmap"
-9="WM_COPYDATA"
-10="DEBUG_CENTER_REGKEY"
+1="hDbgDev"
+2="DBG_CMD_CLEAR_ALL"
+3="DbgClearAll"
+4="DECLARE_INTERFACE_IID_"
+5="LF"
+6="WM_MOUSEWHEEL"
+7="ZoomIn"
+8="hCBTProc"
+9="Hook"
+10="OnPaint"
 "
 [Collapse]
 7=,,
@@ -348,9 +348,9 @@ ProductVer4Range=0
 53=
 54=
 [AutoLoad]
-AutoLoad=2,3,13,5,7,18,11
+AutoLoad=1,2,12,13
 [PTimer]
-PTimer=1556011139
+PTimer=1561009357
 [RADebugBP]
 5=
 2=

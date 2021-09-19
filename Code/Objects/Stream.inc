@@ -527,7 +527,7 @@ Method Streamable.Load, uses xbx xdi xsi, pStream:$ObjPtr(Stream), pDeserInfo:PD
     OCall xdi::Stream.BinRead32
     mov [xsi].dErrorCode, eax
 
-    ;This POINTER must be deserialized, since the information may not present at this moment
+    ;This POINTER must be deserialized, since the information may not be present at this moment
     mov [xsi].pErrorCaller, $OCall(xdi::Stream.%BinReadX)
     xor eax, eax
   .endif

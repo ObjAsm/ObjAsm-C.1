@@ -10,20 +10,21 @@
 
 COL_MAX_CAPACITY  equ 0FFFFFFFFh/sizeof(POINTER)
 
-PColProc  typedef proto :POINTER, :XWORD, :XWORD
+PColProc  typedef proto :POINTER, :XWORD, :XWORD        ;If required, return value stored in eax
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Object:     Collection
-; Purpose:    Implement a collection of items, including other objects.
+; Purpose:    Implement a collection of objects called items.
 ;             The concept of a Collection is more general than the traditional array or list. A
-;             Collection object can size itself dynamically at run time and is a parent for many
-;             other specialized objects, such as SortedCollections, StrCollections,
+;             Collection object can size itself dynamically at run time and is the base object for
+;             many other specialized objects, such as SortedCollections, StrCollections,
 ;             DataCollections, etc. In addition to methods for adding and deleting items, the
-;             Collection object offers several iteration routines that call a procedure for each
+;             Collection object offers several iteration methods that call a procedure for each
 ;             item in the collection.
-; Notes:      - Since this object inherits from Streamable, it is able to store and recall its data
-;               members to any type of Stream descendant object.
+; Notes:      - Since this object inherits from Streamable, it is able to store and recall its items
+;               to any type of Stream descendant object.
 ;             - This object and all descendants are thread safe using the OA multithreading support.
+;             - NULL items are not supported.
 
 Object Collection, CollectionID, Streamable
   VirtualMethod     Delete,         POINTER             ;-> Item
@@ -42,7 +43,7 @@ Object Collection, CollectionID, Streamable
   VirtualMethod     ForEachRev,     POINTER, XWORD, XWORD ;-> Proc, 2 x Parameter, reverse order
   DynamicMethod     GetItem,        $ObjPtr(Stream), PDESER_INFO
   VirtualMethod     IndexOf,        POINTER             ;-> Item
-  RedefineMethod    Init,           POINTER, DWORD, DWORD, DWORD ;-> Owner, Count, Increment, Limit
+  RedefineMethod    Init,           POINTER, DWORD, DWORD, DWORD ;-> Owner, Count, Incr., Max Capa.
   VirtualMethod     Insert,         POINTER             ;-> Item
   VirtualMethod     InsertAt,       DWORD, POINTER      ;Index, -> Item
   VirtualMethod     ItemAt,         DWORD               ;Index in range [0..Count-1]
@@ -53,7 +54,7 @@ Object Collection, CollectionID, Streamable
   DynamicMethod     PutItem,        $ObjPtr(Stream), POINTER ;-> Stream, -> Item
   RedefineMethod    Serialize
   DynamicMethod     SerializeItem,  POINTER
-  RedefineMethod    Store,          $ObjPtr(Stream) ;-> Stream
+  RedefineMethod    Store,          $ObjPtr(Stream)     ;-> Stream
   Private
   VirtualMethod     SetLimit,       DWORD               ;Set new limit (private method)
 
@@ -73,7 +74,7 @@ if IMPLEMENT
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Collection.Delete
 ; Purpose:    Delete an item POINTER from the collection.
-; Arguments:  Arg1: -> Item.
+; Arguments:  Arg1: -> Item. This argument should never be NULL.
 ; Return:     xax -> Item or NULL if the item is not in the collection.
 
 Method Collection.Delete, uses xsi, pItem:POINTER
@@ -101,8 +102,8 @@ Method Collection.DeleteAt, uses xdi xsi, dIndex:DWORD
     mov xdi, [xdi].pItems
     mov eax, $ArgReg(dIndex)
     lea xdi, [xdi + sizeof(POINTER)*xax]
+    sub ecx, eax
     mov xax, POINTER ptr [xdi]                          ;xax -> Deleted item (return value)
-    sub ecx, dIndex
     jz @@EOM
     lea xsi, [xdi + sizeof(POINTER)]
     if TARGET_BITNESS eq 32
@@ -118,7 +119,7 @@ MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Collection.DeleteAll
-; Purpose:    Delete all item POINTERs.
+; Purpose:    Remove all item POINTERs.
 ; Arguments:  None.
 ; Return:     Nothing.
 
@@ -152,7 +153,7 @@ MethodEnd
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Collection.DeserializeItem
 ; Purpose:    Convert a serialized item back.
-; Arguments:  Arg1: -> Item.
+; Arguments:  Arg1: -> Item. This argument should never be NULL.
 ;             Arg2: -> DESER_INFO.
 ; Return:     Nothing.
 
@@ -166,7 +167,7 @@ MethodEnd
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:    Collection.DestroyItem
 ; Purpose:   Auxiliary procedure to dispose a item in the collection. Don't call directly!
-; Arguments: Arg1: -> Item.
+; Arguments: Arg1: -> Item. This argument should never be NULL.
 ; Return:    Nothing.
 
 Method Collection.DestroyItem,, pItem:POINTER
@@ -178,7 +179,7 @@ MethodEnd                                               ; and frees the object
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Collection.Dispose
 ; Purpose:    Dispose an item.
-; Arguments:  Arg1: -> Item.
+; Arguments:  Arg1: -> Item. This argument should never be NULL.
 ; Return:     Nothing.
 
 Method Collection.Dispose, uses xsi, pItem:POINTER
@@ -256,7 +257,7 @@ Method Collection.FirstThat, uses xbx xdi xsi, pTestFunc:POINTER, xArg1:XWORD, x
   test ebx, ebx
   .while !ZERO?
     invoke PColProc ptr xdi, POINTER ptr [xsi], xArg1, xArg2
-    test xax, xax                                       ;Check return value for zero (FALSE)
+    test xax, xax                                       ;Check return value for FALSE
     jnz @F
     add xsi, sizeof(POINTER)                            ;xsi -> Next item in the collection
     dec ebx
@@ -285,7 +286,7 @@ Method Collection.FirstThatNot, uses xbx xdi xsi, pTestFunc:POINTER, xArg1:XWORD
   test ebx, ebx
   .while !ZERO?
     invoke PColProc ptr xdi, POINTER ptr [xsi], xArg1, xArg2
-    test xax, xax                                       ;Check return value for zero (FALSE)
+    test xax, xax                                       ;Check return value for FALSE
     jz @F
     add xsi, sizeof(POINTER)                            ;xsi -> Next item in the collection
     dec ebx
@@ -293,7 +294,7 @@ Method Collection.FirstThatNot, uses xbx xdi xsi, pTestFunc:POINTER, xArg1:XWORD
   xor eax, eax                                          ;In case that dCount = 0
   jmp @@EOM                                             ;Nothing found => return NULL
 @@:
-  mov xax, [xsi]
+  mov xax, [xsi]                                        ;xax -> Item
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -340,7 +341,7 @@ Method Collection.ForEachRev, uses xbx xdi xsi, pActionProc:POINTER, xArg1:XWORD
   test ebx, ebx
   .while !ZERO?
     invoke PColProc ptr xdi, POINTER ptr [xsi], xArg1, xArg2
-    sub xsi, sizeof(POINTER)                            ;xsi -> Next item in the collection
+    sub xsi, sizeof(POINTER)                            ;xsi -> Previous item in the collection
     dec ebx
   .endw
 MethodEnd
@@ -349,6 +350,7 @@ MethodEnd
 ; Method:     Collection.GetItem
 ; Purpose:    Load an item from a stream object.
 ; Arguments:  Arg1: -> Stream object containing an object.
+;             Arg2: -> DESER_INFO.
 ; Return:     xax -> New loaded object.
 
 Method Collection.GetItem,, pStream:$ObjPtr(Stream), pDeserInfo:PDESER_INFO
@@ -360,7 +362,7 @@ MethodEnd
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Collection.IndexOf
 ; Purpose:    Return the index of an item in the collection in the range [0..Count-1].
-; Arguments:  Arg1: -> Item.
+; Arguments:  Arg1: -> Item. This argument should never be NULL.
 ; Return:     eax = Index. If the item wasn't found, the return value is -1!
 
 Method Collection.IndexOf, uses xdi, pItem:POINTER
@@ -425,7 +427,7 @@ MethodEnd
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Collection.Insert
 ; Purpose:    Insert item at the end of the collection.
-; Arguments:  Arg1: -> New item.
+; Arguments:  Arg1: -> New item. This argument should never be NULL.
 ; Return:     xax -> Inserted item or NULL if failed.
 
 Method Collection.Insert, uses xsi, pItem:POINTER
@@ -454,7 +456,7 @@ MethodEnd
 ; Method:     Collection.InsertAt
 ; Purpose:    Insert an item at index position shifting the remaining items.
 ; Arguments:  Arg1: Index value [0..Count].
-;             Arg2: -> New item.
+;             Arg2: -> New item. This argument should never be NULL.
 ; Return:     xax -> Inserted item or NULL if failed.
 
 Method Collection.InsertAt, uses xdi xsi, dIndex:DWORD, pItem:POINTER
@@ -535,9 +537,9 @@ Method Collection.LastThat, uses xbx xdi xsi, pTestFunc:POINTER, xArg1:XWORD, xA
   test ebx, ebx
   .while !ZERO?
     invoke PColProc ptr xdi, POINTER ptr [xsi], xArg1, xArg2
-    test xax, xax                                       ;Check return value for zero (FALSE)
+    test xax, xax                                       ;Check return value for FALSE
     jnz @F
-    sub xsi, sizeof(POINTER)                            ;xsi -> Next item in the collection
+    sub xsi, sizeof(POINTER)                            ;xsi -> Previous item in the collection
     dec ebx
   .endw                                                 ;At the end of the loop, xax = 0
   xor eax, eax                                          ;In case that dCount = 0
@@ -565,9 +567,9 @@ Method Collection.LastThatNot, uses xbx xdi xsi, pTestFunc:POINTER, xArg1:XWORD,
   test ebx, ebx
   .while !ZERO?
     invoke PColProc ptr xdi, POINTER ptr [xsi], xArg1, xArg2
-    test xax, xax                                       ;Check return value for zero (FALSE)
+    test xax, xax                                       ;Check return value for FALSE
     jz @F
-    sub xsi, sizeof(POINTER)                            ;xsi -> Next item in the collection
+    sub xsi, sizeof(POINTER)                            ;xsi -> Previous item in the collection
     dec ebx
   .endw                                                 ;At the end of the loop, xax = 0
   xor eax, eax                                          ;In case that dCount = 0
@@ -626,7 +628,7 @@ MethodEnd
 ; Method:     Collection.PutAt
 ; Purpose:    Overwrite an item POINTER at index position.
 ; Arguments:  Arg1: Index value.
-;             Arg2: -> New item.
+;             Arg2: -> New item. This argument should never be NULL.
 ; Return:     xax -> Replaced item at index position or NULL if failed.
 
 Method Collection.PutAt,, dIndex:DWORD, pItem:POINTER
@@ -649,7 +651,7 @@ MethodEnd
 ; Method:     Collection.PutItem
 ; Purpose:    Store an item of the collection in a stream object.
 ; Arguments:  Arg1: -> Stream.
-;             Arg2: -> Item.
+;             Arg2: -> Item. This argument should never be NULL.
 ; Return:     Nothing.
 
 Method Collection.PutItem,, pStream:$ObjPtr(Stream), pItem:POINTER
@@ -681,7 +683,7 @@ MethodEnd
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Collection.SerializeItem
 ; Purpose:    Serialize an item.
-; Arguments:  Arg1: -> Item.
+; Arguments:  Arg1: -> Item. This argument should never be NULL.
 ; Return:     Nothing.
 
 Method Collection.SerializeItem,, pItem:POINTER

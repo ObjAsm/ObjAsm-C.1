@@ -1496,10 +1496,7 @@ DbgCloseAll macro
   if DEBUGGING
     ifidn DBG_DEVICE, <WND>
       DbgSaveContext
-      invoke IsWindow, hDbgDev                          ;;Is it a valid window handle?
-      .if eax != FALSE
-        invoke DbgOutCmd, DBG_CMD_CLOSE_ALL, NULL
-      .endif
+      invoke DbgOutCmd, DBG_CMD_CLOSE_ALL, NULL
       DbgLoadContext
     endif
   endif
@@ -1515,10 +1512,7 @@ DbgCloseTxt macro Dest
     ifidn DBG_DEVICE, <WND>
       DbgSaveContext
       DbgSetDestWnd Dest
-      invoke IsWindow, hDbgDev                          ;;Is it a valid window handle?
-      .if eax != FALSE
-        invoke DbgOutCmd, DBG_CMD_CLOSE_TXT, ??DbgDstWnd
-      .endif
+      invoke DbgOutCmd, DBG_CMD_CLOSE_TXT, ??DbgDstWnd
       DbgLoadContext
     endif
   endif
@@ -1534,10 +1528,7 @@ DbgCloseBmp macro Dest
     ifidn DBG_DEVICE, <WND>
       DbgSaveContext
       DbgSetDestWnd Dest
-      invoke IsWindow, hDbgDev                          ;;Is it a valid window handle?
-      .if eax != FALSE
-        invoke DbgOutCmd, DBG_CMD_CLOSE_BMP, ??DbgDstWnd
-      .endif
+      invoke DbgOutCmd, DBG_CMD_CLOSE_BMP, ??DbgDstWnd
       DbgLoadContext
     endif
   endif
@@ -1552,10 +1543,7 @@ DbgClearAll macro
   if DEBUGGING
     ifidn DBG_DEVICE, <WND>
       DbgSaveContext
-      invoke IsWindow, hDbgDev                          ;;Is it a valid window handle?
-      .if eax != FALSE
-        invoke DbgOutCmd, DBG_CMD_CLEAR_ALL, NULL
-      .endif
+      invoke DbgOutCmd, DBG_CMD_CLEAR_ALL, NULL
       DbgLoadContext
     endif
   endif
@@ -1571,10 +1559,7 @@ DbgClearTxt macro Dest
     ifidn DBG_DEVICE, <WND>
       DbgSaveContext
       DbgSetDestWnd Dest
-      invoke IsWindow, hDbgDev                          ;;Is it a valid window handle?
-      .if eax != FALSE
-        invoke DbgOutCmd, DBG_CMD_CLEAR_TXT, ??DbgDstWnd
-      .endif
+      invoke DbgOutCmd, DBG_CMD_CLEAR_TXT, ??DbgDstWnd
       DbgLoadContext
     endif
   endif
@@ -1590,10 +1575,7 @@ DbgClearBmp macro Dest
     ifidn DBG_DEVICE, <WND>
       DbgSaveContext
       DbgSetDestWnd Dest
-      invoke IsWindow, hDbgDev                          ;;Is it a valid window handle?
-      .if eax != FALSE
-        invoke DbgOutCmd, DBG_CMD_CLEAR_BMP, ??DbgDstWnd
-      .endif
+      invoke DbgOutCmd, DBG_CMD_CLEAR_BMP, ??DbgDstWnd
       DbgLoadContext
     endif
   endif

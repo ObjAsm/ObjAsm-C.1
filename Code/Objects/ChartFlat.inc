@@ -135,6 +135,7 @@ CHT_ID_SCALEY1    equ     -3
 CHT_ID_SCALEY2    equ     -4
 CHT_ID_PLOT       equ     -5
 
+externdef $ObjTmpl(Application):$Obj(WinApp)
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Object:  ChartFlat
@@ -1947,9 +1948,9 @@ MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-include ChartFlatTabGeneral.inc
-include ChartFlatTabScale.inc
-include ChartFlatTabSeries.inc
-include ChartFlatSetup.inc
+% include &ObjPath&ChartFlatTabGeneral.inc
+% include &ObjPath&ChartFlatTabScale.inc
+% include &ObjPath&ChartFlatTabSeries.inc
+% include &ObjPath&ChartFlatSetup.inc
 
 endif

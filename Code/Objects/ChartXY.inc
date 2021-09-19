@@ -811,7 +811,7 @@ Method ChartXY.Startup
   local WC:WNDCLASSEX
 
   mov WC.cbSize, sizeof WNDCLASSEX
-  mov WC.style, CLSSTYLE
+  mov WC.style, CS_DBLCLKS
   m2m WC.lpfnWndProc, $MethodAddr(ChartXY.WndProc), xdx
   m2z WC.cbClsExtra
   m2z WC.cbWndExtra

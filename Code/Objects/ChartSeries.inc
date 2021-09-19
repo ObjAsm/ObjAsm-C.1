@@ -7,8 +7,7 @@
 ; ==================================================================================================
 
 
-CHT_FLOAT   textequ <REAL8>
-PCHT_FLOAT  typedef ptr CHT_FLOAT
+CHT_FLOAT textequ <REAL4>
 
 CHT_SERIES_SHOW_LINE    equ   BIT00
 CHT_SERIES_SHOW_MARKER  equ   BIT01

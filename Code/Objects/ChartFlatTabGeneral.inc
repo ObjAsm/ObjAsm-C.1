@@ -1,0 +1,229 @@
+; ==================================================================================================
+; Title:      ChartFlatTabGeneral.inc
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Purpose:    ObjAsm support of ChartFlatTabGeneral objects.
+; Notes:      Version C.1.0, August 2021
+;               - First release.
+; ==================================================================================================
+
+
+
+; ==================================================================================================
+;    ChartFlatTabGeneral implementation
+; ==================================================================================================
+
+
+IDD_CHT_GRL_TAB                 equ   5100
+IDC_CHT_GRL_COL_GRP             equ   5110
+IDC_CHT_GRL_COL_MJR_GRID_BTN    equ   5111
+IDC_CHT_GRL_COL_MNR_GRID_BTN    equ   5112
+IDC_CHT_GRL_COL_PLOT_AREA_BTN   equ   5113
+IDC_CHT_GRL_COL_PLOT_BORDER_BTN equ   5114
+IDC_CHT_GRL_COL_SCALES_BTN      equ   5115
+IDC_CHT_GRL_COL_PLOT_BCKGND_BTN equ   5116
+
+IDC_CHT_GRL_HELP_TVC            equ   5120
+
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartFlatTabGeneral.CtlsGet
+; Purpose:    Read the setting of all controls.
+; Arguments:  None.
+; Return:     Nothing.
+
+Method ChartFlatTabGeneral.CtlsGet, uses xdi xsi
+  SetObject xsi
+  mov xcx, [xsi].pChartFlat
+  lea xdi, [xcx].$Obj(ChartFlat).Colors
+  assume xdi:PCHT_COLOR_CONFIG
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_GRL_COL_MJR_GRID_BTN
+  mov [xdi].MjrGrid, $32($invoke(SendMessage, xax, BM_GETCOLOR, 0, 0))
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_GRL_COL_MNR_GRID_BTN
+  mov [xdi].MnrGrid, $32($invoke(SendMessage, xax, BM_GETCOLOR, 0, 0))
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_GRL_COL_PLOT_AREA_BTN
+  mov [xdi].PlotArea, $32($invoke(SendMessage, xax, BM_GETCOLOR, 0, 0))
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_GRL_COL_PLOT_BORDER_BTN
+  mov [xdi].PlotBorder, $32($invoke(SendMessage, xax, BM_GETCOLOR, 0, 0))
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_GRL_COL_SCALES_BTN
+  mov [xdi].Scales, $32($invoke(SendMessage, xax, BM_GETCOLOR, 0, 0))
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_GRL_COL_PLOT_BCKGND_BTN
+  mov [xdi].Background, $32($invoke(SendMessage, xax, BM_GETCOLOR, 0, 0))
+  assume xdi:NOTHING
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartFlatTabGeneral.CtlsSet
+; Purpose:    Set the controls of the setup dialog.
+; Arguments:  None.
+; Return:     eax = this procedure should return TRUE to direct Windows to set the keyboard focus to
+;                   the control specified by hwndFocus. Otherwise, it should return FALSE to prevent
+;                   Windows from setting the default keyboard focus.
+
+Method ChartFlatTabGeneral.CtlsSet, uses xdi xsi
+  SetObject xsi
+  mov xcx, [xsi].pChartFlat
+  lea xdi, [xcx].$Obj(ChartFlat).Colors
+  assume xdi:PCHT_COLOR_CONFIG
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_GRL_COL_MJR_GRID_BTN
+  invoke SendMessage, xax, BM_SETCOLOR, 0, [xdi].MjrGrid
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_GRL_COL_MNR_GRID_BTN
+  invoke SendMessage, xax, BM_SETCOLOR, 0, [xdi].MnrGrid
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_GRL_COL_PLOT_AREA_BTN
+  invoke SendMessage, xax, BM_SETCOLOR, 0, [xdi].PlotArea
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_GRL_COL_PLOT_BORDER_BTN
+  invoke SendMessage, xax, BM_SETCOLOR, 0, [xdi].PlotBorder
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_GRL_COL_SCALES_BTN
+  invoke SendMessage, xax, BM_SETCOLOR, 0, [xdi].Scales
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_GRL_COL_PLOT_BCKGND_BTN
+  invoke SendMessage, xax, BM_SETCOLOR, 0, [xdi].Background
+  assume xdi:NOTHING
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartFlatTabGeneral.Init
+; Purpose:    Initialize the ChartFlatTabGeneral object.
+; Arguments:  Arg1: -> Owner object.
+;             Arg2: -> ChartFlat.
+; Return:     Nothing.
+
+Method ChartFlatTabGeneral.Init, uses xbx xsi, pOwner:POINTER, pChartFlat:$ObjPtr(ChartFlat)
+  SetObject xsi
+  mov xbx, pOwner
+  ACall xsi.Init, xbx, [xbx].$Obj(TabCtrl).hWnd, IDD_CHT_GRL_TAB, \
+                  offset $ObjTmpl(Application).hActiveMlsDlg
+  mrm [xsi].pChartFlat, pChartFlat, xbx
+
+  ;Create local copy
+  s2s [xsi].LocalColors, [xbx].$Obj(ChartFlat).Colors, xax, xcx, xdx, xmm0, xmm1, xmm3
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartFlatTabGeneral.OnCommand
+; Purpose:    Event procedure for WM_COMMAND message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = Zero if handled.
+
+Method ChartFlatTabGeneral.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
+  local ChooseClr:CHOOSECOLOR, ColorRef[16]:DWORD
+
+  SetObject xsi
+  .if (WORD ptr wParam >= IDC_CHT_GRL_COL_MJR_GRID_BTN) && \
+      (WORD ptr wParam <= IDC_CHT_GRL_COL_PLOT_BCKGND_BTN)
+    mov xbx, [xsi].pChartFlat
+
+    ;Launch ChooseColor system dialog
+    mov ChooseClr.lStructSize, sizeof ChooseClr
+    m2m ChooseClr.hwndOwner, [xsi].hWnd, xdx
+    m2m ChooseClr.hInstance, hInstance, xdx
+    mov ChooseClr.Flags, CC_RGBINIT; or CC_FULLOPEN
+    m2z ChooseClr.lCustData
+    m2z ChooseClr.lpfnHook
+    m2z ChooseClr.lpTemplateName
+
+    ;Fill 1st part with the CHT_COLOR_CONFIG colors
+    lea xdi, ColorRef
+    mov ChooseClr.lpCustColors, xdi
+    s2s CHT_COLOR_CONFIG ptr [xdi], [xbx].$Obj(ChartFlat).Colors, xcx, xdx, xmm0, xmm1, xmm3
+
+    ;Fill the 2 remaining colors with pink
+    mov eax, $RGB(255,000,255)
+    mov ColorRef[06*sizeof(COLORREF)], eax
+    mov ColorRef[07*sizeof(COLORREF)], eax
+
+    ;Fill 2nd part with a gray scale
+    mov ColorRef[08*sizeof(COLORREF)], $RGB(000,000,000)
+    mov ColorRef[09*sizeof(COLORREF)], $RGB(036,036,036)
+    mov ColorRef[10*sizeof(COLORREF)], $RGB(073,073,073)
+    mov ColorRef[11*sizeof(COLORREF)], $RGB(109,109,109)
+    mov ColorRef[12*sizeof(COLORREF)], $RGB(146,146,146)
+    mov ColorRef[13*sizeof(COLORREF)], $RGB(182,182,182)
+    mov ColorRef[14*sizeof(COLORREF)], $RGB(219,219,219)
+    mov ColorRef[15*sizeof(COLORREF)], $RGB(255,255,255)
+
+    .if DWORD ptr wParam == IDC_CHT_GRL_COL_MJR_GRID_BTN
+      lea xbx, [xbx].$Obj(ChartFlat).Colors.MjrGrid
+    .elseif DWORD ptr wParam ==  IDC_CHT_GRL_COL_MNR_GRID_BTN
+      lea xbx, [xbx].$Obj(ChartFlat).Colors.MnrGrid
+    .elseif DWORD ptr wParam ==  IDC_CHT_GRL_COL_PLOT_AREA_BTN
+      lea xbx, [xbx].$Obj(ChartFlat).Colors.PlotArea
+    .elseif DWORD ptr wParam == IDC_CHT_GRL_COL_PLOT_BORDER_BTN
+      lea xbx, [xbx].$Obj(ChartFlat).Colors.PlotBorder
+    .elseif DWORD ptr wParam == IDC_CHT_GRL_COL_SCALES_BTN
+      lea xbx, [xbx].$Obj(ChartFlat).Colors.Scales
+    .elseif DWORD ptr wParam == IDC_CHT_GRL_COL_PLOT_BCKGND_BTN
+      lea xbx, [xbx].$Obj(ChartFlat).Colors.Background
+    .endif
+
+    m2m ChooseClr.rgbResult, COLORREF ptr [xbx], edx
+    invoke ChooseColor, addr ChooseClr
+    .if eax != FALSE
+      invoke GetDlgItem, [xsi].hWnd, DWORD ptr wParam
+      mov xcx, xax
+      mrm COLORREF ptr [xbx], ChooseClr.rgbResult, eax
+      invoke SendMessage, xcx, BM_SETCOLOR, 0, eax
+    .endif
+  .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartFlatTabGeneral.OnCtlColorDlg
+; Purpose:    Event procedure for WM_CTLCOLORDLG message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = Brush to paint the background.
+
+Method ChartFlatTabGeneral.OnCtlColorDlg,, wParam:WPARAM, lParam:LPARAM
+  invoke GetStockObject, WHITE_BRUSH
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartFlatTabGeneral.OnInitDialog
+; Purpose:    Event procedure for WM_INITDIALOG message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = FALSE.
+
+.const
+String szHelp,  "[H+2,C#00000,N#FFFFFF]", \
+                  "General Information{P}", \
+                  "[H-2,C#7F7F7F,I]", \
+                  "  This setup dialog allows you to{B}", \
+                  "modify the chart properties.{P}", \
+                  "  Select a tab to get access to{B}", \
+                  "each category.{P}"
+ExtendString      "  On the bottom of this dialog box {B}", \
+                  "you have 3 button. Click the [C#5F5F5F,B]Preview[~]{B}", \
+                  "button to visualize your changes.{B}", \
+                  "They are not persistant until you{B}", \
+                  "hit the [C#5F5F5F,B]OK[~] button.{P}", \
+                  "Pressing the [C#5F5F5F,B]Cancel[~] button{B}", \
+                  "discards all changes and closes this{B}", \
+                  "dialog box.{B}", \
+                  "[~]", \
+                "[~]"
+
+.code
+Method ChartFlatTabGeneral.OnInitDialog, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+  SetObject xsi
+
+  mov xbx, $invoke(GetDlgItem, [xsi].hWnd, IDC_CHT_GRL_HELP_TVC)
+  invoke SendMessage, xbx, WM_SETTEXT, 0, offset szHelp
+
+  ACall xsi.OnInitDialog, wParam, lParam
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartFlatTabGeneral.Restore
+; Purpose:    Restore original values.
+; Arguments:  None.
+; Return:     Nothing.
+
+Method ChartFlatTabGeneral.Restore, uses xsi
+  ;DbgText "ChartFlatTabGeneral.Restore"
+  SetObject xsi
+  ;Restore from local copy
+  mov xax, [xsi].pChartFlat
+  s2s [xax].$Obj(ChartFlat).Colors, [xsi].LocalColors, xcx, xdx, xmm0, xmm1, xmm3
+MethodEnd

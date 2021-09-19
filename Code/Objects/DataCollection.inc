@@ -34,7 +34,7 @@ if IMPLEMENT
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     DataCollection.DeserializeItem
 ; Purpose:    Convert a serialized data item back.
-; Arguments:  Arg1: -> Item.
+; Arguments:  Arg1: -> Item. This argument should never be NULL.
 ;             Arg2: -> DESER_INFO.
 ; Return:     Nothing.
 
@@ -44,12 +44,12 @@ MethodEnd
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     DataCollection.DestroyItem
 ; Purpose:    Auxiliar function to dispose a item from the collection. Don't call directly!
-; Arguments:  -> Item.
+; Arguments:  -> Item. This argument should never be NULL.
 ; Return:     Nothing.
 
 Method DataCollection.DestroyItem,, pItem:POINTER
   .if pItem != NULL
-    MemFree pItem                                       ;Frees data from heap
+    MemFree pItem                                       ;Frees data from process heap
   .endif
 MethodEnd
 
@@ -77,7 +77,7 @@ MethodEnd
 ; Method:     DataCollection.PutItem
 ; Purpose:    Store an item of the collection in a stream object.
 ; Arguments:  Arg1: -> Stream.
-;             Arg2: -> Item.
+;             Arg2: -> Item. This argument should never be NULL.
 ; Return:     Nothing.
 
 Method DataCollection.PutItem,, pStream:$ObjPtr(Stream), pItem:POINTER
@@ -92,7 +92,7 @@ MethodEnd
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     DataCollection.SerializeItem
 ; Purpose:    Serialize a data item.
-; Arguments:  Arg1: -> Item.
+; Arguments:  Arg1: -> Item. This argument should never be NULL.
 ;             Arg2: -> DESER_INFO.
 ; Return:     Nothing.
 

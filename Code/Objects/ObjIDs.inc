@@ -41,8 +41,6 @@ SortedStrCollectionAID            equ     0000000025
 SortedStrCollectionWID            equ     0000000026
 SortedDataCollectionID            equ     0000000027
 XWCollectionID                    equ     0000000028
-DWCollectionID                    equ     0000000029
-QWCollectionID                    equ     0000000030
 
 ;Profiling objects
 TickCounterID                     equ     0000000040
@@ -440,3 +438,10 @@ HttpServerID                      equ     0000012550
 
 ;WindowBackground
 WindowBackgroundID                equ     0000012560
+
+;Vectors
+BitVectorID                       equ     0000012570
+ByteVectorID                      equ     0000012571
+WordVectorID                      equ     0000012572
+DWordVectorID                     equ     0000012573
+QWordVectorID                     equ     0000012574

@@ -11,16 +11,33 @@
 % include Objects.cop
 
 % include &MacPath&fMath.inc
+% include &IncPath&Windows\CommCtrl.inc
 
 ;Add here all files that build the inheritance path and referenced objects
 LoadObjects Primer
 LoadObjects Stream
 LoadObjects WinPrimer
 LoadObjects Window
+LoadObjects WinApp
 LoadObjects Dialog
 LoadObjects DialogModal
+LoadObjects DialogModeless
 LoadObjects Array
 LoadObjects Collection
+LoadObjects SortedCollection
+LoadObjects DataCollection
+LoadObjects SortedDataCollection
+LoadObjects XWCollection
+LoadObjects SimpleImageList
+LoadObjects MaskedImageList
+LoadObjects Button
+LoadObjects IconButton
+LoadObjects ColorButton
+LoadObjects WinControl
+LoadObjects MsgInterceptor
+LoadObjects TabCtrl
+LoadObjects TextView
+LoadObjects ChartSeries
 
 ;Add here the file that defines the object(s) to be included in the library
 MakeObjects ChartFlat
