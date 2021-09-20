@@ -96,12 +96,12 @@ MethodEnd
           test eax, BIT02
           jz @F
           movsd
-        endif    
+        endif
       else
         shr ecx, $Log2(sizeof(DWORD))
         rep movsd
       endif
-  
+
       if type(TVEC_DATA_TYPE) lt type(DWORD)
       @@:
         test eax, BIT01
@@ -365,6 +365,8 @@ MethodEnd
 ; Return:     eax = TRUE if succeeded, otherwise FALSE.
 
 %Method TVectorName.InsertAt, uses xdi xsi, dIndex:DWORD, xItem:TVEC_DATA_TYPE
+  ArgReg xItem:$SubReg(r8, type(TVEC_DATA_TYPE))
+
   SetObject xdi
   mov ecx, [xdi].dCount
   .if ecx == [xdi].dLimit
@@ -380,44 +382,55 @@ MethodEnd
   mov eax, dIndex
   .if eax <= ecx
     inc [xdi].dCount
-    mov xdi, [xdi].pItems
-    lea xdi, [xdi + sizeof(TVEC_DATA_TYPE)*xcx]
-    sub ecx, eax
-    .if !ZERO?                                          ;Make room
-      std                                               ;Decrease xdi & xsi
-      shl ecx, $Log2(sizeof(TVEC_DATA_TYPE))            ;ecx = byte count
-      lea xsi, [xdi - sizeof(TVEC_DATA_TYPE)]
-      mov eax, ecx
+    sub ecx, eax                                        ;ecx = # of xItems to move
+    .if !ZERO?                                          ;Make room for new xItem
+      std
+      mov xsi, [xdi].pItems
+      lea xdx, [xsi + xax*sizeof(TVEC_DATA_TYPE)]
+      if type(TVEC_DATA_TYPE) gt type(BYTE)
+        lea xax, [xcx*sizeof(TVEC_DATA_TYPE)]             ;xax = BYTE count
+        mov xcx, xax
+      else
+        mov xax, xcx
+      endif
+
       if TARGET_BITNESS eq 64
+        lea xsi, [xdx + xax - sizeof(QWORD)]
         shr ecx, $Log2(sizeof(QWORD))
+        lea xdi, [xsi + sizeof(TVEC_DATA_TYPE)]
         rep movsq
         if type(TVEC_DATA_TYPE) lt type(QWORD)
-          test eax, BIT02
-          jz @F
-          movsd
-        endif    
+          add rdi, sizeof(DWORD)
+          add rsi, sizeof(DWORD)
+          .ifBitSet eax, BIT02
+            movsd
+          .endif
+        endif
       else
+        lea xsi, [xdx + xax - sizeof(DWORD)]
         shr ecx, $Log2(sizeof(DWORD))
+        lea xdi, [xsi + sizeof(TVEC_DATA_TYPE)]
         rep movsd
       endif
-  
       if type(TVEC_DATA_TYPE) lt type(DWORD)
-      @@:
-        test eax, BIT01
-        jz @F
-        movsw
+        add rdi, sizeof(WORD)
+        add rsi, sizeof(WORD)
+        .ifBitSet eax, BIT01
+          movsw
+        .endif
         if type(TVEC_DATA_TYPE) lt type(WORD)
-        @@:
-          test eax, BIT00
-          jz @F
-          movsb
+          add rdi, sizeof(BYTE)
+          add rsi, sizeof(BYTE)
+          .ifBitSet eax, BIT00
+            movsb
+          .endif
         endif
       endif
-      @@:
-      cld                                               ;Restore direction flag
+      cld
+
+      m2m [xdx], $ArgReg(xItem), xax
+
     .endif
-    m2m [xdi], xItem, xcx
-    mov eax, TRUE
     ret
   .endif
   mov eax, COL_INDEX_ERROR
@@ -509,7 +522,7 @@ MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     TVectorName.Load
-; Purpose:    Load and initializes the Vector from a stream object.
+; Purpose:    Load and initializes the Vector from a Stream object.
 ; Arguments:  Arg1: -> Stream object.
 ;             Arg2: -> DESER_INFO.
 ; Return:     Nothing.
@@ -523,10 +536,10 @@ MethodEnd
   OCall pStream::Stream.BinRead32                       ;Read count
   mov edi, eax                                          ;edi = Count
   OCall pStream::Stream.BinRead32                       ;Read dLimit
-  mov $LocReg(dLimit), eax                              
+  mov $LocReg(dLimit), eax
 
   OCall pStream::Stream.BinRead32                       ;Read dDelta
-  mov [xsi].dDelta, eax                                 
+  mov [xsi].dDelta, eax
   OCall pStream::Stream.BinRead32                       ;Read dMaxCapacity
   mov [xsi].dMaxCapacity, eax
 
@@ -568,7 +581,7 @@ MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     TVectorName.SetLimit
-; Purpose:    Set the Vector limit, allocating the necessary memory on the heap to hold
+; Purpose:    Set the Vector limit, allocating the necessary memory on the process heap to hold
 ;             all xItems.
 ; Arguments:  Arg1: New limit (count).
 ; Return:     eax = Error code.
@@ -631,7 +644,7 @@ MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     TVectorName.Store
-; Purpose:    Store the Vector in a stream object.
+; Purpose:    Store the Vector in a Stream object.
 ; Arguments:  Arg1: -> Stream object.
 ; Return:     Nothing.
 
