@@ -136,7 +136,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=15
+MilestoneOnDateDate=21
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -171,8 +171,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,0,0,1707
-1=0,0,0,0,1597
+2=0,0,0,0,1070
+1=0,0,0,0,1369
 6=0,0,1456,414,59484
 4=0,0,0,0,266
 31=0,0,1213,691,1416
@@ -217,16 +217,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="MENU_APP"
-2="; Return:    "
-3=";            Arg2:"
-4="; Arguments: "
-5="; Purpose:   "
-6="; Method:    "
-7="DbgHex [xsi]"
-8="security_check_cookie"
-9="report_rangecheckfailure"
-10="int 3"
+1="szAppClassName"
+2="szDemoApp02"
+3="APP_CLS_STYLE"
+4="CLSSTYLE"
+5="DemoApp02"
+6="MENU_APP"
+7="; Return:    "
+8=";            Arg2:"
+9="; Arguments: "
+10="; Purpose:   "
 [Collapse]
 1=
 2=
@@ -339,9 +339,9 @@ ProductVer4Range=0
 25=
 27=
 [AutoLoad]
-AutoLoad=1,2,14,4,10
+AutoLoad=1,2,14
 [PTimer]
-PTimer=912512669
+PTimer=912774216
 [GroupExpand]
 GroupExpand=1,1,1,0,0,1,1,0
 [RADebugBP]

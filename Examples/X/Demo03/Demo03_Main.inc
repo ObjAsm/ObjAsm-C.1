@@ -7,15 +7,14 @@
 ;               - First release.
 ; ==================================================================================================
 
-CLSSTYLE    equ     CS_VREDRAW or CS_HREDRAW
 
-TBSTYLE     equ     WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or TBSTYLE_TOOLTIPS or \
+TB_STYLE    equ     WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or TBSTYLE_TOOLTIPS or \
                     CCS_NORESIZE or CCS_NODIVIDER or CCS_ADJUSTABLE or TBSTYLE_FLAT or TBSTYLE_LIST
 
-SBSTYLE     equ     WS_CHILD or WS_VISIBLE or SBARS_SIZEGRIP or SBARS_TOOLTIPS
+SB_STYLE    equ     WS_CHILD or WS_VISIBLE or SBARS_SIZEGRIP or SBARS_TOOLTIPS
 
 .const
-ToolbarFile DEF_TOOLBAR {IDC_TOOLBARFILE, TBSTYLE, TBSTYLE_EX_MIXEDBUTTONS, \
+ToolbarFile DEF_TOOLBAR {IDC_TOOLBARFILE, TB_STYLE, TBSTYLE_EX_MIXEDBUTTONS, \
                          $OfsTStr("File operations"), {<0,0,0,0>}, 5}
   TBBUTTON {IDB_FILE_NEW,    IDM_FILE_NEW,    TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("New")}
   TBBUTTON {0,               -1,              TBSTATE_ENABLED, TBSTYLE_SEP}
@@ -23,13 +22,13 @@ ToolbarFile DEF_TOOLBAR {IDC_TOOLBARFILE, TBSTYLE, TBSTYLE_EX_MIXEDBUTTONS, \
   TBBUTTON {IDB_FILE_SAVE,   IDM_FILE_SAVE,   TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("Save")}
   TBBUTTON {IDB_FILE_SAVEAS, IDM_FILE_SAVEAS, TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("Save as")}
 
-ToolbarEdit DEF_TOOLBAR {IDC_TOOLBAREDIT, TBSTYLE, TBSTYLE_EX_MIXEDBUTTONS, \
+ToolbarEdit DEF_TOOLBAR {IDC_TOOLBAREDIT, TB_STYLE, TBSTYLE_EX_MIXEDBUTTONS, \
                          $OfsTStr("Edit operations"), {<0,0,0,0>}, 3}
   TBBUTTON {IDB_EDIT_CUT,    IDM_EDIT_CUT,    TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("Cut")}
   TBBUTTON {IDB_EDIT_COPY,   IDM_EDIT_COPY,   TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("Copy")}
   TBBUTTON {IDB_EDIT_PASTE,  IDM_EDIT_PASTE,  TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("Paste")}
 
-AppStatusbar DEF_STATUSBAR {IDC_STATUSBAR, SBSTYLE, 0, 4}
+AppStatusbar DEF_STATUSBAR {IDC_STATUSBAR, SB_STYLE, 0, 4}
   DEF_STATUSBAR_PART {120,  50, 3, SBT_SUNKEN, $OfsTStr("Help")}
   DEF_STATUSBAR_PART {120,  20, 1, SBT_SUNKEN, NULL}
   DEF_STATUSBAR_PART {120,  -2, 0, SBT_SUNKEN, NULL}         ;Spring
@@ -41,9 +40,7 @@ AppStatusbar DEF_STATUSBAR {IDC_STATUSBAR, SBSTYLE, 0, 4}
 ;  DEF_STATUSBAR_PART {120, 100, 2, SBT_SUNKEN, NULL}
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-CStr szDemoApp03, "DemoApp03"
-
-Object DemoApp03, MySdiAppID, SdiApp                ;Single Document Interface App.
+Object Application, MySdiAppID, SdiApp                ;Single Document Interface App.
   RedefineMethod    Done
   RedefineMethod    Init
   StaticMethod      Startup
@@ -80,16 +77,18 @@ ObjectEnd
 
 .code
 ; ==================================================================================================
-;    DemoApp03 implementation
+;    Application implementation
 ; ==================================================================================================
 
+CStr szAppClassName, "Application"
+
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp03.Done
+; Method:     Application.Done
 ; Purpose:    Finalize the SDI application object.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method DemoApp03.Done, uses xsi
+Method Application.Done, uses xsi
   SetObject xsi
   .if [xsi].hIcon1 != 0
     invoke DestroyIcon, [xsi].hIcon1
@@ -107,12 +106,12 @@ Method DemoApp03.Done, uses xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp03.Init
+; Method:     Application.Init
 ; Purpose:    Initialize the SDI application object.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method DemoApp03.Init, uses xbx xsi
+Method Application.Init, uses xbx xsi
   local dWndPosX:DWORD, dWndPosY:DWORD, dWndWidth:DWORD, dWndHeight:DWORD
 
   SetObject xsi
@@ -141,20 +140,20 @@ Method DemoApp03.Init, uses xbx xsi
   mov dWndPosY, eax
 
   invoke CreateWindowEx, WS_EX_LEFT or WS_EX_APPWINDOW, \
-                         offset szDemoApp03, offset szAppTitle, WS_OVERLAPPEDWINDOW, \
+                         offset szAppClassName, offset szAppTitle, WS_OVERLAPPEDWINDOW, \
                          dWndPosX, dWndPosY, dWndWidth, dWndHeight, NULL, NULL, hInstance, xsi
   invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL
   invoke UpdateWindow, [xsi].hWnd
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp03.OnClose
+; Method:     Application.OnClose
 ; Purpose:    Event procedure for WM_CLOSE message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoApp03.OnClose, uses xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnClose, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   invoke MessageBox, [xsi].hWnd, $OfsCStr("Are you sure ?"), $OfsCStr("Application exit"), \
                      MB_YESNO or MB_ICONQUESTION
@@ -166,13 +165,13 @@ Method DemoApp03.OnClose, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp03.OnCommand
+; Method:     Application.OnCommand
 ; Purpose:    Event procedure for WM_COMMAND message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoApp03.OnCommand, uses xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnCommand, uses xsi, wParam:WPARAM, lParam:LPARAM
   local Dlg:$Obj(DialogAbout)
 
   SetObject xsi
@@ -227,13 +226,13 @@ Method DemoApp03.OnCommand, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp03.OnCreate
+; Method:     Application.OnCreate
 ; Purpose:    Event procedure for WM_CREATE message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero.
 
-Method DemoApp03.OnCreate, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnCreate, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
 
   mov [xsi].pStatusbar, $New(Statusbar)
@@ -276,13 +275,13 @@ Method DemoApp03.OnCreate, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp03.OnNotify
+; Method:     Application.OnNotify
 ; Purpose:    Event procedure for WM_NOTIFY message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoApp03.OnNotify, uses xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnNotify, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   mov xax, wParam
   .if xax == [xsi].pModelessDlg
@@ -298,13 +297,13 @@ Method DemoApp03.OnNotify, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp03.OnPaint
+; Method:     Application.OnPaint
 ; Purpose:    Event procedure for WM_PAINT message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoApp03.OnPaint, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnPaint, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   local PS:PAINTSTRUCT, hDC:HDC, Rct:RECT
 
   SetObject xsi
@@ -331,13 +330,13 @@ Method DemoApp03.OnPaint, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp03.OnSize
+; Method:     Application.OnSize
 ; Purpose:    Event procedure for WM_SIZE message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoApp03.OnSize, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnSize, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   local Rct:RECT
 
   .if wParam != SIZE_MINIMIZED
@@ -352,28 +351,28 @@ Method DemoApp03.OnSize, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
     invoke MoveWindow, [xcx].$Obj(Rebar).hWnd, 0, 0, Rct.right, Rct.bottom, TRUE
   .endif
 
-  xor eax, eax                ;Return zero
+  xor eax, eax                                          ;Return zero
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp03.Startup
-; Purpose:    Register the DemoApp03 window class with the operating system.
+; Method:     Application.Startup
+; Purpose:    Register the Application window class with the operating system.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method DemoApp03.Startup
+Method Application.Startup
   local WC:WNDCLASSEX
 
   mov WC.cbSize, sizeof(WNDCLASSEX)
-  mov WC.style, CLSSTYLE
-  m2m WC.lpfnWndProc, $MethodAddr(DemoApp03.WndProc), xax
+  m2z WC.style
+  m2m WC.lpfnWndProc, $MethodAddr(Application.WndProc), xax
   m2z WC.cbClsExtra
   m2z WC.cbWndExtra
   m2m WC.hInstance, hInstance, xax
   invoke LoadBitmap, hInstance, $OfsCStr("BMP_BACKGROUND")
   mov WC.hbrBackground, $invoke(CreatePatternBrush, xax)
   c2m WC.lpszMenuName, $OfsCStr("MENU_APP"), xax
-  c2m WC.lpszClassName, offset szDemoApp03, xax
+  c2m WC.lpszClassName, offset szAppClassName, xax
   mov WC.hIcon, $invoke(LoadIcon, hInstance, $OfsCStr("ICON_APP"))
   mov WC.hCursor, $invoke(LoadCursor, 0, IDC_ARROW)
   m2z WC.hIconSm

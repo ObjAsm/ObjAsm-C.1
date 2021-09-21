@@ -2,7 +2,7 @@
 ; Title:    ObjMem.inc
 ; Author:   G. Friedrich
 ; Version:  C.1.0
-; Purpose:  Support of memory and string handling functions.
+; Purpose:  ObjAsm library functions and definitions.
 ; Notes:    Version 1.0.0, October 2017
 ;             - First release.
 ; ==================================================================================================
@@ -1404,3 +1404,14 @@ ROP_PSo         equ       00FC008Ah
 ROP_PSDnoo      equ       00FD0A0Ah
 ROP_DPSoo       equ       00FE02A9h
 ROP_1           equ       00FF0062h   ;WHITENESS
+
+
+; Objects
+
+if TARGET_BITNESS eq 64
+  XWordVector equ QWordVector
+  XVEC_MAX_CAPACITY equ VEC64_MAX_CAPACITY
+else
+  XWordVector equ DWordVector
+  XVEC_MAX_CAPACITY equ VEC32_MAX_CAPACITY
+endif

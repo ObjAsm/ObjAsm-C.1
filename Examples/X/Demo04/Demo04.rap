@@ -31,7 +31,7 @@ Debug=1
 20=..\..\..\Code\Objects\DialogModal.inc
 21=..\..\..\Resources\DLG\DialogAbout.rc
 22=
-23=Demo04_Templet.inc
+23=Demo04_Template.inc
 24=..\..\..\Resources\Resource.h
 25=
 26=
@@ -136,7 +136,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=13
+MilestoneOnDateDate=21
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -171,8 +171,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,0,0,655
-1=0,0,0,0,1249
+2=0,0,0,0,6358
+1=0,0,0,0,1879
 6=0,0,1456,414,59484
 4=0,0,0,0,266
 31=0,0,1213,691,1416
@@ -217,16 +217,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="DbgOutHex"
-2="DbgHex"
-3="DbgHex "
+1="szDemoApp04"
+2="APP_CLS_STYLE"
+3="CLSSTYLE"
 4="DemoApp04"
-5="IndexOf"
-6="SubReg"
-7="T_Collection"
-8="DemoApp02"
-9="szDemoApp02"
-10="Demo02"
+5="DbgOutHex"
+6="DbgHex"
+7="DbgHex "
+8="IndexOf"
+9="SubReg"
+10="T_Collection"
 [Collapse]
 1=
 2=
@@ -341,7 +341,7 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,2,23,4,5,9
 [PTimer]
-PTimer=919169608
+PTimer=919543076
 [GroupExpand]
 GroupExpand=1,1,1,0,0,1,1,0
 [RADebugBP]

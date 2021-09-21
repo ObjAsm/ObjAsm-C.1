@@ -73,7 +73,7 @@ Method DLApp.Init, uses xsi
                          [xsi].hWnd, 10, hInstance, 0
 
   c2m [xsi].pDynamicLayout, offset AppChildrenInfo, xcx
-  OCall xsi.OnInitWindow
+  OCall xsi.InitWindow
 
   invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL          ;Show the window
   invoke UpdateWindow, [xsi].hWnd                       ;Update if necessary

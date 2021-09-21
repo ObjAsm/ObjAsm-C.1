@@ -26,14 +26,14 @@ MakeObjects WinApp, SdiApp
 
 .code
 include Demo03_Globals.inc                              ;Include application globals
-include Demo03_Main.inc                                 ;Include DemoApp03 object
+include Demo03_Main.inc                                 ;Include Application object
 
 start proc                                              ;Program entry point
   SysInit                                               ;Runtime initialization of OOP model
 
-  OCall $ObjTmpl(DemoApp03)::DemoApp03.Init             ;Initialize the object data
-  OCall $ObjTmpl(DemoApp03)::DemoApp03.Run              ;Execute the application
-  OCall $ObjTmpl(DemoApp03)::DemoApp03.Done             ;Finalize it
+  OCall $ObjTmpl(Application)::Application.Init             ;Initialize the object data
+  OCall $ObjTmpl(Application)::Application.Run              ;Execute the application
+  OCall $ObjTmpl(Application)::Application.Done             ;Finalize it
 
   SysDone                                               ;Runtime finalization of the OOP model
   invoke ExitProcess, 0                                 ;Exit program returning 0 to the OS

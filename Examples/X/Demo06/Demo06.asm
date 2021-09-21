@@ -31,14 +31,14 @@ MakeObjects WinControl, Toolbar, Rebar, Statusbar, Tooltip
 MakeObjects WinApp, MdiApp
 
 include Demo06_Globals.inc                              ;Application globals
-include Demo06_Main.inc                                 ;DemoApp06 object
+include Demo06_Main.inc                                 ;Application object
 
 start proc                                              ;Program entry point
   SysInit                                               ;Runtime initialization of OOP model
 
-  OCall $ObjTmpl(DemoApp06)::DemoApp06.Init             ;Initialize the object data
-  OCall $ObjTmpl(DemoApp06)::DemoApp06.Run              ;Execute application
-  OCall $ObjTmpl(DemoApp06)::DemoApp06.Done             ;Finalize application
+  OCall $ObjTmpl(Application)::Application.Init             ;Initialize the object data
+  OCall $ObjTmpl(Application)::Application.Run              ;Execute application
+  OCall $ObjTmpl(Application)::Application.Done             ;Finalize application
 
   SysDone                                               ;Runtime finalization of the OOP model
   invoke ExitProcess, 0                                 ;Exit program returning 0 to the OS

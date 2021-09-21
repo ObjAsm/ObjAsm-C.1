@@ -428,6 +428,8 @@ MethodEnd
 ; Arguments:  Arg1: New 64 bit position.
 ;             Arg2: Seek mode parameter [STM_BEGIN, STM_CURRENT, STM_END]
 ; Return:     Nothing.
+; Note:       In 32 bit mode, use the following syntax
+;             OCall xdi::DiskStream.Seek, QWORD ptr 0, STM_BEGIN
 
 Method DiskStream.Seek,, qPosition:QWORD, dSeekMode:DWORD
   SetObject xcx

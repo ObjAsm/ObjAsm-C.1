@@ -509,7 +509,7 @@ MethodEnd
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Streamable.Load
 ; Purpose:    Load and initialize the streamable instance from a stream object. Descendant objects
-;             should redefine this method and load new members.
+;             must redefine this method to load new members.
 ; Arguments:  Arg1: -> Stream object.
 ;             Arg2: -> DESER_INFO.
 ; Return:     eax = Status code.

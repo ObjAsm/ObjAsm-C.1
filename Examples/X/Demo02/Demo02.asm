@@ -20,15 +20,15 @@ MakeObjects Window, Dialog, DialogModal, DialogAbout
 MakeObjects WinApp, SdiApp
 
 include Demo02_Globals.inc                              ;Application globals
-include Demo02_Main.inc                                 ;DemoApp02 object
+include Demo02_Main.inc                                 ;Application object
 
 .code
 start proc                                              ;Program entry point
   SysInit                                               ;Runtime initialization of OOP model
 
-  OCall $ObjTmpl(DemoApp02)::DemoApp02.Init             ;Initialize application
-  OCall $ObjTmpl(DemoApp02)::DemoApp02.Run              ;Execute application
-  OCall $ObjTmpl(DemoApp02)::DemoApp02.Done             ;Finalize application
+  OCall $ObjTmpl(Application)::Application.Init         ;Initialize application
+  OCall $ObjTmpl(Application)::Application.Run          ;Execute application
+  OCall $ObjTmpl(Application)::Application.Done         ;Finalize application
 
   SysDone                                               ;Runtime finalization of the OOP model
   invoke ExitProcess, 0                                 ;Exit program returning 0 to the OS

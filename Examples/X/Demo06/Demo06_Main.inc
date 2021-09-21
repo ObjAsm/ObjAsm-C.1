@@ -8,18 +8,18 @@
 ; ==================================================================================================
 
 
-CLSSTYLE  equ   CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW
-
-TBSTYLE   equ   WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or TBSTYLE_TOOLTIPS or \
+TB_STYLE  equ   WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or TBSTYLE_TOOLTIPS or \
                 CCS_NORESIZE or CCS_NODIVIDER or CCS_ADJUSTABLE or TBSTYLE_FLAT or TBSTYLE_LIST
 
+SB_STYLE  equ   WS_CHILD or WS_VISIBLE or SBARS_TOOLTIPS or SBARS_SIZEGRIP
+
 .const
-ToolbarFile DEF_TOOLBAR {IDC_TOOLBARFILE, TBSTYLE, TBSTYLE_EX_MIXEDBUTTONS, \
+ToolbarFile DEF_TOOLBAR {IDC_TOOLBARFILE, TB_STYLE, TBSTYLE_EX_MIXEDBUTTONS, \
                          $OfsTStr("File operations"), {<0,0,0,0>}, 2}
   TBBUTTON {IDB_FILE_NEW,   IDM_FILE_NEW,   TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("New")}
   TBBUTTON {IDB_FILE_CLOSE, IDM_FILE_CLOSE, TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("Close")}
 
-ToolbarWindow DEF_TOOLBAR {IDC_TOOLBARWINDOW, TBSTYLE, TBSTYLE_EX_MIXEDBUTTONS, \
+ToolbarWindow DEF_TOOLBAR {IDC_TOOLBARWINDOW, TB_STYLE, TBSTYLE_EX_MIXEDBUTTONS, \
                            $OfsTStr("Window operations"), {<0,0,0,0>}, 6}
   TBBUTTON {IDB_WINDOW_CASCADE,  IDM_WINDOW_CASCADE,  TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, \
             $OfsTStr("Cascade")}
@@ -34,18 +34,13 @@ ToolbarWindow DEF_TOOLBAR {IDC_TOOLBARWINDOW, TBSTYLE, TBSTYLE_EX_MIXEDBUTTONS, 
   TBBUTTON {IDB_WINDOW_CLOSEALL, IDM_WINDOW_CLOSEALL, TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, \
             $OfsTStr("Close all")}
 
-SBSTYLE     equ     WS_CHILD or WS_VISIBLE or SBARS_TOOLTIPS or SBARS_SIZEGRIP
-
-AppStatusbar DEF_STATUSBAR {IDC_STATUSBAR, SBSTYLE, 0, 4}
+AppStatusbar DEF_STATUSBAR {IDC_STATUSBAR, SB_STYLE, 0, 4}
   DEF_STATUSBAR_PART {220, 100, 3, SBT_NOBORDERS, NULL}
   DEF_STATUSBAR_PART {120,  20, 1, SBT_SUNKEN,    NULL}
   DEF_STATUSBAR_PART {120,  -2, 0, SBT_SUNKEN,    NULL}   ;Spring type
   DEF_STATUSBAR_PART {120, 100, 2, SBT_SUNKEN,    NULL}
 
 CloseEnumProc    proto :HWND, :DWORD
-
-CStr szDemoApp06,   "DemoApp06"
-CStr szDemoChild06, "DemoChild06"
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
@@ -75,7 +70,7 @@ ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-Object DemoApp06, , MdiApp                                ;MDI application.
+Object Application, , MdiApp                                ;MDI application.
   VirtualMethod     ChangeLanguage,     DWORD             ;IDLANG_XXX
   RedefineMethod    Done
   VirtualMethod     EnableActions,      DWORD             ;TRUE/FALSE
@@ -106,16 +101,19 @@ ObjectEnd
 
 .code
 ; ==================================================================================================
-;    DemoApp06 implementation
+;    Application implementation
 ; ==================================================================================================
 
+CStr szAppClassName,   "Application"
+CStr szChildClassName, "AppChild"
+
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp06.ChangeLanguage
+; Method:     Application.ChangeLanguage
 ; Purpose:    Switch the application language.
 ; Arguments:  Arg1 = Language ID.
 ; Return:     Nothing.
 
-Method DemoApp06.ChangeLanguage, uses xbx xdi xsi, dLangID:DWORD
+Method Application.ChangeLanguage, uses xbx xdi xsi, dLangID:DWORD
   local MenuInfo:MENUITEMINFO
 
   SetObject xsi
@@ -151,12 +149,12 @@ Method DemoApp06.ChangeLanguage, uses xbx xdi xsi, dLangID:DWORD
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp06.Done
+; Method:     Application.Done
 ; Purpose:    Finalize the application object.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method DemoApp06.Done, uses xsi
+Method Application.Done, uses xsi
   SetObject xsi
   Destroy [xsi].pIconImageList
   Destroy [xsi].pClientWnd
@@ -169,12 +167,12 @@ Method DemoApp06.Done, uses xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp06.EnableActions
+; Method:     Application.EnableActions
 ; Purpose:    Enable or disable MDI child actions.
 ; Arguments:  Arg1 = Enable TRUE/FALSE.
 ; Return:     Nothing.
 
-Method DemoApp06.EnableActions, uses xsi, dAction:DWORD
+Method Application.EnableActions, uses xsi, dAction:DWORD
   SetObject xsi
   OCall [xsi].pToolbarFile::Toolbar.BtnEnable, IDM_FILE_CLOSE, dAction
 
@@ -186,12 +184,12 @@ Method DemoApp06.EnableActions, uses xsi, dAction:DWORD
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp06.Init
+; Method:     Application.Init
 ; Purpose:    Initialize the application object.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method DemoApp06.Init, uses xbx xdi xsi
+Method Application.Init, uses xbx xdi xsi
   local dWndPosX:DWORD, dWndPosY:DWORD, dWndWidth:DWORD, dWndHeight:DWORD
 
   SetObject xsi
@@ -237,7 +235,7 @@ Method DemoApp06.Init, uses xbx xdi xsi
   mov dWndPosY, eax
 
   invoke CreateWindowEx, WS_EX_APPWINDOW or WS_EX_WINDOWEDGE,
-                         offset szDemoApp06, offset szAppTitle, \
+                         offset szAppClassName, offset szAppTitle, \
                          WS_OVERLAPPEDWINDOW or WS_CLIPCHILDREN, \
                          dWndPosX, dWndPosY, dWndWidth, dWndHeight, \
                          NULL, [xsi].hMenuInit, hInstance, pSelf
@@ -248,7 +246,7 @@ Method DemoApp06.Init, uses xbx xdi xsi
 
   ;Create and initialize XMenu
   mov [xsi].pXMenu, $New(XMenu)
-  mov xdi, $MethodAddr(DemoApp06.StatusbarHelp)
+  mov xdi, $MethodAddr(Application.StatusbarHelp)
   mov xax, [xsi].pClientWnd
   OCall [xsi].pXMenu::XMenu.Init, xsi, [xsi].hWnd, [xax].$Obj(MyClientWnd).hWnd, \
                                   [xsi].hMenuChildWnd, xbx, xdi, IDLANG_ENGLISH
@@ -258,13 +256,13 @@ Method DemoApp06.Init, uses xbx xdi xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp06.OnClose
+; Method:     Application.OnClose
 ; Purpose:    Event procedure for WM_CLOSE and WM_QUERYENDSESSION message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoApp06.OnClose, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnClose, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   local dMsg:DWORD
 
   SetObject xsi
@@ -285,13 +283,13 @@ Method DemoApp06.OnClose, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp06.OnCommand
+; Method:     Application.OnCommand
 ; Purpose:    Event procedure for WM_COMMAND message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoApp06.OnCommand, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnCommand, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   local hChildWnd:HWND, AboutDlg:$Obj(DialogAbout)
   local cBuffer[MAX_PATH]:CHR, cNumber[20]:CHR
 
@@ -376,13 +374,13 @@ Method DemoApp06.OnCommand, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp06.OnCreate
+; Method:     Application.OnCreate
 ; Purpose:    Event procedure for WM_CREATE message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoApp06.OnCreate, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnCreate, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
 
   mov [xsi].pStatusbar, $New(Statusbar)
@@ -413,13 +411,13 @@ Method DemoApp06.OnCreate, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp06.OnDestroy
+; Method:     Application.OnDestroy
 ; Purpose:    Event procedure for WM_DESTROY message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero.
 
-Method DemoApp06.OnDestroy, uses xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnDestroy, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   invoke DestroyMenu, [xsi].hMenuInit
   invoke DestroyMenu, [xsi].hMenuChild
@@ -428,35 +426,35 @@ Method DemoApp06.OnDestroy, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp06.OnKeyUp
+; Method:     Application.OnKeyUp
 ; Purpose:    Event procedure for WM_KEYUP message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoApp06.OnKeyUp, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
-  DbgText "DemoApp06.OnKeyUp"
+Method Application.OnKeyUp, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+  DbgText "Application.OnKeyUp"
   SetObject xsi
   mov xbx, [xsi].pClientWnd
   .if wParam == VK_F6
-    DbgText "DemoApp06.OnKeyUp F6"
+    DbgText "Application.OnKeyUp F6"
     invoke SendMessage, [xbx].$Obj(MyClientWnd).hWnd ,WM_MDINEXT, NULL, 0
   .endif
   invoke DefFrameProc, [xsi].hWnd, [xbx].$Obj(MyClientWnd).hWnd, WM_KEYUP, wParam, lParam
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp06.OnSize
+; Method:     Application.OnSize
 ; Purpose:    Event procedure for WM_SIZE message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoApp06.OnSize, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnSize, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   local dHeight:DWORD, dCWidth:DWORD, dTop:DWORD
   local SbRect:RECT, RbRect:RECT, CRect:RECT
 
-;  DbgText "DemoApp06.OnSize"
+;  DbgText "Application.OnSize"
   .if wParam != SIZE_MINIMIZED
     SetObject xsi
     invoke GetClientRect, [xsi].hWnd, addr CRect
@@ -506,23 +504,23 @@ CloseEnumProc proc hWnd:HWND, lParam:DWORD
 CloseEnumProc endp
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp06.Startup
-; Purpose:    Register the DemoApp06 window class with the operating system.
+; Method:     Application.Startup
+; Purpose:    Register the Application window class with the operating system.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method DemoApp06.Startup
+Method Application.Startup
   local WC:WNDCLASSEX
 
   mov WC.cbSize, sizeof WNDCLASSEX
-  mov WC.style, CLSSTYLE
-  m2m WC.lpfnWndProc, $MethodAddr(DemoApp06.WndProc), xax
+  m2z WC.style
+  m2m WC.lpfnWndProc, $MethodAddr(Application.WndProc), xax
   m2z WC.cbClsExtra
   m2z WC.cbWndExtra
   m2m WC.hInstance, hInstance, xax
   m2z WC.hbrBackground
   m2z WC.lpszMenuName
-  c2m WC.lpszClassName, offset szDemoApp06, xax
+  c2m WC.lpszClassName, offset szAppClassName, xax
   mov WC.hIcon, $invoke(LoadIcon, hInstance, $OfsCStr("ICON_APP"))
   mov WC.hCursor, $invoke(LoadCursor, 0, IDC_ARROW)
   m2z WC.hIconSm
@@ -531,12 +529,12 @@ Method DemoApp06.Startup
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp06.StatusbarHelp
+; Method:     Application.StatusbarHelp
 ; Purpose:    Display a help string on panel 0 of the statusbar.
 ; Arguments:  Arg1: -> Help string.
 ; Return:     Nothing.
 
-Method DemoApp06.StatusbarHelp,, pHelpStr:POINTER
+Method Application.StatusbarHelp,, pHelpStr:POINTER
   SetObject xcx
   OCall [xcx].pStatusbar::Statusbar.SetPartText, 0, pHelpStr, SBT_NOBORDERS
 MethodEnd
@@ -615,9 +613,9 @@ Method MyChildWnd.Done, uses xbx xdi xsi
   dec [xdi].$Obj(MyClientWnd).dChildCount
 
   .if ZERO?
-    OCall xbx::DemoApp06.EnableActions, FALSE
+    OCall xbx::Application.EnableActions, FALSE
     invoke SendMessage, [xdi].$Obj(MyClientWnd).hWnd, WM_MDISETMENU, \
-                        [xbx].$Obj(DemoApp06).hMenuInit, NULL
+                        [xbx].$Obj(Application).hMenuInit, NULL
     invoke DrawMenuBar, [xbx].$Obj(MdiApp).hWnd         ;Redraw the new menu bar
   .endif
   ACall xsi.Done
@@ -637,21 +635,21 @@ Method MyChildWnd.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRING
   mov xdi, pOwner                                       ;xdi -> MyClientWnd
   inc [xdi].$Obj(MyClientWnd).dChildCount
 
-  invoke CreateMDIWindow, offset szDemoChild06, pTitle, WS_HSCROLL or WS_VSCROLL, \
+  invoke CreateMDIWindow, offset szChildClassName, pTitle, WS_HSCROLL or WS_VSCROLL, \
                           CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, \
                           [xdi].$Obj(MyClientWnd).hWnd, hInstance, pSelf
   .if xax != NULL
     .if [xdi].$Obj(MyClientWnd).dChildCount == 1        ;First child window ?
-      mov xbx, [xdi].$Obj(MyClientWnd).pOwner           ;xbx -> DemoApp06
-      OCall xbx::DemoApp06.EnableActions, TRUE
+      mov xbx, [xdi].$Obj(MyClientWnd).pOwner           ;xbx -> Application
+      OCall xbx::Application.EnableActions, TRUE
       invoke SendMessage, [xdi].$Obj(MyClientWnd).hWnd, WM_MDISETMENU, \
-                          [xbx].$Obj(DemoApp06).hMenuChild, \
-                          [xbx].$Obj(DemoApp06).hMenuChildWnd
+                          [xbx].$Obj(Application).hMenuChild, \
+                          [xbx].$Obj(Application).hMenuChildWnd
       invoke DrawMenuBar, [xbx].$Obj(MdiApp).hWnd       ;Redraw the new menu bar
     .endif
     invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL
   .else
-    invoke MessageBox, [xdi].$Obj(DemoApp06).hWnd, $OfsCStr("Window creation error"), \
+    invoke MessageBox, [xdi].$Obj(Application).hWnd, $OfsCStr("Window creation error"), \
                        offset szError, MB_OK or MB_ICONERROR
   .endif 
 MethodEnd
@@ -674,7 +672,7 @@ Method MyChildWnd.OnCommand, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
 
     mov xax, [xsi].pOwner
     mov xcx, [xax].$Obj(MyClientWnd).pOwner
-    mov xax, [xcx].$Obj(DemoApp06).hMenuChild
+    mov xax, [xcx].$Obj(Application).hMenuChild
     invoke GetSubMenu, xax, IDMENUCOLOR
     invoke CheckMenuRadioItem, xax, IDM_COLOR_BLACK, IDM_COLOR_WHITE, edi, MF_BYCOMMAND
     xor eax, eax
@@ -731,7 +729,7 @@ Method MyChildWnd.OnMdiActivate, uses xsi, wParam:WPARAM, lParam:LPARAM
   mov xax, lParam
   .if xax == [xsi].hWnd                               ;Activate child window
     ;Color popup menu update
-    invoke GetSubMenu, [xdx].$Obj(DemoApp06).hMenuChild, IDMENUCOLOR
+    invoke GetSubMenu, [xdx].$Obj(Application).hMenuChild, IDMENUCOLOR
     mov xcx, xax
     mov eax, [xsi].dColorIndex
     add eax, IDM_COLOR_BLACK
@@ -751,14 +749,14 @@ Method MyChildWnd.Startup
   local WC:WNDCLASSEX
 
   mov WC.cbSize, sizeof WNDCLASSEX
-  mov WC.style, CS_HREDRAW or CS_VREDRAW or CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT
+  mov WC.style, 0
   mrm WC.lpfnWndProc, $MethodAddr(MyChildWnd.WndProc), xax
   m2z WC.cbClsExtra
   m2z WC.cbWndExtra
   mrm WC.hInstance, hInstance, xax
   mov WC.hbrBackground, COLOR_WINDOW + 1
   m2z WC.lpszMenuName
-  mrm WC.lpszClassName, offset szDemoChild06, xax
+  mrm WC.lpszClassName, offset szChildClassName, xax
   mov WC.hIcon, $invoke(LoadIcon, hInstance, $OfsCStr("ICON_APP_CHILD"))
   m2z WC.hIconSm
   mov WC.hCursor, $invoke(LoadCursor, 0, IDC_ARROW)

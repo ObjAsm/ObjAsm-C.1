@@ -34,14 +34,14 @@ MakeObjects FlipBox, Splitter, ProjectWnd, PropertiesWnd
 MakeObjects WinApp, MdiApp
 
 include Demo10_Globals.inc                              ;Application globals
-include Demo10_Main.inc                                 ;DemoApp10 object
+include Demo10_Main.inc                                 ;Application object
 
 start proc                                              ;Program entry point
   SysInit                                               ;Runtime initialization of OOP model
 
-  OCall $ObjTmpl(DemoApp10)::DemoApp10.Init             ;Initialize application
-  OCall $ObjTmpl(DemoApp10)::DemoApp10.Run              ;Execute application
-  OCall $ObjTmpl(DemoApp10)::DemoApp10.Done             ;Finalize application
+  OCall $ObjTmpl(Application)::Application.Init         ;Initialize application
+  OCall $ObjTmpl(Application)::Application.Run          ;Execute application
+  OCall $ObjTmpl(Application)::Application.Done         ;Finalize application
 
   SysDone                                               ;Runtime finalization of the OOP model
   invoke ExitProcess, 0                                 ;Exit program returning 0 to the OS

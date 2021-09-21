@@ -49,9 +49,9 @@ start proc
                                   $OfsCStr("hello"), 3
   OCall xbx::DialogPassword.Show
   .if eax != FALSE
-    OCall $ObjTmpl(DemoApp07)::DemoApp07.Init
-    OCall $ObjTmpl(DemoApp07)::DemoApp07.Run
-    OCall $ObjTmpl(DemoApp07)::DemoApp07.Done
+    OCall $ObjTmpl(Application)::Application.Init
+    OCall $ObjTmpl(Application)::Application.Run
+    OCall $ObjTmpl(Application)::Application.Done
   .endif
   Destroy xbx
 

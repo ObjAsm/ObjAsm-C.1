@@ -84,7 +84,7 @@ PDL_HEADER typedef ptr DL_HEADER
 ;          Object pointer is stored in the window GWL_USERDATA slot.
 
 Object Window, WindowID, WinPrimer
-  VirtualMethod     OnInitWindow
+  VirtualMethod     InitWindow
   VirtualMethod     WndProc,          DWORD, WPARAM, LPARAM
 
   ;Dynamic Layout messages
@@ -166,10 +166,8 @@ Method Window.OnGetMinMaxInfo, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     Window.OnInitWindow
-; Purpose:    Event procedure for WM_CREATE or WM_INITDIALOG message.
-; Arguments:  Arg1: First message parameter.
-;             Arg2: Second message parameter.
+; Method:     Window.InitWindow
+; Purpose:    Gatter children data and initialize internal structures.
 ; Return:     eax = Child count.
 
 GetChildInfo proc uses xbx xsi hWnd:HWND, pGetChildWndInfo:PGetChildWndInfo
@@ -196,11 +194,10 @@ GetChildInfo proc uses xbx xsi hWnd:HWND, pGetChildWndInfo:PGetChildWndInfo
   ret
 GetChildInfo endp
 
-Method Window.OnInitWindow, uses xbx xsi
+Method Window.InitWindow, uses xbx xsi
   local CRect:RECT, GCWI:GetChildWndInfo, IniSize:SIZE_, Gripper:RECT
 
-;  DbgText "Window.OnInitWindow"
-
+  ;DbgText "Window.OnInitWindow"
   SetObject xsi
   mov xbx, [xsi].pDynamicLayout
   .if xbx != NULL
@@ -245,7 +242,6 @@ Method Window.OnInitWindow, uses xbx xsi
   .else
     xor eax, eax
   .endif
-;  DbgDec eax
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

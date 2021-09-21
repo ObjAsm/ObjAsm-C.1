@@ -14,6 +14,11 @@
 ; Purpose:    Implement a specialised WinApp object using a dialog as main window.
 
 Object DlgApp, DlgAppID, WinApp                         ;Dialog based Application.
+  VirtualMethod     CtlsGet
+  VirtualMethod     CtlsSet
+  
+  VirtualEvent      OnInitDialog,   WM_INITDIALOG
+
   RedefineMethod    Run
   RedefineMethod    WndProc,        DWORD, WPARAM, LPARAM
 ObjectEnd
@@ -24,6 +29,24 @@ ObjectEnd
 ; ==================================================================================================
 
 if IMPLEMENT
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     DlgApp.CtlsGet
+; Purpose:    Do nothing at this stage. It has to be redefined to provide proper functionality.
+; Arguments:  None.
+; Return:     Nothing.
+
+Method DlgApp.CtlsGet
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     DlgApp.CtlsSet
+; Purpose:    Do nothing at this stage. It has to be redefined to provide proper functionality.
+; Arguments:  None.
+; Return:     Nothing.
+
+Method DlgApp.CtlsSet
+MethodEnd
 
 ;; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ;; Method:     DlgApp.Init   - code sample-
@@ -38,6 +61,22 @@ if IMPLEMENT
 ;
 ;  invoke CreateDialogParam, hInstance, offset szDlgName, 0, $MethodAddr(DlgApp.WndProc), xsi
 ;MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     DlgApp.OnInitDialog
+; Purpose:    Event procedure for WM_INITDIALOG message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = TRUE to direct the system to set the keyboard focus to the control specified by
+;             wParam. Otherwise, it should return FALSE to prevent the system from setting the
+;             default keyboard focus.
+
+Method DlgApp.OnInitDialog, uses xsi, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "DlgApp.OnInitDialog"
+  SetObject xsi
+  OCall xsi.InitWindow
+  OCall xsi.CtlsSet
+MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     DlgApp.Run
@@ -91,7 +130,7 @@ MethodEnd
 ; Note:       Window handle is passed in pSelf (hidden parameter).
 
 Method DlgApp.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-  DbgMessage uMsg,, "DlgApp Messages"
+  ;DbgMessage uMsg,, "DlgApp Messages"
   .if uMsg == WM_INITDIALOG
     mov xsi, lParam
     test xsi, xsi

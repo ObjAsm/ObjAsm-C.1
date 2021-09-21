@@ -8,12 +8,7 @@
 ; ==================================================================================================
 
 
-CLSSTYLE equ CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW; or CS_DROPSHADOW
-
-CStr szDemoApp02, "DemoApp02"                           ;Creates szDemoApp02 string in .const
-
-
-Object DemoApp02, MySdiAppID, SdiApp                    ;Single Document Interface App.
+Object Application, MySdiAppID, SdiApp                  ;Single Document Interface App.
   RedefineMethod    Init                                ;Init method redefinition
   StaticMethod      Startup
 
@@ -26,16 +21,18 @@ ObjectEnd                                               ;Ends object definition
 
 .code
 ; ==================================================================================================
-;    DemoApp02 implementation
+;    Application implementation
 ; ==================================================================================================
 
+CStr szAppClassName, "Application"                      ;Creates szAppClassName string in .const
+
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp02.Init
+; Method:     Application.Init
 ; Purpose:    Initialize the SDI application object.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method DemoApp02.Init, uses xsi
+Method Application.Init, uses xsi
   local dWndPosX:DWORD, dWndPosY:DWORD, dWndWidth:DWORD, dWndHeight:DWORD
 
   SetObject xsi
@@ -47,7 +44,7 @@ Method DemoApp02.Init, uses xsi
   mov dWndPosY, $32($invoke(CenterForm, dWndHeight, $32($invoke(GetSystemMetrics, SM_CYSCREEN))))
 
   invoke CreateWindowEx, WS_EX_LEFT or WS_EX_APPWINDOW, \
-                         offset szDemoApp02, offset szAppTitle, WS_OVERLAPPEDWINDOW, \
+                         offset szAppClassName, offset szAppTitle, WS_OVERLAPPEDWINDOW, \
                          dWndPosX, dWndPosY, dWndWidth, dWndHeight, NULL, NULL, hInstance, pSelf
 
   invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL          ;Show the window
@@ -55,13 +52,13 @@ Method DemoApp02.Init, uses xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp02.OnCommand
+; Method:     Application.OnCommand
 ; Purpose:    Event procedure for WM_COMMAND message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoApp02.OnCommand, uses xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnCommand, uses xsi, wParam:WPARAM, lParam:LPARAM
   local cBuffer[MAX_PATH]:CHR, Dlg:$Obj(DialogAbout)
 
   SetObject xsi
@@ -90,13 +87,13 @@ Method DemoApp02.OnCommand, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp02.OnClose
+; Method:     Application.OnClose
 ; Purpose:    Event procedure for WM_CLOSE message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoApp02.OnClose, uses xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnClose, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   invoke MessageBox, [xsi].hWnd, $OfsCStr("Are you sure ?"), $OfsCStr("Application exit"), \
                      MB_YESNO or MB_ICONQUESTION
@@ -108,13 +105,13 @@ Method DemoApp02.OnClose, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp02.OnPaint
+; Method:     Application.OnPaint
 ; Purpose:    Event procedure for WM_PAINT message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoApp02.OnPaint, uses xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnPaint, uses xsi, wParam:WPARAM, lParam:LPARAM
   local PS:PAINTSTRUCT, hDC:HDC, Rct:RECT
 
   SetObject xsi
@@ -128,16 +125,16 @@ Method DemoApp02.OnPaint, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp02.Startup
-; Purpose:    Register the DemoApp02 window class with the operating system.
+; Method:     Application.Startup
+; Purpose:    Register the Application window class with the operating system.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method DemoApp02.Startup
+Method Application.Startup
   local WC:WNDCLASSEX
 
   mov WC.cbSize, sizeof(WNDCLASSEX)
-  mov WC.style, CLSSTYLE
+  m2z WC.style
   m2m WC.lpfnWndProc, $MethodAddr(SdiApp.WndProc), xax
   m2z WC.cbClsExtra
   m2z WC.cbWndExtra
@@ -145,7 +142,7 @@ Method DemoApp02.Startup
   invoke LoadBitmap, hInstance, $OfsCStr("BMP_BACKGROUND")
   mov WC.hbrBackground, $invoke(CreatePatternBrush, xax)
   c2m WC.lpszMenuName, $OfsCStr("MENU_APP"), rax
-  c2m WC.lpszClassName, offset szDemoApp02, rax
+  c2m WC.lpszClassName, offset szAppClassName, rax
   mov WC.hIcon, $invoke(LoadIcon, hInstance, offset szIcoName)
   mov WC.hCursor, $invoke(LoadCursor, 0, IDC_ARROW)
   m2z WC.hIconSm

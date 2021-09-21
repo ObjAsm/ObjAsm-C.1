@@ -1,15 +1,11 @@
 ; ==================================================================================================
-; Title:      XWordVector.inc
+; Title:      Demo08_Globals.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:    ObjAsm support of XWordVector objects.
-; Notes:      Version C.1.0, September 2021
+; Purpose:    ObjAsm CUDA demo application.
+; Notes:      Version C.1.0, October 2017
 ;               - First release.
 ; ==================================================================================================
 
 
-if TARGETBITNESS eq 64
-  XWordVector textequ <QWordVector>
-else
-  XWordVector textequ <DWordVector>
-endif
+include Demo08_Shared.inc

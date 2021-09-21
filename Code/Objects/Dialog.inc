@@ -230,7 +230,7 @@ MethodEnd
 Method Dialog.OnInitDialog, uses xsi, wParam:WPARAM, lParam:LPARAM
 ;  DbgText "Dialog.OnInitDialog"
   SetObject xsi
-  OCall xsi.OnInitWindow
+  OCall xsi.InitWindow
 
   .if ([xsi].StartPos.x != -1) || ([xsi].StartPos.y != -1)
     ;Check if the dialog will be fully visible

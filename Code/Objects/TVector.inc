@@ -400,8 +400,8 @@ MethodEnd
         lea xdi, [xsi + sizeof(TVEC_DATA_TYPE)]
         rep movsq
         if type(TVEC_DATA_TYPE) lt type(QWORD)
-          add rdi, sizeof(DWORD)
-          add rsi, sizeof(DWORD)
+          add xdi, sizeof(DWORD)
+          add xsi, sizeof(DWORD)
           .ifBitSet eax, BIT02
             movsd
           .endif
@@ -413,14 +413,14 @@ MethodEnd
         rep movsd
       endif
       if type(TVEC_DATA_TYPE) lt type(DWORD)
-        add rdi, sizeof(WORD)
-        add rsi, sizeof(WORD)
+        add xdi, sizeof(WORD)
+        add xsi, sizeof(WORD)
         .ifBitSet eax, BIT01
           movsw
         .endif
         if type(TVEC_DATA_TYPE) lt type(WORD)
-          add rdi, sizeof(BYTE)
-          add rsi, sizeof(BYTE)
+          add xdi, sizeof(BYTE)
+          add xsi, sizeof(BYTE)
           .ifBitSet eax, BIT00
             movsb
           .endif
