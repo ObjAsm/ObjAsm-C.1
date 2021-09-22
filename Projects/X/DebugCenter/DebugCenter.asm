@@ -9,7 +9,7 @@
 
 
 ;TODO: translate some strings from Globals to resource definitions
-;TODO: upgrade resource definitions like OA_Tools 
+;TODO: upgrade resource definitions like OA_Tools
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc   ;Include & initialize standard modules
@@ -24,27 +24,32 @@ SysSetup OOP, WIN64, WIDE_STRING;, DEBUG(CON, INFO)     ;Load OOP files and OS r
 % include &IncPath&Windows\ShellApi.inc
 % include &IncPath&Windows\CommCtrl.inc
 % include &IncPath&Windows\CommDlg.inc
+% include &IncPath&Windows\IImgCtx.inc
+% include &IncPath&Windows\UxTheme.inc
+% include &IncPath&Windows\vsstyle.inc
 
 % includelib &LibPath&Windows\Shell32.lib
 % includelib &LibPath&Windows\OLE32.lib
 % includelib &LibPath&Windows\Comctl32.lib
 % includelib &LibPath&Windows\ComDlg32.lib
 % includelib &LibPath&Windows\shlwapi.lib
+% includelib &LibPath&Windows\Msimg32.lib
+% includelib &LibPath&Windows\UxTheme.lib
 
 if DEBUGGING eq FALSE
   % include &MacPath&DebugShare.inc
 endif
 
 MakeObjects Primer, Stream, DiskStream                  ;Load or build the following objects
-MakeObjects Collection, DataCollection
+MakeObjects Collection, DataCollection, SortedCollection, SortedDataCollection, XWCollection
 MakeObjects WinPrimer, Window, WinApp, MdiApp
-MakeObjects Button, Hyperlink
+MakeObjects Button, Hyperlink, IconButton
 MakeObjects RegKey, IDL, IniFile
-MakeObjects Dialog, DialogModal, DialogModalIndirect, DialogAbout
+MakeObjects Dialog, DialogModal, DialogModalIndirect
 MakeObjects DialogModeless, DialogModelessIndirect, DialogFindText
 MakeObjects SimpleImageList, MaskedImageList
 MakeObjects MsgInterceptor, XMenu, Magnetism
-MakeObjects WinControl, Toolbar, Rebar, Statusbar, Tooltip
+MakeObjects WinControl, Toolbar, Rebar, Statusbar, Tooltip, TextView, Image
 
 include DebugCenter_Globals.inc                         ;Include application globals
 include DebugCenter_Main.inc                            ;Include DebugCenter main object

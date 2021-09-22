@@ -137,6 +137,7 @@ ObjectEnd
 include DebugCenter_Child.inc
 include DebugCenter_ChildTxt.inc
 include DebugCenter_ChildBmp.inc
+include DebugCenter_About.inc
 
 % CStrW cDbgRegKey, DEBUG_CENTER_REGKEY
 
@@ -721,8 +722,7 @@ EraseChild endp
 Method DebugCenter.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   local hChildWnd:HWND, pDlg:POINTER, pChild:POINTER
   local OpenFileName:OPENFILENAME, cInitDir[MAX_PATH]:CHR, cFileName[MAX_PATH]:CHR
-  local PageSetup:PAGESETUPDLG, Dlg:$Obj(DialogAbout)
-  local pResStr:PSTRING, cResStr[1024]:CHR, cAboutStr[1024]:CHR
+  local PageSetup:PAGESETUPDLG, AboutDlg:$Obj(DialogAbout)
 
   SetObject xsi
   mov xcx, [xsi].pClientWnd
@@ -1035,19 +1035,10 @@ Method DebugCenter.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
     xor eax, eax
 
   .elseif ax == IDM_HELP_ABOUT
-    mov edx, [xsi].dLanguage
-    add edx, 105
-    lea xbx, cResStr
-    mov pResStr, xbx
-    invoke LoadString, hInstance, edx, xbx, lengthof(cResStr)
-    lea xbx, cAboutStr
-    invoke wvsprintf, xbx, offset szAboutText, addr pResStr  
-
-    New Dlg::DialogAbout
-    invoke LoadIcon, hInstance, $OfsCStr("ICON_APP")
-    OCall Dlg::DialogAbout.Init, xsi, [xsi].hWnd, xax, xbx
-    OCall Dlg::DialogAbout.Show
-    OCall Dlg::DialogAbout.Done
+    New AboutDlg::DialogAbout
+    OCall AboutDlg::DialogAbout.Init, xsi, [xsi].hWnd
+    OCall AboutDlg::DialogAbout.Show
+    OCall AboutDlg::DialogAbout.Done
     xor eax, eax
 
   ; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1175,7 +1166,7 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
 
 			;m2z CFD.crTextColor
 		  	mov CFD.crTextColor, DBG_COLOR_LINE
-			
+
           m2z CFD.dwEffects
           invoke SendMessage, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_SETCHARFORMAT, SCF_SELECTION, addr CFD
           .if dDbgCmd == DBG_CMD_SINGLE_LINE
@@ -1304,7 +1295,7 @@ Method DebugCenter.OnCreate, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   OCall [xsi].pRebar::Rebar.InsertBand, [xdx].$Obj(Toolbar).hWnd, ebx, eax
 
   FillString LogFnt.lfFaceName, <DBG_FONT_TEXT>
-  
+
   mov hDC, $invoke(GetDC, [xsi].hWnd)
   invoke GetDeviceCaps, hDC, LOGPIXELSY
   invoke MulDiv, 8, eax, -72
@@ -1611,7 +1602,7 @@ MethodEnd
 
 Method DbgMdiClient.OnDropFiles, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   local pFileName:PSTRING
-  
+
   SetObject xsi
   mov xbx, $invoke(DragQueryFile, wParam, -1, NULL, 0)
   .while xbx > 0

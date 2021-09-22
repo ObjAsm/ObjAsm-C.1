@@ -8,8 +8,6 @@
 ; ==================================================================================================
 
 
-CLSSTYLE equ CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW; or CS_DROPSHADOW
-
 CStr szApplication, "Application"
 
 
@@ -199,7 +197,7 @@ Method Application.Startup
   local WC:WNDCLASSEX
 
   mov WC.cbSize, sizeof(WNDCLASSEX)
-  mov WC.style, CLSSTYLE
+  m2z WC.style
   m2m WC.lpfnWndProc, $MethodAddr(SdiApp.WndProc), xax
   m2z WC.cbClsExtra
   m2z WC.cbWndExtra

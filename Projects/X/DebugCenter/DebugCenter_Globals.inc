@@ -11,13 +11,6 @@
 include DebugCenter_Shared.inc
 
 %CStr szAppTitle, "&APP_TITLE"
-%CStr szAboutText,"&ABOUT_TEXT", 13, 10, \
-                  "Version &VER_PRODUCTVERSION_STR", 13, 10, \
-                  "%s", 13, 10, \
-                  "© &COPYRIGHT", 13, 10, 13, 10, \ 
-                  @CatStr(<!">, %BUILD_DATE_STR, \
-                          <  -  Build: >, %BUILD_NUMBER, <->, %ASSEMBLER, <->, \
-                          %TARGET_MODE_STR, <->, %BUILD_BITNESS, <!">)
 
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   CStr szRichEdit20, "RichEdit20A"

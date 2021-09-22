@@ -55,7 +55,7 @@ ExtendString            "[Indent 0, Align.Center]", \
                           "   Email us to  ", \
                           "[APP ", @CatStr(<!">, %APP_EMAIL, <!">), ", Color #0000FF, U]objasm@gmx.net[~]{P}", \
                           "[APP ", @CatStr(<!">, %APP_CHECK, <!">), ", Color #0000FF, U]Check for updates[~]", \
-                          "[TIP ", @CatStr(<!">, %INFO_UPDATE, <!">), ", Font 'Webdings', H+1, Color #5F5FFF]  {#F069}[~]", \
+                          "[TIP ", @CatStr(<!">, %INFO_UPDATE, <!">), ", Font 'Webdings', Height +1, Color #5F5FFF]  {#F069}[~]", \
                         "[~]", \
                       "[~]"
 

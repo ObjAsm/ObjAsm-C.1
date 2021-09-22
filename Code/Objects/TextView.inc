@@ -1113,6 +1113,7 @@ Method TextView.Done, uses xsi
   invoke StrDispose, [xsi].pMarkupText
 
   invoke SelectObject, [xsi].hMemDC, [xsi].hPrvBmp
+  invoke DeleteObject, xax
   invoke SelectObject, [xsi].hMemDC, [xsi].hPrvBrush
   invoke SelectObject, [xsi].hMemDC, [xsi].hPrvFont
   invoke DeleteDC, [xsi].hMemDC
@@ -1660,6 +1661,7 @@ Method TextView.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
   invoke ReleaseDC, [xsi].hParent, hDC
   mov [xsi].hPrvBmp, $invoke(SelectObject, [xsi].hMemDC, [xsi].hMemBmp)
   mov [xsi].hPrvFont, $invoke(GetCurrentObject, [xsi].hMemDC, OBJ_FONT)
+  mov [xsi].hPrvBrush, $invoke(GetCurrentObject, [xsi].hMemDC, OBJ_BRUSH)
   mov [xsi].dLogPixY, $32($invoke(GetDeviceCaps, [xsi].hMemDC, LOGPIXELSY))
 
   ;Create a ToolTip window to display popup information when hoovering over an TIP area
@@ -2884,7 +2886,7 @@ Method TextView.Parse, uses xdi xsi
   mov [xdi].TVSTYLE.hBackBrush, $invoke(CreateSolidBrush, [xdi].TVSTYLE.BackColor)
 
   OCall [xsi].GdiObjects::DataCollection.Insert, xax    ;Resource #1
-  mov [xsi].hPrvBrush, $invoke(SelectObject, [xsi].hMemDC, xax)
+  invoke SelectObject, [xsi].hMemDC, xax                ;Select text background brush
 
   mov dTVStateID, TVSID_INIT                            ;Set initial state
 

@@ -54,13 +54,13 @@ ICON_WINDOW_ZOOMOUT     ICON DISCARDABLE "ICO\Font_Smaller_16x16_04.ico"
 ICON_HELP_HELP          ICON DISCARDABLE "ICO\Help_Red_16x16_04.ico"
 ICON_HELP_ABOUT         ICON DISCARDABLE "ICO\Info_Blue_16x16_04.ico"
 
-// DialogAboutEx icons
-ICON_LINK               ICON DISCARDABLE "ICO\Link_16x16_04.ico"
-ICON_MAIL               ICON DISCARDABLE "ICO\MAIL_16x16_04.ico"
+ICON_OK                 ICON DISCARDABLE "ICO\OK_16x16_04.ico"
+ICON_CANCEL             ICON DISCARDABLE "ICO\Cancel_16x16_04.ico"
 
 
 // Dialogs -----------------------------------------------------------------------------------------
-#include "DLG\DialogAboutEx.rc"
+
+#include "Res\DebugCenter_AboutDlg.rc"
 
 
 // Cursors -----------------------------------------------------------------------------------------
@@ -73,6 +73,10 @@ CURSOR_HAND             CURSOR DISCARDABLE "CUR\Hand.cur"      ;Used by Hyperlin
 BMP_BACKGROUND          BITMAP "BMP\WndBkgnd.bmp"
 BMP_MENUSIDEBAR         BITMAP "BMP\OA_Vert.bmp"
 
+
+// Images -----------------------------------------------------------------------------------------
+
+PNG_DEBUGCENTER         IMAGE   DISCARDABLE   "res\DebugCenter_100x100.png"
 
 
 MDIMENUINIT MENUEX DISCARDABLE
@@ -292,8 +296,10 @@ BEGIN
   IDLANG_ENGLISH + 102, "&Yes"
   IDLANG_ENGLISH + 103, "&No"
 
+  IDLANG_ENGLISH + 104, "About this application"
   IDLANG_ENGLISH + 105, "Designed with ObjAsm"
-  IDLANG_ENGLISH + 106, "&Visit our Homepage"
+  IDLANG_ENGLISH + 106, "Visit our Homepage"
+  IDLANG_ENGLISH + 107, "Send us an Email to"
 
   IDLANG_ENGLISH + ID_MDI_MORE, "&More windows...|Select a window"
   IDLANG_ENGLISH + ID_MDI_LIST, "Window List"
@@ -377,8 +383,10 @@ BEGIN
   IDLANG_GERMAN  + 102, "&Ja"
   IDLANG_GERMAN  + 103, "&Nein"
 
+  IDLANG_GERMAN  + 104, "Über diese Anwendung"
   IDLANG_GERMAN  + 105, "Mit ObjAsm entwickelt"
-  IDLANG_GERMAN  + 106, "&Besuchen Sie unsere Homepage"
+  IDLANG_GERMAN  + 106, "Besuchen Sie unsere Homepage"
+  IDLANG_GERMAN  + 107, "Senden Sie uns eine Email an"
 
   IDLANG_GERMAN + ID_MDI_MORE, "&Weitere Fenster...|Fenster auswählen"
   IDLANG_GERMAN + ID_MDI_LIST, "Fensterliste"
@@ -462,8 +470,10 @@ BEGIN
   IDLANG_ITALIAN + 102, "&Si"
   IDLANG_ITALIAN + 103, "&No"
 
+  IDLANG_ITALIAN + 104, "Su questa applicazione"
   IDLANG_ITALIAN + 105, "Progettato con ObjAsm"
-  IDLANG_ITALIAN + 106, "&Visita la nostra Homepage"
+  IDLANG_ITALIAN + 106, "Visita la nostra Homepage"
+  IDLANG_ITALIAN + 107, "Inviaci una mail a"
 
   IDLANG_ITALIAN + ID_MDI_MORE, "&Più finestre...|Selezionare una finestra"
   IDLANG_ITALIAN + ID_MDI_LIST, "Lista di finestre"
@@ -547,8 +557,10 @@ BEGIN
   IDLANG_RUSSIAN + 102, L"\x0026\x0434\x0430"
   IDLANG_RUSSIAN + 103, L"\x0026\x043D\x0435\x0442"
 
+  IDLANG_RUSSIAN + 104, L"\x041E\x0431\x0437\x0020\x04D4\x0442\x043E\x043C\x0020\x043F\x0440\x0438\x043B\x043E\x0436\x0435\x043D\x0438\x0438"
   IDLANG_RUSSIAN + 105, L"\x0420\x0430\x0437\x0440\x0430\x0431\x043E\x0442\x0430\x043D\x043E\x0020\x0441\x0020\x043F\x043E\x043C\x043E\x0449\x044C\x044E ObjAsm"
-  IDLANG_RUSSIAN + 106, L"\x0026\x041F\x043E\x0441\x0435\x0442\x0438\x0442\x0435\x0020\x043D\x0430\x0448\x0020\x0441\x0430\x0439\x0442"
+  IDLANG_RUSSIAN + 106, L"\x041F\x043E\x0441\x0435\x0442\x0438\x0442\x0435\x0020\x043D\x0430\x0448\x0020\x0441\x0430\x0439\x0442"
+  IDLANG_RUSSIAN + 107, L"\x041E\x0442\x043F\x0440\x0430\x0432\x044C\x0442\x0435\x0020\x043D\x0430\x043C\x0020\x043F\x0438\x0441\x044C\x043C\x043E\x0020\x043F\x043E\x0020\x0430\x0434\x0440\x0435\x0441\x0443"
 
   IDLANG_RUSSIAN + ID_MDI_MORE, L"\x0026\x041F\x043E\x043A\x0430\x0437\x0430\x0442\x044C\x0020\x0435\x0449\x0435\x0020\x043E\x043A\x043D\x0430\x002E\x002E\x002E\x007C\x0412\x044B\x0431\x0440\x0430\x0442\x044C\x0020\x043E\x043A\x043D\x043E"
   IDLANG_RUSSIAN + ID_MDI_LIST, L"\x0421\x043F\x0438\x0441\x043E\x043A\x0020\x043E\x043A\x043E\x043D"
@@ -603,7 +615,7 @@ BEGIN
 
   IDLANG_SPANISH + 60, "&Ayuda|Comandos de ayuda"
   IDLANG_SPANISH + 61, "Ayuda~F1|Muestra ayuda sobre esta aplicación"
-  IDLANG_SPANISH + 62, "Sobre...|Muestra información sobre esta aplicación"
+  IDLANG_SPANISH + 62, "Acerca...|Muestra información sobre esta aplicación"
 
   IDLANG_SPANISH + 70, "&Restaurar Debug Center"
   IDLANG_SPANISH + 71, "&Finalizar Debug Center"
@@ -633,8 +645,10 @@ BEGIN
   IDLANG_SPANISH + 102, "&Sí"
   IDLANG_SPANISH + 103, "&No"
 
+  IDLANG_SPANISH + 104, "Acerca de esta aplicación"
   IDLANG_SPANISH + 105, "Diseñado con ObjAsm"
-  IDLANG_SPANISH + 106, "&Visite nuesta página Web"
+  IDLANG_SPANISH + 106, "Visite nuesta página Web"
+  IDLANG_SPANISH + 107, "Envíenos un Email a"
 
   IDLANG_SPANISH + ID_MDI_MORE, "&Otras ventanas...|Seleccione una ventana"
   IDLANG_SPANISH + ID_MDI_LIST, "Lista de ventanas"
