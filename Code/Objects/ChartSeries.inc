@@ -11,7 +11,7 @@ CHT_FLOAT textequ <REAL4>
 
 CHT_SERIES_SHOW_LINE    equ   BIT00
 CHT_SERIES_SHOW_MARKER  equ   BIT01
-CHT_SERIES_SHOW_TAB     equ   BIT02                     ;Show series tab on the setup dialog 
+CHT_SERIES_SHOW_TAB     equ   BIT02                     ;Show series tab on the setup dialog
 
 CHT_SERIES_DEFAULT_FLAGS  equ  CHT_SERIES_SHOW_LINE or CHT_SERIES_SHOW_MARKER or CHT_SERIES_SHOW_TAB
 
@@ -25,7 +25,7 @@ Object ChartSeries, ChartSeriesID, Array
   RedefineMethod    Done                                            ;Release allocated resources
   RedefineMethod    Init,               POINTER, DWORD              ;-> Owner, Capacity
   RedefineMethod    Load,               $ObjPtr(Stream)             ;-> Stream
-  DynamicMethod     Scan,               DWORD, DWORD                ;Scan the buffer from, count 
+  DynamicMethod     Scan,               DWORD, DWORD                ;Scan the buffer from, count
   RedefineMethod    Store,              $ObjPtr(Stream)             ;-> Stream
 
   DefineVariable    dDataFrom,          DWORD,      0               ;First Data index

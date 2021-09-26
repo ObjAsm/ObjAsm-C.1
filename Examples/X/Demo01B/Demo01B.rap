@@ -18,7 +18,7 @@ Debug=0
 7=..\..\..\Code\Objects\Primer.inc
 8=..\..\..\Code\Objects\ObjErrs.inc
 9=Demo01B.asm
-10=
+10=..\..\..\Code\Objects\Demo01.inc
 11=
 12=
 13=
@@ -75,7 +75,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Objects,Macros
 7=6
 8=7
 9=2
-10=
+10=6
 11=
 12=
 13=
@@ -112,7 +112,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=9
+MilestoneOnDateDate=26
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -156,7 +156,7 @@ ProductVer4Range=0
 8=0,0,0,0,840
 7=0,0,0,0,5933
 9=0,0,0,0,1091
-10=
+10=0,0,0,0,0
 11=
 12=
 16=
@@ -209,9 +209,9 @@ ProductVer4Range=0
 13=
 8=
 [AutoLoad]
-AutoLoad=9
+AutoLoad=9,10
 [PTimer]
-PTimer=332422039
+PTimer=332497539
 [GroupExpand]
 GroupExpand=0,1,1,0,0,1,1,0
 [RADebugBP]

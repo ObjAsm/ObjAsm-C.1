@@ -2,8 +2,8 @@
 ; Title:      Demo07.rc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:    ObjAsm resource file.
-; Notes:      Version C.1.0, October 2017
+; Purpose:    ObjAsm resource file for demonstration program 7.
+; Notes:      Version C.1.0, August 2021
 ;               - First release.
 ; ==================================================================================================
 
@@ -20,7 +20,7 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
 // App icons
 ICON_APP              ICON DISCARDABLE "ICO\OA.ico"
-ICON_APP_CHILD        ICON DISCARDABLE "ICO\PlotXY_16x16_4.ico"
+ICON_APP_CHILD        ICON DISCARDABLE "ICO\ChartXY_16x16_04.ico"
 
 // Menu icons
 ICON_FILE_NEW         ICON DISCARDABLE "ICO\New_16x16_04.ico"
@@ -36,11 +36,19 @@ ICON_HELP_ABOUT       ICON DISCARDABLE "ICO\Info_Blue_16x16_04.ico"
 
 // Button icons
 ICON_BLOT             ICON DISCARDABLE "ICO\Blot_16x16_04.ico"
+ICON_OK               ICON DISCARDABLE "ICO\OK_16x16_04.ico"
+ICON_CANCEL           ICON DISCARDABLE "ICO\Cancel_16x16_04.ico"
+ICON_PREVIEW          ICON DISCARDABLE "ICO\Refresh_16x16_04.ico"
 
 // DialogAboutEx icons
 ICON_LINK             ICON DISCARDABLE "ICO\Link_16x16_04.ico"
 ICON_MAIL             ICON DISCARDABLE "ICO\Mail_16x16_04.ico"
 
+// Chart icons
+ICON_SETUP            ICON DISCARDABLE "ICO\Setup_16x16_04.ico"
+ICON_SCALEX           ICON DISCARDABLE "Res\ScaleX_16x16_04.ico"
+ICON_SCALEY           ICON DISCARDABLE "Res\ScaleY_16x16_04.ico"
+ICON_SERIES           ICON DISCARDABLE "Res\Series_16x16_04.ico"
 
 // Cursors -----------------------------------------------------------------------------------------
 
@@ -49,7 +57,7 @@ CURSOR_HAND           CURSOR DISCARDABLE "CUR\Hand.cur"
 
 // Bitmaps -----------------------------------------------------------------------------------------
 
-BMP_BACKGROUND	      BITMAP "BMP\WndBkgnd.bmp"
+BMP_BACKGROUND        BITMAP "BMP\WndBkgnd.bmp"
 
 
 // Dialogs -----------------------------------------------------------------------------------------
@@ -57,8 +65,10 @@ BMP_BACKGROUND	      BITMAP "BMP\WndBkgnd.bmp"
 #include "DLG\DialogAlert.rc"
 #include "DLG\DialogPassword.rc"
 #include "DLG\DialogAboutEx.rc"
-#include "DLG\PXY_DialogSetupScale.rc"
-#include "DLG\PXY_DialogSetupColors.rc"
+#include "Res\ChartFlatSetupDlg.rc"
+#include "Res\ChartFlatTabGeneralDlg.rc"
+#include "Res\ChartFlatTabScaleDlg.rc"
+#include "Res\ChartFlatTabSeriesDlg.rc"
 
 
 // Gifs --------------------------------------------------------------------------------------------

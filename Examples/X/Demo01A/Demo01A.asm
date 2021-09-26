@@ -9,7 +9,7 @@
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc   ;Include & initialize standard modules
-SysSetup OOP, NUI32, ANSI_STRING, DEBUG(WND)            ;Load OOP files and basic OS support
+SysSetup OOP, NUI64, ANSI_STRING, DEBUG(WND)            ;Load OOP files and basic OS support
 
 MakeObjects Primer, Demo01                              ;Include Shape, Triangle and Rectangle
 

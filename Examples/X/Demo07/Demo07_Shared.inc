@@ -3,7 +3,7 @@
 ; Author:     G. Friedrich
 ; Version:    C.1.0
 ; Purpose:    ObjAsm demonstration program 7.
-; Notes:      Version C.1.0, October 2017
+; Notes:      Version C.1.0, August 2021
 ;               - First release.
 ; ==================================================================================================
 
@@ -11,16 +11,16 @@
 ;General information
 APP_TITLE                     textequ   <Demo07>
 ABOUT_TEXT                    textequ   <Demo07>
-COPYRIGHT                     textequ   <G. Friedrich   October 2017> 
+COPYRIGHT                     textequ   <G. Friedrich   August 2021>
 VER_FILEVERSION               equ       2,0,0,0
 VER_FILEVERSION_STR           textequ   <2.0>
 VER_PRODUCTVERSION            equ       2,0,0,0
 VER_PRODUCTVERSION_STR        equ       <2.0>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       46
-BUILD_DATE_STR                textequ   <21.09.2021>
-BUILD_BITNESS                 equ       64
+BUILD_NUMBER                  equ       161
+BUILD_DATE_STR                textequ   <2021-09-26>
+BUILD_BITNESS                 equ       32
 BUILD_MODE                    equ       DBG
 
 ;Menu IDs

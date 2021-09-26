@@ -29,10 +29,10 @@ DEF_CHART struc
   union
     rect        RECT      {}
     struct
-      sdPosX    SDWORD  ?                               ;X position
-      sdPosY    SDWORD  ?                               ;Y position
-      dWidth    DWORD   ?                               ;Width
-      dHeight   DWORD   ?                               ;Height
+      sdPosX    SDWORD    ?                             ;X position
+      sdPosY    SDWORD    ?                             ;Y position
+      dWidth    DWORD     ?                             ;Width
+      dHeight   DWORD     ?                             ;Height
     ends
   ends
 DEF_CHART ends

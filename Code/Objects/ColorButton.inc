@@ -268,9 +268,9 @@ Method ColorButton.Startup
   local WC:WNDCLASSEX
 
   mov WC.cbSize, sizeof(WNDCLASSEX)
-  mov WC.style, CS_HREDRAW or CS_VREDRAW or CS_PARENTDC
+  m2z WC.style
   m2m WC.lpfnWndProc, $MethodAddr(ColorButton.WndProc), xdx
-  m2z WC.cbClsExtra
+  mov WC.cbClsExtra, sizeof(POINTER)
   m2z WC.cbWndExtra
   m2m WC.hInstance, hInstance, xdx
   m2z WC.hbrBackground
@@ -281,7 +281,7 @@ Method ColorButton.Startup
 
   mov WC.hCursor, $invoke(LoadCursor, 0, IDC_ARROW)
   m2z WC.hIconSm
-
+  
   invoke RegisterClassEx, addr WC
 MethodEnd
 
@@ -298,7 +298,7 @@ Method ColorButton.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
   .if uMsg == WM_NCCREATE
     mov xax, lParam
     .if [xax].CREATESTRUCT.lpCreateParams == NULL
-      ;If lpCreateParams is 0, then it is a resource call => Create new object instance
+      ;If lpCreateParams is NULL, then it is a resource call => Create new object instance
       mov xsi, $New(ColorButton)
       OCall xax::ColorButton.InitRes, pSelf
     .else

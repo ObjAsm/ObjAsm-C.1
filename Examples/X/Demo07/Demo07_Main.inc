@@ -3,23 +3,27 @@
 ; Author:     G. Friedrich
 ; Version:    C.1.0
 ; Purpose:    ObjAsm demonstration program 7.
-; Notes:      Version C.1.0, October 2017
+; Notes:      Version C.1.0, August 2021
 ;               - First release.
 ; ==================================================================================================
 
 
-APP_CLS_STYLE    equ  CS_DBLCLKS
-CHILD_CLS_STYLE  equ  CS_DBLCLKS
+APP_CLS_STYLE     equ   CS_DBLCLKS
 
-TB_STYLE   equ  WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or TBSTYLE_TOOLTIPS or \
-                CCS_NORESIZE or CCS_NODIVIDER or CCS_ADJUSTABLE or TBSTYLE_FLAT or TBSTYLE_LIST
+CHILD_CLS_STYLE   equ   CS_DBLCLKS
+
+TB_STYLE    equ   WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or TBSTYLE_TOOLTIPS or \
+                  CCS_NORESIZE or CCS_NODIVIDER or CCS_ADJUSTABLE or TBSTYLE_FLAT or TBSTYLE_LIST
+
+SB_STYLE    equ   WS_CHILD or WS_VISIBLE or SBARS_TOOLTIPS or SBARS_SIZEGRIP
+
 
 .const
-ToolbarFile DEF_TOOLBAR {IDC_TOOLBARFILE, TB_STYLE, TBSTYLE_EX_MIXEDBUTTONS, $OfsTStr("File operations"), 0, 0, 0, 0, 2}
+ToolbarFile DEF_TOOLBAR {IDC_TOOLBARFILE, TB_STYLE, TBSTYLE_EX_MIXEDBUTTONS, $OfsTStr("File operations"), {<0,0,0,0>}, 2}
   TBBUTTON {IDB_FILE_NEW,   IDM_FILE_NEW,   TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("New")}
   TBBUTTON {IDB_FILE_CLOSE, IDM_FILE_CLOSE, TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("Close")}
 
-ToolbarWindow DEF_TOOLBAR {IDC_TOOLBARWINDOW, TB_STYLE, TBSTYLE_EX_MIXEDBUTTONS, $OfsTStr("Window operations"), 0, 0, 0, 0, 6}
+ToolbarWindow DEF_TOOLBAR {IDC_TOOLBARWINDOW, TB_STYLE, TBSTYLE_EX_MIXEDBUTTONS, $OfsTStr("Window operations"), {<0,0,0,0>}, 6}
   TBBUTTON {IDB_WINDOW_CASCADE,  IDM_WINDOW_CASCADE,  TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("Cascade")}
   TBBUTTON {IDB_WINDOW_TILE_HOR, IDM_WINDOW_TILE_HOR, TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("Tile horizontal")}
   TBBUTTON {IDB_WINDOW_TILE_VER, IDM_WINDOW_TILE_VER, TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("Tile vertical")}
@@ -27,9 +31,7 @@ ToolbarWindow DEF_TOOLBAR {IDC_TOOLBARWINDOW, TB_STYLE, TBSTYLE_EX_MIXEDBUTTONS,
   TBBUTTON {IDB_WINDOW_ARRANGE,  -1                ,  TBSTATE_ENABLED, TBSTYLE_SEP}
   TBBUTTON {IDB_WINDOW_CLOSEALL, IDM_WINDOW_CLOSEALL, TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, $OfsTStr("Close all")}
 
-SBSTYLE     equ    WS_CHILD or WS_VISIBLE or SBARS_TOOLTIPS or SBARS_SIZEGRIP
-
-AppStatusbar DEF_STATUSBAR {IDC_STATUSBAR, SBSTYLE, 0, 4}
+AppStatusbar DEF_STATUSBAR {IDC_STATUSBAR, SB_STYLE, 0, 4}
   DEF_STATUSBAR_PART {220, 100, 3, SBT_NOBORDERS, NULL}
   DEF_STATUSBAR_PART {120,  20, 1, SBT_SUNKEN,    NULL}
   DEF_STATUSBAR_PART {120,  -2, 0, SBT_SUNKEN,    NULL} ;Spring
@@ -37,26 +39,26 @@ AppStatusbar DEF_STATUSBAR {IDC_STATUSBAR, SBSTYLE, 0, 4}
 
 CloseEnumProc    proto :HWND, :LPARAM
 
-CStr szDemoApp07,   "Application"                         ;Used by Startup and Shutdown
-CStr szDemoChild07, "AppChild"                            ;Used by Startup and Shutdown
+CStr szApplication,   "Application"                     ;Used by Startup and Shutdown
+CStr szChildWnd,      "ChildWnd"                        ;Used by Startup and Shutdown
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-Object DemoChild07, , MdiChildWnd                       ;MDI child window.
+Object ChildWnd, , MdiChildWnd                          ;MDI child window.
   RedefineMethod    Done
-  RedefineMethod    Init,               POINTER, PSTRING  ;-> Owner, -> Title
+  RedefineMethod    Init,               POINTER, PSTRING  ;-> Owner, -> Caption
   RedefineMethod    OnGetMinMaxInfo,    WPARAM, LPARAM
+  RedefineMethod    OnSize,             WPARAM, LPARAM
   StaticMethod      Startup
 
   VirtualEvent      OnCreate,           WM_CREATE
-  VirtualEvent      OnPaint,            WM_PAINT
 
-  DefineVariable    pPlotXY,            $ObjPtr(PlotXY),    NULL
+  Embed     Chart,    ChartXY
 ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-Object MyClientWnd, MyClientWndID, MdiClientWnd         ;MDI client window.
+Object ClientWnd, MyClientWndID, MdiClientWnd           ;MDI client window.
   RedefineMethod    Done
   RedefineMethod    Init,               POINTER         ;-> Owner
 
@@ -68,7 +70,7 @@ ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-Object Application, , MdiApp                              ;MDI application.
+Object Application, , MdiApp                            ;MDI application = Frame window.
   RedefineMethod    Done
   VirtualMethod     EnableActions,      DWORD           ;TRUE/FALSE
   RedefineMethod    Init
@@ -76,7 +78,7 @@ Object Application, , MdiApp                              ;MDI application.
   StaticMethod      StatusbarHelp,      POINTER         ;-> Help string
   StaticMethod      Startup
 
-  VirtualEvent      OnClose,            WM_CLOSE, WM_QUERYENDSESSION
+;  VirtualEvent      OnClose,            WM_CLOSE, WM_QUERYENDSESSION
   VirtualEvent      OnCommand,          WM_COMMAND
   VirtualEvent      OnCreate,           WM_CREATE
   VirtualEvent      OnDestroy,          WM_DESTROY
@@ -102,6 +104,7 @@ ObjectEnd
 ;    Application implementation
 ; ==================================================================================================
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Application.Done
 ; Purpose:    Finalize the SDI application object.
@@ -185,18 +188,17 @@ Method Application.Init, uses xbx xdi xsi
   mov dWndPosY, $32($invoke(CenterForm, dWndHeight, $32($invoke(GetSystemMetrics, SM_CYSCREEN))))
 
   invoke CreateWindowEx, WS_EX_APPWINDOW or WS_EX_WINDOWEDGE,
-         offset szDemoApp07, offset szAppTitle, WS_OVERLAPPEDWINDOW or WS_CLIPCHILDREN, \
-         dWndPosX, dWndPosY, dWndWidth, dWndHeight, NULL, [xsi].hMenuInit, hInstance, pSelf
-
+         offset szApplication, offset szAppTitle, WS_OVERLAPPEDWINDOW or WS_CLIPCHILDREN, \
+         dWndPosX, dWndPosY, dWndWidth, dWndHeight, 0, [xsi].hMenuInit, hInstance, pSelf
   .if xax != 0
     ;Create Client window (subclass MDICLIENT)
-    mov [xsi].pClientWnd, $New(MyClientWnd)
-    OCall xax::MyClientWnd.Init, xsi
+    mov [xsi].pClientWnd, $New(ClientWnd)
+    OCall xax::ClientWnd.Init, xsi
 
     ;Create XMenu
     mov [xsi].pXMenu, $New(XMenu)
     mov xdi, [xsi].pClientWnd
-    OCall [xsi].pXMenu::XMenu.Init, xsi, [xsi].hWnd, [xdi].$Obj(MyClientWnd).hWnd, \
+    OCall [xsi].pXMenu::XMenu.Init, xsi, [xsi].hWnd, [xdi].$Obj(ClientWnd).hWnd, \
                                     [xsi].hMenuChildWnd, xbx, \
                                     $MethodAddr(Application.StatusbarHelp), IDLANG_ENGLISH
     invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL
@@ -217,15 +219,15 @@ Method Application.OnClose, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   mov dMsg, eax
   mov xbx, [xsi].pClientWnd
-  .if [xbx].$Obj(MyClientWnd).dChildCount == 0    ;Ask only if a child window is open
-    invoke DefFrameProc, [xsi].hWnd, [xbx].$Obj(MyClientWnd).hWnd, dMsg, wParam, lParam
+  .if [xbx].$Obj(ClientWnd).dChildCount == 0            ;Ask only if a child window is open
+    invoke DefFrameProc, [xsi].hWnd, [xbx].$Obj(ClientWnd).hWnd, dMsg, wParam, lParam
   .else
     invoke MessageBox, [xsi].hWnd, $OfsCStr("Are you sure ?"), $OfsCStr("Application exit"), \
                        MB_YESNO + MB_ICONQUESTION
     .if eax == IDNO
       xor eax, eax
     .else
-      invoke DefFrameProc, [xsi].hWnd, [xbx].$Obj(MyClientWnd).hWnd, dMsg, wParam, lParam
+      invoke DefFrameProc, [xsi].hWnd, [xbx].$Obj(ClientWnd).hWnd, dMsg, wParam, lParam
     .endif
   .endif
 MethodEnd
@@ -244,15 +246,15 @@ Method Application.OnCommand, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   mov xax, wParam
   mov xbx, [xsi].pClientWnd
-  .if ax == IDM_FILE_NEW                              ;Create a child window
+  .if ax == IDM_FILE_NEW                                ;Create a child window
     inc [xsi].dChildNumber
     invoke MemClone, addr cBuffer, $OfsCStr("Child "), 7*sizeof CHR
     invoke dword2dec, addr cNumber, [xsi].dChildNumber
     invoke StrLRTrim, addr cNumber, addr cNumber
     invoke StrCCat, addr cBuffer, addr cNumber, lengthof cBuffer
-    New DemoChild07
-    mov xcx, xax 
-    OCall xcx::DemoChild07.Init, xbx, addr cBuffer
+    New ChildWnd
+    mov xcx, xax
+    OCall xcx::ChildWnd.Init, xbx, addr cBuffer
     xor eax, eax
 
   .elseif ax == IDM_HELP_HELP
@@ -269,16 +271,16 @@ Method Application.OnCommand, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
     OCall Dlg::DialogAbout.Done
     xor eax, eax
 
-  .elseif (ax == IDM_FILE_CLOSE) || (ax == SC_CLOSE)  ;Close the active window
-    mov hChildWnd, $invoke(SendMessage, [xbx].$Obj(MyClientWnd).hWnd, WM_MDIGETACTIVE, 0, 0)
+  .elseif (ax == IDM_FILE_CLOSE) || (ax == SC_CLOSE)    ;Close the active window
+    mov hChildWnd, $invoke(SendMessage, [xbx].$Obj(ClientWnd).hWnd, WM_MDIGETACTIVE, 0, 0)
     invoke SendMessage, hChildWnd, WM_CLOSE, 0, 0
 
-  .elseif ax == SC_RESTORE                            ;Restore the active window
-    mov hChildWnd, $invoke(SendMessage, [xbx].$Obj(MyClientWnd).hWnd, WM_MDIGETACTIVE, 0, 0)
-    invoke SendMessage, [xbx].$Obj(MyClientWnd).hWnd, WM_MDIRESTORE, hChildWnd, 0
+  .elseif ax == SC_RESTORE                              ;Restore the active window
+    mov hChildWnd, $invoke(SendMessage, [xbx].$Obj(ClientWnd).hWnd, WM_MDIGETACTIVE, 0, 0)
+    invoke SendMessage, [xbx].$Obj(ClientWnd).hWnd, WM_MDIRESTORE, hChildWnd, 0
 
-  .elseif ax == SC_MINIMIZE                           ;Minimize the active window
-    mov hChildWnd, $invoke(SendMessage, [xbx].$Obj(MyClientWnd).hWnd, WM_MDIGETACTIVE, 0, 0)
+  .elseif ax == SC_MINIMIZE                             ;Minimize the active window
+    mov hChildWnd, $invoke(SendMessage, [xbx].$Obj(ClientWnd).hWnd, WM_MDIGETACTIVE, 0, 0)
     invoke ShowWindow, xax, SW_MINIMIZE
     xor eax, eax
 
@@ -287,21 +289,21 @@ Method Application.OnCommand, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
 
   ;Messages for arranging windows
   .elseif ax == IDM_WINDOW_TILE_HOR
-    invoke SendMessage, [xbx].$Obj(MyClientWnd).hWnd, WM_MDITILE, MDITILE_HORIZONTAL, 0
+    invoke SendMessage, [xbx].$Obj(ClientWnd).hWnd, WM_MDITILE, MDITILE_HORIZONTAL, 0
   .elseif ax == IDM_WINDOW_TILE_VER
-    invoke SendMessage, [xbx].$Obj(MyClientWnd).hWnd, WM_MDITILE, MDITILE_VERTICAL, 0
+    invoke SendMessage, [xbx].$Obj(ClientWnd).hWnd, WM_MDITILE, MDITILE_VERTICAL, 0
   .elseif ax == IDM_WINDOW_CASCADE
-    invoke SendMessage, [xbx].$Obj(MyClientWnd).hWnd, WM_MDICASCADE, 0, 0
+    invoke SendMessage, [xbx].$Obj(ClientWnd).hWnd, WM_MDICASCADE, 0, 0
   .elseif ax == IDM_WINDOW_ARRANGE
-    invoke SendMessage, [xbx].$Obj(MyClientWnd).hWnd, WM_MDIICONARRANGE, 0, 0
-  .elseif ax == IDM_WINDOW_CLOSEALL                   ;Attempt to close all windows
-    invoke EnumChildWindows, [xbx].$Obj(MyClientWnd).hWnd, addr CloseEnumProc, \
-                             [xbx].$Obj(MyClientWnd).hWnd
+    invoke SendMessage, [xbx].$Obj(ClientWnd).hWnd, WM_MDIICONARRANGE, 0, 0
+  .elseif ax == IDM_WINDOW_CLOSEALL                     ;Attempt to close all windows
+    invoke EnumChildWindows, [xbx].$Obj(ClientWnd).hWnd, addr CloseEnumProc, \
+                             [xbx].$Obj(ClientWnd).hWnd
     xor eax, eax
 
   ;Pass to active child
   .else
-    invoke SendMessage, [xbx].$Obj(MyClientWnd).hWnd, WM_MDIGETACTIVE, 0, 0
+    invoke SendMessage, [xbx].$Obj(ClientWnd).hWnd, WM_MDIGETACTIVE, 0, 0
     invoke SendMessage, xax, WM_COMMAND, wParam, lParam
   .endif
 MethodEnd
@@ -367,9 +369,9 @@ Method Application.OnKeyUp, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   mov xbx, [xsi].pClientWnd
   .if wParam == VK_F6
-    invoke SendMessage, [xbx].$Obj(MyClientWnd).hWnd ,WM_MDINEXT, NULL, 0
+    invoke SendMessage, [xbx].$Obj(ClientWnd).hWnd ,WM_MDINEXT, NULL, 0
   .endif
-  invoke DefFrameProc, [xsi].hWnd, [xbx].$Obj(MyClientWnd).hWnd, WM_KEYUP, wParam, lParam
+  invoke DefFrameProc, [xsi].hWnd, [xbx].$Obj(ClientWnd).hWnd, WM_KEYUP, wParam, lParam
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -407,8 +409,8 @@ Method Application.OnSize, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
     .if xbx != NULL
       mov ecx, dTop
       sub dHeight, ecx
-      invoke InvalidateRect, [xbx].$Obj(MyClientWnd).hWnd, NULL, FALSE
-      invoke MoveWindow, [xbx].$Obj(MyClientWnd).hWnd, 0, dTop, dWidth, dHeight, TRUE
+      invoke InvalidateRect, [xbx].$Obj(ClientWnd).hWnd, NULL, FALSE
+      invoke MoveWindow, [xbx].$Obj(ClientWnd).hWnd, 0, dTop, dWidth, dHeight, TRUE
     .endif
   .endif
 
@@ -459,7 +461,7 @@ Method Application.Startup
   m2m WC.hInstance, hInstance, xdx
   m2z WC.hbrBackground
   m2z WC.lpszMenuName
-  c2m WC.lpszClassName, offset szDemoApp07, xdx
+  c2m WC.lpszClassName, offset szApplication, xdx
   mov WC.hIcon, $invoke(LoadIcon, hInstance, $OfsCStr("ICON_APP"))
   mov WC.hCursor, $invoke(LoadCursor, 0, IDC_ARROW)
   m2z WC.hIconSm
@@ -470,30 +472,30 @@ MethodEnd
 
 
 ; ==================================================================================================
-;    MyClientWnd implementation
+;    ClientWnd implementation
 ; ==================================================================================================
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     MyClientWnd.Done
-; Purpose:    Finalize the MyClientWnd object.
+; Method:     ClientWnd.Done
+; Purpose:    Finalize the ClientWnd object.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method MyClientWnd.Done, uses xsi
+Method ClientWnd.Done, uses xsi
   SetObject xsi
   invoke DeleteObject, [xsi].hBGBrush
   ACall xsi.Done
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     MyClientWnd.Init
+; Method:     ClientWnd.Init
 ; Purpose:    Initialize the MdiClientWnd object.
 ; Arguments:  Arg1 -> Owner object.
 ; Return:     Nothing.
 
-Method MyClientWnd.Init, uses xsi, pOwner:POINTER
+Method ClientWnd.Init, uses xsi, pOwner:POINTER
   local hBmp:HBITMAP
-  
+
   SetObject xsi
   ACall xsi.Init, pOwner
   mov hBmp, $invoke(LoadBitmap, hInstance, $OfsCStr("BMP_BACKGROUND"))
@@ -502,13 +504,13 @@ Method MyClientWnd.Init, uses xsi, pOwner:POINTER
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     MyClientWnd.OnPaint
+; Method:     ClientWnd.OnPaint
 ; Purpose:    Event procedure for WM_PAINT message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method MyClientWnd.OnPaint, uses xsi, wParam:WPARAM, lParam:LPARAM
+Method ClientWnd.OnPaint, uses xsi, wParam:WPARAM, lParam:LPARAM
   local PS:PAINTSTRUCT, Rct:RECT
 
   SetObject xsi
@@ -517,67 +519,67 @@ Method MyClientWnd.OnPaint, uses xsi, wParam:WPARAM, lParam:LPARAM
   invoke FillRect, PS.hdc, addr Rct, [xsi].hBGBrush
   invoke EndPaint, [xsi].hWnd, addr PS
   xor eax, eax
-  invoke CallWindowProc, [xsi].$Obj(MyClientWnd).pPrevWndProc, \
-                         [xsi].$Obj(MyClientWnd).hWnd, \
+  invoke CallWindowProc, [xsi].$Obj(ClientWnd).pPrevWndProc, \
+                         [xsi].$Obj(ClientWnd).hWnd, \
                          WM_PAINT, wParam, lParam
 MethodEnd
 
 
 
 ; ==================================================================================================
-;    DemoChild07 implementation
+;    ChildWnd implementation
 ; ==================================================================================================
 
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoChild07.Done
-; Purpose:    Finalize the DemoChild07 object.
+; Method:     ChildWnd.Done
+; Purpose:    Finalize the ChildWnd object.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method DemoChild07.Done, uses xbx xdi xsi
+Method ChildWnd.Done, uses xbx xdi xsi
   SetObject xsi
   mov xdi, [xsi].pOwner
-  dec [xdi].$Obj(MyClientWnd).dChildCount
+  dec [xdi].$Obj(ClientWnd).dChildCount
 
   .if ZERO?
-    mov xbx, [xdi].$Obj(MyClientWnd).pOwner
+    mov xbx, [xdi].$Obj(ClientWnd).pOwner
     OCall xbx::Application.EnableActions, FALSE
-    invoke SendMessage, [xdi].$Obj(MyClientWnd).hWnd, WM_MDISETMENU, \
+    invoke SendMessage, [xdi].$Obj(ClientWnd).hWnd, WM_MDISETMENU, \
                         [xbx].$Obj(Application).hMenuInit, NULL
-    invoke DrawMenuBar, [xbx].$Obj(Application).hWnd      ;Redraw the new menu bar
+    invoke DrawMenuBar, [xbx].$Obj(Application).hWnd    ;Redraw the new menu bar
   .endif
 
-  Destroy [xsi].pPlotXY
+  OCall [xsi].Chart::ChartXY.Done
   ACall xsi.Done
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoChild07.Init
-; Purpose:    Initialize the DemoChild07 object.
+; Method:     ChildWnd.Init
+; Purpose:    Initialize the ChildWnd object.
 ; Arguments:  Arg1: -> Owner object.
 ;             Arg2: -> Title string.
 ; Return:     Nothing.
 
-Method DemoChild07.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRING
+Method ChildWnd.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRING
   SetObject xsi
   ACall xsi.Init, pOwner, NULL                          ;hWnd is set in WndProc
 
   mov xdi, pOwner
-  inc [xdi].$Obj(MyClientWnd).dChildCount
+  inc [xdi].$Obj(ClientWnd).dChildCount
 
-  invoke CreateMDIWindow, offset szDemoChild07, pTitle, \
+  invoke CreateMDIWindow, offset szChildWnd, pTitle, \
                           0 , CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, \
-                          [xdi].$Obj(MyClientWnd).hWnd, hInstance, pSelf
-  mov xbx, [xdi].$Obj(MyClientWnd).pOwner
+                          [xdi].$Obj(ClientWnd).hWnd, hInstance, pSelf
+  mov xbx, [xdi].$Obj(ClientWnd).pOwner
   .if xax != NULL
     ;Manage the main Menu
-    .if [xdi].$Obj(MyClientWnd).dChildCount == 1        ;First child window ?
+    .if [xdi].$Obj(ClientWnd).dChildCount == 1          ;First child window ?
       OCall xbx::Application.EnableActions, TRUE
-      invoke SendMessage, [xdi].$Obj(MyClientWnd).hWnd, WM_MDISETMENU, \
+      invoke SendMessage, [xdi].$Obj(ClientWnd).hWnd, WM_MDISETMENU, \
                           [xbx].$Obj(Application).hMenuChild, \
                           [xbx].$Obj(Application).hMenuChildWnd
-      invoke DrawMenuBar, [xbx].$Obj(Application).hWnd    ;Redraw the new menu bar
+      invoke DrawMenuBar, [xbx].$Obj(Application).hWnd  ;Redraw the new menu bar
     .endif
 
     invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL
@@ -588,210 +590,170 @@ Method DemoChild07.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRING
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoChild07.OnCreate
+; Method:     ChildWnd.OnCreate
 ; Purpose:    Event procedure for WM_CREATE message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoChild07.OnCreate, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
-  local DataXY:PLOTXY_DATA, dDataBuff:DWORD
-  local pCollDataX:POINTER, pCollDataY:POINTER
-  local pDataBufferX:POINTER, pDataBufferY:POINTER
+$CFloat macro Value
+  if type CHT_FLOAT eq 4
+    exitm $CReal4(Value)
+  else
+    exitm $CReal8(Value)
+  endif
+endm
+
+Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
+  local dDataBuff:DWORD, ChartDef:DEF_CHART
 
   SetObject xsi
 
-  ;Create PlotXY instance
-  mov [xsi].pPlotXY, $New(PlotXY)
+  mov ChartDef.xCtlID, 123456
+  mov ChartDef.dStyle, WS_BORDER or WS_CHILD
+  mov ChartDef.dExStyle, 0
+  invoke GetClientRect, [xsi].hWnd, addr ChartDef.rect
 
-  ;Create PlotXY data
-  ;X's data
-  mov pCollDataX, $New(Collection)
-  OCall xax::Collection.Init, xsi, 3, 1, COL_MAX_CAPACITY
-  ;X(1)
-  mov pDataBufferX, $New(DataBufferXY)
-  mov xbx, xax
-  OCall xbx::DataBufferXY.Init, xsi, DATAPOINTS, sizeof(REAL4)
-  mov [xbx].$Obj(DataBufferXY).pDesc, $invoke(StrNew, $OfsCStr("Time"))
-  mov [xbx].$Obj(DataBufferXY).pUnit, $invoke(StrNew, $OfsCStr("sec."))
-  xor ebx, ebx
-  .while ebx < DATAPOINTS
-    mov dDataBuff, ebx
-    fild dDataBuff
-    fstp REAL4 ptr dDataBuff
-    OCall pDataBufferX::DataBufferXY.ItemAt, ebx
-    .if xax != NULL
-      mrm REAL4 ptr [xax], dDataBuff, edx
-    .endif
-    inc ebx
-  .endw
-  OCall pDataBufferX::DataBufferXY.Scan, 0, DATAPOINTS - 1
-  OCall pCollDataX::Collection.Insert, pDataBufferX
-  ;X(2)
-  mov pDataBufferX, $New(DataBufferXY)
-  OCall xax::DataBufferXY.Init, xsi, DATAPOINTS-200, sizeof(REAL4)
-  xor ebx, ebx
-  .while ebx < DATAPOINTS - 200
-    mov dDataBuff, ebx
-    fild dDataBuff
-    fstp REAL4 ptr dDataBuff
-    OCall pDataBufferX::DataBufferXY.ItemAt, ebx
-    .if xax != NULL
-      mrm REAL4 ptr [xax], dDataBuff, edx
-    .endif
-    inc ebx
-  .endw
-  OCall pDataBufferX::DataBufferXY.Scan, 0, DATAPOINTS - 200 - 1
-  OCall pCollDataX::Collection.Insert, pDataBufferX
-  ;X(3)
-  mov pDataBufferX, $New(DataBufferXY)
-  OCall xax::DataBufferXY.Init, xsi, DATAPOINTS - 400, sizeof(REAL4)
-  xor ebx, ebx
-  .while ebx < DATAPOINTS - 400
-    mov dDataBuff, ebx
-    add dDataBuff, 300
-    fild dDataBuff
-    fstp REAL4 ptr dDataBuff
-    OCall pDataBufferX::DataBufferXY.ItemAt, ebx
-    .if eax != NULL
-      mrm REAL4 ptr [xax], dDataBuff, edx
-    .endif
-    inc ebx
-  .endw
-  OCall pDataBufferX::DataBufferXY.Scan, 0, DATAPOINTS - 400 - 1
-  OCall pCollDataX::Collection.Insert, pDataBufferX
+  OCall [xsi].Chart::ChartXY.Init, xsi, [xsi].hWnd, addr ChartDef
 
-  ;Y's data
-  mov pCollDataY, $New(Collection)
-  OCall xax::Collection.Init, xsi, 3, 1, COL_MAX_CAPACITY
-  ;Y(1)
-  mov pDataBufferY, $New(DataBufferXY)
-  mov xbx, xax
-  OCall xbx::DataBufferXY.Init, xsi, DATAPOINTS, sizeof(REAL4)
-  mov [xbx].$Obj(DataBufferXY).pDesc, $invoke(StrNew, $OfsCStr("Output"))
-  mov [xbx].$Obj(DataBufferXY).pUnit, $invoke(StrNew, $OfsCStr("Volt"))
-  mov [xbx].$Obj(DataBufferXY).dLineColor, $RGB(255, 000, 000)    ;Plot line color
-  xor ebx, ebx
-  fld $CReal4(0.12566370614359)                      ;2*Pi/50
-  fldz
-  fldz
-  .while ebx < DATAPOINTS
-    fsin
-    fstp REAL4 ptr dDataBuff
-    fadd st(0), st(1)
-    fld st(0)
-    OCall pDataBufferY::DataBufferXY.ItemAt, ebx
-    .if xax != NULL
-      mrm REAL4 ptr [xax], dDataBuff, edx
-    .endif
-    inc ebx
-  .endw
-  fUnload 3                                           ;Unload FPU stack
-  OCall pDataBufferY::DataBufferXY.Scan, 0, DATAPOINTS - 1
-  OCall pCollDataY::Collection.Insert, pDataBufferY
-  ;Y(2)
-  mov pDataBufferY, $New(DataBufferXY)
-  mov xbx, xax
-  OCall xax::DataBufferXY.Init, xsi, DATAPOINTS - 200, sizeof(REAL4)
-  mov [xbx].$Obj(DataBufferXY).dLineColor, $RGB(000, 255, 000)    ;Plot line color
-  mov [xbx].$Obj(DataBufferXY).dLineWidth, 3
-  xor ebx, ebx
-  fld $CReal4(0.00566370614359)
-  fldz
-  fldz
-  .while ebx < DATAPOINTS - 200
-    fsqrt
-    fstp REAL4 ptr dDataBuff
-    fadd st(0), st(1)
-    fld st(0)
-    OCall pDataBufferY::DataBufferXY.ItemAt, ebx
-    .if xax != NULL
-      mrm REAL4 ptr [xax], dDataBuff, edx
-    .endif
-    inc ebx
-  .endw
-  fUnload 3                                           ;Unload FPU stack
-  OCall pDataBufferY::DataBufferXY.Scan, 0, DATAPOINTS - 200 - 1
-  OCall pCollDataY::Collection.Insert, pDataBufferY
-  ;Y(3)
-  mov pDataBufferY, $New(DataBufferXY)
-  mov xbx, xax
-  OCall xbx::DataBufferXY.Init, xsi, DATAPOINTS - 400, sizeof(REAL4)
-  mov [xbx].$Obj(DataBufferXY).dLineColor, $RGB(000, 000, 255)  ;Plot line color
-  mov [xbx].$Obj(DataBufferXY).dLineWidth, 2
-  xor ebx, ebx
-  fld $CReal4(0.00566370614359)
-  fldz
-  fldz
-  .while ebx < DATAPOINTS - 400
-    fsqrt
-    fstp REAL4 ptr dDataBuff
-    fadd st(0), st(1)
-    fld st(0)
-    OCall pDataBufferY::DataBufferXY.ItemAt, ebx
-    .if eax != NULL
-      mrm REAL4 ptr [xax], dDataBuff, edx
-    .endif
-    inc ebx
-  .endw
-  fUnload 3                                           ;Unload FPU stack
-  OCall pDataBufferY::DataBufferXY.Scan, 0, DATAPOINTS - 400 - 1
-  OCall pCollDataY::Collection.Insert, pDataBufferY
+;  mov [xsi].Chart.Colors.PlotArea,    $RGB(255,255,255)
+;  mov [xsi].Chart.Colors.PlotBorder,  $RGB(000,000,000)
+;  mov [xsi].Chart.Colors.Background,  $RGB(223,223,223)
+;  mov [xsi].Chart.Colors.Scales,      $RGB(000,000,000)
 
-  ;Main Data structure
-  lea xbx, DataXY
-  invoke MemZero, xbx, sizeof DataXY
-
-  mrm [xbx].PLOTXY_DATA.pCollDataX, pCollDataX, xax
-  mrm [xbx].PLOTXY_DATA.pCollDataY, pCollDataY, xax
+  ;Set paddings
+  mov [xsi].Chart.Padding.left, 20
+  mov [xsi].Chart.Padding.top, 20
+  mov [xsi].Chart.Padding.right, 20
+  mov [xsi].Chart.Padding.bottom, 20
 
   ;Scale X axis
-  lea xbx, DataXY.ScaleX
-  mov [xbx].SCALE_BASIC_DATA.bOptions, mask AutoMin or mask AutoMax or \
-                                       mask AutoMjrDiv or mask AutoMnrDiv or \
-                                       mask ShowGrid
+  s2s [xsi].Chart.ScaleX.fSetupMax, $CFloat(1000.0), xax, xcx
+  s2s [xsi].Chart.ScaleX.fSetupMin, $CFloat(0.0), xax, xcx
+  s2s [xsi].Chart.ScaleX.fDataMax,  $CFloat(1000.0), xax, xcx
+  s2s [xsi].Chart.ScaleX.fDataMin,  $CFloat(0.0), xax, xcx
+
+  mov [xsi].Chart.ScaleX.dSetupMjrDiv, 16
+  mov [xsi].Chart.ScaleX.dSetupMnrDiv, 8
+  mov [xsi].Chart.ScaleX.dDataMjrDiv, 16
+  mov [xsi].Chart.ScaleX.dDataMnrDiv, 8
+
+  mov [xsi].Chart.ScaleX.pDescription, $invoke(StrNew, $OfsCStr("Time"))
+  mov [xsi].Chart.ScaleX.pUnit, $invoke(StrNew, $OfsCStr("sec."))
+
   ;Scale Y axis
-  lea xbx, DataXY.ScaleY
-  mov [xbx].SCALE_BASIC_DATA.bOptions, mask AutoMin or mask AutoMax or \
-                                       mask AutoMjrDiv or mask AutoMnrDiv or \
-                                       mask ShowGrid
-  ;Colors
-  lea xbx, DataXY.Colors
-  mov [xbx].COLOR_CONFIG.dGrid,       $RGB(128, 128, 128)    ;Grid color
-  mov [xbx].COLOR_CONFIG.dPlotArea,   $RGB(255, 255, 255)    ;Plot area color
-  mov [xbx].COLOR_CONFIG.dPlotBorder, $RGB(000, 000, 000)    ;Plot border color
-  mov [xbx].COLOR_CONFIG.dBackground, $RGB(220, 220, 220)    ;Background color
-  mov [xbx].COLOR_CONFIG.dScales,     $RGB(000, 000, 000)    ;Ticks and scale labels
+  s2s [xsi].Chart.ScaleY1.fSetupMax, $CFloat(5.0), xax, xcx
+  s2s [xsi].Chart.ScaleY1.fSetupMin, $CFloat(-5.0), xax, xcx
+  s2s [xsi].Chart.ScaleY1.fDataMax,  $CFloat(2.0), xax, xcx
+  s2s [xsi].Chart.ScaleY1.fDataMin,  $CFloat(-2.0), xax, xcx
 
-  OCall [xsi].pPlotXY::PlotXY.Init, xsi, [xsi].hWnd, addr DataXY
+  mov [xsi].Chart.ScaleY1.dSetupMjrDiv, 2
+  mov [xsi].Chart.ScaleY1.dSetupMnrDiv, 1
+  mov [xsi].Chart.ScaleY1.dDataMjrDiv, 2
+  mov [xsi].Chart.ScaleY1.dDataMnrDiv, 1
+
+  mov [xsi].Chart.ScaleY1.pDescription, $invoke(StrNew, $OfsCStr("Signal"))
+  mov [xsi].Chart.ScaleY1.pUnit, $invoke(StrNew, $OfsCStr("Volt"))
+
+  ;Create Chart data
+  mov xdi, $New(ChartSeries)
+  OCall xdi::ChartSeries.Init, addr [xsi].Chart.Data, DATAPOINTS
+  mov [xdi].$Obj(ChartSeries).dDataFrom, 0 + 200
+  mov [xdi].$Obj(ChartSeries).dDataCount, DATAPOINTS - 400
+  mov [xdi].$Obj(ChartSeries).pName, $invoke(StrNew, $OfsCStr("Voltage 1"))
+  mov [xdi].$Obj(ChartSeries).pDescription, $invoke(StrNew, $OfsCStr("Signal 1"))
+  mov [xdi].$Obj(ChartSeries).LineColor, $RGB(000,192,000)
+  mov [xdi].$Obj(ChartSeries).dLineWidth, 1
+  mov [xdi].$Obj(ChartSeries).MarkerFillColor, $RGB(000,255,000)
+  mov [xdi].$Obj(ChartSeries).dMarkerSize, 7
+  mov [xdi].$Obj(ChartSeries).dMarkerShape, CHTXY_MARKER_SQUARE
+  mov [xdi].$Obj(ChartSeries).dFlags, CHT_SERIES_SHOW_LINE or CHT_SERIES_SHOW_MARKER or CHT_SERIES_SHOW_TAB
+
+  xor ebx, ebx
+  .while ebx < DATAPOINTS
+    mov dDataBuff, ebx
+    OCall xdi::ChartSeries.ItemAt, 0, ebx               ;Return a pointer to a CHT_FLOAT (x-value)
+    .if xax != NULL
+      fild dDataBuff
+      fstp CHT_FLOAT ptr [xax]
+    .endif
+    inc ebx
+  .endw
+
+  xor ebx, ebx
+  fld $CFloat(0.12566370614359)                         ;2*Pi/50
+  fldz
+  fldz
+  .while ebx < DATAPOINTS
+    OCall xdi::ChartSeries.ItemAt, 1, ebx               ;Return a pointer to a CHT_FLOAT (y-value)
+    .if xax != NULL
+      fsin
+      fstp CHT_FLOAT ptr [xax]
+      fadd st(0), st(1)
+      fld st(0)
+    .endif
+    inc ebx
+  .endw
+  fUnload 3
+
+  OCall xdi::ChartSeries.Scan, 0, DATAPOINTS
+  OCall [xsi].Chart.Data::Collection.Insert, xdi
+
+  ;Create Chart data
+  mov xdi, $New(ChartSeries)
+  OCall xdi::ChartSeries.Init, addr [xsi].Chart.Data, DATAPOINTS/32
+  mov [xdi].$Obj(ChartSeries).dDataFrom, 0
+  mov [xdi].$Obj(ChartSeries).dDataCount, DATAPOINTS/32
+  mov [xdi].$Obj(ChartSeries).pName, $invoke(StrNew, $OfsCStr("Voltage 2"))
+  mov [xdi].$Obj(ChartSeries).pDescription, $invoke(StrNew, $OfsCStr("Signal 2"))
+  mov [xdi].$Obj(ChartSeries).LineColor, $RGB(255,000,000)
+  mov [xdi].$Obj(ChartSeries).dLineWidth, 1
+  mov [xdi].$Obj(ChartSeries).MarkerFillColor, $RGB(255,000,000)
+  mov [xdi].$Obj(ChartSeries).dMarkerSize, 9
+  mov [xdi].$Obj(ChartSeries).dMarkerShape, CHTXY_MARKER_CIRCLE
+  mov [xdi].$Obj(ChartSeries).dFlags, CHT_SERIES_SHOW_LINE or CHT_SERIES_SHOW_MARKER or CHT_SERIES_SHOW_TAB
+
+  xor ebx, ebx
+  .while ebx < DATAPOINTS/32
+    mov ecx, ebx
+    shl ecx, 5
+    mov dDataBuff, ecx
+    OCall xdi::ChartSeries.ItemAt, 0, ebx               ;Return a pointer to a CHT_FLOAT (x-value)
+    .if xax != NULL
+      fild dDataBuff
+      fstp CHT_FLOAT ptr [xax]
+    .endif
+    inc ebx
+  .endw
+
+  xor ebx, ebx
+  fld $CFloat(0.05)
+  fldz
+  fldz
+  .while ebx < DATAPOINTS/32
+    OCall xdi::ChartSeries.ItemAt, 1, ebx               ;Return a pointer to a CHT_FLOAT (y-value)
+    .if xax != NULL
+      fsqrt
+      fstp CHT_FLOAT ptr [xax]
+      fadd st(0), st(1)
+      fld st(0)
+    .endif
+    inc ebx
+  .endw
+  fUnload 3
+
+  OCall xdi::ChartSeries.Scan, 0, DATAPOINTS/32
+  OCall [xsi].Chart.Data::Collection.Insert, xdi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoChild07.OnPaint
-; Purpose:    Event procedure for WM_PAINT message.
-; Arguments:  Arg1: First message parameter.
-;             Arg2: Second message parameter.
-; Return:     eax = Zero.
-
-Method DemoChild07.OnPaint, uses xsi, wParam:WPARAM, lParam:LPARAM
-  local PS:PAINTSTRUCT, ClientRect:RECT
-
-  SetObject xsi
-  invoke BeginPaint, [xsi].hWnd, addr PS
-  invoke GetClientRect, [xsi].hWnd, addr ClientRect
-  OCall [xsi].pPlotXY::PlotXY.Show, PS.hdc, addr ClientRect
-  invoke EndPaint, [xsi].hWnd, addr PS
-  xor eax, eax
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoChild07.OnGetMinMaxInfo
+; Method:     ChildWnd.OnGetMinMaxInfo
 ; Purpose:    Event procedure for WM_GETMINMAXINFO message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoChild07.OnGetMinMaxInfo, uses xsi, wParam:WPARAM, lParam:LPARAM
+Method ChildWnd.OnGetMinMaxInfo, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   invoke DefMDIChildProc, [xsi].hWnd, WM_GETMINMAXINFO, wParam, lParam
   mov xcx, lParam
@@ -801,23 +763,42 @@ Method DemoChild07.OnGetMinMaxInfo, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoChild07.Startup
+; Method:     ChildWnd.OnSize
+; Purpose:    Event procedure for WM_SIZE message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = Zero if handled.
+
+Method ChildWnd.OnSize, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+  SetObject xsi
+  ;DbgText "ChildWnd.OnSize"
+  ACall xsi.OnSize, wParam, lParam
+  .if wParam != SIZE_MINIMIZED
+    LoWord lParam, xax
+    HiWord lParam, xbx
+    invoke MoveWindow, [xsi].Chart.hWnd, 0, 0, eax, ebx, TRUE
+  .endif
+  xor eax, eax
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChildWnd.Startup
 ; Purpose:    Register the object with the OS.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method DemoChild07.Startup
+Method ChildWnd.Startup
   local WC:WNDCLASSEX
 
   mov WC.cbSize, sizeof WNDCLASSEX
   mov WC.style, CHILD_CLS_STYLE
-  mrm WC.lpfnWndProc, $MethodAddr(DemoChild07.WndProc), xdx
+  mrm WC.lpfnWndProc, $MethodAddr(ChildWnd.WndProc), xdx
   m2z WC.cbClsExtra
   m2z WC.cbWndExtra
   mrm WC.hInstance, hInstance, xdx
   mov WC.hbrBackground, 0                               ;No background drawing to avoid flickering
   m2z WC.lpszMenuName
-  c2m WC.lpszClassName, offset szDemoChild07, xdx
+  c2m WC.lpszClassName, offset szChildWnd, xdx
   mov WC.hIcon, $invoke(LoadIcon, hInstance, $OfsCStr("ICON_APP_CHILD"))
   m2z WC.hIconSm
   mov WC.hCursor, $invoke(LoadCursor, 0, IDC_ARROW)

@@ -10,7 +10,7 @@
 ; ==================================================================================================
 
 
-WM_GETOBJECTINSTANCE  equ   7FFFh   ;Last possible WM_USER message
+WM_GETOBJECTINSTANCE  equ   7FFFh                       ;Last possible WM_USER message
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Object:     WinPrimer
@@ -46,9 +46,10 @@ if IMPLEMENT
 
 Method WinPrimer.Done, uses xsi
   SetObject xsi
-  .if [xsi].hWnd != 0
-    invoke DestroyWindow, [xsi].hWnd 
-  .endif
+;  .if [xsi].hWnd != 0
+;    invoke DestroyWindow, [xsi].hWnd
+;    mov [xsi].hWnd, 0
+;  .endif
   ACall xsi.Done
 MethodEnd
 
