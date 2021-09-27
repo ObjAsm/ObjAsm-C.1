@@ -19,8 +19,8 @@ IDM_FIRSTCHILD equ 50000                                ;Must be larger than any
 
 Object MdiChildWnd, MdiChildWndID, Window               ;Child window of MdiApp.
   RedefineMethod    OnGetMinMaxInfo,WPARAM, LPARAM 
-  RedefineMethod    WndProc,        DWORD, WPARAM, LPARAM
   RedefineMethod    OnSize,         WPARAM, LPARAM
+  RedefineMethod    WndProc,        DWORD, WPARAM, LPARAM
 
   VirtualEvent      OnNCDestroy,    WM_NCDESTROY
 ObjectEnd

@@ -1808,6 +1808,7 @@ MethodEnd
 Method ChartFlat.OnMouseWheel, uses xsi, wParam:WPARAM, lParam:LPARAM
   local sdValue:SDWORD, dDoZoom:DWORD, dDoPan:DWORD
 
+  ;DbgText "ChartFlat.OnMouseWheel"
   SetObject xsi
   mov dDoPan, FALSE
   mov dDoZoom, FALSE
@@ -1916,7 +1917,7 @@ Method ChartFlat.Show, uses xbx xdi xsi, hDC:HDC, pRect:PRECT
   ;DbgText "ChartFlat.Show"
   SetObject xsi
   ;Draw on a memory DC to avoid flicker
-  mov xdi, $invoke(CreateCompatibleDC, hDC)
+  mov xdi, $invoke(CreateCompatibleDC, hDC)             ;Create Mem DC
   mov xbx, pRect
   invoke CreateCompatibleBitmap, hDC, [xbx].RECT.right, [xbx].RECT.bottom
   mov hPrevBmp, $invoke(SelectObject, xdi, xax)
@@ -1937,7 +1938,7 @@ Method ChartFlat.Show, uses xbx xdi xsi, hDC:HDC, pRect:PRECT
     .endw
   .endif
 
-  ;Copy the drawn chart on memory DC to window hDC
+  ;Copy the drawn chart on memory DC to window DC
   mov xbx, pRect
   invoke BitBlt, hDC, [xbx].RECT.left, [xbx].RECT.top, [xbx].RECT.right, [xbx].RECT.bottom, \
                  xdi, [xbx].RECT.left, [xbx].RECT.top, SRCCOPY

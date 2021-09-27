@@ -52,6 +52,7 @@ Object ChildWnd, , MdiChildWnd                          ;MDI child window.
   StaticMethod      Startup
 
   VirtualEvent      OnCreate,           WM_CREATE
+  VirtualEvent      OnMouseWheel,       WM_MOUSEWHEEL
 
   Embed     Chart,    ChartXY
 ObjectEnd
@@ -778,6 +779,20 @@ Method ChildWnd.OnSize, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
     HiWord lParam, xbx
     invoke MoveWindow, [xsi].Chart.hWnd, 0, 0, eax, ebx, TRUE
   .endif
+  xor eax, eax
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChildWnd.OnMouseWheel
+; Purpose:    Event procedure for WM_MOUSEWHEEL message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = Zero if handled.
+
+Method ChildWnd.OnMouseWheel, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+  SetObject xsi
+  ;DbgText "ChildWnd.OnMouseWheel"
+  invoke SendMessage, [xsi].Chart.hWnd, WM_MOUSEWHEEL, wParam, lParam 
   xor eax, eax
 MethodEnd
 
