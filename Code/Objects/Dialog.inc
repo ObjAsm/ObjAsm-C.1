@@ -258,12 +258,12 @@ MethodEnd                                               ;  setting the default k
 ;             Arg2: Y position from screen left border.
 ; Return:     Nothing.
 
-Method Dialog.ShowAt,, XPos:SDWORD, YPos:SDWORD
+Method Dialog.ShowAt,, sdXPos:SDWORD, sdYPos:SDWORD
   SetObject xcx
-  m2m [xcx].StartPos.x, XPos, eax
-  m2m [xcx].StartPos.y, YPos, edx
+  m2m [xcx].StartPos.x, sdXPos, eax
+  m2m [xcx].StartPos.y, sdYPos, edx
   .if [xcx].hWnd
-    invoke SetWindowPos, [xcx].hWnd, HWND_TOP, XPos, YPos, 0, 0, SWP_NOSIZE
+    invoke SetWindowPos, [xcx].hWnd, HWND_TOP, sdXPos, sdYPos, 0, 0, SWP_NOSIZE
   .else
     OCall xcx.Show
   .endif

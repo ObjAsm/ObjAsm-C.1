@@ -189,7 +189,7 @@ Method ColorButton.OnPaint, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
   invoke CreateSolidBrush, [xsi].Color
   mov hPrevBrush, $invoke(SelectObject, [xsi].hMemDC, xax)
   add edi, 8                                            ;Move to the center of the 16x16 icon
-  invoke FloodFill, [xsi].hMemDC, edi, edi, $RGB(0, 0, 0)
+  invoke FloodFill, [xsi].hMemDC, edi, edi, $RGB(000,000,000)
   invoke DeleteObject, $invoke(SelectObject, [xsi].hMemDC, hPrevBrush)
 
   mov xax, [xsi].pTextBuffer
@@ -197,7 +197,8 @@ Method ColorButton.OnPaint, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
     mov dPrevBackMode, $32($invoke(SetBkMode, [xsi].hMemDC, TRANSPARENT))
     .ifBitClr [xsi].dFlags, BTF_DISABLED
       ;Enabled
-      invoke GetSysColor, COLOR_WINDOWTEXT
+      ;invoke GetSysColor, COLOR_WINDOWTEXT
+      mov eax, $RGB(000,000,000)
       mov dPrevColor, $32($invoke(SetTextColor, [xsi].hMemDC, eax))
       invoke DrawTextEx, [xsi].hMemDC, [xsi].pTextBuffer, -1, \
                          addr [xsi].TextRect, DT_LEFT or DT_VCENTER or DT_SINGLELINE, NULL

@@ -13,27 +13,24 @@
 CheckPointAndAdjustPosition macro
   mov Pnt.x, edi
   mov Pnt.y, esi
-  invoke MonitorFromPoint, Pnt, MONITOR_DEFAULTTONULL
-  .if eax == NULL
-    invoke MonitorFromPoint, Pnt, MONITOR_DEFAULTTONEAREST
-    lea r8, MI
-    mov MI.cbSize, sizeof(MONITORINFO)
-    invoke GetMonitorInfo, rax, r8
-    .if esi > MI.rcWork.bottom
-      sub esi, MI.rcWork.bottom
-      sub sdYPos, esi
-    .elseif esi < MI.rcWork.top
-      sub esi, MI.rcWork.top
-      sub sdYPos, esi
-    .endif
- 
-    .if edi > MI.rcWork.right
-      sub edi, MI.rcWork.right
-      sub sdXPos, edi
-    .elseif edi < MI.rcWork.left
-      sub edi, MI.rcWork.left
-      sub sdXPos, edi
-    .endif
+  invoke MonitorFromPoint, Pnt, MONITOR_DEFAULTTONEAREST
+  lea r8, MI
+  mov MI.cbSize, sizeof(MONITORINFO)
+  invoke GetMonitorInfo, rax, r8
+  .if sdword ptr esi > MI.rcWork.bottom
+    sub esi, MI.rcWork.bottom
+    sub sdYPos, esi
+  .elseif sdword ptr esi < MI.rcWork.top
+    sub esi, MI.rcWork.top
+    sub sdYPos, esi
+  .endif
+
+  .if sdword ptr edi > MI.rcWork.right
+    sub edi, MI.rcWork.right
+    sub sdXPos, edi
+  .elseif sdword ptr edi < MI.rcWork.left
+    sub edi, MI.rcWork.left
+    sub sdXPos, edi
   .endif
 endm
 

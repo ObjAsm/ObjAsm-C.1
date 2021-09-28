@@ -11,33 +11,27 @@
 % include &ObjMemPath&ObjMem.cop
 
 CheckPointAndAdjustPosition macro
-  push MONITOR_DEFAULTTONULL
+  push MONITOR_DEFAULTTONEAREST
   push esi
   push edi
   call MonitorFromPoint
-  .if eax == NULL
-    push MONITOR_DEFAULTTONULL
-    push esi
-    push edi
-    call MonitorFromPoint
-    lea ecx, MI
-    mov MI.cbSize, sizeof MONITORINFO
-    invoke GetMonitorInfo, eax, ecx
-    .if esi > MI.rcWork.bottom
-      sub esi, MI.rcWork.bottom
-      sub sdYPos, esi
-    .elseif esi < MI.rcWork.top
-      sub esi, MI.rcWork.top
-      sub sdYPos, esi
-    .endif
+  lea ecx, MI
+  mov MI.cbSize, sizeof MONITORINFO
+  invoke GetMonitorInfo, eax, ecx
+  .if sdword ptr esi > MI.rcWork.bottom
+    sub esi, MI.rcWork.bottom
+    sub sdYPos, esi
+  .elseif sdword ptr esi < MI.rcWork.top
+    sub esi, MI.rcWork.top
+    sub sdYPos, esi
+  .endif
 
-    .if edi > MI.rcWork.right
-      sub edi, MI.rcWork.right
-      sub sdXPos, edi
-    .elseif edi < MI.rcWork.left
-      sub edi, MI.rcWork.left
-      sub sdXPos, edi
-    .endif
+  .if sdword ptr edi > MI.rcWork.right
+    sub edi, MI.rcWork.right
+    sub sdXPos, edi
+  .elseif sdword ptr edi < MI.rcWork.left
+    sub edi, MI.rcWork.left
+    sub sdXPos, edi
   .endif
 endm
 

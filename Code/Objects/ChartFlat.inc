@@ -1713,6 +1713,7 @@ Method ChartFlat.OnLButtonDblClk, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   ;Get doubleclick client coordinates
   add DblClkPnt.x, 10                                   ;Place the Dialog 10 px at the right
   add DblClkPnt.y, 20                                   ;Place the Dialog 20 px below
+  
   invoke ClientToScreen, [xsi].hWnd, addr DblClkPnt     ;Transform to screen coordiantes
   ;Check if X scale was double clicked
   .if (SDWORD ptr ebx >= [xsi].PlotRect.left) && (SDWORD ptr ebx <= [xsi].ViewRect.right) && \
