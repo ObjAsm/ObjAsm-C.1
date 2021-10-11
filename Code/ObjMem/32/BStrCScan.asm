@@ -27,7 +27,7 @@ align ALIGN_CODE
 BStrCScan proc pBStr:POINTER, dMaxChars:DWORD, cChar:CHRW
   mov ecx, [esp + 4]                                    ;ecx -> BStr
   mov eax, [ecx - 4]                                    ;eax = BStr byte size
-  or eax, eax                                           ;Size = 0 ?
+  test eax, eax                                         ;Size = 0 ?
   jz @@Exit                                             ;Return NULL
   shr eax, 1
   mov ecx, eax                                          ;ecx (counter) = char length

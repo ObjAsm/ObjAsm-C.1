@@ -251,7 +251,7 @@ endm
 qqdiv macro
   local @@Exit
 
-  or ecx, ecx                                           ;;check if ecx is zero
+  test ecx, ecx                                         ;;check if ecx is zero
   jnz @F                                                
   qddiv                                                 ;;Perform qddiv
   xor ecx, ecx                                          ;;ecx = remainder-hi = zero

@@ -25,10 +25,10 @@ ShortToLongPathNameA proc uses edi esi pShortPathNameA:POINTER
   local FFD:WIN32_FIND_DATA
 
   invoke StrLScanA, pShortPathNameA, "~"
-  or eax, eax
+  test eax, eax
   jz @@0
   invoke StrLScanA, pShortPathNameA, "\"
-  or eax, eax
+  test eax, eax
   jnz @@1
 @@0:
   invoke StrNewA, pShortPathNameA
@@ -44,7 +44,7 @@ ShortToLongPathNameA proc uses edi esi pShortPathNameA:POINTER
   invoke StrLScanA, esi, "\"
   mov esi, eax
   invoke StrCatCharA, addr Result, "\"
-  or esi, esi
+  test esi, esi
   jnz @@3
   mov eax, edi
   jmp @@4
@@ -56,7 +56,7 @@ ShortToLongPathNameA proc uses edi esi pShortPathNameA:POINTER
   invoke FindFirstFile, addr Buffer, addr FFD
   invoke FindClose, eax
   invoke StrCatA, addr Result, addr FFD.cFileName
-  or esi, esi
+  test esi, esi
   jz @@5
   inc esi
   cmp esi, edi

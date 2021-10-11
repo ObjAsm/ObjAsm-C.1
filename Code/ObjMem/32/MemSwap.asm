@@ -34,7 +34,7 @@ MemSwap proc pMem1:POINTER, pMem2:POINTER, dCount:DWORD
   mov edi, [esp + 16]                                   ;edi -> pMem2
   mov ecx, [esp + 20]                                   ;ecx = dCount
   shr ecx, 2
-  or ecx, ecx
+  test ecx, ecx
   jmp @@02
 @@01:
   mov eax, DWORD ptr [esi]

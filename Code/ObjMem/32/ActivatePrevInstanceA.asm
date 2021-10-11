@@ -22,7 +22,7 @@
 align ALIGN_CODE
 ActivatePrevInstanceA proc uses edi pStringIDA:POINTER, pClassNameA:POINTER
   invoke GetPrevInstanceA, pStringIDA, pClassNameA
-  or eax, eax
+  test eax, eax
   jz @@Exit
   mov edi, eax                                          ;edi = hMainWnd or hPopupWnd
   invoke IsIconic, edi                                  ;If the window is minimized

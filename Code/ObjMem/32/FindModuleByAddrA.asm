@@ -35,20 +35,20 @@ FindModuleByAddrA proc uses edi esi ebx pAddress:POINTER, pModuleNameA:POINTER
 
   invoke GetModuleHandle, 0                             ;Important to ensure that
   invoke LoadLibraryA, $OfsCStr("psapi.dll")            ;  LoadLibrary works well
-  or eax, eax
+  test eax, eax
   jnz @F
   ret
 @@:
   mov hLib,eax
   invoke GetProcAddress, hLib, $OfsCStrA("EnumProcessModules")
   mov pEnumProcessModules, eax
-  or eax, eax
+  test eax, eax
   jnz @F
   ret
 @@:
   invoke GetProcAddress, hLib, $OfsCStrA("GetModuleInformation")
   mov [pGetModuleInformation], eax
-  or eax, eax
+  test eax, eax
   jnz @F
   ret
 @@:
@@ -69,7 +69,7 @@ FindModuleByAddrA proc uses edi esi ebx pAddress:POINTER, pModuleNameA:POINTER
   push eax
   push hProcess
   call pEnumProcessModules
-  or eax, eax
+  test eax, eax
   jz @@Done
     mov edi, cbNeeded
     shr edi, 2
@@ -86,12 +86,12 @@ FindModuleByAddrA proc uses edi esi ebx pAddress:POINTER, pModuleNameA:POINTER
     push hModule
     push hProcess
     call pGetModuleInformation
-    or eax, eax
+    test eax, eax
     jz @@Done
     cmp ebx, ModInfo.lpBaseOfDll
     jg @@L2
       dec edi
-      or edi,edi
+      test edi, edi
       js @@Done
       jmp @@L1
 @@L2:
@@ -100,7 +100,7 @@ FindModuleByAddrA proc uses edi esi ebx pAddress:POINTER, pModuleNameA:POINTER
       cmp ebx, eax
       jl @@L3
       dec edi
-      or edi, edi
+      test edi, edi
       js @@Done
       jmp @@L1
 @@L3:

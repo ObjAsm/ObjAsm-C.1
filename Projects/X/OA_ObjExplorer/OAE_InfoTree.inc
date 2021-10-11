@@ -1,7 +1,7 @@
 ; ==================================================================================================
-; Title:      OAB_InfoTree.inc
+; Title:      OAE_InfoTree.inc
 ; Author:     G. Friedrich
-; Version:    Check OA_ObjectBrowser.asm
+; Version:    Check OA_ObjExplorer.asm
 ; Purpose:    InfoTree implementation for OA_ObjBrowser. 
 ; ==================================================================================================
 
@@ -73,15 +73,13 @@ MethodEnd
 Method InfoNode.FindNode, uses xsi, pName:PSTRINGA
   SetObject xsi
   mov xcx, [xsi].pInfo
-  DbgStrA [xcx].INFORMATION.pName
-  DbgStrA pName
   .if $invoke(StrCompA, [xcx].INFORMATION.pName, pName) == 0
     mov xax, xsi
   .else
     mov xcx, [xsi].pFirstChild
     .if xcx != NULL
       OCall xcx::InfoNode.FindNode, pName
-      or eax, eax
+      test xax, xax
       jnz @@EOM
     .endif
     mov xcx, [xsi].pNextSibling
@@ -265,7 +263,6 @@ MethodEnd
 
 Method InfoTree.FindNode, uses xbx xsi, pName:PSTRINGA, dType:DWORD
   SetObject xsi
-  DbgStrA pName
   mov xbx, [xsi].pFirstChild
   xor eax, eax
   .while xbx != NULL
@@ -344,7 +341,7 @@ Method InfoTree.OnLButtonDblClk, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   ACall xsi.OnLButtonDblClk, wParam, lParam
 
-  ;Now we send a message to the ObjectBrowser to open a child window
+  ;Now we send a message to the Application to open a child window
   ; with the passed object information
   mov xcx, [xsi].pOwner
   mov xax, [xcx].$Obj(WinPrimer).pOwner

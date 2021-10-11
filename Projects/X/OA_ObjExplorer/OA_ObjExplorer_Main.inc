@@ -1,27 +1,25 @@
 ; ==================================================================================================
-; Title:      OA_ObjectBrowser_Main.inc
+; Title:      OA_ObjExplorer_Main.inc
 ; Author:     G. Friedrich
-; Version:    Check OA_ObjectBrowser.asm
+; Version:    Check OA_ObjExplorer.asm
 ; Purpose:    Window definitions for OA_ObjBrowser.
 ; ==================================================================================================
 
 
-CLSSTYLE      equ   CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW
-
-TBSTYLE       equ   WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or TBSTYLE_TOOLTIPS or \
+TB_STYLE      equ   WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or TBSTYLE_TOOLTIPS or \
                     CCS_NORESIZE or CCS_NODIVIDER or CCS_ADJUSTABLE or TBSTYLE_FLAT or TBSTYLE_LIST
 
-SBSTYLE       equ   WS_CHILD or WS_VISIBLE or SBARS_TOOLTIPS or SBARS_SIZEGRIP
+SB_STYLE      equ   WS_CHILD or WS_VISIBLE or SBARS_TOOLTIPS or SBARS_SIZEGRIP
 
 NODE_HEIGHT   equ  20
 NODE_WIDTH    equ  146
 
 .const
-ToolbarFile DEF_TOOLBAR {IDC_TOOLBARFILE, TBSTYLE, TBSTYLE_EX_MIXEDBUTTONS, \
+ToolbarFile DEF_TOOLBAR {IDC_TOOLBARFILE, TB_STYLE, TBSTYLE_EX_MIXEDBUTTONS, \
                          $OfsTStr("File commands"), {<0,0,0,0>}, 1}
   TBBUTTON {IDB_FILE_SETUP,     IDM_FILE_SETUP,    TBSTATE_ENABLED, TBSTYLE_BUTTON}
 
-ToolbarWindow DEF_TOOLBAR {IDC_TOOLBARWINDOW, TBSTYLE, TBSTYLE_EX_MIXEDBUTTONS, \
+ToolbarWindow DEF_TOOLBAR {IDC_TOOLBARWINDOW, TB_STYLE, TBSTYLE_EX_MIXEDBUTTONS, \
                            $OfsTStr("Window commands"), {<0,0,0,0>}, 9}
   TBBUTTON {IDB_WIND_CASCADE,   IDM_WIND_CASCADE,  TBSTATE_ENABLED, TBSTYLE_BUTTON}
   TBBUTTON {IDB_WIND_TILE_HORZ, IDM_WIND_TILE_HOR, TBSTATE_ENABLED, TBSTYLE_BUTTON}
@@ -33,7 +31,7 @@ ToolbarWindow DEF_TOOLBAR {IDC_TOOLBARWINDOW, TBSTYLE, TBSTYLE_EX_MIXEDBUTTONS, 
   TBBUTTON {IDB_WIND_CLOSE,     IDM_WIND_CLOSE,    TBSTATE_ENABLED, TBSTYLE_BUTTON}
   TBBUTTON {IDB_WIND_CLOSEALL,  IDM_WIND_CLOSEALL, TBSTATE_ENABLED, TBSTYLE_BUTTON}
 
-AppStatusbar DEF_STATUSBAR {IDC_STATUSBAR, SBSTYLE, 0, 4}
+AppStatusbar DEF_STATUSBAR {IDC_STATUSBAR, SB_STYLE, 0, 4}
   DEF_STATUSBAR_PART {220, 100, 3, SBT_NOBORDERS, NULL}
   DEF_STATUSBAR_PART {120,  20, 1, SBT_SUNKEN,    NULL}
   DEF_STATUSBAR_PART {120,  -2, 0, SBT_SUNKEN,    NULL} ;Spring
@@ -49,29 +47,35 @@ Object ClientWnd, ObjBwrClientWndID, MdiClientWnd       ;MDI client window.
   VirtualEvent      OnEraseBkgnd,       WM_ERASEBKGND
   VirtualEvent      OnPaint,            WM_PAINT
 
-  DefineVariable    hBGBrush,           HBRUSH,     0   ;Background brush
-  DefineVariable    dChildCount,        DWORD,      0
+  DefineVariable    hBGBrush,           HBRUSH,   0     ;Background brush
+  DefineVariable    dChildCount,        DWORD,    0
 ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
 Object PropWnd, PropWndID, MdiChildWnd                  ;MDI base child window.
+  VirtualMethod     CreateLinkInfo,     DWORD, POINTER, DWORD
+  VirtualAbstract   CreateMarkupText
   RedefineMethod    Done
   RedefineMethod    Init,               $ObjPtr(ClientWnd), PSTRING, PINFORMATION
   StaticMethod      InitContainer,      PSTRING
-  VirtualAbstract   EmitHtml
   VirtualAbstract   Gather
   RedefineMethod    OnSize,             WPARAM, LPARAM
+  VirtualMethod     ShowFileInfo,       PSTRING, DWORD, PFILETIME, PFILETIME, PFILETIME
+  VirtualMethod     WriteString,        PSTRING
 
   VirtualEvent      OnClose,            WM_CLOSE
 
   DefineVariable    pInfo,              PINFORMATION, NULL
   DefineVariable    pName,              PSTRING,      NULL
 
-  DefineVariable    pTextView,          $ObjPtr(TextView), NULL
-  DefineVariable    dInitialized,       DWORD,      FALSE
-  DefineVariable    dShowRedefMtds,     DWORD,      TRUE
-  DefineVariable    dShowRedefVars,     DWORD,      TRUE
+  DefineVariable    dInitialized,       DWORD,    FALSE
+  DefineVariable    dShowRedefMtds,     DWORD,    TRUE
+  DefineVariable    dShowRedefVars,     DWORD,    TRUE
+
+  Embed   MarkupStream,   MemoryStream                  ;Markup text
+  Embed   InfoPane,       TextView
+  Embed   LinkInfos,      DataCollection
 ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -79,6 +83,7 @@ ObjectEnd
 CStr cIntPropClass, "IntPropWndClass"
 
 Object IntPropWnd, IntPropWndID, PropWnd
+;  RedefineMethod    CreateMarkupText
   RedefineMethod    Done
   RedefineMethod    Init,               $ObjPtr(ClientWnd), PSTRING, PINTERFACEINFORMATION
   RedefineMethod    Gather
@@ -86,7 +91,7 @@ Object IntPropWnd, IntPropWndID, PropWnd
   StaticMethod      ShowInheritance,    PINTERFACEINFORMATION, DWORD
   StaticMethod      Startup
 
-  Embed     Methods,     DataCollection       ;Collection of MEMBERDATA structures
+  Embed     Methods,      DataCollection                ;Collection of MEMBERDATA structures
 ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -94,6 +99,7 @@ ObjectEnd
 CStr cObjPropClass, "ObjPropWndClass"
 
 Object ObjPropWnd, ObjPropWndID, PropWnd
+  RedefineMethod    CreateMarkupText
   RedefineMethod    Done
   RedefineMethod    Init,               $ObjPtr(ClientWnd), PSTRING, POBJECTINFORMATION
   RedefineMethod    Gather
@@ -103,13 +109,13 @@ Object ObjPropWnd, ObjPropWndID, PropWnd
   StaticMethod      Startup
   VirtualEvent      OnNotify,           WM_NOTIFY
 
-  Embed     Methods,     DataCollection       ;Collection of MEMBERDATA structures
-  Embed     Variables,   DataCollection       ;Collection of MEMBERDATA structures
+  Embed     Methods,      DataCollection                ;Collection of MEMBERDATA structures
+  Embed     Variables,    DataCollection                ;Collection of MEMBERDATA structures
 
-  DefineVariable    dRadioBtn1,         DWORD,    TRUE  
-  DefineVariable    dRadioBtn2,         DWORD,    FALSE  
-  DefineVariable    dCheckBox1,         DWORD,    FALSE 
-  DefineVariable    dCheckBox2,         DWORD,    FALSE  
+  DefineVariable    dRadioBtn1,         DWORD,    TRUE
+  DefineVariable    dRadioBtn2,         DWORD,    FALSE
+  DefineVariable    dCheckBox1,         DWORD,    FALSE
+  DefineVariable    dCheckBox2,         DWORD,    FALSE
 ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -139,9 +145,9 @@ ObjectEnd
 
 CloseEnumProc    proto :HANDLE, :LPARAM
 
-CStr cObjectBrowserClass, "ObjectBrowserClass"
+CStr cObjExplorerClass, "ObjExplorerClass"
 
-Object ObjectBrowser, ObjectBrowserID, MdiApp           ;MDI application.
+Object Application, ObjExplorerID, MdiApp               ;MDI application.
   VirtualMethod     ChangeBtnLanguage,  DWORD           ;IDLANG_XXX
   VirtualMethod     ChangeLanguage,     DWORD           ;IDLANG_XXX
   RedefineMethod    Done
@@ -182,7 +188,7 @@ Object ObjectBrowser, ObjectBrowserID, MdiApp           ;MDI application.
   Embed     SetupFile,        IniFile
   Embed     FindInfDlg,       FindInfoDlg
 
-  DefineVariable    pViewerApp,         POINTER,    NULL    ;-> String
+  DefineVariable    pViewerApp,         POINTER,    offset cDefViewer    ;-> String
   DefineVariable    dShowAll,           DWORD,      TRUE    ;Project and non project
   DefineVariable    dShowBrokenOnly,    DWORD,      FALSE   ;Invalid INFORMATION only
   DefineVariable    dShowObjects,       DWORD,      TRUE
@@ -206,6 +212,21 @@ MEMBERDATA struc
 MEMBERDATA ends
 PMEMBERDATA typedef ptr MEMBERDATA
 
+LIA_GOTO_OBJECT     equ   0
+LIA_GOTO_INTERFACE  equ   1
+LIA_OPEN_FILE       equ   2
+LIA_EDIT_FILE_AT    equ   3
+LIA_COMPILE         equ   4
+LIA_EXPAND          equ   5
+LIA_COLLAPSE        equ   6
+
+LINK_INFO struct
+  dAction       DWORD         ?
+  pParam        POINTER       ?
+  dParam        DWORD         ?
+LINK_INFO ends
+PLINK_INFO typedef ptr LINK_INFO
+
 MDT_UNKNOWN         equ   BIT00
 MDT_FINAL           equ   BIT01
 MDT_SHOWDETAIL      equ   BIT02
@@ -214,32 +235,20 @@ REFRESH_TREE        equ   BIT00
 REFRESH_CHILDREN    equ   BIT01
 REFRESH_ALL         equ   REFRESH_TREE or REFRESH_CHILDREN
 
-.const
-;Lookup tables
-
-SOM_TEXT_TABLE \
-  PSTRING $OfsTStr("Unknown type")
-  PSTRING $OfsTStr("Static")
-  PSTRING $OfsTStr("Virtual")
-  PSTRING $OfsTStr("Virtual")             ;Abstract
-  PSTRING $OfsTStr("Virtual Event")       ;Event
-  PSTRING $OfsTStr("Dynamic")
-  PSTRING $OfsTStr("Dynamic")             ;Abstract
-  PSTRING $OfsTStr("Dynamic Event")       ;Event
-  PSTRING $OfsTStr("Interface")
-  PSTRING $OfsTStr("Inline")
-  PSTRING $OfsTStr("Redefined")
-  PSTRING $OfsTStr("Standard")
-  PSTRING $OfsTStr("Dispatch")
 
 .code
 
 ; ==================================================================================================
-;    ICustomDocHostUIHandler implementation
+;    Application implementation
 ; ==================================================================================================
 
 ;##\
 
+PROPERTIES_INFO struct
+  pCaption    PSTRING   ?
+  dType       DWORD     ?
+  pChild      $ObjPtr(ObjPropWnd) ?
+PROPERTIES_INFO ends
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      EnableContextMenuItem
@@ -258,26 +267,13 @@ EnableContextMenuItem macro CMD:req, Index:req
   invoke EnableMenuItem, xdi, CMD, eax
 endm
 
-
-; ==================================================================================================
-;    ObjectBrowser implementation
-; ==================================================================================================
-
-;##\
-
-PROPERTIES_INFO struct
-  pCaption    PSTRING   ?
-  dType       DWORD     ?
-  pChild      $ObjPtr(ObjPropWnd) ?
-PROPERTIES_INFO ends
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.ChangeBtnLanguage
+; Method:     Application.ChangeBtnLanguage
 ; Purpose:    Switch the toolbar button application language.
 ; Arguments:  Arg1: Language ID.
 ; Return:     Nothing.
 
-Method ObjectBrowser.ChangeBtnLanguage, uses xbx xdi xsi, dLangID:DWORD
+Method Application.ChangeBtnLanguage, uses xbx xdi xsi, dLangID:DWORD
 
   SetButtonText macro ButtonCommand:req, TextIndex:req
     mov eax, dLangID
@@ -314,12 +310,12 @@ Method ObjectBrowser.ChangeBtnLanguage, uses xbx xdi xsi, dLangID:DWORD
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.ChangeLanguage
+; Method:     Application.ChangeLanguage
 ; Purpose:    Switches the application language.
 ; Arguments:  Arg1: Language ID.
 ; Return:     Nothing.
 
-Method ObjectBrowser.ChangeLanguage, uses xbx xdi xsi, dLangID:DWORD
+Method Application.ChangeLanguage, uses xbx xdi xsi, dLangID:DWORD
   local MenuInfo:MENUITEMINFO
 
   SetObject xsi
@@ -357,14 +353,14 @@ Method ObjectBrowser.ChangeLanguage, uses xbx xdi xsi, dLangID:DWORD
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.Done
+; Method:     Application.Done
 ; Purpose:    Finalizes the MDI application object. Objects associated with window controls are
 ;             destroyed by Windows automatically when WM_DESTROY is send.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ObjectBrowser.Done, uses xsi
-  ;DbgText "ObjectBrowser.Done"
+Method Application.Done, uses xsi
+  ;DbgText "Application.Done"
   SetObject xsi
   OCall [xsi].pObjDB::OA_ObjDB.Done
 
@@ -391,12 +387,12 @@ Method ObjectBrowser.Done, uses xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.EnableActions
+; Method:     Application.EnableActions
 ; Purpose:    Enables or disables MDI child actions.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ObjectBrowser.EnableActions, uses xbx xdi xsi
+Method Application.EnableActions, uses xbx xdi xsi
   SetObject xsi
   xor edi, edi
   mov xbx, [xsi].pClientWnd
@@ -419,7 +415,7 @@ Method ObjectBrowser.EnableActions, uses xbx xdi xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.ExtractResFile
+; Method:     Application.ExtractResFile
 ; Purpose:    Extracts a resource file and saves it to the user temp folder.
 ; Arguments:  Arg1: Module instance handle where the resource is placed.
 ;             Arg2: -> Resource type.
@@ -427,7 +423,7 @@ MethodEnd
 ;             Arg4: -> Path and file name.
 ; Return:     eax = OBJ_OK on success, otherwise an error code.
 
-Method ObjectBrowser.ExtractResFile, uses xsi, hInst:HANDLE, pResType:POINTER, \
+Method Application.ExtractResFile, uses xsi, hInst:HANDLE, pResType:POINTER, \
                                                pResName:PSTRING, pFileName:PSTRING
   local hFindRes:HANDLE, hResData:HANDLE, hFile:HANDLE
   local pResData:POINTER, dResSize:DWORD, dBytesWritten:DWORD
@@ -480,12 +476,12 @@ Method ObjectBrowser.ExtractResFile, uses xsi, hInst:HANDLE, pResType:POINTER, \
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.FindObjInfo
+; Method:     Application.FindObjInfo
 ; Purpose:    Searches for an OBJECTINFORMATION with a matching object name.
 ; Arguments:  Arg1: -> Object name.
 ; Return:     xax -> OBJECTINFORMATION or NULL of not found.
 
-Method ObjectBrowser.FindObjInfo, uses xsi, pName:PSTRING
+Method Application.FindObjInfo, uses xsi, pName:PSTRING
   SetObject xsi
   mov xcx, [xsi].pObjDB
   .if $OCall([xcx].$Obj(OA_ObjDB).ObjectColl::ObjInfoCollection.Search, pName) != FALSE
@@ -496,12 +492,12 @@ Method ObjectBrowser.FindObjInfo, uses xsi, pName:PSTRING
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.FindIntInfo
+; Method:     Application.FindIntInfo
 ; Purpose:    Searches for an INTERFACEINFORMATION with a matching interface name.
 ; Arguments:  Arg1: -> Interface name.
 ; Return:     xax -> INTERFACEINFORMATION or NULL of not found.
 
-Method ObjectBrowser.FindIntInfo, uses xsi, pName:PSTRING
+Method Application.FindIntInfo, uses xsi, pName:PSTRING
   SetObject xsi
   mov xcx, [xsi].pObjDB
   .if $OCall([xcx].$Obj(OA_ObjDB).InterfaceColl::IntInfoCollection.Search, pName) != FALSE
@@ -512,12 +508,12 @@ Method ObjectBrowser.FindIntInfo, uses xsi, pName:PSTRING
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.Init
+; Method:     Application.Init
 ; Purpose:    Initalizes the SDI application object.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ObjectBrowser.Init, uses xbx xdi xsi
+Method Application.Init, uses xbx xdi xsi
   local dWwd:DWORD, dWht:DWORD, dWtx:DWORD, dWty:DWORD
   local cBuffer[1024]:CHR, pSBHelp:POINTER
 
@@ -532,7 +528,7 @@ Method ObjectBrowser.Init, uses xbx xdi xsi
   lea xbx, cBuffer
   invoke GetCurrentDirectory, lengthof cBuffer, xbx
   lea xax, [xbx + sizeof(CHR)*xax]
-  FillString [xax], <\OA_ObjectBrowser.ini>
+  FillString [xax], <\OA_ObjExplorer.ini>
 
   OCall [xsi].SetupFile::IniFile.Init, xsi, xbx
 
@@ -545,39 +541,39 @@ Method ObjectBrowser.Init, uses xbx xdi xsi
   OCall [xsi].SetupFile::IniFile.GetDWord, offset cSetup, offset cShowRedefVars, BST_CHECKED
   mov [xsi].dShowRedefVars, eax
 
-  ;Extract some files from the resource section to the user temp folder
-  lea xdi, cBuffer
-  invoke GetTempPath, lengthof cBuffer, xdi
-  lea xbx, [xdi + xax]
-  FillString [xbx], <Compile.png>
-  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngCompile"), xdi
-  FillString [xbx], <Edit.png>
-  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngEdit"), xdi
-  FillString [xbx], <Open.png>
-  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngOpen"), xdi
-  FillString [xbx], <Show.png>
-  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngShow"), xdi
-  FillString [xbx], <Hide.png>
-  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngHide"), xdi
-  FillString [xbx], <VarDat.png>
-  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngVarDat"), xdi
-  FillString [xbx], <VarObj.png>
-  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngVarObj"), xdi
-  FillString [xbx], <VarRDt.png>
-  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngVarRDt"), xdi
-  FillString [xbx], <IntMtd.png>
-  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngIntMtd"), xdi
-  FillString [xbx], <IntDsp.png>
-  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngIntDsp"), xdi
-  FillString [xbx], <Plus.png>
-  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngPlus"), xdi
-  FillString [xbx], <Minus.png>
-  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngMinus"), xdi
+;  ;Extract some files from the resource section to the user temp folder
+;  lea xdi, cBuffer
+;  invoke GetTempPath, lengthof cBuffer, xdi
+;  lea xbx, [xdi + xax]
+;  FillString [xbx], <Compile.png>
+;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngCompile"), xdi
+;  FillString [xbx], <Edit.png>
+;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngEdit"), xdi
+;  FillString [xbx], <Open.png>
+;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngOpen"), xdi
+;  FillString [xbx], <Show.png>
+;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngShow"), xdi
+;  FillString [xbx], <Hide.png>
+;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngHide"), xdi
+;  FillString [xbx], <VarDat.png>
+;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngVarReg"), xdi
+;  FillString [xbx], <VarObj.png>
+;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngVarObj"), xdi
+;  FillString [xbx], <VarRDt.png>
+;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngVarRed"), xdi
+;  FillString [xbx], <IntMtd.png>
+;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngIntMtd"), xdi
+;  FillString [xbx], <IntDsp.png>
+;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngIntDsp"), xdi
+;  FillString [xbx], <Plus.png>
+;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngPlus"), xdi
+;  FillString [xbx], <Minus.png>
+;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngMinus"), xdi
 
   ;Load application & menu icons from the resource section
   lea xbx, [xsi].IconList
   OCall xbx::MaskedImageList.Init, xsi, 16, 16, 1
-  OCall xbx::MaskedImageList.IconLoadResource, offset szIcoName                 ;00
+  OCall xbx::MaskedImageList.IconLoadResource, offset cIconName                 ;00
   OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_FILE_REFRESH")    ;01
   OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_FILE_SEARCH")     ;02
   OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_FILE_SETUP")      ;03
@@ -614,7 +610,7 @@ Method ObjectBrowser.Init, uses xbx xdi xsi
   mov dWty, $32($invoke(CenterForm, dWht, $32($invoke(GetSystemMetrics, SM_CYSCREEN))))
 
   invoke CreateWindowEx, WS_EX_APPWINDOW or WS_EX_WINDOWEDGE,
-                         offset cObjectBrowserClass, offset szAppTitle, \
+                         offset cObjExplorerClass, offset szAppTitle, \
                          WS_OVERLAPPEDWINDOW or WS_CLIPCHILDREN, \
                          dWtx, dWty, dWwd, dWht, 0, [xsi].hMenuInit, hInstance, xsi
 
@@ -624,7 +620,7 @@ Method ObjectBrowser.Init, uses xbx xdi xsi
   mov xdi, [xdi].$Obj(ClientWnd).hWnd
 
   ;Initialize XMenu, xbx -> [xsi].IconList
-  m2m pSBHelp, $MethodAddr(xsi::ObjectBrowser.StatusbarHelp), xax
+  m2m pSBHelp, $MethodAddr(xsi::Application.StatusbarHelp), xax
   OCall [xsi].Menu::XMenu.Init, xsi, [xsi].hWnd, xdi, [xsi].hMenuChildWnd, xbx, \
                                 pSBHelp, IDLANG_ENGLISH
   OCall [xsi].Menu::XMenu.Convert, [xsi].hMenuContext, FALSE
@@ -644,13 +640,13 @@ Method ObjectBrowser.Init, uses xbx xdi xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.Navigate
+; Method:     Application.Navigate
 ; Purpose:    Navigates the InfoTree to the desired object.
 ; Arguments:  Arg1: -> Name.
 ;             Arg2: Type (INFO_TYPE_OBJECT or INFO_TYPE_INTERFACE).
 ; Return:     Nothing.
 
-Method ObjectBrowser.Navigate, uses xbx xsi, pName:PSTRING, dType:DWORD
+Method Application.Navigate, uses xbx xsi, pName:PSTRING, dType:DWORD
   SetObject xsi
   OCall [xsi].TreeWnd.Tree::InfoTree.FindNode, pName, dType
   .if xax != NULL
@@ -678,16 +674,16 @@ Method ObjectBrowser.Navigate, uses xbx xsi, pName:PSTRING, dType:DWORD
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.OnClose
+; Method:     Application.OnClose
 ; Purpose:    Event procedure for WM_CLOSE or WM_QUERYENDSESSION messages.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method ObjectBrowser.OnClose, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnClose, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   local dMsg:DWORD
 
-  ;DbgText "ObjectBrowser.OnClose"
+  ;DbgText "Application.OnClose"
   SetObject xsi
   mov dMsg, eax
   mov xbx, [xsi].pClientWnd
@@ -740,13 +736,13 @@ ChildSearch proc uses xbx hWnd:HANDLE, lParam:LPARAM
 ChildSearch endp
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.OnCommand
+; Method:     Application.OnCommand
 ; Purpose:    Event procedure for WM_COMMAND message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method ObjectBrowser.OnCommand, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnCommand, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   local SetupDialog:$Obj(SetupDlg), AboutDialog:$Obj(DialogAbout)
   local cBuffer[MAX_PATH]:CHR, PTI:PROPERTIES_INFO
 
@@ -834,7 +830,7 @@ Method ObjectBrowser.OnCommand, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
 
   .elseif ax == IDM_HELP_ABOUT
     New AboutDialog::DialogAbout
-    invoke LoadIcon, hInstance, offset szIcoName
+    invoke LoadIcon, hInstance, offset cIconName
     OCall AboutDialog::DialogAbout.Init, xsi, [xsi].hWnd, xax, offset szAboutText
     OCall AboutDialog::DialogAbout.Show
     OCall AboutDialog::DialogAbout.Done
@@ -906,13 +902,13 @@ Method ObjectBrowser.OnCommand, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.OnCreate
+; Method:     Application.OnCreate
 ; Purpose:    Event procedure for WM_CREATE message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method ObjectBrowser.OnCreate, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnCreate, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
 
   ;Initialize tree window
@@ -943,13 +939,13 @@ Method ObjectBrowser.OnCreate, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.OnDestroy
+; Method:     Application.OnDestroy
 ; Purpose:    Event procedure for WM_DESTROY message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method ObjectBrowser.OnDestroy, uses xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnDestroy, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   .if [xsi].hMenuInit
     invoke DestroyMenu, [xsi].hMenuInit
@@ -964,24 +960,24 @@ Method ObjectBrowser.OnDestroy, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.OnEraseBkgnd
+; Method:     Application.OnEraseBkgnd
 ; Purpose:    Event procedure for WM_ERASEBKGND message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Non zero => we do the job.
 
-Method ObjectBrowser.OnEraseBkgnd,, wParam:WPARAM, lParam:LPARAM
+Method Application.OnEraseBkgnd,, wParam:WPARAM, lParam:LPARAM
   mov eax, -1
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.OnNotify
+; Method:     Application.OnNotify
 ; Purpose:    Event procedure for WM_NOTIFY message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method ObjectBrowser.OnNotify, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnNotify, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   local cToolTipText[256]:CHR
 
   SetObject xsi
@@ -1017,13 +1013,13 @@ Method ObjectBrowser.OnNotify, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.OnSize
+; Method:     Application.OnSize
 ; Purpose:    Event procedure for WM_SIZE message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method ObjectBrowser.OnSize, uses xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnSize, uses xsi, wParam:WPARAM, lParam:LPARAM
   local dHeight:DWORD, dWidth:DWORD, dTop:DWORD
   local CtRect:RECT, SbRect:RECT, RbRect:RECT
   local TreeWndRect:RECT, SpVerRect:RECT
@@ -1114,14 +1110,14 @@ ResetInfoFlags endp
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  AddObjectBranch
-; Purpose:    Auxiliary procedure used by ObjectBrowser.Refresh.
+; Purpose:    Auxiliary procedure used by Application.Refresh.
 ; Arguments:  Arg1: -> OBJECTINFORMATION.
 ;             Arg2: -> Ancestor InfoNode.
-;             Arg3: -> ObjectBrowser.
+;             Arg3: -> Application.
 ; Return:     Nothing.
 
-AddObjectBranch proc uses xbx xdi xsi, pInfo:POBJECTINFORMATION, pAncestorNode:$ObjPtr(InfoNode), pSelf:$ObjPtr(ObjectBrowser)
-  SetObject xsi, ObjectBrowser, pSelf
+AddObjectBranch proc uses xbx xdi xsi, pInfo:POBJECTINFORMATION, pAncestorNode:$ObjPtr(InfoNode), pSelf:$ObjPtr(Application)
+  SetObject xsi, Application, pSelf
   mov xax, pInfo
   .ifBitClr [xax].OBJECTINFORMATION.dFlags, INF_INTREE
     mov xcx, pAncestorNode
@@ -1155,14 +1151,14 @@ AddObjectBranch endp
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  AddBrokenObjects
-; Purpose:    Auxiliary procedure used by ObjectBrowser.Refresh.
+; Purpose:    Auxiliary procedure used by Application.Refresh.
 ; Arguments:  Arg1: -> OBJECTINFORMATION.
-;             Arg2: -> ObjectBrowser.
+;             Arg2: -> Application.
 ;             Arg3: Dummy.
 ; Return:     Nothing.
 
-AddBrokenObjects proc uses xbx xdi xsi pInfo:POBJECTINFORMATION, pSelf:$ObjPtr(ObjectBrowser), xDummy:XWORD
-  SetObject xsi, ObjectBrowser, pSelf
+AddBrokenObjects proc uses xbx xdi xsi pInfo:POBJECTINFORMATION, pSelf:$ObjPtr(Application), xDummy:XWORD
+  SetObject xsi, Application, pSelf
   mov xax, pInfo
   .ifBitClr [xax].OBJECTINFORMATION.dFlags, INF_INTREE
     mov xdx, [xax].OBJECTINFORMATION.pAncestorName
@@ -1185,14 +1181,14 @@ AddBrokenObjects endp
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  AddInterfaceBranch
-; Purpose:    Auxiliary procedure used by ObjectBrowser.Refresh.
+; Purpose:    Auxiliary procedure used by Application.Refresh.
 ; Arguments:  Arg1: -> INTERFACEINFORMATION.
 ;             Arg2: -> Ancestor InfoNode.
-;             Arg3: -> ObjectBrowser.
+;             Arg3: -> Application.
 ; Return:     Nothing.
 
-AddInterfaceBranch proc uses xbx xdi xsi, pInfo:PINTERFACEINFORMATION, pAncestorNode:$ObjPtr(InfoNode), pSelf:$ObjPtr(ObjectBrowser)
-  SetObject xsi, ObjectBrowser, pSelf
+AddInterfaceBranch proc uses xbx xdi xsi, pInfo:PINTERFACEINFORMATION, pAncestorNode:$ObjPtr(InfoNode), pSelf:$ObjPtr(Application)
+  SetObject xsi, Application, pSelf
   mov xax, pInfo
   .ifBitClr [xax].INTERFACEINFORMATION.dFlags, INF_INTREE
     mov xcx, pAncestorNode
@@ -1226,14 +1222,14 @@ AddInterfaceBranch endp
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  AddInterfaceBranch
-; Purpose:    Auxiliary procedure used by ObjectBrowser.Refresh.
+; Purpose:    Auxiliary procedure used by Application.Refresh.
 ; Arguments:  Arg1: -> INTERFACEINFORMATION.
-;             Arg2: -> ObjectBrowser.
+;             Arg2: -> Application.
 ;             Arg3: Dummy.
 ; Return:     Nothing.
 
-AddBrokenInterfaces proc uses xbx xdi xsi pInfo:PINTERFACEINFORMATION, pSelf:$ObjPtr(ObjectBrowser), xDummy:XWORD
-  SetObject xsi, ObjectBrowser, pSelf
+AddBrokenInterfaces proc uses xbx xdi xsi pInfo:PINTERFACEINFORMATION, pSelf:$ObjPtr(Application), xDummy:XWORD
+  SetObject xsi, Application, pSelf
   mov xax, pInfo
   .ifBitClr [xax].INTERFACEINFORMATION.dFlags, INF_INTREE
     mov xdx, [xax].INTERFACEINFORMATION.pAncestorName
@@ -1270,9 +1266,9 @@ RefreshMdiChild proc uses xbx hWnd:HANDLE, lParam:LPARAM
       invoke GetObjectID, xbx
       mov xcx, [xbx].$Obj(PropWnd).pOwner                     ;xcx -> ClientWnd
       .if eax == ObjPropWndID
-        OCall [xcx].$Obj(ClientWnd).pOwner::ObjectBrowser.FindObjInfo, [xbx].$Obj(PropWnd).pName
+        OCall [xcx].$Obj(ClientWnd).pOwner::Application.FindObjInfo, [xbx].$Obj(PropWnd).pName
       .elseif eax == IntPropWndID
-        OCall [xcx].$Obj(ClientWnd).pOwner::ObjectBrowser.FindIntInfo, [xbx].$Obj(PropWnd).pName
+        OCall [xcx].$Obj(ClientWnd).pOwner::Application.FindIntInfo, [xbx].$Obj(PropWnd).pName
       .else
         mov eax, TRUE                                   ;TRUE => next window
         ret
@@ -1283,7 +1279,7 @@ RefreshMdiChild proc uses xbx hWnd:HANDLE, lParam:LPARAM
       .else
         mov [xbx].$Obj(PropWnd).pInfo, xax
         OCall xbx::PropWnd.Gather
-;        OCall xbx::PropWnd.EmitHtml
+;        OCall xbx::PropWnd.CreateMarkupText
 ;        ICall [xbx].$Obj(PropWnd).pIWebBrowser2::IWebBrowser2.Refresh
       .endif
     .endif
@@ -1293,12 +1289,12 @@ RefreshMdiChild proc uses xbx hWnd:HANDLE, lParam:LPARAM
 RefreshMdiChild endp
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.Refresh
+; Method:     Application.Refresh
 ; Purpose:    Reloads the object information stream.
 ; Arguments:  Arg1: Refresh flags [REFRESH_TREE, REFRESH_CHILDREN, REFRESH_ALL]
 ; Return:     Nothing.
 
-Method ObjectBrowser.Refresh, uses xbx xsi, dFlags:DWORD
+Method Application.Refresh, uses xbx xsi, dFlags:DWORD
   SetObject xsi
 
   .ifBitSet dFlags, REFRESH_TREE
@@ -1352,12 +1348,12 @@ Method ObjectBrowser.Refresh, uses xbx xsi, dFlags:DWORD
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.TreeDecimate
+; Method:     Application.TreeDecimate
 ; Purpose:    Walk the tree leaves and remove them if they dont belong to the project.
 ; Arguments:  Arg1: -> InfoNode.
 ; Return:     eax = TRUE if something was removed, otherwise FALSE.
 
-Method ObjectBrowser.TreeDecimate, uses xbx xdi xsi, pNode:$ObjPtr(InfoNode)
+Method Application.TreeDecimate, uses xbx xdi xsi, pNode:$ObjPtr(InfoNode)
   SetObject xsi
   xor edi, edi                                        ;edi = HasChanged flag
   mov xbx, pNode
@@ -1382,24 +1378,24 @@ Method ObjectBrowser.TreeDecimate, uses xbx xdi xsi, pNode:$ObjPtr(InfoNode)
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.Startup
+; Method:     Application.Startup
 ; Purpose:    Registers the object with the OS.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ObjectBrowser.Startup
+Method Application.Startup
   local WC:WNDCLASSEX
 
   mov WC.cbSize, sizeof WNDCLASSEX
-  mov WC.style, CLSSTYLE
-  m2m WC.lpfnWndProc, $MethodAddr(ObjectBrowser.WndProc), xdx
+  m2z WC.style
+  m2m WC.lpfnWndProc, $MethodAddr(Application.WndProc), xdx
   mov WC.cbClsExtra, 0
   mov WC.cbWndExtra, 0
   m2m WC.hInstance, hInstance, xdx
   mov WC.hbrBackground, NULL
   mov WC.lpszMenuName, NULL
-  m2m WC.lpszClassName, offset cObjectBrowserClass, xax
-  mov WC.hIcon, $invoke(LoadIcon, hInstance, offset szIcoName)
+  m2m WC.lpszClassName, offset cObjExplorerClass, xax
+  mov WC.hIcon, $invoke(LoadIcon, hInstance, offset cIconName)
   mov WC.hCursor, $invoke(LoadCursor, NULL, IDC_ARROW)
   mov WC.hIconSm, 0
 
@@ -1407,12 +1403,12 @@ Method ObjectBrowser.Startup
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ObjectBrowser.StatusbarHelp
+; Method:     Application.StatusbarHelp
 ; Purpose:    Displays a help string on panel 0 of the statusbar.
 ; Arguments:  Arg1: -> Help string.
 ; Return:     Nothing.
 
-Method ObjectBrowser.StatusbarHelp,, pHelpStr:PSTRING
+Method Application.StatusbarHelp,, pHelpStr:PSTRING
   SetObject xcx
   OCall [xcx].SBar::Statusbar.SetPartText, 0, pHelpStr, SBT_NOBORDERS
 MethodEnd

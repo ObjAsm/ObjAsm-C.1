@@ -376,6 +376,7 @@ TVNM_DRAW struc
   Extent        POINT       <>
   Padding       RECT        <>
   pStyle        PTVSTYLE    ?
+  dZoomFactor   DWORD       ?
 TVNM_DRAW ends
 PTVNM_DRAW typedef ptr TVNM_DRAW
 
@@ -1336,6 +1337,7 @@ Method TextView.Draw, uses xbx xdi xsi
       s2s DrawNotification.Extent, [xsi].Extent, xcx, xdx, xmm0, xmm1, xmm2, xmm3
       s2s DrawNotification.Padding, [xsi].Padding, xcx, xdx, xmm0, xmm1, xmm2, xmm3
       m2m DrawNotification.pStyle, [xdi].TVENTRY.pStyle, xcx
+      m2m DrawNotification.dZoomFactor, [xsi].dZoomFactor, xcx
       invoke SendMessage, [xsi].hParent, WM_NOTIFY, xCtrlID, addr DrawNotification
       jmp @@EndHandler
 
@@ -1370,6 +1372,7 @@ Method TextView.Draw, uses xbx xdi xsi
       s2s [xax].TVNM_DRAW.Extent, [xsi].Extent, xcx, xdx, xmm0
       s2s [xax].TVNM_DRAW.Padding, [xsi].Padding, xcx, xdx, xmm0
       m2m [xax].TVNM_DRAW.pStyle, [xdi].TVENTRY.pStyle, xcx
+      m2m [xax].TVNM_DRAW.dZoomFactor, [xsi].dZoomFactor, xcx
       OCall [xsi].CoverTasks::DataCollection.Insert, xax
       jmp @@EndHandler
 

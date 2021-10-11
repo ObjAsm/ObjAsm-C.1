@@ -4439,7 +4439,7 @@ Method Pixelmap.Litho, uses xbx xdi xsi, pDstRct:PRECT, dThreshhold:DWORD
     m2z dBlack
     mov dWhite, 00FFFFFFh
     mov eax, dThreshhold
-    or eax, eax
+    test eax, eax
     .if SIGN?
       mov dBlack, 00FFFFFFh
       m2z dWhite

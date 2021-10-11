@@ -28,7 +28,7 @@ StrPosA proc pString1A:POINTER, pString2A:POINTER
   push esi
   push ebx
   invoke StrLengthA, [esp + 20]                         ;pString2A -> searched string
-  or eax, eax
+  test eax, eax
   je @@Exit                                             ;Returns eax = NULL
   mov ebx, eax                                          ;ebx = length of the searched string
 

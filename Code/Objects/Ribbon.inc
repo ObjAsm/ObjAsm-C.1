@@ -20,7 +20,7 @@ Object UIApplication, , Component
   RedefineMethod    Init,                 POINTER, HWND, PSTRINGW
   VirtualMethod     Release
 
-  DefineVariable    pUIRibbonFramework,   POINTER
+  DefineVariable    pUIRibbonFramework,   POINTER,  NULL
 ObjectEnd
 
 Object IUIApplication, , IUnknown
@@ -34,8 +34,8 @@ ObjectEnd
 Object UICommandHandler, , Component
   RedefineMethod    Init,                 POINTER, DWORD, DWORD
 
-  DefineVariable    dCommandID,           DWORD
-  DefineVariable    dTypeID,              DWORD
+  DefineVariable    dCommandID,           DWORD,    0
+  DefineVariable    dTypeID,              DWORD,    0
 ObjectEnd
 
 Object IUICommandHandler, , IUnknown

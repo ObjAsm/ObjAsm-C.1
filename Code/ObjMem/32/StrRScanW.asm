@@ -25,7 +25,7 @@ OPTION EPILOGUE:NONE
 align ALIGN_CODE
 StrRScanW proc pStringW:POINTER, cChar:CHRW
   invoke StrLengthW, [esp + 4]                          ;pStringW
-  or eax, eax
+  test eax, eax
   je @@Exit                                             ;Lenght = 0
   push edi
   std

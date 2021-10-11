@@ -36,7 +36,7 @@ Str2BStrA proc uses edi esi pDstBStr:POINTER, pSrcStrA:POINTER
   lodsb
   stosw
   dec ecx
-  or ecx, ecx
+  test ecx, ecx
   jne @B
   cld
   pop eax

@@ -26,7 +26,7 @@ OPTION EPILOGUE:NONE
 align ALIGN_CODE
 StrCScanA proc pStringA:POINTER, dMaxCount:DWORD, cChar:CHRA
   invoke StrLengthA, [esp + 4]                          ;pStringA
-  or eax, eax                                           ;Lenght = 0 ?
+  test eax, eax                                         ;Lenght = 0 ?
   jz @@Exit                                             ;Return NULL
   mov ecx, eax                                          ;ecx (counter) = length
   mov eax, [esp + 8]                                    ;eax = dMaxCount

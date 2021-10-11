@@ -29,10 +29,10 @@ OPTION EPILOGUE:NONE
 align ALIGN_CODE
 BStrCNew proc pBStr:POINTER, dMaxChars:DWORD
   mov edx, [esp + 4]                                    ;edx -> BStr
-  or edx, edx
+  test edx, edx
   je @@1
   mov eax, [edx - 4]
-  or eax, eax
+  test eax, eax
   jne @@2
 @@1:
   xor eax, eax
@@ -45,7 +45,7 @@ BStrCNew proc pBStr:POINTER, dMaxChars:DWORD
   push eax
   invoke BStrAlloc, eax
   pop ecx
-  or eax, eax
+  test eax, eax
   je @@Exit
   mov DWORD ptr [eax - 4], ecx                          ;Store BStr length
   m2z WORD ptr [eax + ecx]                              ;Set zero terminator

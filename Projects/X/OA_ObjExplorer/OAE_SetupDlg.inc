@@ -1,7 +1,7 @@
 ; ==================================================================================================
-; Title:      OAB_SetupDlg.inc
+; Title:      OAE_SetupDlg.inc
 ; Author:     G. Friedrich
-; Version:    Check OA_ObjectBrowser.asm
+; Version:    Check OA_ObjExplorer.asm
 ; Purpose:    SetupDlg implementation for OA_ObjBrowser. 
 ; ==================================================================================================
 ;
@@ -25,17 +25,17 @@ Method SetupDlg.CtlsGet, uses xbx xdi xsi
 
   SetObject xsi
   mov xdi, [xsi].pOwner
-  invoke StrDispose, [xdi].$Obj(ObjectBrowser).pViewerApp
+  invoke StrDispose, [xdi].$Obj(Application).pViewerApp
   mov hWnd, $invoke(GetDlgItem, [xsi].hWnd, IDC_SETUP_VIEWER_EDIT)
   mov ebx, $32($invoke(GetWindowTextLength, xax))
-  mov [xdi].$Obj(ObjectBrowser).pViewerApp, $invoke(StrAlloc, ebx)
+  mov [xdi].$Obj(Application).pViewerApp, $invoke(StrAlloc, ebx)
   inc ebx
   invoke GetWindowText, hWnd, xax, ebx
 
   invoke IsDlgButtonChecked, [xsi].hWnd, IDC_SETUP_PROP_CHK_MTD
-  mov [xdi].$Obj(ObjectBrowser).dShowRedefMtds, eax
+  mov [xdi].$Obj(Application).dShowRedefMtds, eax
   invoke IsDlgButtonChecked, [xsi].hWnd, IDC_SETUP_PROP_CHK_VAR
-  mov [xdi].$Obj(ObjectBrowser).dShowRedefVars, eax
+  mov [xdi].$Obj(Application).dShowRedefVars, eax
 
   mov eax, TRUE
 MethodEnd
@@ -54,7 +54,7 @@ Method SetupDlg.CtlsSet, uses xbx xdi xsi
 
   ;Set caption and control strings
   mov xcx, [xsi].pOwner
-  mov ebx, [xcx].$Obj(ObjectBrowser).dLanguage
+  mov ebx, [xcx].$Obj(Application).dLanguage
   lea xdi, cBuffer
 
   lea edx, [ebx + IDS_SETUP_CAPTION]
@@ -71,7 +71,7 @@ Method SetupDlg.CtlsSet, uses xbx xdi xsi
 
   ;Set control values
   mov xdi, [xsi].pOwner
-  assume xdi:$ObjPtr(ObjectBrowser)
+  assume xdi:$ObjPtr(Application)
   invoke SetDlgItemText, [xsi].hWnd, IDC_SETUP_VIEWER_EDIT,  [xdi].pViewerApp
   invoke CheckDlgButton, [xsi].hWnd, IDC_SETUP_PROP_CHK_MTD, [xdi].dShowRedefMtds
   invoke CheckDlgButton, [xsi].hWnd, IDC_SETUP_PROP_CHK_VAR, [xdi].dShowRedefVars
@@ -130,7 +130,7 @@ Method SetupDlg.OnCommand, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
     lea xax, cInitDir
     mov OpenFileName.lpstrInitialDir, xax
     mov xax, [xsi].pOwner
-    mov ecx, [xax].$Obj(ObjectBrowser).dLanguage
+    mov ecx, [xax].$Obj(Application).dLanguage
     lea edx, [ecx + IDS_SELECT]
     lea xax, cBuffer
     mov OpenFileName.lpstrTitle, xax

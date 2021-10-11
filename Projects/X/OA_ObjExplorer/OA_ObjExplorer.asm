@@ -1,5 +1,5 @@
 ; ==================================================================================================
-; Title:      OA_ObjectBrowser.asm
+; Title:      OA_ObjExplorer.asm
 ; Author:     G. Friedrich
 ; Version:    C.1.1
 ; Purpose:    ObjAsm Object Browser.
@@ -11,7 +11,7 @@
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc
-SysSetup OOP, WIN32, ANSI_STRING, DEBUG(WND)
+SysSetup OOP, WIN64, ANSI_STRING, DEBUG(WND)
 
 % includelib &LibPath&Windows\Kernel32.lib
 % includelib &LibPath&Windows\Shell32.lib
@@ -21,9 +21,13 @@ SysSetup OOP, WIN32, ANSI_STRING, DEBUG(WND)
 % includelib &LibPath&Windows\Comdlg32.lib
 % includelib &LibPath&Windows\MSVCRT.lib
 % includelib &LibPath&Windows\UUID.lib
+% includelib &LibPath&Windows\Ole32.lib
+% includelib &LibPath&Windows\Msimg32.lib
 
 % includelib &LibPath&PCRE\PCRE844S&TARGET_STR_AFFIX&.lib
 
+% include &COMPath&COM.inc                              ;COM basic support
+% include &IncPath&Windows\IImgCtx.inc
 % include &IncPath&Windows\CommCtrl.inc
 % include &IncPath&Windows\vsstyle.inc
 % include &IncPath&Windows\shlwapi.inc
@@ -48,30 +52,32 @@ MakeObjects MsgInterceptor, DialogModalIndirect, XMenu
 MakeObjects Toolbar, Rebar, Statusbar
 MakeObjects DataPool, IniFile, RegEx
 MakeObjects FlipBox, Splitter, XTreeView
+MakeObjects Image
 MakeObjects WinApp, MdiApp, TextView
 
-include OAB_TextSource.inc
-include OAB_ObjDB_Collections.inc
-include OAB_ObjDB.inc
-include OAB_InfoTree.inc
-include OAB_TreeWindow.inc
-include OA_ObjectBrowser_Globals.inc
-include OA_ObjectBrowser_Main.inc
-include OAB_PropWnd.inc
-include OAB_IntPropWnd.inc
-include OAB_ObjPropWnd.inc
-include OAB_SetupDlg.inc
-include OAB_FindInfoDlg.inc
-
+include OAE_TextSource.inc
+include OAE_ObjDB_Collections.inc
+include OAE_ObjDB.inc
+include OAE_InfoTree.inc
+include OAE_TreeWindow.inc
+include OA_ObjExplorer_Globals.inc
+include OA_ObjExplorer_Main.inc
+include OAE_PropWnd.inc
+include OAE_IntPropWnd.inc
+include OAE_ObjPropWnd.inc
+include OAE_SetupDlg.inc
+include OAE_FindInfoDlg.inc
 
 start proc
   SysInit
 
 ;  ResGuard_Start
   DbgClearAll
-  OCall $ObjTmpl(ObjectBrowser)::ObjectBrowser.Init
-  OCall $ObjTmpl(ObjectBrowser)::ObjectBrowser.Run
-  OCall $ObjTmpl(ObjectBrowser)::ObjectBrowser.Done
+  invoke CoInitialize, 0                                ;Required for Image object
+  OCall $ObjTmpl(Application)::Application.Init
+  OCall $ObjTmpl(Application)::Application.Run
+  OCall $ObjTmpl(Application)::Application.Done
+  invoke CoUninitialize
 ;  ResGuard_Stop
 ;  ResGuard_Show
   SysDone

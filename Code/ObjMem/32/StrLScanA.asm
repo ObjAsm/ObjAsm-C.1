@@ -25,7 +25,7 @@ OPTION EPILOGUE:NONE
 align ALIGN_CODE
 StrLScanA proc pStringA:POINTER, cChar:CHRA
   invoke StrLengthA, [esp + 4]                          ;pStringA
-  or eax, eax                                           ;Lenght = 0 ?
+  test eax, eax                                         ;Lenght = 0 ?
   jz @@Exit                                             ;Return NULL
   mov ecx, eax                                          ;ecx (counter) = length
   mov al, [esp + 8]                                     ;Load Char

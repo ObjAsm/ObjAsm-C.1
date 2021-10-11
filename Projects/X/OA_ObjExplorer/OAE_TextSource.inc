@@ -1,7 +1,7 @@
 ; ==================================================================================================
-; Title:      OAB_TextSource.inc
+; Title:      OAE_TextSource.inc
 ; Author:     G. Friedrich
-; Version:    Check OA_ObjectBrowser.asm
+; Version:    Check OA_ObjExplorer.asm
 ; Purpose:    TextSource implementation for OA_ObjBrowser. 
 ; ==================================================================================================
 

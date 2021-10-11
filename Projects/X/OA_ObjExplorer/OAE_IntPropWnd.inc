@@ -1,7 +1,7 @@
 ; ==================================================================================================
-; Title:      OAB_IntPropWnd.inc
+; Title:      OAE_IntPropWnd.inc
 ; Author:     G. Friedrich
-; Version:    Check OA_ObjectBrowser.asm
+; Version:    Check OA_ObjExplorer.asm
 ; Purpose:    IntPropWnd implementation for OA_ObjBrowser. 
 ; ==================================================================================================
 
@@ -52,14 +52,14 @@ ShowIntMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(IntPropW
   lea xdi, dBytesWritten
   mov xbx, [xsi].MEMBERDATA.pMemberInfo               ;ebx -> INTMTDINFORMATION
   .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_UNKNOWN
-    invoke WriteFile, hHtmlFile, offset HTML_SEPARATOR, sizeof HTML_SEPARATOR, xdi, NULL
-    invoke WriteFile, hHtmlFile, offset HTML_MIS_00, HTML_MIS_00_SIZE, xdi, NULL
-    ;Attention: In this case ebx -> INTERFACEINFORMATION
-    invoke StrLength, [xbx].INTERFACEINFORMATION.pAncestorName
-    invoke WriteFile, hHtmlFile, [xbx].INTERFACEINFORMATION.pAncestorName, eax, xdi, NULL
-    invoke WriteFile, hHtmlFile, offset HTML_MIS_01, offset HTML_MIS_01_SIZE, xdi, NULL
-    invoke WriteFile, hHtmlFile, offset HTML_SEPARATOR, sizeof HTML_SEPARATOR, xdi, NULL
-    invoke WriteFile, hHtmlFile, offset HTML_MIS_02, offset HTML_MIS_02_SIZE, xdi, NULL
+;    invoke WriteFile, hHtmlFile, offset HTML_SEPARATOR, sizeof HTML_SEPARATOR, xdi, NULL
+;    invoke WriteFile, hHtmlFile, offset HTML_MIS_00, HTML_MIS_00_SIZE, xdi, NULL
+;    ;Attention: In this case ebx -> INTERFACEINFORMATION
+;    invoke StrLength, [xbx].INTERFACEINFORMATION.pAncestorName
+;    invoke WriteFile, hHtmlFile, [xbx].INTERFACEINFORMATION.pAncestorName, eax, xdi, NULL
+;    invoke WriteFile, hHtmlFile, offset HTML_MIS_01, offset HTML_MIS_01_SIZE, xdi, NULL
+;    invoke WriteFile, hHtmlFile, offset HTML_SEPARATOR, sizeof HTML_SEPARATOR, xdi, NULL
+;    invoke WriteFile, hHtmlFile, offset HTML_MIS_02, offset HTML_MIS_02_SIZE, xdi, NULL
   .else
     mov xcx, pSelf
     .if [xcx].$Obj(IntPropWnd).dShowRedefMtds == FALSE
@@ -68,57 +68,57 @@ ShowIntMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(IntPropW
       .endif
     .endif
 
-    invoke WriteFile, hHtmlFile, offset HTML_IMD_01, HTML_IMD_01_SIZE, xdi, NULL
-    .if [xbx].INTMTDINFORMATION.dFlags == METHODTYPE_STANDARD
-      invoke WriteFile, hHtmlFile, offset HTML_INTMTD, sizeof HTML_INTMTD, xdi, NULL
-    .else
-      invoke WriteFile, hHtmlFile, offset HTML_INTDSP, sizeof HTML_INTDSP, xdi, NULL
-    .endif
-    invoke WriteFile, hHtmlFile, offset HTML_IMD_02, HTML_IMD_02_SIZE, xdi, NULL
-    .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
-      invoke WriteFile, hHtmlFile, offset HTML_COLOR_BLACK, sizeof HTML_COLOR_BLACK, xdi, NULL
-    .else
-      invoke WriteFile, hHtmlFile, offset HTML_COLOR_GRAY, sizeof HTML_COLOR_GRAY, xdi, NULL
-    .endif
-    invoke StrLength, [xbx].INTMTDINFORMATION.pInterfaceName
-    invoke WriteFile, hHtmlFile, [xbx].INTMTDINFORMATION.pInterfaceName, eax, xdi, NULL
-    invoke WriteFile, hHtmlFile, offset HTML_OMD_06, HTML_OMD_06_SIZE, xdi, NULL
-    .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
-      invoke WriteFile, hHtmlFile, offset HTML_OPEN_BOLD, sizeof HTML_OPEN_BOLD, xdi, NULL
-    .endif
-    mov ecx, [xbx].INTMTDINFORMATION.dFlags
-    invoke StrLength, [xbx].INTMTDINFORMATION.pName
-    invoke WriteFile, hHtmlFile, [xbx].INTMTDINFORMATION.pName, eax, xdi, NULL
-    mov ecx, [xbx].INTMTDINFORMATION.dFlags
-    .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
-      invoke WriteFile, hHtmlFile, offset HTML_CLOSE_BOLD, sizeof HTML_CLOSE_BOLD, xdi, NULL
-    .endif
-    invoke WriteFile, hHtmlFile, offset HTML_OMD_07, HTML_OMD_07_SIZE, xdi, NULL
-    invoke WriteFile, hHtmlFile, offset HTML_OMD_08, HTML_OMD_08_SIZE, xdi, NULL
-    .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
-      invoke WriteFile, hHtmlFile, offset HTML_COLOR_BLACK, sizeof HTML_COLOR_BLACK, xdi, NULL
-    .else
-      invoke WriteFile, hHtmlFile, offset HTML_COLOR_GRAY, sizeof HTML_COLOR_GRAY, xdi, NULL
-    .endif
-    invoke WriteFile, hHtmlFile, offset HTML_SEPARATOR, sizeof HTML_SEPARATOR, xdi, NULL
-    mov eax, [xbx].INTMTDINFORMATION.dFlags
-    lea xcx, SOM_TEXT_TABLE
-    mov xbx, PSTRING ptr [xcx + sizeof(PSTRING)*xax]
-    invoke StrLength, xbx
-    invoke WriteFile, hHtmlFile, xbx, eax, xdi, NULL
-    invoke WriteFile, hHtmlFile, offset HTML_SEPARATOR, sizeof HTML_SEPARATOR, xdi, NULL
-    invoke WriteFile, hHtmlFile, offset HTML_OMD_10, HTML_OMD_10_SIZE, xdi, NULL
-    invoke WriteFile, hHtmlFile, offset HTML_OMD_11, HTML_OMD_11_SIZE, xdi, NULL
-    .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_SHOWDETAIL
-      invoke WriteFile, hHtmlFile, offset HTML_OMC_00, HTML_OMC_00_SIZE, xdi, NULL
-      .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
-        invoke WriteFile, hHtmlFile, offset HTML_COLOR_BLACK, sizeof HTML_COLOR_BLACK, xdi, NULL
-      .else
-        invoke WriteFile, hHtmlFile, offset HTML_COLOR_GRAY, sizeof HTML_COLOR_GRAY, xdi, NULL
-      .endif
-      invoke WriteFile, hHtmlFile, offset bCRLF, 2, xdi, NULL
-      invoke WriteFile, hHtmlFile, offset HTML_OMC_01, HTML_OMC_01_SIZE, xdi, NULL
-    .endif
+;    invoke WriteFile, hHtmlFile, offset HTML_IMD_01, HTML_IMD_01_SIZE, xdi, NULL
+;    .if [xbx].INTMTDINFORMATION.dFlags == METHODTYPE_STANDARD
+;      invoke WriteFile, hHtmlFile, offset HTML_INTMTD, sizeof HTML_INTMTD, xdi, NULL
+;    .else
+;      invoke WriteFile, hHtmlFile, offset HTML_INTDSP, sizeof HTML_INTDSP, xdi, NULL
+;    .endif
+;    invoke WriteFile, hHtmlFile, offset HTML_IMD_02, HTML_IMD_02_SIZE, xdi, NULL
+;    .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
+;      invoke WriteFile, hHtmlFile, offset HTML_COLOR_BLACK, sizeof HTML_COLOR_BLACK, xdi, NULL
+;    .else
+;      invoke WriteFile, hHtmlFile, offset HTML_COLOR_GRAY, sizeof HTML_COLOR_GRAY, xdi, NULL
+;    .endif
+;    invoke StrLength, [xbx].INTMTDINFORMATION.pInterfaceName
+;    invoke WriteFile, hHtmlFile, [xbx].INTMTDINFORMATION.pInterfaceName, eax, xdi, NULL
+;    invoke WriteFile, hHtmlFile, offset HTML_OMD_06, HTML_OMD_06_SIZE, xdi, NULL
+;    .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
+;      invoke WriteFile, hHtmlFile, offset HTML_OPEN_BOLD, sizeof HTML_OPEN_BOLD, xdi, NULL
+;    .endif
+;    mov ecx, [xbx].INTMTDINFORMATION.dFlags
+;    invoke StrLength, [xbx].INTMTDINFORMATION.pName
+;    invoke WriteFile, hHtmlFile, [xbx].INTMTDINFORMATION.pName, eax, xdi, NULL
+;    mov ecx, [xbx].INTMTDINFORMATION.dFlags
+;    .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
+;      invoke WriteFile, hHtmlFile, offset HTML_CLOSE_BOLD, sizeof HTML_CLOSE_BOLD, xdi, NULL
+;    .endif
+;    invoke WriteFile, hHtmlFile, offset HTML_OMD_07, HTML_OMD_07_SIZE, xdi, NULL
+;    invoke WriteFile, hHtmlFile, offset HTML_OMD_08, HTML_OMD_08_SIZE, xdi, NULL
+;    .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
+;      invoke WriteFile, hHtmlFile, offset HTML_COLOR_BLACK, sizeof HTML_COLOR_BLACK, xdi, NULL
+;    .else
+;      invoke WriteFile, hHtmlFile, offset HTML_COLOR_GRAY, sizeof HTML_COLOR_GRAY, xdi, NULL
+;    .endif
+;    invoke WriteFile, hHtmlFile, offset HTML_SEPARATOR, sizeof HTML_SEPARATOR, xdi, NULL
+;    mov eax, [xbx].INTMTDINFORMATION.dFlags
+;    lea xcx, SOM_TEXT_TABLE
+;    mov xbx, PSTRING ptr [xcx + sizeof(PSTRING)*xax]
+;    invoke StrLength, xbx
+;    invoke WriteFile, hHtmlFile, xbx, eax, xdi, NULL
+;    invoke WriteFile, hHtmlFile, offset HTML_SEPARATOR, sizeof HTML_SEPARATOR, xdi, NULL
+;    invoke WriteFile, hHtmlFile, offset HTML_OMD_10, HTML_OMD_10_SIZE, xdi, NULL
+;    invoke WriteFile, hHtmlFile, offset HTML_OMD_11, HTML_OMD_11_SIZE, xdi, NULL
+;    .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_SHOWDETAIL
+;      invoke WriteFile, hHtmlFile, offset HTML_OMC_00, HTML_OMC_00_SIZE, xdi, NULL
+;      .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
+;        invoke WriteFile, hHtmlFile, offset HTML_COLOR_BLACK, sizeof HTML_COLOR_BLACK, xdi, NULL
+;      .else
+;        invoke WriteFile, hHtmlFile, offset HTML_COLOR_GRAY, sizeof HTML_COLOR_GRAY, xdi, NULL
+;      .endif
+;      invoke WriteFile, hHtmlFile, offset bCRLF, 2, xdi, NULL
+;      invoke WriteFile, hHtmlFile, offset HTML_OMC_01, HTML_OMC_01_SIZE, xdi, NULL
+;    .endif
   .endif
   ret
 ShowIntMtd endp
@@ -239,7 +239,7 @@ Method IntPropWnd.GatherMethods, uses xsi, pInfo:PINTERFACEINFORMATION
   mov xdx, [xcx].INTERFACEINFORMATION.pAncestorName
   .if xdx != NULL
     mov xcx, [xsi].pOwner                               ;xcx -> ClientWnd
-    OCall [xcx].$Obj(ClientWnd).pOwner::ObjectBrowser.FindIntInfo, xdx
+    OCall [xcx].$Obj(ClientWnd).pOwner::Application.FindIntInfo, xdx
     .if xax != NULL
       OCall xsi.GatherMethods, xax
     .else
@@ -254,8 +254,8 @@ Method IntPropWnd.GatherMethods, uses xsi, pInfo:PINTERFACEINFORMATION
 
   mov xax, pInfo
   mov xcx, [xsi].pOwner                                 ;xcx -> ClientWnd
-  mov xdx, [xcx].$Obj(ClientWnd).pOwner                 ;xax -> ObjectBrowser
-  mov xcx, [xdx].$Obj(ObjectBrowser).pObjDB
+  mov xdx, [xcx].$Obj(ClientWnd).pOwner                 ;xax -> Application
+  mov xcx, [xdx].$Obj(Application).pObjDB
   OCall [xcx].$Obj(OA_ObjDB).IntMethodColl::IntMtdInfoCollection.ForEach, \
                                          offset GatherIntMtds, [xax].INTERFACEINFORMATION.pName, xsi
 MethodEnd
@@ -276,7 +276,7 @@ Method IntPropWnd.ShowInheritance, uses xbx xdi xsi, pInterfaceInfo:PINTERFACEIN
   mov xbx, [xcx].INTERFACEINFORMATION.pAncestorName
   .if xbx != NULL
     mov xcx, [xsi].pOwner                             ;ecx -> ClientWnd
-    OCall [xcx].$Obj(ClientWnd).pOwner::ObjectBrowser.FindIntInfo, xbx
+    OCall [xcx].$Obj(ClientWnd).pOwner::Application.FindIntInfo, xbx
     .if xax != NULL
       OCall xsi::IntPropWnd.ShowInheritance, xax, TRUE
     .else

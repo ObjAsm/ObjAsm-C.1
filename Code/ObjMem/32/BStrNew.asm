@@ -28,7 +28,7 @@ OPTION EPILOGUE:NONE
 align ALIGN_CODE
 BStrNew proc pBStr:POINTER
   mov eax, [esp + 4]                                    ;eax -> BStr
-  or eax, eax
+  test eax, eax
   jne @F
   ret 4
 @@:
@@ -36,7 +36,7 @@ BStrNew proc pBStr:POINTER
   push edx
   invoke BStrAlloc, edx
   pop ecx
-  or eax, eax
+  test eax, eax
   je @F                                                 ;Allocation failed
   mov edx, [esp + 4]                                    ;edx -> BStr
   push eax

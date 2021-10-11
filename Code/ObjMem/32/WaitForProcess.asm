@@ -25,7 +25,7 @@ OPTION EPILOGUE:NONE
 align ALIGN_CODE
 WaitForProcess proc dProcessID:DWORD, dTimeOut:DWORD
   invoke OpenProcess, SYNCHRONIZE, FALSE, [esp + 4]     ;dProcessID
-  or eax, eax
+  test eax, eax
   jnz @F
   dec eax                                               ;-1 = failure
   ret 8

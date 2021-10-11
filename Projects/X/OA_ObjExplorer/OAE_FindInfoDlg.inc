@@ -1,7 +1,7 @@
 ; ==================================================================================================
-; Title:      OAB_FindInfoDlg.inc
+; Title:      OAE_FindInfoDlg.inc
 ; Author:     G. Friedrich
-; Version:    Check OA_ObjectBrowser.asm
+; Version:    Check OA_ObjExplorer.asm
 ; Purpose:    FindInfoDlg implementation for OA_ObjBrowser. 
 ; ==================================================================================================
 
@@ -20,7 +20,7 @@ Method FindInfoDlg.CtlsSet, uses xbx xdi xsi
 
   ;Set caption and control strings
   mov xcx, [xsi].pOwner
-  mov ebx, [xcx].$Obj(ObjectBrowser).dLanguage
+  mov ebx, [xcx].$Obj(Application).dLanguage
   lea xdi, cBuffer
 
   lea edx, [ebx + IDS_FIND_CAPTION]
@@ -75,7 +75,7 @@ MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  InfoMatch
-; Purpose:    Used to filter out not matching strings from the ListBox content.
+; Purpose:    Used to filter out non matching strings from the ListBox content.
 ; Arguments:  Arg1: -> INFORMATION.
 ;             Arg2: -> Filter string.
 ;             Arg3: ListBox handle.
@@ -114,7 +114,7 @@ Method FindInfoDlg.OnCommand, uses xdi xbx xsi, wParam:WPARAM, lParam:LPARAM
     invoke SendMessage, xbx, LB_RESETCONTENT, 0, 0
     invoke IsDlgButtonChecked, [xsi].hWnd, IDC_FIND_RBN_OBJ
     mov xdx, [xsi].pOwner
-    mov xcx, [xdx].$Obj(ObjectBrowser).pObjDB
+    mov xcx, [xdx].$Obj(Application).pObjDB
     .if eax != FALSE
       OCall [xcx].$Obj(OA_ObjDB).ObjectColl::ObjInfoCollection.ForEach, offset InfoMatch, xdi, xbx
     .else
@@ -138,9 +138,9 @@ Method FindInfoDlg.OnCommand, uses xdi xbx xsi, wParam:WPARAM, lParam:LPARAM
       invoke SendMessage, xbx, LB_GETTEXT, eax, xdi
       invoke IsDlgButtonChecked, [xsi].hWnd, IDC_FIND_RBN_OBJ
       .if eax != FALSE
-        OCall [xsi].pOwner::ObjectBrowser.Navigate, xdi, INFO_TYPE_OBJECT
+        OCall [xsi].pOwner::Application.Navigate, xdi, INFO_TYPE_OBJECT
       .else
-        OCall [xsi].pOwner::ObjectBrowser.Navigate, xdi, INFO_TYPE_INTERFACE
+        OCall [xsi].pOwner::Application.Navigate, xdi, INFO_TYPE_INTERFACE
       .endif
       xor eax, eax
     .else

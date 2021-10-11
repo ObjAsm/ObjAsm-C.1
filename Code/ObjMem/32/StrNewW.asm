@@ -28,13 +28,13 @@ OPTION EPILOGUE:NONE
 align ALIGN_CODE
 StrNewW proc pStringW:POINTER
   mov eax, [esp + 4]                                    ;eax -> StringW
-  or eax, eax                                           ;is NULL => fail
+  test eax, eax                                         ;is NULL => fail
   jz @F
   invoke StrLengthW, eax
   push eax
   invoke StrAllocW, eax
   pop ecx
-  or eax, eax
+  test eax, eax
   jz @F                                                 ;Allocation failed
   lea ecx, [2 * ecx + 2]                                ;Include zero ending marker
   push eax

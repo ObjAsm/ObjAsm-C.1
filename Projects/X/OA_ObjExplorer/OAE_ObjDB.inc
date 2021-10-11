@@ -1,7 +1,7 @@
 ; ==================================================================================================
-; Title:      OAB_ObjDB.inc
+; Title:      OAE_ObjDB.inc
 ; Author:     G. Friedrich
-; Version:    Check OA_ObjectBrowser.asm
+; Version:    Check OA_ObjExplorer.asm
 ; Purpose:    OA_ObjDB implementation for OA_ObjBrowser. 
 ; ==================================================================================================
 
@@ -371,7 +371,7 @@ Method OA_ObjDB.Save, uses xbx xsi, pFileName:PSTRING
   local DskStm:$Obj(DiskStream)
 
   SetObject xsi
-  DbgText "Saving Database..."
+;  DbgText "Saving Database..."
   mov xbx, $New(DskStm::DiskStream)
   OCall xbx::DiskStream.Init, xsi, pFileName, 0, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
   OCall xbx::DiskStream.BinWrite32, DATABASE_VERSION

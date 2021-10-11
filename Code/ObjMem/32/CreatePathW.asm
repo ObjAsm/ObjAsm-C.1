@@ -35,14 +35,14 @@ CreatePathW proc uses ebx esi pPathNameW:POINTER
 @@0:
   mov ebx, pPathNameW
   invoke StrLScanW, ebx, "\"
-  or eax, eax
+  test eax, eax
   jz @@Exit
   add eax, 2
   mov esi, eax
 @@1:
   invoke StrLScanW, esi, "\"
   mov esi, eax
-  or eax, eax
+  test eax, eax
   je @@2
   sub eax, ebx
   shr eax, 1
@@ -52,7 +52,7 @@ CreatePathW proc uses ebx esi pPathNameW:POINTER
   invoke StrCopyW, addr cBuffer, ebx
 @@3:
   invoke CreateDirectoryW, addr cBuffer, NULL
-  or esi, esi
+  test esi, esi
   jz @@Exit
   add esi, 2
   jmp @@1

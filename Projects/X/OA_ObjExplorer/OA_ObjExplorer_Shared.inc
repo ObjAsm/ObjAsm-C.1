@@ -1,5 +1,5 @@
 ; ==================================================================================================
-; Title:      OA_ObjectBrowser_Shared.inc
+; Title:      OA_ObjExplorer_Shared.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
 ; Purpose:    ObjAsm Object Browser.
@@ -18,9 +18,9 @@ VER_PRODUCTVERSION            equ       2,0,0,0
 VER_PRODUCTVERSION_STR        equ       <2.0>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       81
-BUILD_DATE_STR                textequ   <09.09.2021>
-BUILD_BITNESS                 equ       32
+BUILD_NUMBER                  equ       99
+BUILD_DATE_STR                textequ   <2021-10-11>
+BUILD_BITNESS                 equ       64
 BUILD_MODE                    equ       DBG
 
 ;Menu IDs
@@ -125,7 +125,7 @@ IDS_FIND_GO                   equ       121
 IDS_FIND_OBJ                  equ       122
 IDS_FIND_INT                  equ       123
 
-;Res\ObjectBrowser_SetupDlg.rc
+;Res\ObjExplorer_SetupDlg.rc
 IDD_SETUP_DLG                 equ       5000
 IDC_SETUP_VIEWER_GRP          equ       2001
 IDC_SETUP_VIEWER_STC          equ       2002
@@ -136,7 +136,7 @@ IDC_SETUP_PROP_GRP            equ       2010
 IDC_SETUP_PROP_CHK_MTD        equ       2011
 IDC_SETUP_PROP_CHK_VAR        equ       2012
 
-;Res\ObjectBrowser_FindDlg.rc
+;Res\ObjExplorer_FindDlg.rc
 IDD_FIND_DLG                  equ       6000
 IDC_FIND_EDIT                 equ       1001
 IDC_FIND_BTN_GO               equ       1002

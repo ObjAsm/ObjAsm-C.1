@@ -363,7 +363,7 @@ OcxClientSiteID                   equ     0000012011
 ;RedBlackTree
 RedBlackTreeID                    equ     0000012030
 
-;ObjectBrowser
+;ObjExplorer
 FilesCollectionID                 equ     0000012040
 ObjInfoCollectionID               equ     0000012041
 ObjMtdInfoCollectionID            equ     0000012042
@@ -376,7 +376,7 @@ ObjBwrClientWndID                 equ     0000012048
 PropWndID                         equ     0000012049
 IntPropWndID                      equ     0000012050
 ObjPropWndID                      equ     0000012051
-ObjectBrowserID                   equ     0000012052
+ObjExplorerID                     equ     0000012052
 
 ;Office apps
 ExcelHostID                       equ     0000012060

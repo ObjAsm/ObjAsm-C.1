@@ -400,7 +400,7 @@ Method XTVDemoApp.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
     invoke GetWindowLongPtr, pSelf, GWLP_USERDATA       ;If GWL_USERDATA wasn't set,
     .if xax == 0                                        ;  it returns NULL
       invoke GetWindowLongPtr, pSelf, DWLP_USER
-      or eax, eax
+      test eax, eax
       jz @@DefProc                                      ;Goto handler defined in DispatchEvent
     .endif
     mov xsi, xax

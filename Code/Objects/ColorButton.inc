@@ -296,6 +296,7 @@ MethodEnd
 ; Note:       Window HANDLE is passed in pSelf (hidden argument).
 
 Method ColorButton.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
+  ;DbgMessage uMsg,, "ColorButton"
   .if uMsg == WM_NCCREATE
     mov xax, lParam
     .if [xax].CREATESTRUCT.lpCreateParams == NULL

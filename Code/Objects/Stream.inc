@@ -74,7 +74,7 @@ Object Stream, StreamID, Primer
   VirtualAbstract     GetSize
   VirtualAbstract     Flush
   VirtualMethod       Put,          POINTER
-  VirtualAbstract     Seek,         QWORD, DWORD
+  VirtualAbstract     Seek,         SQWORD, DWORD
   VirtualMethod       StrRead
   VirtualMethod       StrWriteA,    PSTRINGA
   VirtualMethod       StrWriteW,    PSTRINGW

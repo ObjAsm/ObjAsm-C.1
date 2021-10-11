@@ -35,14 +35,14 @@ CreatePathA proc uses ebx esi pPathNameA:POINTER
 @@0:
   mov ebx, pPathNameA
   invoke StrLScanA, ebx, "\"
-  or eax, eax
+  test eax, eax
   jz @@Exit
   inc eax
   mov esi, eax
 @@1:
   invoke StrLScanA, esi, "\"
   mov esi, eax
-  or eax, eax
+  test eax, eax
   je @@2
   sub eax, ebx
   invoke StrCCopyA, addr cBuffer, ebx, eax
@@ -51,7 +51,7 @@ CreatePathA proc uses ebx esi pPathNameA:POINTER
   invoke StrCopyA, addr cBuffer, ebx
 @@3:
   invoke CreateDirectoryA, addr cBuffer, NULL
-  or esi, esi
+  test esi, esi
   jz @@Exit
   inc esi
   jmp @@1

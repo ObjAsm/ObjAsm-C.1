@@ -1,5 +1,5 @@
 ; ==================================================================================================
-; Title:      MdiApp.inc
+; Title:      MemoryStream.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.2
 ; Purpose:    ObjAsm support of memory streaming objects.
@@ -9,31 +9,39 @@
 
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Object:  MemoryStream
-; Purpose: Implements an "in memory" stream.
+; Object:     MemoryStream
+; Purpose:    Implements an "in memory" stream. 4GB max capacity.
 
 Object MemoryStream, MemoryStreamID, Stream
-  RedefineMethod    BinRead,      POINTER, DWORD      ;-> Buffer, Count
-  RedefineMethod    BinWrite,     POINTER, DWORD      ;-> Buffer, Count
-  VirtualMethod     BufferLoad,   POINTER, DWORD      ;-> Buffer, Size
-  VirtualMethod     BufferSave,   POINTER             ;-> Buffer
-  RedefineMethod    Done
-  VirtualMethod     FileLoad,     PSTRING             ;-> FileName
-  VirtualMethod     FileSave,     PSTRING             ;-> FileName
-  RedefineMethod    GetPos                            ;Returns QWORD edx::eax
-  RedefineMethod    GetSize                           ;Returns QWORD edx::eax
-  RedefineMethod    Init,         POINTER, DWORD, DWORD, DWORD  ;-> Owner, Capacity, Increment, Max.
-  RedefineMethod    Seek,         QWORD               ;Position
-  StaticMethod      SetCapacity,  DWORD
-  RedefineMethod    Truncate
-
-  DefineVariable    pBuffer,      POINTER,      NULL  ;-> Storage buffer
-  DefineVariable    dCurrSize,    DWORD,        0     ;Storage fill
-  DefineVariable    dPosition,    DWORD,        0     ;Current position into storage
-  DefineVariable    dLimit,       DWORD,        0     ;Current storage capacity
-  DefineVariable    dDelta,       DWORD,        0     ;Storage capacity increment
-  DefineVariable    dMaxSize,     DWORD,        0     ;Maximal storage capacity
-  DefineVariable    ObjLock,      OBJECT_LOCK,  {}
+  RedefineMethod      BinRead,      POINTER, DWORD      ;-> Buffer, Count
+  RedefineMethod      BinRead8
+  RedefineMethod      BinRead16
+  RedefineMethod      BinRead32
+  RedefineMethod      BinRead64
+  RedefineMethod      BinWrite,     POINTER, DWORD      ;-> Buffer, Count
+  RedefineMethod      BinWrite8,    BYTE
+  RedefineMethod      BinWrite16,   WORD
+  RedefineMethod      BinWrite32,   DWORD
+  RedefineMethod      BinWrite64,   QWORD
+  VirtualMethod       BufferLoad,   POINTER, DWORD      ;-> Buffer, Size
+  VirtualMethod       BufferSave,   POINTER             ;-> Buffer
+  RedefineMethod      Done
+  VirtualMethod       FileLoad,     PSTRING             ;-> FileName
+  VirtualMethod       FileSave,     PSTRING             ;-> FileName
+  RedefineMethod      GetPos                            ;Returns QWORD edx::eax
+  RedefineMethod      GetSize                           ;Returns QWORD edx::eax
+  RedefineMethod      Init,         POINTER, DWORD, DWORD, DWORD  ;-> Owner, Capacity, Incr., Max.
+  RedefineMethod      Seek,         SQWORD, DWORD       ;Position
+  StaticMethod        SetCapacity,  DWORD
+  RedefineMethod      Truncate
+                      
+  DefineVariable      pBuffer,      POINTER,      NULL  ;-> Storage buffer
+  DefineVariable      dCurrSize,    DWORD,        0     ;Storage current size
+  DefineVariable      dPosition,    DWORD,        0     ;Current position into storage
+  DefineVariable      dLimit,       DWORD,        0     ;Current storage capacity
+  DefineVariable      dDelta,       DWORD,        0     ;Storage capacity increment
+  DefineVariable      dMaxSize,     DWORD,        0     ;Maximal storage capacity
+  DefineVariable      ObjLock,      OBJECT_LOCK,  {}
 ObjectEnd
 
 
@@ -69,6 +77,129 @@ Method MemoryStream.BinRead, uses xsi, pBuffer:POINTER, dCount:DWORD
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     MemoryStream.BinRead8
+; Purpose:    Read a byte from stream at the current position, returns it in the ecx register and
+;             advance the current position into the stream.
+; Arguments:  Nothing.
+; Return:     eax = Read BYTE value.
+;             ecx = Bytes read.
+
+Method MemoryStream.BinRead8, uses xsi
+  SetObject xsi
+  .if [xsi].dErrorCode == OBJ_OK
+    mov edx, [xsi].dPosition
+    mov eax, [xsi].dCurrSize
+    sub eax, edx
+    mov ecx, sizeof(BYTE)
+    .if eax < ecx
+      OCall xsi.ErrorReport, NULL, STM_READ_ERROR
+      xor eax, eax
+      xor ecx, ecx
+    .else
+      add xdx, [xsi].pBuffer
+      movzx eax, BYTE ptr [xdx]
+      add [xsi].dPosition, ecx
+    .endif
+  .else
+    xor ecx, ecx
+    xor eax, eax
+  .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     MemoryStream.BinRead16
+; Purpose:    Read a word from stream at the current position, returns it in the ecx register and
+;             advance the current position into the stream.
+; Arguments:  Nothing.
+; Return:     eax = Read WORD value.
+;             ecx = Bytes read.
+
+Method MemoryStream.BinRead16, uses xsi
+  SetObject xsi
+  .if [xsi].dErrorCode == OBJ_OK
+    mov edx, [xsi].dPosition
+    mov eax, [xsi].dCurrSize
+    sub eax, edx
+    mov ecx, sizeof(WORD)
+    .if eax < ecx
+      OCall xsi.ErrorReport, NULL, STM_READ_ERROR
+      xor eax, eax
+      xor ecx, ecx
+    .else
+      add xdx, [xsi].pBuffer
+      movzx eax, WORD ptr [xdx]
+      add [xsi].dPosition, ecx
+    .endif
+  .else
+    xor ecx, ecx
+    xor eax, eax
+  .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     MemoryStream.BinRead32
+; Purpose:    Read a DWORD from stream at the current position, returns it in the ecx register and
+;             advance the current position into the stream.
+; Arguments:  Nothing.
+; Return:     eax = Read DWORD value.
+;             ecx = Bytes read.
+
+Method MemoryStream.BinRead32, uses xsi
+  SetObject xsi
+  .if [xsi].dErrorCode == OBJ_OK
+    mov edx, [xsi].dPosition
+    mov eax, [xsi].dCurrSize
+    sub eax, edx
+    mov ecx, sizeof(DWORD)
+    .if eax < ecx
+      OCall xsi.ErrorReport, NULL, STM_READ_ERROR
+      xor eax, eax
+      xor ecx, ecx
+    .else
+      add xdx, [xsi].pBuffer
+      mov eax, DWORD ptr [xdx]
+      add [xsi].dPosition, ecx
+    .endif
+  .else
+    xor ecx, ecx
+    xor eax, eax
+  .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     MemoryStream.BinRead64
+; Purpose:    Read a QWORD from stream at the current position, returns it in the ecx register and
+;             advance the current position into the stream.
+; Arguments:  Nothing.
+; Return:     rax or edx::eax = Read QWORD value.
+;             ecx = Bytes read.
+
+Method MemoryStream.BinRead64, uses xsi
+  SetObject xsi
+  .if [xsi].dErrorCode == OBJ_OK
+    mov edx, [xsi].dPosition
+    mov eax, [xsi].dCurrSize
+    sub eax, edx
+    mov ecx, sizeof(QWORD)
+    .if eax < ecx
+      OCall xsi.ErrorReport, NULL, STM_READ_ERROR
+      xor eax, eax
+      xor ecx, ecx
+    .else
+      add xdx, [xsi].pBuffer
+      mov xax, XWORD ptr [xdx]
+      if TARGET_BITNESS eq 32
+        mov edx, DWORD ptr [xdx + sizeof(DWORD)]
+      endif
+      add [xsi].dPosition, ecx
+    .endif
+  .else
+    xor ecx, ecx
+    xor eax, eax
+  .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     MemoryStream.BinWrite
 ; Purpose:    Write should write Count bytes from Buffer onto the stream and advance the
 ;             current position of the stream by Count bytes.
@@ -91,9 +222,10 @@ Method MemoryStream.BinWrite, uses xsi, pBuffer:POINTER, dCount:DWORD
       .until eax >= ecx
       .if eax <= [xsi].dMaxSize
         OCall xsi.SetCapacity, eax
-        ExitMethod .if [xsi].dErrorCode !!= OBJ_OK
+        ExitMethod .if eax == 0
       .else
         OCall xsi.ErrorReport, NULL, STM_WRITE_ERROR
+        ExitMethod
       .endif
     .endif
     mov eax, [xsi].dPosition
@@ -101,10 +233,158 @@ Method MemoryStream.BinWrite, uses xsi, pBuffer:POINTER, dCount:DWORD
     invoke MemClone, xax, pBuffer, dCount
     mov eax, dCount                               ;Set return value
     add [xsi].dPosition, eax
+  .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     DiskStream.BinWrite8
+; Purpose:    Write a byte value onto the stream and advance the current position into the stream.
+; Arguments:  Arg1: Byte value.
+; Return:     eax = Bytes written (= 1).
+
+Method MemoryStream.BinWrite8, uses xsi, bValue:BYTE
+  SetObject xsi
+  .if [xsi].dErrorCode != OBJ_OK
+    xor eax, eax
+  .else
+    mov eax, sizeof(BYTE)
+    mov ecx, [xsi].dPosition
+    add ecx, eax
+    mov edx, [xsi].dLimit
+    .if edx < ecx
+      align ALIGN_CODE
+      .repeat
+        add edx, [xsi].dDelta
+      .until edx >= ecx
+      .if edx <= [xsi].dMaxSize
+        OCall xsi.SetCapacity, edx                ;Zero if failed
+        ExitMethod .if eax == 0
+      .else
+        OCall xsi.ErrorReport, NULL, STM_WRITE_ERROR
+        ExitMethod
+      .endif
+      mov eax, sizeof(BYTE)                       ;Set return value
+    .endif
     mov edx, [xsi].dPosition
-    cmp edx, [xsi].dCurrSize
-    jbe @@EOM
-    mov [xsi].dCurrSize, edx                      ;Adjust dCurrSize
+    add xdx, [xsi].pBuffer
+    mov cl, bValue
+    mov [xdx], cl
+    add [xsi].dPosition, eax
+  .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     MemoryStream.BinWrite16
+; Purpose:    Write a word value onto the stream and advance the current position into the stream.
+; Arguments:  Arg1: Word value.
+; Return:     eax = Bytes written (= 2).
+
+Method MemoryStream.BinWrite16, uses xsi, wValue:WORD
+  SetObject xsi
+  .if [xsi].dErrorCode != OBJ_OK
+    xor eax, eax
+  .else
+    mov eax, sizeof(WORD)
+    mov ecx, [xsi].dPosition
+    add ecx, eax
+    mov edx, [xsi].dLimit
+    .if edx < ecx
+      align ALIGN_CODE
+      .repeat
+        add edx, [xsi].dDelta
+      .until edx >= ecx
+      .if edx <= [xsi].dMaxSize
+        OCall xsi.SetCapacity, edx                ;Zero if failed
+        ExitMethod .if eax == 0
+      .else
+        OCall xsi.ErrorReport, NULL, STM_WRITE_ERROR
+        ExitMethod
+      .endif
+      mov eax, sizeof(WORD)                       ;Set return value
+    .endif
+    mov edx, [xsi].dPosition
+    add xdx, [xsi].pBuffer
+    mov cx, wValue
+    mov [xdx], cx
+    add [xsi].dPosition, eax
+  .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     MemoryStream.BinWrite32
+; Purpose:    Write a DWORD value onto the stream and advance the current position into the stream.
+; Arguments:  Arg1: DWORD value.
+; Return:     eax = Bytes written (= 4).
+
+Method MemoryStream.BinWrite32, uses xsi, dValue:DWORD
+  SetObject xsi
+  .if [xsi].dErrorCode != OBJ_OK
+    xor eax, eax
+  .else
+    mov eax, sizeof(DWORD)
+    mov ecx, [xsi].dPosition
+    add ecx, eax
+    mov edx, [xsi].dLimit
+    .if edx < ecx
+      align ALIGN_CODE
+      .repeat
+        add edx, [xsi].dDelta
+      .until edx >= ecx
+      .if edx <= [xsi].dMaxSize
+        OCall xsi.SetCapacity, edx                ;Zero if failed
+        ExitMethod .if eax == 0
+      .else
+        OCall xsi.ErrorReport, NULL, STM_WRITE_ERROR
+        ExitMethod
+      .endif
+      mov eax, sizeof(DWORD)                      ;Set return value
+    .endif
+    mov edx, [xsi].dPosition
+    add xdx, [xsi].pBuffer
+    mov ecx, dValue
+    mov [xdx], ecx
+    add [xsi].dPosition, eax
+  .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     MemoryStream.BinWrite64
+; Purpose:    Write a QWORD value onto the stream and advance the current position into the stream.
+; Arguments:  Arg1: QWORD value.
+; Return:     eax = Bytes written (= 8).
+
+Method MemoryStream.BinWrite64, uses xsi, qValue:QWORD
+  SetObject xsi
+  .if [xsi].dErrorCode != OBJ_OK
+    xor eax, eax
+  .else
+    mov eax, sizeof(QWORD)
+    mov ecx, [xsi].dPosition
+    add ecx, eax
+    mov edx, [xsi].dLimit
+    .if edx < ecx
+      align ALIGN_CODE
+      .repeat
+        add edx, [xsi].dDelta
+      .until edx >= ecx
+      .if edx <= [xsi].dMaxSize
+        OCall xsi.SetCapacity, edx                ;Zero if failed
+        ExitMethod .if eax == 0
+      .else
+        OCall xsi.ErrorReport, NULL, STM_WRITE_ERROR
+        ExitMethod
+      .endif
+      mov eax, sizeof(QWORD)                      ;Set return value
+    .endif
+    mov edx, [xsi].dPosition
+    add xdx, [xsi].pBuffer
+    mov xcx, XWORD ptr [qValue]
+    mov [xdx], xcx
+    if TARGET_BITNESS eq 32
+      mov ecx, DWORD ptr [qValue + sizeof(DWORD)]
+      mov [edx + sizeof(DWORD)], ecx
+    endif
+    add [xsi].dPosition, eax
   .endif
 MethodEnd
 
@@ -179,10 +459,10 @@ Method MemoryStream.FileLoad, uses xsi, pFileName:PSTRING
   mov hFile, xax
   invoke ReadFile, hFile, addr [xsi].dErrorCode, sizeof $Obj(MemoryStream).dErrorCode, \
                    addr dBytesRead, NULL
-  or eax, eax
+  test eax, eax
   je @@Error
   invoke ReadFile, hFile, addr dNewLimit, sizeof $Obj(MemoryStream).dLimit, addr dBytesRead, NULL
-  or eax, eax
+  test eax, eax
   je @@Error
   mov eax, dNewLimit
   .if eax > [xsi].dMaxSize
@@ -195,14 +475,14 @@ Method MemoryStream.FileLoad, uses xsi, pFileName:PSTRING
   jne @@Error
   invoke ReadFile, hFile, addr [xsi].dCurrSize, sizeof $Obj(MemoryStream).dCurrSize, \
          addr dBytesRead, NULL
-  or eax, eax
+  test eax, eax
   je @@Error
   invoke ReadFile, hFile, addr [xsi].dPosition, sizeof $Obj(MemoryStream).dPosition, \
          addr dBytesRead, NULL
-  or eax, eax
+  test eax, eax
   je @@Error
   invoke ReadFile, hFile, [xsi].pBuffer, [xsi].dCurrSize, addr dBytesRead, NULL
-  or eax, eax
+  test eax, eax
   jne @@Exit
 @@Error:
   OCall xsi.ErrorReport, NULL, STM_READ_ERROR
@@ -225,22 +505,22 @@ Method MemoryStream.FileSave, uses xsi, pFileName:PSTRING
   mov hFile, xax
   invoke WriteFile, hFile, addr [xsi].dErrorCode, sizeof $Obj(MemoryStream).dErrorCode, \
                            addr dBytesWritten, NULL
-  or eax, eax
+  test eax, eax
   je @@Error
   invoke WriteFile, hFile, addr [xsi].dLimit, sizeof $Obj(MemoryStream).dLimit, \
                     addr dBytesWritten, NULL
-  or eax, eax
+  test eax, eax
   je @@Error
   invoke WriteFile, hFile, addr [xsi].dCurrSize, sizeof $Obj(MemoryStream).dCurrSize, \
                     addr dBytesWritten, NULL
-  or eax, eax
+  test eax, eax
   je @@Error
   invoke WriteFile, hFile, addr [xsi].dPosition, sizeof $Obj(MemoryStream).dPosition, \
                     addr dBytesWritten, NULL
-  or eax, eax
+  test eax, eax
   je @@Error
   invoke WriteFile, hFile, [xsi].pBuffer, [xsi].dCurrSize, addr dBytesWritten, NULL
-  or eax, eax
+  test eax, eax
   jne @@Exit
 @@Error:
   OCall xsi.ErrorReport, NULL, STM_WRITE_ERROR
@@ -273,11 +553,12 @@ MethodEnd
 
 Method MemoryStream.GetSize
   SetObject xcx
-  xor edx, edx
   .if [xcx].dErrorCode == OBJ_OK
     mov eax, [xcx].dCurrSize
+    xor edx, edx
   .else
     mov eax, -1
+    mov edx, eax
   .endif
 MethodEnd
 
@@ -308,16 +589,34 @@ MethodEnd
 ; Purpose:    Seek sets the current position to NewPosition bytes from the start of the calling
 ;             stream. The start of a stream is position 0. HiPart of qNewPosition is ignored!
 ; Arguments:  Arg1: New position.
+;             Arg2: Positioning beginning.
 ; Return:     Nothing.
 
-Method MemoryStream.Seek,, qNewPosition:QWORD
+Method MemoryStream.Seek,, sqNewPosition:SQWORD, dMode
   SetObject xcx
   .if [xcx].dErrorCode == OBJ_OK
-    mov eax, (QUADWORD ptr qNewPosition).LoDWord
-    .if eax > [xcx].dCurrSize
+    mov edx, (QUADWORD ptr sqNewPosition).HiDWord
+    .if edx != 0
       OCall xcx.ErrorReport, NULL, STM_SEEK_ERROR
     .else
-      mov [xcx].dPosition, eax
+      mov eax, (QUADWORD ptr sqNewPosition).LoDWord
+      .if dMode == STM_BEGIN
+        xor edx, edx
+      .elseif dMode == STM_CURRENT
+        mov edx, [xcx].dPosition
+      .elseif dMode == STM_CURRENT
+        mov edx, [xcx].dCurrSize
+      .else
+        OCall xcx.ErrorReport, NULL, STM_SEEK_ERROR
+        ExitMethod
+      .endif
+      mov edx, [xcx].dPosition
+      add edx, eax
+      .if CARRY? || edx > [xcx].dCurrSize
+        OCall xcx.ErrorReport, NULL, STM_SEEK_ERROR
+      .else
+        mov [xcx].dPosition, edx
+      .endif
     .endif
   .endif
 MethodEnd
@@ -329,20 +628,19 @@ MethodEnd
 ; Arguments:  Arg1: New storage dLimit in bytes.
 ; Return:     eax = if succeeded, allocated dLimit, otherwise 0.
 
-Method MemoryStream.SetCapacity, uses xbx xsi, dNewLimit:DWORD
+Method MemoryStream.SetCapacity, uses xsi, dNewLimit:DWORD
   SetObject xsi
   .if [xsi].dErrorCode == OBJ_OK
-    MemAlloc dNewLimit
+    .if [xsi].pBuffer == NULL
+      MemAlloc dNewLimit
+    .else
+      MemReAlloc [xsi].pBuffer, dNewLimit
+    .endif
     .if xax == NULL
       OCall xsi.ErrorReport, NULL, STM_OUT_OF_MEMORY
       xor eax, eax
     .else
-      mov xbx, [xsi].pBuffer
       mov [xsi].pBuffer, xax
-      .if xbx != NULL
-        invoke MemClone, xax, xbx, [xsi].dCurrSize
-        MemFree xbx
-      .endif
       m2m [xsi].dLimit, dNewLimit, eax                ;Set return value
     .endif
   .endif

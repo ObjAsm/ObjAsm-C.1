@@ -21,7 +21,7 @@
 
 align ALIGN_CODE
 StrCopyA proc pDstStrA:POINTER, pSrcStrA:POINTER
-  invoke StrSize, rdx
+  invoke StrSizeA, rdx
   invoke MemShift, pDstStrA, pSrcStrA, eax
   ret
 StrCopyA endp

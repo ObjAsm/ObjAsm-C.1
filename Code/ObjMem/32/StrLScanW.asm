@@ -25,7 +25,7 @@ OPTION EPILOGUE:NONE
 align ALIGN_CODE
 StrLScanW proc pStringW:POINTER, cChar:CHRW
   invoke StrLengthW, [esp + 4]                          ;pStringW
-  or eax, eax                                           ;Lenght = 0 ?
+  test eax, eax                                         ;Lenght = 0 ?
   jz @@Exit                                             ;Return NULL
   mov ecx, eax                                          ;ecx (counter) = length
   mov ax, [esp + 8]                                     ;Load Char

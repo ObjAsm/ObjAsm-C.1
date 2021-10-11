@@ -197,6 +197,7 @@ MethodEnd
 ; Note:       Window handle is passed in pSelf (hidden parameter).
 
 Method TabIptor.WndProc,, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
+  ;DbgMessage uMsg,, "TabIptor"
   invoke GetProp, pSelf, offset szTabCtlIptor
   OCall xax::MsgInterceptor.Dispatch, pSelf, uMsg, wParam, lParam
 MethodEnd

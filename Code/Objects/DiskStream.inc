@@ -28,22 +28,22 @@ PDISKSTREAM_INIT typedef ptr DISKSTREAM_INIT
 ;             BufferedDiskStream. DiskStream overrides all the abstract methods defined by Stream.
 
 Object DiskStream, DiskStreamID, Stream
-  RedefineMethod      BinRead,      POINTER, DWORD            ;-> Buffer, Count
+  RedefineMethod      BinRead,      POINTER, DWORD      ;-> Buffer, Count
   RedefineMethod      BinRead8
   RedefineMethod      BinRead16
   RedefineMethod      BinRead32
   RedefineMethod      BinRead64
-  RedefineMethod      BinWrite,     POINTER, DWORD            ;-> Buffer, Count
+  RedefineMethod      BinWrite,     POINTER, DWORD      ;-> Buffer, Count
   RedefineMethod      BinWrite8,    BYTE
   RedefineMethod      BinWrite16,   WORD
   RedefineMethod      BinWrite32,   DWORD
   RedefineMethod      BinWrite64,   QWORD
   RedefineMethod      Done
   RedefineMethod      Flush
-  RedefineMethod      GetPos                                  ;Returns QWORD edx::eax
-  RedefineMethod      GetSize                                 ;Returns QWORD edx::eax
+  RedefineMethod      GetPos                            ;Returns QWORD edx::eax
+  RedefineMethod      GetSize                           ;Returns QWORD edx::eax
   RedefineMethod      Init,         POINTER, PSTRING, DWORD, DWORD, POINTER, DWORD, DWORD, HANDLE
-  RedefineMethod      Seek,         QWORD, DWORD              ;Position, Mode
+  RedefineMethod      Seek,         SQWORD, DWORD       ;Position, Mode
   RedefineMethod      Truncate
 
   DefineVariable      hFile,        HANDLE,     INVALID_HANDLE_VALUE
@@ -431,10 +431,10 @@ MethodEnd
 ; Note:       In 32 bit mode, use the following syntax
 ;             OCall xdi::DiskStream.Seek, QWORD ptr 0, STM_BEGIN
 
-Method DiskStream.Seek,, qPosition:QWORD, dSeekMode:DWORD
+Method DiskStream.Seek,, sqPosition:SQWORD, dSeekMode:DWORD
   SetObject xcx
   .if [xcx].dErrorCode == OBJ_OK
-    invoke SetFilePointerEx, [xcx].hFile, qPosition, NULL, dSeekMode
+    invoke SetFilePointerEx, [xcx].hFile, sqPosition, NULL, dSeekMode
   .endif
 MethodEnd
 

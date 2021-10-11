@@ -1,7 +1,7 @@
 ; ==================================================================================================
-; Title:      OAB_TreeWindow.inc
+; Title:      OAE_TreeWindow.inc
 ; Author:     G. Friedrich
-; Version:    Check OA_ObjectBrowser.asm
+; Version:    Check OA_ObjExplorer.asm
 ; Purpose:    TreeWindow implementation for OA_ObjBrowser. 
 ; ==================================================================================================
 
