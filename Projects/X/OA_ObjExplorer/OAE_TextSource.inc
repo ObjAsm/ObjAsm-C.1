@@ -263,7 +263,7 @@ Method TextSource.GetNextWord, uses xbx xdi xsi
               mov dInWord, 2
             .endif
             inc xbx
-          .elseif al == ":" || al == "," || al == "." || \
+          .elseif al == "," || al == "." || \
               al == "+" || al == "-" || al == "*" || al == "/" || \
               al == "=" || al == "!" || al == "<" || al == ">" || \
               al == "[" || al == "]" || \

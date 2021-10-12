@@ -57,7 +57,7 @@ CStrA bDispMethod,          "DISPMETHOD"
 ; Object:    OA_ObjDB
 ; Purpose:   Object database engine.
 
-Object OA_ObjDB, OA_ObjDBID, Primer
+Object OA_ObjDB, OAE_ObjDBID, Primer
   StaticMethod      RemoveFileInfo,     PSTRING
   RedefineMethod    Done
   RedefineMethod    Init,               POINTER, $ObjPtr(IniFile)
@@ -490,8 +490,8 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
   local dIncludeLength:DWORD, pExtension:PSTRING, dFlags:DWORD
   local pFileInfo:PFILEINFORMATION, TextSrc:$Obj(TextSource)
 
-;  DbgText "OA_ObjDB.ScanFile"
-;  DbgStr pFileName
+  ;DbgText "OA_ObjDB.ScanFile"
+  ;DbgStr pFileName
   SetObject xsi
   m2z pFileInfo
 
@@ -556,7 +556,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
       mov pWord, xax
       mov dWordLength, ecx
 
-      .if ecx == lengthof bObject
+      .if ecx == 6                                      ;lengthof(bObject) and lengthof(bMethod) 
         invoke StrCCompA, pWord, offset bObject, dWordLength
         .if eax == 0
           OCall TextSrc::TextSource.GetNextWord      ;Get object name
@@ -572,8 +572,9 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
             mov pName, $invoke(StrCNewA, pWord, dWordLength)
             mov xbx, $MemAlloc(sizeof OBJECTINFORMATION)
             m2m [xbx].OBJECTINFORMATION.pName, pName, edx
-            m2m [xbx].OBJECTINFORMATION.dFlags, dInfoFlags, ecx
-            m2m [xbx].OBJECTINFORMATION.pFileInfo, pFileInfo, xdx
+            m2m [xbx].OBJECTINFORMATION.dLineNumber, TextSrc.dLineNumber, ecx
+            m2m [xbx].OBJECTINFORMATION.dFlags, dInfoFlags, edx
+            m2m [xbx].OBJECTINFORMATION.pFileInfo, pFileInfo, xcx
             m2z [xbx].OBJECTINFORMATION.pHelpData     ;Ignore this now
             m2z [xbx].OBJECTINFORMATION.dHelpLineCount
             OCall [xsi].ObjectColl::ObjInfoCollection.Insert, xbx
@@ -634,8 +635,9 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
                 mov [xax].OBJMTDINFORMATION.pName, xbx
                 mov xbx, xax
                 mov [xbx].OBJMTDINFORMATION.pObjectName, $invoke(StrNewA, pName)
+                m2m [xbx].OBJMTDINFORMATION.dLineNumber, TextSrc.dLineNumber, ecx
                 m2m [xbx].OBJMTDINFORMATION.pFileInfo, pFileInfo, xdx   ;From FilesCollection
-                m2m [xbx].OBJMTDINFORMATION.dFlags, dFlags, edx
+                m2m [xbx].OBJMTDINFORMATION.dFlags, dFlags, ecx
                 m2z [xbx].OBJMTDINFORMATION.pHelpData                   ;Ignore this now
                 m2z [xbx].OBJMTDINFORMATION.dHelpLineCount
 
@@ -668,8 +670,9 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
                 mov [xax].OBJVARINFORMATION.pName, xbx
                 mov xbx, xax
                 mov [xbx].OBJVARINFORMATION.pObjectName, $invoke(StrNewA, pName)
+                m2m [xbx].OBJVARINFORMATION.dLineNumber, TextSrc.dLineNumber, ecx
                 m2m [xbx].OBJVARINFORMATION.pFileInfo, pFileInfo, xdx  ;From FilesCollection
-                m2m [xbx].OBJVARINFORMATION.dFlags, dFlags, edx
+                m2m [xbx].OBJVARINFORMATION.dFlags, dFlags, ecx
                 m2z [xbx].OBJVARINFORMATION.pHelpData ;Ignore this now
                 m2z [xbx].OBJVARINFORMATION.dHelpLineCount
                 mov pWord, $OCall(TextSrc::TextSource.GetNextWord)
@@ -688,13 +691,54 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
 
             .until FALSE
           .endif
+        .else
+          ;-- Method implementation --------------------------------------------------
+          invoke StrCCompA, pWord, offset bMethod, dWordLength
+          .if eax == 0
+            OCall TextSrc::TextSource.GetNextWord    ;Get object/interface name
+            mov pWord, xax
+            mov dWordLength, ecx
+            .if ecx == lengthof(bMacro)
+              invoke StrCICompA, offset bMacro, pWord, dWordLength
+              .continue .if eax == 0
+            .endif
+            ;Get the interface/object name
+            mov xbx, $MemAlloc(sizeof IMPMTDINFORMATION)
+            invoke StrCNew, pWord, dWordLength
+            mov [xbx].IMPMTDINFORMATION.pObjectName, xax
+            m2m [xbx].IMPMTDINFORMATION.pFileInfo, pFileInfo, xdx ;From FilesCollection
+            m2m [xbx].IMPMTDINFORMATION.dLineNumber, TextSrc.dLineNumber, ecx
+            m2z [xbx].IMPMTDINFORMATION.dFlags
+            m2z [xbx].IMPMTDINFORMATION.pArguments
+            m2z [xbx].IMPMTDINFORMATION.pHelpData   ;Ignore this now
+            m2z [xbx].IMPMTDINFORMATION.dHelpLineCount
+
+            ;Get the method name
+            OCall TextSrc::TextSource.GetNextWord  ;xax -> parameters
+            mov pWord, xax
+            mov dWordLength, ecx
+            add pWord, xcx
+            mov [xbx].IMPMTDINFORMATION.pName, $invoke(StrCNewA, xax, dWordLength)
+            invoke StrLScanA, pWord, ","
+            .if xax != NULL
+              invoke StrLScanA, xax, ","
+              .if xax != NULL
+                add xax, sizeof(CHR)
+                mov [xbx].IMPMTDINFORMATION.pArguments, $invoke(StrNewA, xax)
+              .endif
+            .endif
+
+            OCall [xsi].ImpMethodColl::ImpMtdInfoCollection.Insert, xbx
+
+            invoke FindHelpLines, addr TextSrc, xbx
+          .endif
         .endif
 
-        ;-- Interface definition --------------------------------------------------
-
-      .elseif dWordLength == lengthof bBeginInterface
+      ;-- Interface definition --------------------------------------------------
+      .elseif ecx == lengthof bBeginInterface
         invoke StrCCompA, pWord, offset bBeginInterface, dWordLength
         .if eax == 0
+          int 3
           OCall TextSrc::TextSource.GetNextWord     ;Get interface name
           mov pWord, xax
           mov dWordLength, ecx
@@ -712,6 +756,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
             or edx, INF_INTERFACE
             mov [xbx].INTERFACEINFORMATION.dFlags, edx
             m2m [xbx].INTERFACEINFORMATION.pFileInfo, pFileInfo, xax
+            m2m [xbx].INTERFACEINFORMATION.dLineNumber, TextSrc.dLineNumber, ecx
             m2z [xbx].INTERFACEINFORMATION.pHelpData
             m2z [xbx].INTERFACEINFORMATION.dHelpLineCount
 
@@ -724,6 +769,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
               xor eax, eax
             .endif
             mov [xbx].INTERFACEINFORMATION.pAncestorName, xax
+            DbgStr xax
 
             OCall [xsi].InterfaceColl::IntInfoCollection.Insert, xbx
 
@@ -784,51 +830,6 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
                 .endif
               .endif
             .until FALSE
-          .endif
-
-        ;-- Method implementation --------------------------------------------------
-        .elseif dWordLength == lengthof bMethod
-          invoke StrCCompA, pWord, offset bMethod, dWordLength
-          .if eax == 0
-            OCall TextSrc::TextSource.GetNextWord    ;Get object/interface name
-            mov pWord, xax
-            mov dWordLength, ecx
-            .if ecx != 0
-              .if ecx == lengthof bMacro
-                invoke StrCICompA, offset bMacro, pWord, dWordLength
-                .if eax == 0
-                  ;Get the interface/object name
-                  mov xbx, $MemAlloc(sizeof IMPMTDINFORMATION)
-                  invoke StrCNew, pWord, dWordLength
-                  mov [xbx].IMPMTDINFORMATION.pObjectName, xax
-                  m2m [xbx].IMPMTDINFORMATION.pFileInfo, pFileInfo, xdx ;From FilesCollection
-                  m2z [xbx].IMPMTDINFORMATION.dFlags
-                  m2z [xbx].IMPMTDINFORMATION.pArguments
-                  m2z [xbx].IMPMTDINFORMATION.pHelpData   ;Ignore this now
-                  m2z [xbx].IMPMTDINFORMATION.dHelpLineCount
-
-                  ;Get the method name
-                  OCall TextSrc::TextSource.GetNextWord  ;xax -> parameters
-                  mov pWord, xax
-                  mov dWordLength, ecx
-                  add pWord, xcx
-                  mov [xbx].IMPMTDINFORMATION.pName, $invoke(StrCNewA, xax, dWordLength)
-                  invoke StrLScanA, pWord, ","
-                  .if xax != NULL
-                    invoke StrLScanA, xax, ","
-                    .if xax != NULL
-                      inc xax
-                      mov [xbx].IMPMTDINFORMATION.pArguments, $invoke(StrNewA, xax)
-                    .endif
-                  .endif
-
-                  OCall [xsi].ImpMethodColl::ImpMtdInfoCollection.Insert, xbx
-
-                  invoke FindHelpLines, addr TextSrc, xbx
-
-                .endif
-              .endif
-            .endif
           .endif
         .endif
       .endif

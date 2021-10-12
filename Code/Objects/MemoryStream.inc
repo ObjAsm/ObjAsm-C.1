@@ -610,7 +610,6 @@ Method MemoryStream.Seek,, sqNewPosition:SQWORD, dMode
         OCall xcx.ErrorReport, NULL, STM_SEEK_ERROR
         ExitMethod
       .endif
-      mov edx, [xcx].dPosition
       add edx, eax
       .if CARRY? || edx > [xcx].dCurrSize
         OCall xcx.ErrorReport, NULL, STM_SEEK_ERROR

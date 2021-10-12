@@ -204,7 +204,7 @@ Method TreeWindow.Startup
   local WC:WNDCLASSEX
 
   mov WC.cbSize, sizeof WNDCLASSEX
-  mov WC.style, CS_HREDRAW or CS_VREDRAW or CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT
+  m2z WC.style
   m2m WC.lpfnWndProc, $MethodAddr(TreeWindow.WndProc), edx
   and WC.cbClsExtra, 0
   and WC.cbWndExtra, 0

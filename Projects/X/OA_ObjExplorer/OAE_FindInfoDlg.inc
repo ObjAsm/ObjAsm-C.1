@@ -19,8 +19,7 @@ Method FindInfoDlg.CtlsSet, uses xbx xdi xsi
   SetObject xsi
 
   ;Set caption and control strings
-  mov xcx, [xsi].pOwner
-  mov ebx, [xcx].$Obj(Application).dLanguage
+  mov ebx, $ObjTmpl(Application).dLanguage
   lea xdi, cBuffer
 
   lea edx, [ebx + IDS_FIND_CAPTION]
@@ -29,9 +28,10 @@ Method FindInfoDlg.CtlsSet, uses xbx xdi xsi
 
   invoke CheckRadioButton, [xsi].hWnd, IDC_FIND_RBN_OBJ, IDC_FIND_RBN_INT, IDC_FIND_RBN_OBJ
 
-  SetCtrlText IDC_FIND_BTN_GO, IDS_FIND_GO
-  SetCtrlText IDC_FIND_RBN_OBJ, IDS_FIND_OBJ
-  SetCtrlText IDC_FIND_RBN_INT, IDS_FIND_INT
+  SetCtrlText IDC_FIND_BTN_SEARCH,   IDS_FIND_GO
+  SetCtrlText IDC_FIND_RBN_OBJ,  IDS_FIND_OBJ
+  SetCtrlText IDC_FIND_RBN_INT,  IDS_FIND_INT
+  SetCtrlText IDC_FIND_STC_HELP, IDS_FIND_HELP
 
   mov eax, TRUE
 MethodEnd
@@ -103,7 +103,7 @@ Method FindInfoDlg.OnCommand, uses xdi xbx xsi, wParam:WPARAM, lParam:LPARAM
 
   SetObject xsi
   mov xax, wParam
-  .if (ax == IDC_FIND_BTN_GO) || (ax == IDOK) || \
+  .if (ax == IDC_FIND_BTN_SEARCH) || (ax == IDOK) || \
       (ax == IDC_FIND_RBN_OBJ) || (ax == IDC_FIND_RBN_INT)
     lea xdi, cBuffer
     invoke GetDlgItem, [xsi].hWnd, IDC_FIND_EDIT
@@ -113,8 +113,7 @@ Method FindInfoDlg.OnCommand, uses xdi xbx xsi, wParam:WPARAM, lParam:LPARAM
     invoke LockWindowUpdate, xbx
     invoke SendMessage, xbx, LB_RESETCONTENT, 0, 0
     invoke IsDlgButtonChecked, [xsi].hWnd, IDC_FIND_RBN_OBJ
-    mov xdx, [xsi].pOwner
-    mov xcx, [xdx].$Obj(Application).pObjDB
+    mov xcx, $ObjTmpl(Application).pObjDB
     .if eax != FALSE
       OCall [xcx].$Obj(OA_ObjDB).ObjectColl::ObjInfoCollection.ForEach, offset InfoMatch, xdi, xbx
     .else
@@ -138,9 +137,9 @@ Method FindInfoDlg.OnCommand, uses xdi xbx xsi, wParam:WPARAM, lParam:LPARAM
       invoke SendMessage, xbx, LB_GETTEXT, eax, xdi
       invoke IsDlgButtonChecked, [xsi].hWnd, IDC_FIND_RBN_OBJ
       .if eax != FALSE
-        OCall [xsi].pOwner::Application.Navigate, xdi, INFO_TYPE_OBJECT
+        OCall $ObjTmpl(Application)::Application.Navigate, xdi, INFO_TYPE_OBJECT
       .else
-        OCall [xsi].pOwner::Application.Navigate, xdi, INFO_TYPE_INTERFACE
+        OCall $ObjTmpl(Application)::Application.Navigate, xdi, INFO_TYPE_INTERFACE
       .endif
       xor eax, eax
     .else

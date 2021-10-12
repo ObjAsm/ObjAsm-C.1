@@ -40,7 +40,7 @@ AppStatusbar DEF_STATUSBAR {IDC_STATUSBAR, SB_STYLE, 0, 4}
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-Object ClientWnd, ObjBwrClientWndID, MdiClientWnd       ;MDI client window.
+Object ClientWnd, OAE_ClientWndID, MdiClientWnd       ;MDI client window.
   RedefineMethod    Done
   RedefineMethod    Init,               POINTER         ;-> Owner
 
@@ -53,15 +53,15 @@ ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-Object PropWnd, PropWndID, MdiChildWnd                  ;MDI base child window.
-  VirtualMethod     CreateLinkInfo,     DWORD, POINTER, DWORD
+Object PropWnd, OAE_PropWndID, MdiChildWnd                  ;MDI base child window.
+  VirtualMethod     CreateLinkInfo,     DWORD, PSTRING, DWORD
   VirtualAbstract   CreateMarkupText
   RedefineMethod    Done
   RedefineMethod    Init,               $ObjPtr(ClientWnd), PSTRING, PINFORMATION
   StaticMethod      InitContainer,      PSTRING
   VirtualAbstract   Gather
   RedefineMethod    OnSize,             WPARAM, LPARAM
-  VirtualMethod     ShowFileInfo,       PSTRING, DWORD, PFILETIME, PFILETIME, PFILETIME
+  VirtualMethod     ShowFileInfo,       PSTRING, DWORD, DWORD, PFILETIME, PFILETIME, PFILETIME
   VirtualMethod     WriteString,        PSTRING
 
   VirtualEvent      OnClose,            WM_CLOSE
@@ -82,7 +82,7 @@ ObjectEnd
 
 CStr cIntPropClass, "IntPropWndClass"
 
-Object IntPropWnd, IntPropWndID, PropWnd
+Object IntPropWnd, OAE_IntPropWndID, PropWnd
 ;  RedefineMethod    CreateMarkupText
   RedefineMethod    Done
   RedefineMethod    Init,               $ObjPtr(ClientWnd), PSTRING, PINTERFACEINFORMATION
@@ -98,7 +98,7 @@ ObjectEnd
 
 CStr cObjPropClass, "ObjPropWndClass"
 
-Object ObjPropWnd, ObjPropWndID, PropWnd
+Object ObjPropWnd, OAE_ObjPropWndID, PropWnd
   RedefineMethod    CreateMarkupText
   RedefineMethod    Done
   RedefineMethod    Init,               $ObjPtr(ClientWnd), PSTRING, POBJECTINFORMATION
@@ -111,11 +111,6 @@ Object ObjPropWnd, ObjPropWndID, PropWnd
 
   Embed     Methods,      DataCollection                ;Collection of MEMBERDATA structures
   Embed     Variables,    DataCollection                ;Collection of MEMBERDATA structures
-
-  DefineVariable    dRadioBtn1,         DWORD,    TRUE
-  DefineVariable    dRadioBtn2,         DWORD,    FALSE
-  DefineVariable    dCheckBox1,         DWORD,    FALSE
-  DefineVariable    dCheckBox2,         DWORD,    FALSE
 ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -147,12 +142,11 @@ CloseEnumProc    proto :HANDLE, :LPARAM
 
 CStr cObjExplorerClass, "ObjExplorerClass"
 
-Object Application, ObjExplorerID, MdiApp               ;MDI application.
+Object Application, OAE_ApplicationID, MdiApp           ;MDI application.
   VirtualMethod     ChangeBtnLanguage,  DWORD           ;IDLANG_XXX
   VirtualMethod     ChangeLanguage,     DWORD           ;IDLANG_XXX
   RedefineMethod    Done
   StaticMethod      EnableActions
-  StaticMethod      ExtractResFile,     HANDLE, POINTER, PSTRING, PSTRING
   StaticMethod      FindObjInfo,        PSTRING
   VirtualMethod     FindIntInfo,        PSTRING
   RedefineMethod    Init
@@ -215,15 +209,15 @@ PMEMBERDATA typedef ptr MEMBERDATA
 LIA_GOTO_OBJECT     equ   0
 LIA_GOTO_INTERFACE  equ   1
 LIA_OPEN_FILE       equ   2
-LIA_EDIT_FILE_AT    equ   3
-LIA_COMPILE         equ   4
-LIA_EXPAND          equ   5
-LIA_COLLAPSE        equ   6
+LIA_COMPILE         equ   3
+LIA_EXPAND          equ   4
+LIA_SHOW_REDEF_MTDS equ   5
+LIA_SHOW_REDEF_VARS equ   6
 
 LINK_INFO struct
   dAction       DWORD         ?
-  pParam        POINTER       ?
   dParam        DWORD         ?
+  FileName      CHR MAX_PATH DUP(?)
 LINK_INFO ends
 PLINK_INFO typedef ptr LINK_INFO
 
@@ -415,67 +409,6 @@ Method Application.EnableActions, uses xbx xdi xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     Application.ExtractResFile
-; Purpose:    Extracts a resource file and saves it to the user temp folder.
-; Arguments:  Arg1: Module instance handle where the resource is placed.
-;             Arg2: -> Resource type.
-;             Arg3: -> Resource name.
-;             Arg4: -> Path and file name.
-; Return:     eax = OBJ_OK on success, otherwise an error code.
-
-Method Application.ExtractResFile, uses xsi, hInst:HANDLE, pResType:POINTER, \
-                                               pResName:PSTRING, pFileName:PSTRING
-  local hFindRes:HANDLE, hResData:HANDLE, hFile:HANDLE
-  local pResData:POINTER, dResSize:DWORD, dBytesWritten:DWORD
-
-  SetObject xsi
-  invoke FindResource, hInst, pResName, pResType
-  .if eax == 0
-    invoke GetLastError
-    OCall xsi.ErrorReport, NULL, eax
-  .else
-    mov hFindRes, xax
-    invoke LoadResource, hInst, xax
-    .if eax == 0
-      invoke GetLastError
-      OCall xsi.ErrorReport, NULL, eax
-    .else
-      mov hResData, xax
-      invoke LockResource, xax
-      .if eax == NULL
-        invoke GetLastError
-        OCall xsi.ErrorReport, NULL, eax
-      .else
-        mov pResData, xax
-        invoke SizeofResource, hInst, hFindRes
-        .if eax == 0
-          invoke GetLastError
-          OCall xsi.ErrorReport, NULL, eax
-        .else
-          mov dResSize, eax
-          invoke CreateFile, pFileName, GENERIC_WRITE, FILE_SHARE_READ, NULL, \
-                             CREATE_ALWAYS, FILE_ATTRIBUTE_ARCHIVE, 0
-          .if xax == 0
-            invoke GetLastError
-            OCall xsi.ErrorReport, NULL, eax
-          .else
-            mov hFile, xax
-            invoke WriteFile, hFile, pResData, dResSize, addr dBytesWritten, NULL
-            .if eax == 0
-              invoke GetLastError
-              OCall xsi.ErrorReport, NULL, eax
-            .endif
-            invoke CloseHandle, hFile
-          .endif
-        .endif
-      .endif
-      invoke FreeResource, hResData
-    .endif
-  .endif
-  mov eax, [xsi].dErrorCode
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Application.FindObjInfo
 ; Purpose:    Searches for an OBJECTINFORMATION with a matching object name.
 ; Arguments:  Arg1: -> Object name.
@@ -541,35 +474,6 @@ Method Application.Init, uses xbx xdi xsi
   OCall [xsi].SetupFile::IniFile.GetDWord, offset cSetup, offset cShowRedefVars, BST_CHECKED
   mov [xsi].dShowRedefVars, eax
 
-;  ;Extract some files from the resource section to the user temp folder
-;  lea xdi, cBuffer
-;  invoke GetTempPath, lengthof cBuffer, xdi
-;  lea xbx, [xdi + xax]
-;  FillString [xbx], <Compile.png>
-;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngCompile"), xdi
-;  FillString [xbx], <Edit.png>
-;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngEdit"), xdi
-;  FillString [xbx], <Open.png>
-;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngOpen"), xdi
-;  FillString [xbx], <Show.png>
-;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngShow"), xdi
-;  FillString [xbx], <Hide.png>
-;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngHide"), xdi
-;  FillString [xbx], <VarDat.png>
-;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngVarReg"), xdi
-;  FillString [xbx], <VarObj.png>
-;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngVarObj"), xdi
-;  FillString [xbx], <VarRDt.png>
-;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngVarRed"), xdi
-;  FillString [xbx], <IntMtd.png>
-;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngIntMtd"), xdi
-;  FillString [xbx], <IntDsp.png>
-;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngIntDsp"), xdi
-;  FillString [xbx], <Plus.png>
-;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngPlus"), xdi
-;  FillString [xbx], <Minus.png>
-;  OCall xsi.ExtractResFile, hInstance, offset cPNG, $OfsCStr("PngMinus"), xdi
-
   ;Load application & menu icons from the resource section
   lea xbx, [xsi].IconList
   OCall xbx::MaskedImageList.Init, xsi, 16, 16, 1
@@ -604,7 +508,7 @@ Method Application.Init, uses xbx xdi xsi
   mov [xsi].hMenuContext, $invoke(LoadMenu, hInstance, $OfsCStr("PROPCONTEXT"))
 
   ;Create the MDI Frame window
-  mov dWwd, 2100
+  mov dWwd, 1500
   mov dWht, 1000
   mov dWtx, $32($invoke(CenterForm, dWwd, $32($invoke(GetSystemMetrics, SM_CXSCREEN))))
   mov dWty, $32($invoke(CenterForm, dWht, $32($invoke(GetSystemMetrics, SM_CYSCREEN))))
@@ -1265,9 +1169,9 @@ RefreshMdiChild proc uses xbx hWnd:HANDLE, lParam:LPARAM
       mov xbx, xax
       invoke GetObjectID, xbx
       mov xcx, [xbx].$Obj(PropWnd).pOwner                     ;xcx -> ClientWnd
-      .if eax == ObjPropWndID
+      .if eax == OAE_ObjPropWndID
         OCall [xcx].$Obj(ClientWnd).pOwner::Application.FindObjInfo, [xbx].$Obj(PropWnd).pName
-      .elseif eax == IntPropWndID
+      .elseif eax == OAE_IntPropWndID
         OCall [xcx].$Obj(ClientWnd).pOwner::Application.FindIntInfo, [xbx].$Obj(PropWnd).pName
       .else
         mov eax, TRUE                                   ;TRUE => next window

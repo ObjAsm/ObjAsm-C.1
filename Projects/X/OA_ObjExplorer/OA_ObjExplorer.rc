@@ -2,7 +2,7 @@
 ; Title:      OA_ObjExplorer.rc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:    ObjAsm Object Browser resource file.
+; Purpose:    ObjAsm Object Explorer resource file.
 ; Notes:      Version C.1.0, December 2020
 ;               - First release.
 ; ==================================================================================================
@@ -188,7 +188,7 @@ BEGIN
   IDLANG_ENGLISH + 41, "Application help~F1|Launches help system"
   IDLANG_ENGLISH + 42, "&About...|Displays information about this application"
 
-  IDLANG_ENGLISH + 80, "Refreshes the browser information"
+  IDLANG_ENGLISH + 80, "Refreshes the Explorer information"
   IDLANG_ENGLISH + 81, "Searches information"
   IDLANG_ENGLISH + 82, "Sets up application functionality"
   IDLANG_ENGLISH + 83, "Cascades all windows"
@@ -213,16 +213,17 @@ BEGIN
   IDLANG_ENGLISH + 103, "External Viewer"
   IDLANG_ENGLISH + 104, "&Application:"
   IDLANG_ENGLISH + 105, "Left empty to use the default viewer"
-  IDLANG_ENGLISH + 106, "Property window"
+  IDLANG_ENGLISH + 106, "Property window default values"
   IDLANG_ENGLISH + 107, "Show redefined &methods"
   IDLANG_ENGLISH + 108, "Show redefined &variables"
   IDLANG_ENGLISH + 109, "Select a file"
   
 
   IDLANG_ENGLISH + 120, "Find information"
-  IDLANG_ENGLISH + 121, "&Go"
+  IDLANG_ENGLISH + 121, "&Search"
   IDLANG_ENGLISH + 122, "&Object"
   IDLANG_ENGLISH + 123, "&Interface"
+  IDLANG_ENGLISH + 124, "Doubleclick to open selection"
 
 
   IDLANG_GERMAN  + 00, "&Datei|Dateibefehle"
@@ -281,7 +282,7 @@ BEGIN
   IDLANG_GERMAN  + 103, "Externer Viewer"
   IDLANG_GERMAN  + 104, "&Anwendung:"
   IDLANG_GERMAN  + 105, "Bitte frei lassen um den default Viewer zu benutzen"
-  IDLANG_GERMAN  + 106, "Eigenschaftsfenster"
+  IDLANG_GERMAN  + 106, "Standardeinstellungen des Eigenschaftsfensters"
   IDLANG_GERMAN  + 107, "Redefinierte &Methoden anzeigen"
   IDLANG_GERMAN  + 108, "Redefinierte &Variablen anzeigen"
   IDLANG_GERMAN  + 109, "Datei auswählen"
@@ -290,7 +291,7 @@ BEGIN
   IDLANG_GERMAN  + 121, "&Suchen"
   IDLANG_GERMAN  + 122, "&Objekte"
   IDLANG_GERMAN  + 123, "&Schnittstellen"
-
+  IDLANG_GERMAN  + 124, "Doppelclicken um zu öffnen"
 
   IDLANG_SPANISH + 00, "&Archivo|Comandos de archivo"
   IDLANG_SPANISH + 01, "&Refrescar~Ctrl+R$80"
@@ -323,7 +324,7 @@ BEGIN
   IDLANG_SPANISH + 41, "&Ayuda sobre la aplicación~F1|Ejecuta el sistema de ayuda"
   IDLANG_SPANISH + 42, "&Sobre...|Muestra información sobre la aplicación"
 
-  IDLANG_SPANISH + 80, "Refresca los datos del browser"
+  IDLANG_SPANISH + 80, "Refresca los datos del Explorer"
   IDLANG_SPANISH + 81, "Busca información"
   IDLANG_SPANISH + 82, "Configura la aplicación"
   IDLANG_SPANISH + 83, "Ordena todas las ventanas en cascada"
@@ -345,10 +346,10 @@ BEGIN
   IDLANG_SPANISH + 100, "Configuración"
   IDLANG_SPANISH + 101, "OK"
   IDLANG_SPANISH + 102, "Cancelar"
-  IDLANG_SPANISH + 103, "Viewer externo"
+  IDLANG_SPANISH + 103, "Visualizador externo"
   IDLANG_SPANISH + 104, "&Aplicación:"
-  IDLANG_SPANISH + 105, "Por favor dejar en blaco para usar del Viewer por default"
-  IDLANG_SPANISH + 106, "Ventana de propiedades"
+  IDLANG_SPANISH + 105, "Por favor dejar en blanco para usar del visualizador por defecto"
+  IDLANG_SPANISH + 106, "Valores por defecto de la ventana de propiedades"
   IDLANG_SPANISH + 107, "Mostrar &métodos redefinidos"
   IDLANG_SPANISH + 108, "Mostrar &variables redefinidas"
   IDLANG_SPANISH + 109, "Seleccione un archivo"
@@ -357,6 +358,7 @@ BEGIN
   IDLANG_SPANISH + 121, "&Buscar"
   IDLANG_SPANISH + 122, "&Objectos"
   IDLANG_SPANISH + 123, "&Interfaces"
+  IDLANG_SPANISH + 124, "Doble click para abrir la selección"
 
 END
 
@@ -372,8 +374,6 @@ PngVarRed   IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\VarRed.png"
 PngVarObj   IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\VarObj.png"
 PngIntMtd   IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\IntMtd.png"
 PngIntDsp   IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\IntDsp.png"
-PngPlus     IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\Plus.png"
-PngMinus    IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\Minus.png"
 
 
 // Accelerators ------------------------------------------------------------------------------------

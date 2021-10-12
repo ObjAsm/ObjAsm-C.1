@@ -102,7 +102,7 @@ ShowIntMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(IntPropW
 ;    .endif
 ;    invoke WriteFile, hHtmlFile, offset HTML_SEPARATOR, sizeof HTML_SEPARATOR, xdi, NULL
 ;    mov eax, [xbx].INTMTDINFORMATION.dFlags
-;    lea xcx, SOM_TEXT_TABLE
+;    lea xcx, OMT_TEXT_TABLE
 ;    mov xbx, PSTRING ptr [xcx + sizeof(PSTRING)*xax]
 ;    invoke StrLength, xbx
 ;    invoke WriteFile, hHtmlFile, xbx, eax, xdi, NULL
@@ -238,8 +238,7 @@ Method IntPropWnd.GatherMethods, uses xsi, pInfo:PINTERFACEINFORMATION
   mov xcx, pInfo
   mov xdx, [xcx].INTERFACEINFORMATION.pAncestorName
   .if xdx != NULL
-    mov xcx, [xsi].pOwner                               ;xcx -> ClientWnd
-    OCall [xcx].$Obj(ClientWnd).pOwner::Application.FindIntInfo, xdx
+    OCall $ObjTmpl(Application)::Application.FindIntInfo, xdx
     .if xax != NULL
       OCall xsi.GatherMethods, xax
     .else
@@ -253,9 +252,7 @@ Method IntPropWnd.GatherMethods, uses xsi, pInfo:PINTERFACEINFORMATION
   .endif
 
   mov xax, pInfo
-  mov xcx, [xsi].pOwner                                 ;xcx -> ClientWnd
-  mov xdx, [xcx].$Obj(ClientWnd).pOwner                 ;xax -> Application
-  mov xcx, [xdx].$Obj(Application).pObjDB
+  mov xcx, $ObjTmpl(Application).pObjDB
   OCall [xcx].$Obj(OA_ObjDB).IntMethodColl::IntMtdInfoCollection.ForEach, \
                                          offset GatherIntMtds, [xax].INTERFACEINFORMATION.pName, xsi
 MethodEnd
@@ -275,8 +272,7 @@ Method IntPropWnd.ShowInheritance, uses xbx xdi xsi, pInterfaceInfo:PINTERFACEIN
   mov xcx, pInterfaceInfo
   mov xbx, [xcx].INTERFACEINFORMATION.pAncestorName
   .if xbx != NULL
-    mov xcx, [xsi].pOwner                             ;ecx -> ClientWnd
-    OCall [xcx].$Obj(ClientWnd).pOwner::Application.FindIntInfo, xbx
+    OCall $ObjTmpl(Application)::Application.FindIntInfo, xbx
     .if xax != NULL
       OCall xsi::IntPropWnd.ShowInheritance, xax, TRUE
     .else

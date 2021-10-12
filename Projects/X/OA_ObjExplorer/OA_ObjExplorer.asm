@@ -2,12 +2,17 @@
 ; Title:      OA_ObjExplorer.asm
 ; Author:     G. Friedrich
 ; Version:    C.1.1
-; Purpose:    ObjAsm Object Browser.
+; Purpose:    ObjAsm Object Explorer.
 ; Notes:      Version C.1.1, January 2021
 ;               - COM stuff replaced by TextView.
 ;             Version C.1.0, December 2020
 ;               - First release.
 ; ==================================================================================================
+
+;Todos:
+;Search dialog does not process key input --> CANCEL
+;Namespaces are not handled
+;Interfaces are not recognized
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc

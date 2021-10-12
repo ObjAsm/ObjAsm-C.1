@@ -43,18 +43,22 @@ FindFinalMember endp
 ; Method:     PropWnd.CreateLinkInfo
 ; Purpose:    Record a LINK_INFO in a DataCollection.
 ; Arguments:  Arg1: Action to execute when the link is invoked (LIA_xxx).
-;             Arg2: Link POINTER parameter.
-;             Arg3: Link DWORD parameter.
+;             Arg2: -> FileName.
+;             Arg3: Parameter.
 ; Return:     eax = Link ID.
 
-Method PropWnd.CreateLinkInfo, uses xsi, dAction:DWORD, pParam:POINTER, dParam:DWORD
+Method PropWnd.CreateLinkInfo, uses xsi, dAction:DWORD, pFileName:PSTRING, dParam:DWORD
   SetObject xsi
   MemAlloc sizeof(LINK_INFO)
   .if xax != NULL
-    m2m [xax].LINK_INFO.dAction, dAction, edx
-    m2m [xax].LINK_INFO.pParam, pParam, xcx
-    m2m [xax].LINK_INFO.dParam, dParam, edx
     OCall [xsi].LinkInfos::DataCollection.Insert, xax
+    m2m [xax].LINK_INFO.dAction, dAction, edx
+    m2m [xax].LINK_INFO.dParam, dParam, edx
+    .if pFileName == NULL
+      m2z CHR ptr [xax].LINK_INFO.FileName
+    .else
+      invoke StrCCopy, addr [xax].LINK_INFO.FileName, pFileName, MAX_PATH - 1
+    .endif
     mov eax, [xsi].LinkInfos.dCount
     dec eax
   .else
@@ -68,7 +72,7 @@ MethodEnd
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method PropWnd.Done, uses xbx xdi xsi
+Method PropWnd.Done, uses xbx xsi
   SetObject xsi
 
   ;Finalize some objects
@@ -77,15 +81,14 @@ Method PropWnd.Done, uses xbx xdi xsi
   OCall [xsi].LinkInfos::DataCollection.Done
 
   ;Main menu update
-  mov xcx, [xsi].pOwner
-  mov xdi, [xcx].$Obj(ClientWnd).pOwner
-  mov xbx, [xdi].$Obj(Application).pClientWnd
+  mov xbx, $ObjTmpl(Application).pClientWnd
   dec [xbx].$Obj(ClientWnd).dChildCount
-  OCall xdi::Application.EnableActions
+  OCall $ObjTmpl(Application)::Application.EnableActions
   .if [xbx].$Obj(ClientWnd).dChildCount == 0            ;No more child windows ?
-    invoke SendMessage, [xdi].$Obj(Application).hWnd, WM_MDISETMENU, \
-                        [xbx].$Obj(Application).hMenuInit, NULL
-    invoke DrawMenuBar, [xdi].$Obj(Application).hWnd    ;Redraw the new menu bar
+    mov xax, $ObjTmpl(Application).pClientWnd
+    invoke SendMessage, [xax].$Obj(ClientWnd).hWnd, WM_MDISETMENU, \
+                        $ObjTmpl(Application).hMenuInit, NULL
+    invoke DrawMenuBar, $ObjTmpl(Application).hWnd      ;Redraw the new menu bar
   .endif
 
   ;Final object cleanup
@@ -119,9 +122,8 @@ Method PropWnd.Init, uses xbx xdi xsi, pOwner:$ObjPtr(ClientWnd), pWndClassName:
 
   ;Apply application setup
   mov xdi, [xsi].pOwner                                 ;xdi -> ClientWnd
-  mov xdx, [xdi].$Obj(ClientWnd).pOwner                 ;xdx -> Application
-  m2m [xsi].dShowRedefMtds, [xdx].$Obj(Application).dShowRedefMtds, eax
-  m2m [xsi].dShowRedefVars, [xdx].$Obj(Application).dShowRedefVars, eax
+  m2m [xsi].dShowRedefMtds, $ObjTmpl(Application).dShowRedefMtds, eax
+  m2m [xsi].dShowRedefVars, $ObjTmpl(Application).dShowRedefVars, eax
 
   ;Polymorphic calls
   OCall xsi.Gather
@@ -146,18 +148,16 @@ Method PropWnd.Init, uses xbx xdi xsi, pOwner:$ObjPtr(ClientWnd), pWndClassName:
   invoke GetClientRect, [xsi].hWnd, addr DefTextView.rect
   OCall [xsi].InfoPane::TextView.Init, xsi, [xsi].hWnd, addr DefTextView
 
-  mov xbx, [xdi].$Obj(ClientWnd).pOwner
-  OCall xbx::Application.EnableActions
+  OCall $ObjTmpl(Application)::Application.EnableActions
   .if eax != 0
     .if [xdi].$Obj(ClientWnd).dChildCount == 1          ;First child window ?
-      mov xax, [xbx].$Obj(Application).pClientWnd
-      invoke SendMessage, [xax].$Obj(ClientWnd).hWnd, WM_MDISETMENU, \
-                          [xbx].$Obj(Application).hMenuChild, [xbx].$Obj(Application).hMenuChildWnd
-      invoke DrawMenuBar, [xbx].$Obj(Application).hWnd  ;Redraw the new menu bar
+      invoke SendMessage, [xdi].$Obj(ClientWnd).hWnd, WM_MDISETMENU, \
+                          $ObjTmpl(Application).hMenuChild, $ObjTmpl(Application).hMenuChildWnd
+      invoke DrawMenuBar, $ObjTmpl(Application).hWnd  ;Redraw the new menu bar
     .endif
   .else
     invoke GetLastError
-    invoke ErrorMessageBox, [xbx].$Obj(Application).hWnd, $OfsCStr("Window creation error"), \
+    invoke ErrorMessageBox, $ObjTmpl(Application).hWnd, $OfsCStr("Window creation error"), \
                             LOCALE_USER_DEFAULT, eax
   .endif
 MethodEnd
@@ -172,9 +172,7 @@ MethodEnd
 Method PropWnd.OnClose, uses xsi, wParam:WPARAM, lParam:LPARAM
   invoke GetActiveWindow
   SetObject xsi
-  mov xcx, [xsi].pOwner                                 ;xcx -> ClientWnd
-  mov xdx, [xcx].$Obj(ClientWnd).pOwner                 ;xdx -> Application
-  .if xax == [xdx].$Obj(Application).hWnd
+  .if xax == $ObjTmpl(Application).hWnd
     invoke DefMDIChildProc, [xsi].hWnd, WM_CLOSE, wParam, lParam
   .else
     xor eax, eax
@@ -207,12 +205,14 @@ MethodEnd
 ; Purpose:    Show file information.
 ; Arguments:  Arg1: -> Full path FileName.
 ;             Arg2: Show Link.
-;             Arg3: -> FileTime storage of this file.
-;             Arg4: -> Reference SysTime 1.
-;             Arg5: -> Reference SysTime 2.
+;             Arg3: Line Number.
+;             Arg4: -> FileTime storage of this file.
+;             Arg5: -> Reference SysTime 1.
+;             Arg6: -> Reference SysTime 2.
 ; Return:     Nothing.
 
-Method PropWnd.ShowFileInfo, uses xbx xsi, pFileName:PSTRING, dShowLink:DWORD, pFileTime:PFILETIME, \
+Method PropWnd.ShowFileInfo, uses xbx xsi, pFileName:PSTRING, dShowLink:DWORD, dLineNumber:DWORD, \
+                                           pFileTime:PFILETIME, \
                                            pFileTime1:PFILETIME, pFileTime2:PFILETIME
   local hFile:HANDLE, cBuffer[100]:CHR, cNumBuffer[20]:CHR, dLength:dword
   local LocalSysTime:SYSTEMTIME, SysTimeUTC:SYSTEMTIME
@@ -224,7 +224,7 @@ Method PropWnd.ShowFileInfo, uses xbx xsi, pFileName:PSTRING, dShowLink:DWORD, p
     .if dShowLink != FALSE
       ;Show the link
       OCall [xsi].MarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_LINK_BEG)
-      OCall xsi.CreateLinkInfo, LIA_OPEN_FILE, pFileName, 0
+      OCall xsi.CreateLinkInfo, LIA_OPEN_FILE, pFileName, dLineNumber
       invoke dword2dec, addr cNumBuffer, eax
       OCall xsi::PropWnd.WriteString, addr cNumBuffer
       OCall [xsi].MarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_LINK_END)

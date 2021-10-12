@@ -173,7 +173,7 @@ TVCHAR_RB_CHECKED   equ   025C9h
 TVCHAR_RB_UNCHECKED equ   025CBh
 
 ;If you use symbol fonts, you habe to "and 0F000h" each character in order that DrawText can render
-;the symbol properly. For unkown reasons, that API appies a mapping for this type of fonts from
+;the symbol properly. For unkown reasons, that API applies a mapping for this type of fonts from
 ;range 00020-000FFh to 0F020-0F0FFh.
 ;http://masm32.com/board/index.php?topic=8524.msg102726#msg102726
 TVCHAR_CB_CHECKED   equ   0F052h

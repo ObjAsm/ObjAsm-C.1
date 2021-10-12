@@ -8,27 +8,6 @@
 ; ==================================================================================================
 
 
-METHODTYPE_UNKNOWN          equ   0
-METHODTYPE_STATIC           equ   1
-METHODTYPE_VIRTUAL          equ   2
-METHODTYPE_VIRTUAL_ABSTRACT equ   3
-METHODTYPE_VIRTUAL_EVENT    equ   4
-METHODTYPE_DYNAMIC          equ   5
-METHODTYPE_DYNAMIC_ABSTRACT equ   6
-METHODTYPE_DYNAMIC_EVENT    equ   7
-METHODTYPE_INTERFACE        equ   8
-METHODTYPE_INLINE           equ   9
-METHODTYPE_REDEFINED        equ   10
-
-METHODTYPE_STANDARD         equ   11
-METHODTYPE_DISPATCH         equ   12
-
-
-VARIABLETYPE_UNKNOWN        equ   0
-VARIABLETYPE_REGULAR        equ   1
-VARIABLETYPE_REDEFINED      equ   2
-VARIABLETYPE_OBJECT         equ   3
-
 
 FILEINFORMATION struct
   pFileName       PSTRING   ?           ;-> File Name
@@ -41,6 +20,7 @@ INFORMATION struct
   dFlags          DWORD     ?           ;METHODTYPE_XXX, VARIABLETYPE_XXX,
   pName           PSTRING   ?           ;-> Name.
   pFileInfo       PFILEINFORMATION   ?  ;-> FILEINFORMATION structure
+  dLineNumber     DWORD     ?           ;Where to find the info in the text file.
   dHelpLineCount  DWORD     ?           ;Number of lines contained in HelpLines
   pHelpData       PSTRING   ?           ;help strings, each string is a consecutive line
 INFORMATION ends
@@ -95,7 +75,7 @@ SCAN_ON_REQUEST   equ     BIT01
 ; Object:    FileCollection
 ; Purpose:   This collection holds all file references of the object database.
 
-Object FilesCollection, FilesCollectionID, SortedCollection
+Object FilesCollection, OAE_FilesCollectionID, SortedCollection
   RedefineMethod    Compare,        PSTRING, PSTRING
   RedefineMethod    DestroyItem,    PFILEINFORMATION
   RedefineMethod    GetItem,        $ObjPtr(Stream)
@@ -107,7 +87,7 @@ ObjectEnd
 ; Object:    ObjInfoCollection
 ; Purpose:   This collection holds all object definitions found in the scanned files.
 
-Object ObjInfoCollection, ObjInfoCollectionID, SortedCollection
+Object ObjInfoCollection, OAE_ObjInfoCollectionID, SortedCollection
   RedefineMethod    Compare,        PSTRINGA, PSTRINGA
   RedefineMethod    DestroyItem,    POBJECTINFORMATION
   RedefineMethod    GetItem,        $ObjPtr(Stream)
@@ -122,7 +102,7 @@ ObjectEnd
 ; Object:    ObjMtdInfoCollection
 ; Purpose:   This collection holds all method definitions found in the scanned files.
 
-Object ObjMtdInfoCollection, ObjMtdInfoCollectionID, Collection
+Object ObjMtdInfoCollection, OAE_ObjMtdInfoCollectionID, Collection
   RedefineMethod    DestroyItem,    POBJMTDINFORMATION
   RedefineMethod    GetItem,        $ObjPtr(Stream)
   RedefineMethod    Init,           POINTER, DWORD, DWORD, $ObjPtr(FilesCollection)
@@ -135,7 +115,7 @@ ObjectEnd
 ; Object:    ObjVarInfoCollection
 ; Purpose:   This collection holds all variable definitions found in the scanned files.
 
-Object ObjVarInfoCollection, ObjVarInfoCollectionID, Collection
+Object ObjVarInfoCollection, OAE_ObjVarInfoCollectionID, Collection
   RedefineMethod    DestroyItem,    POBJVARINFORMATION
   RedefineMethod    GetItem,        $ObjPtr(Stream)
   RedefineMethod    Init,           POINTER, DWORD, DWORD, $ObjPtr(FilesCollection)
@@ -148,7 +128,7 @@ ObjectEnd
 ; Object:    IntInfoCollection
 ; Purpose:   This collection holds all interface definitions found in the scanned files.
 
-Object IntInfoCollection, IntInfoCollectionID, SortedCollection
+Object IntInfoCollection, OAE_IntInfoCollectionID, SortedCollection
   RedefineMethod    Compare,        PSTRINGA, PSTRINGA
   RedefineMethod    DestroyItem,    PINTERFACEINFORMATION
   RedefineMethod    GetItem,        $ObjPtr(Stream)
@@ -163,7 +143,7 @@ ObjectEnd
 ; Object:    IntMtdInfoCollection
 ; Purpose:   This collection holds all interface method definitions found in the scanned files.
 
-Object IntMtdInfoCollection, IntMtdInfoCollectionID, Collection
+Object IntMtdInfoCollection, OAE_IntMtdInfoCollectionID, Collection
   RedefineMethod    DestroyItem,    PINTMTDINFORMATION
   RedefineMethod    GetItem,        $ObjPtr(Stream)
   RedefineMethod    Init,           POINTER, DWORD, DWORD, $ObjPtr(FilesCollection)
@@ -176,7 +156,7 @@ ObjectEnd
 ; Object:    ImpMtdInfoCollection
 ; Purpose:   This collection holds all implemented methods found in the scanned files.
 
-Object ImpMtdInfoCollection, ImpMtdInfoCollectionID, Collection
+Object ImpMtdInfoCollection, OAE_ImpMtdInfoCollectionID, Collection
   RedefineMethod    DestroyItem,    PIMPMTDINFORMATION
   RedefineMethod    GetItem,        $ObjPtr(Stream)
   RedefineMethod    Init,           POINTER, DWORD, DWORD, $ObjPtr(FilesCollection)

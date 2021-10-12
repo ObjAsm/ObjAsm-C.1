@@ -20,8 +20,8 @@ Object InfoTree, 0, XTreeView
   RedefineMethod    OnCreate,           WPARAM, LPARAM            ;Create icons
   RedefineMethod    OnDestroy,          WPARAM, LPARAM            ;Destroy icons
   RedefineMethod    OnLButtonDblClk,    WPARAM, LPARAM
-  RedefineMethod    Startup                                       ;Register new wnd class
-  RedefineMethod    WndProc,            DWORD, WPARAM, LPARAM     ;Create new wnd class
+  RedefineMethod    Startup                                       ;Register new Window Class
+  RedefineMethod    WndProc,            DWORD, WPARAM, LPARAM
 
   RedefineVariable  dFlags,             XTV_FLAGS or XTVF_DISABLE_DEL_KEY
   RedefineVariable  dDispInfoSize,      sizeof XTVN_TREE_DISP_INFO;Extended structure
@@ -230,7 +230,7 @@ MethodEnd
 
 ;##\
 
-CStr cInfoTreeClass, "OA_InfoTreeClass"
+CStr cInfoTreeClass, "InfoTreeClass"
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     InfoTree.Init
@@ -402,8 +402,7 @@ Method InfoTree.Startup
   local WC:WNDCLASSEX
 
   mov WC.cbSize, sizeof WNDCLASSEX
-  mov WC.style, CS_HREDRAW or CS_VREDRAW or CS_PARENTDC or CS_BYTEALIGNWINDOW or \
-                CS_BYTEALIGNCLIENT or CS_DBLCLKS
+  mov WC.style, CS_PARENTDC or CS_DBLCLKS
   m2m WC.lpfnWndProc, $MethodAddr(InfoTree.WndProc), xdx
   mov WC.cbClsExtra, 0
   mov WC.cbWndExtra, 0

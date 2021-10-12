@@ -2,15 +2,15 @@
 ; Title:      OA_ObjExplorer_Shared.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:    ObjAsm Object Browser.
+; Purpose:    ObjAsm Object Explorer.
 ; Notes:      Version C.1.0, December 2020
 ;               - First release.
 ; ==================================================================================================
 
 
 ;General information
-APP_TITLE                     textequ   <ObjAsm Object Browser>
-ABOUT_TEXT                    textequ   <ObjAsm Object Browser>
+APP_TITLE                     textequ   <ObjAsm Object Explorer>
+ABOUT_TEXT                    textequ   <ObjAsm Object Explorer>
 COPYRIGHT                     textequ   <G. Friedrich   December 2020>
 VER_FILEVERSION               equ       2,0,0,0
 VER_FILEVERSION_STR           textequ   <2.0>
@@ -18,8 +18,8 @@ VER_PRODUCTVERSION            equ       2,0,0,0
 VER_PRODUCTVERSION_STR        equ       <2.0>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       99
-BUILD_DATE_STR                textequ   <2021-10-11>
+BUILD_NUMBER                  equ       115
+BUILD_DATE_STR                textequ   <2021-10-12>
 BUILD_BITNESS                 equ       64
 BUILD_MODE                    equ       DBG
 
@@ -124,6 +124,7 @@ IDS_FIND_CAPTION              equ       120
 IDS_FIND_GO                   equ       121
 IDS_FIND_OBJ                  equ       122
 IDS_FIND_INT                  equ       123
+IDS_FIND_HELP                 equ       124
 
 ;Res\ObjExplorer_SetupDlg.rc
 IDD_SETUP_DLG                 equ       5000
@@ -139,10 +140,11 @@ IDC_SETUP_PROP_CHK_VAR        equ       2012
 ;Res\ObjExplorer_FindDlg.rc
 IDD_FIND_DLG                  equ       6000
 IDC_FIND_EDIT                 equ       1001
-IDC_FIND_BTN_GO               equ       1002
+IDC_FIND_BTN_SEARCH           equ       1002
 IDC_FIND_LISTBOX              equ       1003
 IDC_FIND_RBN_OBJ              equ       1004
 IDC_FIND_RBN_INT              equ       1005
+IDC_FIND_STC_HELP             equ       1006
 
 
 IDM_CONTEXT                   equ       3000

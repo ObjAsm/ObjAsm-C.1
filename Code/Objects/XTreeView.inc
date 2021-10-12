@@ -1704,7 +1704,7 @@ MethodEnd
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     XTreeView.InitRes
 ; Purpose:    Initialize the XTreeViewNode object from a resource.
-; Arguments:  Arg1: Window handle.
+; Arguments:  Arg1: Window HANDLE.
 ; Return:     Nothing.
 
 Method XTreeView.InitRes, uses xsi, hWnd:HWND
@@ -1720,7 +1720,7 @@ MethodEnd
 ; Arguments:  Arg1: -> Node to insert.
 ;             Arg2: -> Reference node. NULL is considdered as the root.
 ;             Arg3: Insertion mode. See "XTreeViewNode.CanDropHere" method for valid values.
-; Return:     xax -> inserted node.
+; Return:     xax -> Inserted node.
 
 Method XTreeView.Insert, uses xbx xdi xsi, pNode:$ObjPtr(XTreeViewNode), pRefNode:$ObjPtr(XTreeViewNode), \
                                            dHowToInsert:DWORD

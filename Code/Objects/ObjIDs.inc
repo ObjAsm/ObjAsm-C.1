@@ -363,20 +363,20 @@ OcxClientSiteID                   equ     0000012011
 ;RedBlackTree
 RedBlackTreeID                    equ     0000012030
 
-;ObjExplorer
-FilesCollectionID                 equ     0000012040
-ObjInfoCollectionID               equ     0000012041
-ObjMtdInfoCollectionID            equ     0000012042
-ObjVarInfoCollectionID            equ     0000012043
-IntInfoCollectionID               equ     0000012044
-IntMtdInfoCollectionID            equ     0000012045
-ImpMtdInfoCollectionID            equ     0000012046
-OA_ObjDBID                        equ     0000012047
-ObjBwrClientWndID                 equ     0000012048
-PropWndID                         equ     0000012049
-IntPropWndID                      equ     0000012050
-ObjPropWndID                      equ     0000012051
-ObjExplorerID                     equ     0000012052
+;OA Object Explorer
+OAE_FilesCollectionID             equ     0000012040
+OAE_ObjInfoCollectionID           equ     0000012041
+OAE_ObjMtdInfoCollectionID        equ     0000012042
+OAE_ObjVarInfoCollectionID        equ     0000012043
+OAE_IntInfoCollectionID           equ     0000012044
+OAE_IntMtdInfoCollectionID        equ     0000012045
+OAE_ImpMtdInfoCollectionID        equ     0000012046
+OAE_ObjDBID                       equ     0000012047
+OAE_ClientWndID                   equ     0000012048
+OAE_PropWndID                     equ     0000012049
+OAE_IntPropWndID                  equ     0000012050
+OAE_ObjPropWndID                  equ     0000012051
+OAE_ApplicationID                 equ     0000012052
 
 ;Office apps
 ExcelHostID                       equ     0000012060
