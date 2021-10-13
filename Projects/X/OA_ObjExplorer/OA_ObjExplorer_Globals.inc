@@ -102,8 +102,6 @@ MTXT_STYLE_CLOSE    CHR "[~]"
 MTXT_PARA           CHR "{P}"
 MTXT_BREAK          CHR "{B}"
 MTXT_TAB            CHR "{T}"
-MTXT_MARK           CHR "****************************************"
-
 
 MTXT_REDEF_CHECK    CHR "[F'Wingdings 2']{#F052}[~] Show redefined"
 MTXT_REDEF_UNCHECK  CHR "[F'Wingdings 2']{#F0A3}[~] Show redefined"

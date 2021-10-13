@@ -265,7 +265,7 @@ MethodEnd
 ; Return:     Nothing.
 
 Method IntPropWnd.ShowInheritance, uses xbx xdi xsi, pInterfaceInfo:PINTERFACEINFORMATION, dLink:DWORD
-  local dBytesWritten:DWORD, cHexBuffer[12]:CHR
+  local dBytesWritten:DWORD;, cHexBuffer[12]:CHR
 
   SetObject xsi
   lea xdi, dBytesWritten

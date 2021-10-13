@@ -124,6 +124,8 @@ Object FindInfoDlg,, Dialog
   VirtualEvent      OnActivate,         WM_ACTIVATE
 
   DefineVariable    hSearch,            HANDLE,   0
+  DefineVariable    pActiveDlgHandle,   POINTER         ;Usually -> WinApp.hActiveMlsDlg (HWND)
+  DefineVariable    hPrvActiveDlg,      HWND,     0
 ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

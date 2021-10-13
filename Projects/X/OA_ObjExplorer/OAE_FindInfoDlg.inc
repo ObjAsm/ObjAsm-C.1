@@ -38,17 +38,43 @@ MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:   	FindInfoDlg.Init
-; Purpose:  	Initializes a Dialog object.
+; Purpose:  	Initializes a modeless dialog object.
 ; Arguments:	Arg1: -> Owner object.
 ;           	Arg2: Parent window handle.
 ; Return:   	Nothing.
 
 Method FindInfoDlg.Init, uses xsi, pOwner:POINTER, hParent:HANDLE
   SetObject xsi
+  lea xax, $ObjTmpl(Application).hActiveMlsDlg
+  mov [xsi].pActiveDlgHandle, xax
   ACall xsi.Init, pOwner, hParent, IDD_FIND_DLG
   ;We create here the Modeless Dialog but without showing it. WS_VISIBLE must not be set!
   invoke CreateDialogParam, hInstance, [xsi].pTemplate, [xsi].hParent, \
                             $MethodAddr(FindInfoDlg.DlgProc), xsi   ;lParam passed WM_INITDIALOG
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     FindInfoDlg.OnActivate
+; Purpose:    Event procedure for WM_ACTIVATE message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = Zero if processed.
+
+Method FindInfoDlg.OnActivate,, wParam:WPARAM, lParam:LPARAM
+  SetObject xcx
+  mov xdx, [xcx].pActiveDlgHandle
+  .if xdx != NULL
+    mov xax, wParam
+    .if ax == WA_INACTIVE
+      ;Restore old handle
+      m2m HWND ptr [xdx], [xcx].hPrvActiveDlg, xax
+    .else
+      ;Save the current HANDLE and set our dialog to process its messages
+      m2m [xcx].hPrvActiveDlg, HANDLE ptr [xdx], xax
+      m2m HWND ptr [xdx], [xcx].hWnd, xax
+    .endif
+  .endif
+  invoke DefWindowProc, [xcx].hWnd, WM_ACTIVATE, wParam, lParam    ;Perform default processing
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -148,15 +174,4 @@ Method FindInfoDlg.OnCommand, uses xdi xbx xsi, wParam:WPARAM, lParam:LPARAM
     .endif
 
   .endif
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     FindInfoDlg.OnActivate
-; Purpose:    Event procedure for WM_ACTIVATE message.
-; Arguments:  Arg1: First message parameter.
-;             Arg2: Second message parameter.
-; Return:     eax = Zero.
-
-Method FindInfoDlg.OnActivate,, wParam:WPARAM, lParam:LPARAM
-  xor eax, eax
 MethodEnd

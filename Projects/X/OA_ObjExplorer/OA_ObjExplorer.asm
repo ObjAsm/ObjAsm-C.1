@@ -10,9 +10,9 @@
 ; ==================================================================================================
 
 ;Todos:
-;Search dialog does not process key input --> CANCEL
-;Namespaces are not handled
-;Interfaces are not recognized
+;Search dialog does not change language dynamically
+;Namespaces are not handled correctly
+;Interfaces are not recognized --> API convention change!
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc

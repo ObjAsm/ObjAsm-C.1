@@ -13,9 +13,8 @@
 ; Return:     Nothing.
 
 Method ObjPropWnd.CreateMarkupText, uses xbx xdi xsi
-  local cBuffer[1024]:CHR, cNumBuffer[20]:CHR
   local LastWriteTimeDef:FILETIME, LastWriteTimeAsm:FILETIME, LastWriteTime:FILETIME
-  local cAsmFile[MAX_PATH]:CHR, cLibFile[MAX_PATH]:CHR
+  local cNumBuffer[20]:CHR, cAsmFile[MAX_PATH]:CHR, cLibFile[MAX_PATH]:CHR
 
   SetObject xsi
 
@@ -215,7 +214,7 @@ MatchObjectImpMethod endp
 ; Return:     Nothing.
 
 ShowObjMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropWnd), xDummy:XWORD
-  local cBuffer[20]:CHR, pMarkupStream:$ObjPtr(MemoryStream), pText:POINTER
+  local pMarkupStream:$ObjPtr(MemoryStream), pText:POINTER
   local pImpMtdInfo:PIMPMTDINFORMATION, cNumBuffer[20]:CHR
 
   mov xcx, pSelf
@@ -393,7 +392,7 @@ ShowObjMtd endp
 ShowObjVar proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropWnd), xDummy:XWORD
   local pMarkupStream:$ObjPtr(MemoryStream), pText:POINTER
   local dLength:DWORD, dLength1:DWORD, dLength2:DWORD
-  local cBuffer1[1024]:CHR, cBuffer2[1024]:CHR, cHexBuffer[12]:CHR
+  local cBuffer1[1024]:CHR, cBuffer2[1024]:CHR
   local cNumBuffer[20]:CHR
 
   mov xcx, pSelf
@@ -731,7 +730,7 @@ MethodEnd
 ; Return:   	Nothing.
 
 Method ObjPropWnd.ShowInheritance, uses xbx xsi, pObjectInfo:POBJECTINFORMATION, dLink:DWORD
-  local cNumBuffer[20]:CHR, pLinkInfo:PLINK_INFO, cHexBuffer[12]:CHR
+  local cNumBuffer[20]:CHR
 
   SetObject xsi
   mov xcx, pObjectInfo
@@ -769,9 +768,9 @@ MethodEnd
 ; Return:     Nothing.
 
 Method ObjPropWnd.OnNotify, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
-  local dCheckBoxIndex:DWORD, Img:$Obj(Image), DstRect:RECT
+  local Img:$Obj(Image), DstRect:RECT
   local StartupInfo:STARTUPINFO, ProcessInfo:PROCESS_INFORMATION
-  local cFileName[MAX_PATH]:CHR, cFormat[2*MAX_PATH]:CHR, cCommand[2*MAX_PATH]:CHR
+  local cFormat[2*MAX_PATH]:CHR, cCommand[2*MAX_PATH]:CHR
 
   SetObject xsi
   mov xax, wParam

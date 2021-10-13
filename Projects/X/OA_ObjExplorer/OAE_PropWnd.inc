@@ -106,8 +106,7 @@ MethodEnd
 
 Method PropWnd.Init, uses xbx xdi xsi, pOwner:$ObjPtr(ClientWnd), pWndClassName:PSTRING, \
                                        pInfo:PINFORMATION
-  local Rect:RECT, cTempPath[MAX_PATH]:CHR, dIsMaximized:DWORD, CRect:RECT
-  local DefTextView:DEF_TEXTVIEW
+  local dIsMaximized:DWORD, DefTextView:DEF_TEXTVIEW
 
   SetObject xsi
   ACall xsi.Init, pOwner, NULL                          ;hWnd is set in WndProc
@@ -214,7 +213,7 @@ MethodEnd
 Method PropWnd.ShowFileInfo, uses xbx xsi, pFileName:PSTRING, dShowLink:DWORD, dLineNumber:DWORD, \
                                            pFileTime:PFILETIME, \
                                            pFileTime1:PFILETIME, pFileTime2:PFILETIME
-  local hFile:HANDLE, cBuffer[100]:CHR, cNumBuffer[20]:CHR, dLength:dword
+  local hFile:HANDLE, cBuffer[100]:CHR, cNumBuffer[20]:CHR
   local LocalSysTime:SYSTEMTIME, SysTimeUTC:SYSTEMTIME
 
   SetObject xsi
