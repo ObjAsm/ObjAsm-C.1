@@ -3,20 +3,21 @@
 ; Author:     G. Friedrich
 ; Version:    C.1.1
 ; Purpose:    ObjAsm Object Explorer.
-; Notes:      Version C.1.1, January 2021
+; Notes:      Version C.1.1, October 2021
 ;               - COM stuff replaced by TextView.
 ;             Version C.1.0, December 2020
 ;               - First release.
 ; ==================================================================================================
 
 ;Todos:
-;Search dialog does not change language dynamically
-;Namespaces are not handled correctly
-;Interfaces are not recognized --> API convention change!
+;Namespaces need better handling
+;Interfaces are not recognized --> API convention change! See h2incX project
+;HelpLines are not collected nor displayed
+;Set some information on the StatusBar from resources
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc
-SysSetup OOP, WIN64, ANSI_STRING, DEBUG(WND)
+SysSetup OOP, WIN64, ANSI_STRING;, DEBUG(WND)
 
 % includelib &LibPath&Windows\Kernel32.lib
 % includelib &LibPath&Windows\Shell32.lib
@@ -37,6 +38,7 @@ SysSetup OOP, WIN64, ANSI_STRING, DEBUG(WND)
 % include &IncPath&Windows\vsstyle.inc
 % include &IncPath&Windows\shlwapi.inc
 % include &IncPath&Windows\uxtheme.inc
+% include &IncPath&Windows\richedit.inc
 
 % include &IncPath&PCRE\PCRE844S.inc
 
@@ -51,7 +53,7 @@ MakeObjects Collection, DataCollection, SortedCollection, SortedDataCollection, 
 MakeObjects SimpleImageList, MaskedImageList
 MakeObjects StopWatch
 MakeObjects WinPrimer, Window
-MakeObjects Dialog, DialogModal, DialogAbout, DialogModeless
+MakeObjects Dialog, DialogModal, DialogModeless
 MakeObjects WinControl, Button, IconButton, Hyperlink
 MakeObjects MsgInterceptor, DialogModalIndirect, XMenu
 MakeObjects Toolbar, Rebar, Statusbar
@@ -66,6 +68,7 @@ include OAE_ObjDB.inc
 include OAE_InfoTree.inc
 include OAE_TreeWindow.inc
 include OA_ObjExplorer_Globals.inc
+include OAE_AboutDlg.inc
 include OA_ObjExplorer_Main.inc
 include OAE_PropWnd.inc
 include OAE_IntPropWnd.inc
@@ -76,15 +79,12 @@ include OAE_FindInfoDlg.inc
 start proc
   SysInit
 
-;  ResGuard_Start
   DbgClearAll
   invoke CoInitialize, 0                                ;Required for Image object
   OCall $ObjTmpl(Application)::Application.Init
   OCall $ObjTmpl(Application)::Application.Run
   OCall $ObjTmpl(Application)::Application.Done
   invoke CoUninitialize
-;  ResGuard_Stop
-;  ResGuard_Show
   SysDone
   invoke ExitProcess, 0
 start endp

@@ -206,7 +206,7 @@ Method DbgMdiChildTxt.Erase, uses xsi
   SetObject xsi
   invoke SendMessage, [xsi].hEdit, EM_SETSEL, 0, -1
   OCall xsi.ClpBrdClear
-  invoke SendMessage, [xsi].hEdit, EM_SETZOOM, [xsi].dZoom, TXT_ZOOM_BASE
+  invoke SendMessage, [xsi].hEdit, EM_SETZOOM, [xsi].dZoomFactor, TXT_ZOOM_BASE
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -266,6 +266,7 @@ Method DbgMdiChildTxt.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
   mov [xsi].hEdit, xax
   invoke SendMessage, [xsi].hEdit, EM_SETEVENTMASK, 0, ENM_SELCHANGE
   invoke SendMessage, [xsi].hEdit, EM_SETBKGNDCOLOR, 0, DBG_COLOR_BACKGROUND
+  invoke SendMessage, [xsi].hEdit, EM_SETZOOM, $ObjTmpl(DebugCenter).dTxtZoomFactor, ZOOM_BASE
 
   mov [xsi].pEdtIptor, $New(REdtIptor)
   OCall xax::REdtIptor.Init, xsi, [xsi].hEdit, offset szPropREdtIptor
@@ -613,7 +614,7 @@ Method DbgMdiChildTxt.ZoomIn, uses xsi
     .endif
     invoke SendMessage, [xsi].hEdit, EM_SETZOOM, dZoomFactor, ZOOM_BASE
     .if eax != FALSE
-      m2m [xsi].dZoom, dZoomFactor, eax
+      m2m [xsi].dZoomFactor, dZoomFactor, eax
     .endif
   .endif
 MethodEnd
@@ -638,7 +639,7 @@ Method DbgMdiChildTxt.ZoomOut, uses xsi
     .endif
     invoke SendMessage, [xsi].hEdit, EM_SETZOOM, dZoomFactor, ZOOM_BASE
     .if eax != FALSE
-      m2m [xsi].dZoom, dZoomFactor, eax
+      m2m [xsi].dZoomFactor, dZoomFactor, eax
     .endif
   .endif
 MethodEnd

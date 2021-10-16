@@ -15,8 +15,6 @@ CLSSTYLE  equ   CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HRE
 TBSTYLE   equ   WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or TBSTYLE_TOOLTIPS or \
                 CCS_NORESIZE or CCS_NODIVIDER or CCS_ADJUSTABLE or TBSTYLE_FLAT or TBSTYLE_LIST
 
-EM_GETZOOM    equ   WM_USER + 224
-EM_SETZOOM    equ   WM_USER + 225
 WAIT_TIMEOUT  equ   102h
 
 .const
@@ -124,8 +122,8 @@ Object DebugCenter, DebugCenterID, MdiApp                       ;MDI application
   DefineVariable    NotifyIconData,     NOTIFYICONDATA, {}
 
   DefineVariable    hFont,              HFONT,      0
-  DefineVariable    dTxtZoom,           DWORD,      TXT_ZOOM_DEFAULT
-  DefineVariable    dBmpZoom,           DWORD,      TXT_ZOOM_DEFAULT
+  DefineVariable    dTxtZoomFactor,           DWORD,      TXT_ZOOM_DEFAULT
+  DefineVariable    dBmpZoomFactor,           DWORD,      BMP_ZOOM_DEFAULT
 
   DefineVariable    PrintMargin,        RECT,       {2500, 1000, 1000, 1000}
   DefineVariable    hDevMode,           HANDLE,     0
@@ -422,7 +420,7 @@ Method DebugCenter.Init, uses xbx xdi xsi
       mov eax, TXT_ZOOM_MAX
     .endif
   .endif
-  mov [xsi].dTxtZoom, eax
+  mov [xsi].dTxtZoomFactor, eax
 
   OCall pRegKey::RegKey.ValueGetDW, offset szBmpZoom
   .if [xsi].dErrorCode != OBJ_OK
@@ -1359,8 +1357,8 @@ Method DebugCenter.OnDestroy, uses xsi, wParam:WPARAM, lParam:LPARAM
   OCall pRegKey::RegKey.ValueSetDW, offset szRightPos,  WP.rcNormalPosition.right
   OCall pRegKey::RegKey.ValueSetDW, offset szBottomPos, WP.rcNormalPosition.bottom
   OCall pRegKey::RegKey.ValueSetDW, offset szLanguage, [xsi].dLanguage
-  OCall pRegKey::RegKey.ValueSetDW, offset szTxtZoom,  [xsi].dTxtZoom
-  OCall pRegKey::RegKey.ValueSetDW, offset szBmpZoom,  [xsi].dBmpZoom
+  OCall pRegKey::RegKey.ValueSetDW, offset szTxtZoom,  [xsi].dTxtZoomFactor
+  OCall pRegKey::RegKey.ValueSetDW, offset szBmpZoom,  [xsi].dBmpZoomFactor
   OCall pRegKey::RegKey.%ValueSetStr, offset szDirectory, [xsi].pDirectory
   OCall pRegKey::RegKey.%ValueSetStr, offset szVersion, $OfsCStr("&VER_PRODUCTVERSION_STR")
   OCall pRegKey::RegKey.Close

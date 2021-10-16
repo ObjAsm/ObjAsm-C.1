@@ -2,7 +2,7 @@
 ; Title:      OAE_SetupDlg.inc
 ; Author:     G. Friedrich
 ; Version:    Check OA_ObjExplorer.asm
-; Purpose:    SetupDlg implementation for OA_ObjBrowser. 
+; Purpose:    SetupDlg implementation for OA_ObjExplorer.
 ; ==================================================================================================
 ;
 

@@ -2,7 +2,7 @@
 ; Title:      OAE_FindInfoDlg.inc
 ; Author:     G. Friedrich
 ; Version:    Check OA_ObjExplorer.asm
-; Purpose:    FindInfoDlg implementation for OA_ObjBrowser. 
+; Purpose:    FindInfoDlg implementation for OA_ObjExplorer.
 ; ==================================================================================================
 
 
@@ -28,10 +28,10 @@ Method FindInfoDlg.CtlsSet, uses xbx xdi xsi
 
   invoke CheckRadioButton, [xsi].hWnd, IDC_FIND_RBN_OBJ, IDC_FIND_RBN_INT, IDC_FIND_RBN_OBJ
 
-  SetCtrlText IDC_FIND_BTN_SEARCH,   IDS_FIND_GO
-  SetCtrlText IDC_FIND_RBN_OBJ,  IDS_FIND_OBJ
-  SetCtrlText IDC_FIND_RBN_INT,  IDS_FIND_INT
-  SetCtrlText IDC_FIND_STC_HELP, IDS_FIND_HELP
+  SetCtrlText IDC_FIND_BTN_SEARCH,  IDS_FIND_SEARCH
+  SetCtrlText IDC_FIND_RBN_OBJ,     IDS_FIND_OBJ
+  SetCtrlText IDC_FIND_RBN_INT,     IDS_FIND_INT
+  SetCtrlText IDC_FIND_STC_HELP,    IDS_FIND_HELP
 
   mov eax, TRUE
 MethodEnd

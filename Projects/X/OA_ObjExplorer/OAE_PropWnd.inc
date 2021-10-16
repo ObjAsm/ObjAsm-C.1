@@ -2,7 +2,7 @@
 ; Title:      OAE_PropWnd.inc
 ; Author:     G. Friedrich
 ; Version:    Check OA_ObjExplorer.asm
-; Purpose:    PropWnd implementation for OA_ObjBrowser.
+; Purpose:    PropWnd implementation for OA_ObjExplorer.
 ; ==================================================================================================
 
 
@@ -152,7 +152,7 @@ Method PropWnd.Init, uses xbx xdi xsi, pOwner:$ObjPtr(ClientWnd), pWndClassName:
     .if [xdi].$Obj(ClientWnd).dChildCount == 1          ;First child window ?
       invoke SendMessage, [xdi].$Obj(ClientWnd).hWnd, WM_MDISETMENU, \
                           $ObjTmpl(Application).hMenuChild, $ObjTmpl(Application).hMenuChildWnd
-      invoke DrawMenuBar, $ObjTmpl(Application).hWnd  ;Redraw the new menu bar
+      invoke DrawMenuBar, $ObjTmpl(Application).hWnd    ;Redraw the new menu bar
     .endif
   .else
     invoke GetLastError
@@ -217,7 +217,8 @@ Method PropWnd.ShowFileInfo, uses xbx xsi, pFileName:PSTRING, dShowLink:DWORD, d
   local LocalSysTime:SYSTEMTIME, SysTimeUTC:SYSTEMTIME
 
   SetObject xsi
-  invoke CreateFile, pFileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_ARCHIVE, 0
+  invoke CreateFile, pFileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, \
+                     FILE_ATTRIBUTE_ARCHIVE, 0
   .if xax != INVALID_HANDLE_VALUE
     mov hFile, xax
     .if dShowLink != FALSE

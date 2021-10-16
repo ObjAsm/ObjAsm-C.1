@@ -16,7 +16,7 @@
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
 // Icons -------------------------------------------------------------------------------------------
-ICON_APP              ICON DISCARDABLE "Res\OA_Browser.ico"
+ICON_APP              ICON DISCARDABLE "Res\OAE.ico"
 
 ICON_FILE_REFRESH     ICON DISCARDABLE "ICO\Refresh_16x16_04.ico"
 ICON_FILE_SEARCH      ICON DISCARDABLE "ICO\Search_16x16_04.ico"
@@ -30,29 +30,30 @@ ICON_WINDOW_NEXT      ICON DISCARDABLE "ICO\Right_16x16_04.ico"
 ICON_WINDOW_PREV      ICON DISCARDABLE "ICO\Left_16x16_04.ico"
 ICON_WINDOW_CLOSE     ICON DISCARDABLE "ICO\Close_16x16_04.ico"
 ICON_WINDOW_CLOSEALL  ICON DISCARDABLE "ICO\CloseAll_16x16_04.ico"
+ICON_WINDOW_ZOOMIN    ICON DISCARDABLE "ICO\Font_Larger_16x16_04.ico"
+ICON_WINDOW_ZOOMOUT   ICON DISCARDABLE "ICO\Font_Smaller_16x16_04.ico"
 ICON_HELP_HELP        ICON DISCARDABLE "ICO\Help_Red_16x16_04.ico"
 ICON_HELP_ABOUT       ICON DISCARDABLE "ICO\Info_Blue_16x16_04.ico"
 
 ICON_TREE_PRJ         ICON DISCARDABLE "ICO\Hand_16X16_32.ico"
-ICON_TREE_ERR         ICON DISCARDABLE "Res\OBR_Error_16X16_32.ico"
-ICON_OBJ_STD          ICON DISCARDABLE "Res\OBR_Tree_Obj_Std_16x16_32.ico"
-ICON_OBJ_PRJ          ICON DISCARDABLE "Res\OBR_Tree_OBJ_Prj_16x16_32.ico"
-ICON_INT_STD          ICON DISCARDABLE "Res\OBR_Tree_Int_Std_16x16_32.ico"
-ICON_INT_PRJ          ICON DISCARDABLE "Res\OBR_Tree_Int_Prj_16x16_32.ico"
-ICON_OVR_ERROR        ICON DISCARDABLE "Res\OBR_Overlay_Error_16x16_32.ico"
+ICON_TREE_ERR         ICON DISCARDABLE "Res\OAE_Error_16X16_32.ico"
+ICON_OBJ_STD          ICON DISCARDABLE "Res\OAE_Tree_Obj_Std_16x16_32.ico"
+ICON_OBJ_PRJ          ICON DISCARDABLE "Res\OAE_Tree_OBJ_Prj_16x16_32.ico"
+ICON_INT_STD          ICON DISCARDABLE "Res\OAE_Tree_Int_Std_16x16_32.ico"
+ICON_INT_PRJ          ICON DISCARDABLE "Res\OAE_Tree_Int_Prj_16x16_32.ico"
+ICON_OVR_ERROR        ICON DISCARDABLE "Res\OAE_Overlay_Error_16x16_32.ico"
 
 ICON_COPY             ICON DISCARDABLE "ICO\Copy_16x16_04.ico"
 ICON_PRINT_PREVIEW    ICON DISCARDABLE "ICO\PrintPreview_16x16_04.ico"
 ICON_PRINT            ICON DISCARDABLE "ICO\Print_16x16_04.ico"
 
-// DialogAboutEx icons
-ICON_LINK             ICON DISCARDABLE "ICO\Link_16x16_04.ico"
-ICON_MAIL             ICON DISCARDABLE "ICO\Mail_16x16_04.ico"
+ICON_OK               ICON DISCARDABLE "ICO\OK_16x16_04.ico"
+//ICON_CANCEL           ICON DISCARDABLE "ICO\Cancel_16x16_04.ico"
 
 
 // Cursors -----------------------------------------------------------------------------------------
 
-CURSOR_HAND           CURSOR DISCARDABLE "CUR\Hand.cur"      ;Used by DialogAboutEx
+CURSOR_HAND           CURSOR DISCARDABLE "CUR\Hand.cur"
 CURSOR_SPLITVER       CURSOR DISCARDABLE "CUR\SplitVer.cur"
 
 ;XTreeView
@@ -64,15 +65,13 @@ CURSOR_XTV_ARROW      CURSOR DISCARDABLE "CUR\\Arrow.cur"
 BMP_BACKGROUND        BITMAP "BMP\WndBkgnd.bmp"
 
 
-// Menu IDs ----------------------------------------------------------------------------------------
-
-
 
 // Dialogs -----------------------------------------------------------------------------------------
 
 #include "..\OA_ObjExplorer\Res\OA_ObjExplorer_FindDlg.rc"
 #include "..\OA_ObjExplorer\Res\OA_ObjExplorer_SetupDlg.rc"
-#include "DLG\DialogAboutEx.rc"
+#include "..\OA_ObjExplorer\Res\OA_ObjExplorer_AboutDlg.rc"
+
 
 // Menus -------------------------------------------------------------------------------------------
 
@@ -94,8 +93,8 @@ BEGIN
   END
   POPUP "$40",          IDM_HELP,               MFT_STRING | MFT_RIGHTJUSTIFY, MFS_ENABLED
   BEGIN
-    MENUITEM "13$41",   IDM_HELP_HELP,          MFT_STRING, MFS_ENABLED
-    MENUITEM "14$42",   IDM_HELP_ABOUT,         MFT_STRING, MFS_ENABLED
+    MENUITEM "15$41",   IDM_HELP_HELP,          MFT_STRING, MFS_ENABLED
+    MENUITEM "16$42",   IDM_HELP_ABOUT,         MFT_STRING, MFS_ENABLED
   END
 END
 
@@ -129,8 +128,8 @@ BEGIN
   END
   POPUP "$40",          IDM_HELP,               MFT_STRING | MFT_RIGHTJUSTIFY, MFS_ENABLED
   BEGIN
-    MENUITEM "13$41",   IDM_HELP_HELP,          MFT_STRING, MFS_ENABLED
-    MENUITEM "14$42",   IDM_HELP_ABOUT,         MFT_STRING, MFS_ENABLED
+    MENUITEM "15$41",   IDM_HELP_HELP,          MFT_STRING, MFS_ENABLED
+    MENUITEM "16$42",   IDM_HELP_ABOUT,         MFT_STRING, MFS_ENABLED
   END
 END
 
@@ -199,10 +198,13 @@ BEGIN
   IDLANG_ENGLISH + 88, "Shows the previous child window"
   IDLANG_ENGLISH + 89, "Closes the active window"
   IDLANG_ENGLISH + 90, "Closes all windows"
-  IDLANG_ENGLISH + 91, "Displays ObjAsm objects"
-  IDLANG_ENGLISH + 92, "Displays COM interfaces"
-  IDLANG_ENGLISH + 93, "Displays project information only"
-  IDLANG_ENGLISH + 94, "Displays broken information only"
+  IDLANG_ENGLISH + 91, "Zoom in"
+  IDLANG_ENGLISH + 92, "Zoom out"
+
+  IDLANG_ENGLISH + 95, "Displays ObjAsm objects"
+  IDLANG_ENGLISH + 96, "Displays COM interfaces"
+  IDLANG_ENGLISH + 97, "Displays project information only"
+  IDLANG_ENGLISH + 98, "Displays broken information only"
 
   IDLANG_ENGLISH + ID_MDI_MORE, "&More windows...|Select a window"
   IDLANG_ENGLISH + ID_MDI_LIST, "Window list"
@@ -217,13 +219,23 @@ BEGIN
   IDLANG_ENGLISH + 107, "Show redefined &methods"
   IDLANG_ENGLISH + 108, "Show redefined &variables"
   IDLANG_ENGLISH + 109, "Select a file"
-  
 
   IDLANG_ENGLISH + 120, "Find information"
   IDLANG_ENGLISH + 121, "&Search"
   IDLANG_ENGLISH + 122, "&Object"
   IDLANG_ENGLISH + 123, "&Interface"
   IDLANG_ENGLISH + 124, "Doubleclick to open selection"
+
+  IDLANG_ENGLISH + 130, "About this application"
+  IDLANG_ENGLISH + 131, "Designed with ObjAsm"
+  IDLANG_ENGLISH + 132, "Visit our Homepage"
+  IDLANG_ENGLISH + 133, "Send us an Email to"
+
+  IDLANG_ENGLISH + 140, "Warning"
+  IDLANG_ENGLISH + 141, "{PA20}[FI55][B,H+3,C#FF4F4F]This application is about to close![~]{P}There are open information windows that you probably need.{P}Do you want to proceed anyway?[~]"
+
+  IDLANG_ENGLISH + 150, "Error"
+  IDLANG_ENGLISH + 151, "{PA20}[FI55][B,H+3,C#FF4F4F]The file viewer could not be opened![~]{P}Please check the application settings.{P}Press the OK button to continue.[~]"
 
 
   IDLANG_GERMAN  + 00, "&Datei|Dateibefehle"
@@ -268,10 +280,13 @@ BEGIN
   IDLANG_GERMAN  + 88, "Zeigt das vorherige Fenster an"
   IDLANG_GERMAN  + 89, "Schliesst das aktive Fenster"
   IDLANG_GERMAN  + 90, "Schliesst alle Fenster"
-  IDLANG_GERMAN  + 91, "Zeigt ObjAsm Objekte an"
-  IDLANG_GERMAN  + 92, "Zeigt COM Schittstellen an"
-  IDLANG_GERMAN  + 93, "Zeigt nur Projektinformation an"
-  IDLANG_GERMAN  + 94, "Zeigt nur fehlerhafte Informationen an"
+  IDLANG_GERMAN  + 91, "Vergrößern"
+  IDLANG_GERMAN  + 92, "Verkleinern"
+
+  IDLANG_GERMAN  + 95, "Zeigt ObjAsm Objekte an"
+  IDLANG_GERMAN  + 96, "Zeigt COM Schittstellen an"
+  IDLANG_GERMAN  + 97, "Zeigt nur Projektinformation an"
+  IDLANG_GERMAN  + 98, "Zeigt nur fehlerhafte Informationen an"
 
   IDLANG_GERMAN  + ID_MDI_MORE, "&Weitere Fenster...|Fenster auswählen"
   IDLANG_GERMAN  + ID_MDI_LIST, "Fensterliste"
@@ -292,6 +307,17 @@ BEGIN
   IDLANG_GERMAN  + 122, "&Objekte"
   IDLANG_GERMAN  + 123, "&Schnittstellen"
   IDLANG_GERMAN  + 124, "Doppelklick zum Öffnen der Auswahl"
+
+  IDLANG_GERMAN  + 130, "Über diese Anwendung"
+  IDLANG_GERMAN  + 131, "Mit ObjAsm entwickelt"
+  IDLANG_GERMAN  + 132, "Besuchen Sie unsere Homepage"
+  IDLANG_GERMAN  + 133, "Senden Sie uns eine Email an"
+
+  IDLANG_GERMAN  + 140, "Achtung"
+  IDLANG_GERMAN  + 141, "{PA20}[FI55][B,H+3,C#FF4F4F]Diese Anwendung wird geschlossen![~]{P}Es gibt offene Informationsfenster, die Sie wahrscheinlich noch brauchen.{P}Wollen Sie trotzdem fortfahren?[~]"
+
+  IDLANG_GERMAN  + 150, "Fehler"
+  IDLANG_GERMAN  + 151, "{PA20}[FI55][B,H+3,C#FF4F4F]Der Datei-Viewer konnte nicht geöffnet werden![~]{P}Bitte überprüfen Sie die Einstellungen der Anwendung.{P}Um fortzufahren drücken Sie die OK Taste.[~]"
 
   IDLANG_SPANISH + 00, "&Archivo|Comandos de archivo"
   IDLANG_SPANISH + 01, "&Refrescar~Ctrl+R$80"
@@ -335,10 +361,13 @@ BEGIN
   IDLANG_SPANISH + 88, "Muestra la ventana previa"
   IDLANG_SPANISH + 89, "Cierra la ventana seleccionada"
   IDLANG_SPANISH + 90, "Cierra todas las ventanas"
-  IDLANG_SPANISH + 91, "Muestra objetos de ObjAsm"
-  IDLANG_SPANISH + 92, "Muestra interfaces COM"
-  IDLANG_SPANISH + 93, "Muestra sólamente informaciones del projecto"
-  IDLANG_SPANISH + 94, "Muestra sólamente informaciones incorrectas"
+  IDLANG_SPANISH + 91, "Ampliar"
+  IDLANG_SPANISH + 92, "Reducir"
+
+  IDLANG_SPANISH + 95, "Muestra objetos de ObjAsm"
+  IDLANG_SPANISH + 96, "Muestra interfaces COM"
+  IDLANG_SPANISH + 97, "Muestra sólamente informaciones del projecto"
+  IDLANG_SPANISH + 98, "Muestra sólamente informaciones incorrectas"
 
   IDLANG_SPANISH + ID_MDI_MORE, "&Otras ventanas...|Seleccione una ventana"
   IDLANG_SPANISH + ID_MDI_LIST, "Lista de ventanas"
@@ -360,20 +389,32 @@ BEGIN
   IDLANG_SPANISH + 123, "&Interfaces"
   IDLANG_SPANISH + 124, "Doble clic para abrir la selección"
 
+  IDLANG_SPANISH + 130, "Acerca de esta aplicación"
+  IDLANG_SPANISH + 131, "Diseñado con ObjAsm"
+  IDLANG_SPANISH + 132, "Visite nuesta página Web"
+  IDLANG_SPANISH + 133, "Envíenos un Email a"
+
+  IDLANG_SPANISH + 140, "Atención"
+  IDLANG_SPANISH + 141, "{PA20}[FI55][B,H+3,C#FF4F4F]Esta aplicación será cerrada![~]{P}Hay ventanas de información abiertas que probablemente necesite.{P}¿Desea proceder de todos modos?[~]"
+
+  IDLANG_SPANISH + 150, "Error"
+  IDLANG_SPANISH + 151, "{PA20}[FI55][B,H+3,C#FF4F4F]No se ha podido abrir el visor de archivos![~]{P}Por favor, revise la configuración de la aplicación.{P}Pulse el botón OK para continuar.[~]"
 END
 
 // PNGs --------------------------------------------------------------------------------------------
-PngCompile  IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\Compile.png"
-PngEdit     IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\Edit.png"
-PngOpen     IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\Open.png"
-PngShow     IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\Show.png"
-PngHide     IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\Hide.png"
-PngVarUnk   IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\VarUnk.png"
-PngVarReg   IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\VarReg.png"
-PngVarRed   IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\VarRed.png"
-PngVarObj   IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\VarObj.png"
-PngIntMtd   IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\IntMtd.png"
-PngIntDsp   IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\IntDsp.png"
+;PngCompile  IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\OAE_Compile.png"
+;PngEdit     IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\OAE_Edit.png"
+;PngOpen     IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\OAE_Open.png"
+;PngShow     IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\OAE_Show.png"
+;PngHide     IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\OAE_Hide.png"
+PngVarUnk   IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\OAE_VarUnk.png"
+PngVarReg   IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\OAE_VarReg.png"
+PngVarRed   IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\OAE_VarRed.png"
+PngVarObj   IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\OAE_VarObj.png"
+;PngIntMtd   IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\OAE_IntMtd.png"
+;PngIntDsp   IMAGE DISCARDABLE "..\OA_ObjExplorer\Res\OAE_IntDsp.png"
+
+PNG_ObjExp  IMAGE   DISCARDABLE   "res\OAE_100x100.png"
 
 
 // Accelerators ------------------------------------------------------------------------------------

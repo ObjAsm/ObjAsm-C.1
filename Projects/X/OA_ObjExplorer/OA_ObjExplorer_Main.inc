@@ -2,7 +2,7 @@
 ; Title:      OA_ObjExplorer_Main.inc
 ; Author:     G. Friedrich
 ; Version:    Check OA_ObjExplorer.asm
-; Purpose:    Window definitions for OA_ObjBrowser.
+; Purpose:    Window definitions for OA_ObjExplorer.
 ; ==================================================================================================
 
 
@@ -20,16 +20,19 @@ ToolbarFile DEF_TOOLBAR {IDC_TOOLBARFILE, TB_STYLE, TBSTYLE_EX_MIXEDBUTTONS, \
   TBBUTTON {IDB_FILE_SETUP,     IDM_FILE_SETUP,    TBSTATE_ENABLED, TBSTYLE_BUTTON}
 
 ToolbarWindow DEF_TOOLBAR {IDC_TOOLBARWINDOW, TB_STYLE, TBSTYLE_EX_MIXEDBUTTONS, \
-                           $OfsTStr("Window commands"), {<0,0,0,0>}, 9}
-  TBBUTTON {IDB_WIND_CASCADE,   IDM_WIND_CASCADE,  TBSTATE_ENABLED, TBSTYLE_BUTTON}
-  TBBUTTON {IDB_WIND_TILE_HORZ, IDM_WIND_TILE_HOR, TBSTATE_ENABLED, TBSTYLE_BUTTON}
-  TBBUTTON {IDB_WIND_TILE_VERT, IDM_WIND_TILE_VER, TBSTATE_ENABLED, TBSTYLE_BUTTON}
-  TBBUTTON {IDB_WIND_ARRANGE,   IDM_WIND_ARRANGE,  TBSTATE_ENABLED, TBSTYLE_BUTTON}
-  TBBUTTON {IDB_WIND_PREV,      IDM_WIND_PREV,     TBSTATE_ENABLED, TBSTYLE_BUTTON}
-  TBBUTTON {IDB_WIND_NEXT,      IDM_WIND_NEXT,     TBSTATE_ENABLED, TBSTYLE_BUTTON}
-  TBBUTTON {0,                  -1,                TBSTATE_ENABLED, TBSTYLE_SEP}
-  TBBUTTON {IDB_WIND_CLOSE,     IDM_WIND_CLOSE,    TBSTATE_ENABLED, TBSTYLE_BUTTON}
-  TBBUTTON {IDB_WIND_CLOSEALL,  IDM_WIND_CLOSEALL, TBSTATE_ENABLED, TBSTYLE_BUTTON}
+                           $OfsTStr("Window commands"), {<0,0,0,0>}, 12}
+  TBBUTTON {IDB_WIND_CASCADE,   IDM_WIND_CASCADE,   TBSTATE_ENABLED, TBSTYLE_BUTTON}
+  TBBUTTON {IDB_WIND_TILE_HORZ, IDM_WIND_TILE_HOR,  TBSTATE_ENABLED, TBSTYLE_BUTTON}
+  TBBUTTON {IDB_WIND_TILE_VERT, IDM_WIND_TILE_VER,  TBSTATE_ENABLED, TBSTYLE_BUTTON}
+  TBBUTTON {IDB_WIND_ARRANGE,   IDM_WIND_ARRANGE,   TBSTATE_ENABLED, TBSTYLE_BUTTON}
+  TBBUTTON {IDB_WIND_PREV,      IDM_WIND_PREV,      TBSTATE_ENABLED, TBSTYLE_BUTTON}
+  TBBUTTON {IDB_WIND_NEXT,      IDM_WIND_NEXT,      TBSTATE_ENABLED, TBSTYLE_BUTTON}
+  TBBUTTON {0,                  -1,                 TBSTATE_ENABLED, TBSTYLE_SEP}
+  TBBUTTON {IDB_WIND_CLOSE,     IDM_WIND_CLOSE,     TBSTATE_ENABLED, TBSTYLE_BUTTON}
+  TBBUTTON {IDB_WIND_CLOSEALL,  IDM_WIND_CLOSEALL,  TBSTATE_ENABLED, TBSTYLE_BUTTON}
+  TBBUTTON {0,                  -2,                 TBSTATE_ENABLED, TBSTYLE_SEP}
+  TBBUTTON {IDB_WIND_ZOOMIN,    IDM_WIND_ZOOMIN,    TBSTATE_ENABLED, TBSTYLE_BUTTON}
+  TBBUTTON {IDB_WIND_ZOOMOUT,   IDM_WIND_ZOOMOUT,   TBSTATE_ENABLED, TBSTYLE_BUTTON}
 
 AppStatusbar DEF_STATUSBAR {IDC_STATUSBAR, SB_STYLE, 0, 4}
   DEF_STATUSBAR_PART {220, 100, 3, SBT_NOBORDERS, NULL}
@@ -40,7 +43,7 @@ AppStatusbar DEF_STATUSBAR {IDC_STATUSBAR, SB_STYLE, 0, 4}
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-Object ClientWnd, OAE_ClientWndID, MdiClientWnd       ;MDI client window.
+Object ClientWnd, OAE_ClientWndID, MdiClientWnd         ;MDI client window.
   RedefineMethod    Done
   RedefineMethod    Init,               POINTER         ;-> Owner
 
@@ -115,7 +118,7 @@ ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-Object FindInfoDlg,, Dialog
+Object FindInfoDlg,, Dialog                             ;This is a Modeless Dialog!
   RedefineMethod    CtlsSet
   RedefineMethod    Init,               POINTER, HANDLE
   RedefineMethod    OnInitDialog,       WPARAM, LPARAM
@@ -190,7 +193,7 @@ Object Application, OAE_ApplicationID, MdiApp           ;MDI application.
   DefineVariable    dShowObjects,       DWORD,      TRUE
   DefineVariable    dShowInterfaces,    DWORD,      TRUE
 
-  DefineVariable    pObjDB,             $ObjPtr(OA_ObjDB),  NULL
+  DefineVariable    pObjDB,             $ObjPtr(OA_ObjDB),  offset $ObjTmpl(OA_ObjDB)
   DefineVariable    dShowRedefMtds,     DWORD,      TRUE
   DefineVariable    dShowRedefVars,     DWORD,      TRUE
 ObjectEnd
@@ -204,7 +207,7 @@ if IMPLEMENT
 MEMBERDATA struc
   pMemberInfo   PINFORMATION  ?
   dFlags        DWORD         ?
-  pDefinition   POINTER       ?                         ;POBJMTDINFORMATION
+  pDefinition   POINTER       ?                         ;E.g. POBJMTDINFORMATION
 MEMBERDATA ends
 PMEMBERDATA typedef ptr MEMBERDATA
 
@@ -303,6 +306,11 @@ Method Application.ChangeBtnLanguage, uses xbx xdi xsi, dLangID:DWORD
   SetButtonText IDM_WIND_NEXT,     88
   SetButtonText IDM_WIND_CLOSE,    89
   SetButtonText IDM_WIND_CLOSEALL, 90
+  SetButtonText IDM_WIND_ZOOMIN,   91
+  SetButtonText IDM_WIND_ZOOMOUT,  92
+
+  ;Set new text on the modeless FindInfoDlg
+  OCall [xsi].FindInfDlg::FindInfoDlg.CtlsSet
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -315,7 +323,7 @@ Method Application.ChangeLanguage, uses xbx xdi xsi, dLangID:DWORD
   local MenuInfo:MENUITEMINFO
 
   SetObject xsi
-  m2m [xsi].dLanguage, dLangID, ecx                   ;Save setting
+  m2m $ObjTmpl(Application).dLanguage, dLangID, ecx                     ;Save setting
 
   ;Keep updated both menus!
   mov eax, dLangID
@@ -335,8 +343,8 @@ Method Application.ChangeLanguage, uses xbx xdi xsi, dLangID:DWORD
   invoke CheckMenuRadioItem, xax, IDM_LANGUAGE_ENGLISH, IDM_LANGUAGE_SPANISH, edi, MF_BYCOMMAND
 
   ;Language switch
-  mov xbx, $invoke(GetMenu, [xsi].hWnd)                     ;Get the current menu
-  OCall [xsi].Menu::XMenu.ChangeLanguage, xbx, dLangID      ;Active menu is converted
+  mov xbx, $invoke(GetMenu, [xsi].hWnd)                 ;Get the current menu
+  OCall [xsi].Menu::XMenu.ChangeLanguage, xbx, dLangID  ;Active menu is converted
 
   ;Convert remaining main menu
   .if xbx == [xsi].hMenuInit
@@ -392,7 +400,7 @@ Method Application.EnableActions, uses xbx xdi xsi
   SetObject xsi
   xor edi, edi
   mov xbx, [xsi].pClientWnd
-  .if [xbx].$Obj(ClientWnd).dChildCount != 0                ;No more child windows ?
+  .if [xbx].$Obj(ClientWnd).dChildCount != 0            ;No more child windows ?
     inc edi
   .endif
   OCall [xsi].TbWindow::Toolbar.BtnEnable, IDM_WIND_CASCADE,  edi
@@ -400,12 +408,14 @@ Method Application.EnableActions, uses xbx xdi xsi
   OCall [xsi].TbWindow::Toolbar.BtnEnable, IDM_WIND_TILE_VER, edi
   OCall [xsi].TbWindow::Toolbar.BtnEnable, IDM_WIND_ARRANGE,  edi
   OCall [xsi].TbWindow::Toolbar.BtnEnable, IDM_WIND_CLOSE,    edi
-  OCall [xsi].TbWindow::Toolbar.BtnEnable, IDM_WIND_CLOSEALL, edi
+  OCall [xsi].TbWindow::Toolbar.BtnEnable, IDM_WIND_ZOOMIN,   edi
+  OCall [xsi].TbWindow::Toolbar.BtnEnable, IDM_WIND_ZOOMOUT,  edi
 
   xor edi, edi
-  .if [xbx].$Obj(ClientWnd).dChildCount > 1                ;More child windows than 1?
+  .if [xbx].$Obj(ClientWnd).dChildCount > 1             ;More child windows than 1?
     inc edi
   .endif
+  OCall [xsi].TbWindow::Toolbar.BtnEnable, IDM_WIND_CLOSEALL, edi
   OCall [xsi].TbWindow::Toolbar.BtnEnable, IDM_WIND_PREV,     edi
   OCall [xsi].TbWindow::Toolbar.BtnEnable, IDM_WIND_NEXT,     edi
 MethodEnd
@@ -492,11 +502,13 @@ Method Application.Init, uses xbx xdi xsi
   OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_WINDOW_PREV")     ;10
   OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_WINDOW_CLOSE")    ;11
   OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_WINDOW_CLOSEALL") ;12
-  OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_HELP_HELP")       ;13
-  OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_HELP_ABOUT")      ;14
-  OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_COPY")            ;15
-  OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_PRINT_PREVIEW")   ;16
-  OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_PRINT")           ;17
+  OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_WINDOW_ZOOMIN")   ;13
+  OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_WINDOW_ZOOMOUT")  ;14
+  OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_HELP_HELP")       ;15
+  OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_HELP_ABOUT")      ;16
+  OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_COPY")            ;17
+  OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_PRINT_PREVIEW")   ;18
+  OCall xbx::MaskedImageList.IconLoadResource, $OfsCStr("ICON_PRINT")           ;19
 
   ;Load application accelerators from the resource section
   mov [xsi].hAccelerators, $invoke(LoadAccelerators, hInstance, $OfsCStr("MDIACCEL"))
@@ -516,7 +528,7 @@ Method Application.Init, uses xbx xdi xsi
   mov dWty, $32($invoke(CenterForm, dWht, $32($invoke(GetSystemMetrics, SM_CYSCREEN))))
 
   invoke CreateWindowEx, WS_EX_APPWINDOW or WS_EX_WINDOWEDGE,
-                         offset cObjExplorerClass, offset szAppTitle, \
+                         offset cObjExplorerClass, offset cAppTitle, \
                          WS_OVERLAPPEDWINDOW or WS_CLIPCHILDREN, \
                          dWtx, dWty, dWwd, dWht, 0, [xsi].hMenuInit, hInstance, xsi
 
@@ -539,7 +551,6 @@ Method Application.Init, uses xbx xdi xsi
   invoke ShowWindow, [xsi].hWnd, SW_SHOW
   invoke UpdateWindow, [xsi].hWnd
 
-  m2m [xsi].pObjDB, offset $ObjTmpl(OA_ObjDB), xax
   OCall [xsi].pObjDB::OA_ObjDB.Init, xsi, addr [xsi].SetupFile
 
   OCall xsi.Refresh, REFRESH_ALL                        ;Load Object information from .stm file --> other thread
@@ -588,24 +599,29 @@ MethodEnd
 
 Method Application.OnClose, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   local dMsg:DWORD
+  local cCaption[512]:CHR, cText[1024]:CHR
 
-  ;DbgText "Application.OnClose"
   SetObject xsi
-  mov dMsg, eax
+  mov dMsg, eax                                         ;Save windows message passed in eax
+  invoke GetKeyState, VK_CONTROL
   mov xbx, [xsi].pClientWnd
-  .if [xbx].$Obj(ClientWnd).dChildCount == 0          ;Ask only if a child window is open
-    invoke DefFrameProc, [xsi].hWnd, [xbx].$Obj(ClientWnd).hWnd, dMsg, wParam, lParam
-  .else
-    invoke MessageBox, [xsi].hWnd, $OfsCStr("Are you sure ?"), $OfsCStr("Application exit"), \
-                       MB_YESNO + MB_ICONQUESTION
-    .if eax == IDNO
-      xor eax, eax
-      ExitMethod
-    .else
-      invoke DefFrameProc, [xsi].hWnd, [xbx].$Obj(ClientWnd).hWnd, dMsg, wParam, lParam
+  and ax, BIT15
+  .if ZERO? || dMsg != WM_CLOSE                         ;If CTRL pressed => close without asking
+    .if [xbx].$Obj(ClientWnd).dChildCount != 0       ;Ask only if a child window is open
+      mov edx, [xsi].dLanguage
+      add edx, 140
+      invoke LoadString, hInstance, edx, addr cCaption, lengthof cCaption
+      mov edx, [xsi].dLanguage
+      add edx, 141
+      invoke LoadString, hInstance, edx, addr cText, lengthof cText
+      invoke MsgBox, [xsi].hWnd, addr cText, addr cCaption, MB_YESNO + MB_ICONWARNING
+      .if eax == IDNO
+        xor eax, eax
+        ExitMethod
+      .endif
     .endif
   .endif
-
+  invoke DefFrameProc, [xsi].hWnd, [xbx].$Obj(ClientWnd).hWnd, dMsg, wParam, lParam
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -736,8 +752,7 @@ Method Application.OnCommand, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
 
   .elseif ax == IDM_HELP_ABOUT
     New AboutDialog::DialogAbout
-    invoke LoadIcon, hInstance, offset cIconName
-    OCall AboutDialog::DialogAbout.Init, xsi, [xsi].hWnd, xax, offset szAboutText
+    OCall AboutDialog::DialogAbout.Init, xsi, [xsi].hWnd
     OCall AboutDialog::DialogAbout.Show
     OCall AboutDialog::DialogAbout.Done
     xor eax, eax
@@ -786,8 +801,33 @@ Method Application.OnCommand, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
     invoke SendMessage, [xbx].$Obj(ClientWnd).hWnd, WM_MDINEXT, 0, -1
     xor eax, eax
 
+  ;Messages for zooming management
+  .elseif ax == IDM_WIND_ZOOMIN
+    invoke SendMessage, [xbx].$Obj(ClientWnd).hWnd, WM_MDIGETACTIVE, 0, 0
+    invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0
+    lea xbx, [xax].$Obj(PropWnd).InfoPane
+    mov edx, [xbx].$Obj(TextView).dZoomFactor
+    add edx, TVZOOM_STEP
+    OCall xbx::TextView.SetZoomFactor, edx
+    OCall xbx::TextView.Reset
+    OCall xbx::TextView.Parse                               ;Required to rebuild all styles
+    OCall xbx::TextView.SetExtent
+    invoke RedrawWindow, [xbx].$Obj(TextView).hWnd, NULL, 0, RDW_INVALIDATE or RDW_UPDATENOW
+    xor eax, eax
+  .elseif ax == IDM_WIND_ZOOMOUT
+    invoke SendMessage, [xbx].$Obj(ClientWnd).hWnd, WM_MDIGETACTIVE, 0, 0
+    invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0
+    lea xbx, [xax].$Obj(PropWnd).InfoPane
+    mov edx, [xbx].$Obj(TextView).dZoomFactor
+    sub edx, TVZOOM_STEP
+    OCall xbx::TextView.SetZoomFactor, edx
+    OCall xbx::TextView.Reset
+    OCall xbx::TextView.Parse                               ;Required to rebuild all styles
+    OCall xbx::TextView.SetExtent
+    invoke RedrawWindow, [xbx].$Obj(TextView).hWnd, NULL, 0, RDW_INVALIDATE or RDW_UPDATENOW
+    xor eax, eax
 
-  .elseif ax == IDM_WIND_CLOSEALL                   ;Attempt to close all windows
+  .elseif ax == IDM_WIND_CLOSEALL                       ;Attempt to close all windows
     invoke EnumChildWindows, [xbx].$Obj(ClientWnd).hWnd, offset CloseEnumProc, [xbx].$Obj(ClientWnd).hWnd
     xor eax, eax
 
@@ -910,6 +950,10 @@ Method Application.OnNotify, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
       add edx, IDS_WIND_CLOSE
     .elseif [xdi].hdr.idFrom == IDM_WIND_CLOSEALL
       add edx, IDS_WIND_CLOSE_ALL
+    .elseif [xdi].hdr.idFrom == IDM_WIND_ZOOMIN
+      add edx, IDS_WIND_ZOOMIN
+    .elseif [xdi].hdr.idFrom == IDM_WIND_ZOOMOUT
+      add edx, IDS_WIND_ZOOMOUT
     .endif
     invoke LoadString, hInstance, edx, xbx, lengthof cToolTipText
     mov [xdi].lpszText, xbx
@@ -1078,7 +1122,8 @@ AddBrokenObjects proc uses xbx xdi xsi pInfo:POBJECTINFORMATION, pSelf:$ObjPtr(A
         BitSet [xcx].OBJECTINFORMATION.dFlags, INF_INVALID
         OCall xbx::InfoTree.Insert, xdi, NULL, XTVN_INSERT_AS_LAST_CHILD
         mov xcx, [xsi].pObjDB
-        OCall [xcx].$Obj(OA_ObjDB).ObjectColl::ObjInfoCollection.ForEach, addr AddObjectBranch, xdi, xsi
+        OCall [xcx].$Obj(OA_ObjDB).ObjectColl::ObjInfoCollection.ForEach, \
+                                                addr AddObjectBranch, xdi, xsi
       .endif
     .endif
   .endif
@@ -1093,7 +1138,8 @@ AddBrokenObjects endp
 ;             Arg3: -> Application.
 ; Return:     Nothing.
 
-AddInterfaceBranch proc uses xbx xdi xsi, pInfo:PINTERFACEINFORMATION, pAncestorNode:$ObjPtr(InfoNode), pSelf:$ObjPtr(Application)
+AddInterfaceBranch proc uses xbx xdi xsi, pInfo:PINTERFACEINFORMATION, \
+                                          pAncestorNode:$ObjPtr(InfoNode), pSelf:$ObjPtr(Application)
   SetObject xsi, Application, pSelf
   mov xax, pInfo
   .ifBitClr [xax].INTERFACEINFORMATION.dFlags, INF_INTREE
@@ -1121,7 +1167,8 @@ AddInterfaceBranch proc uses xbx xdi xsi, pInfo:PINTERFACEINFORMATION, pAncestor
     BitSet [xcx].INTERFACEINFORMATION.dFlags, INF_INTREE
     OCall xbx::InfoTree.Insert, xdi, pAncestorNode, XTVN_INSERT_AS_LAST_CHILD
     mov xcx, [xsi].pObjDB
-    OCall [xcx].$Obj(OA_ObjDB).InterfaceColl::IntInfoCollection.ForEach, addr AddInterfaceBranch, xdi, xsi
+    OCall [xcx].$Obj(OA_ObjDB).InterfaceColl::IntInfoCollection.ForEach, \
+                                                addr AddInterfaceBranch, xdi, xsi
   .endif
   ret
 AddInterfaceBranch endp
@@ -1134,7 +1181,8 @@ AddInterfaceBranch endp
 ;             Arg3: Dummy.
 ; Return:     Nothing.
 
-AddBrokenInterfaces proc uses xbx xdi xsi pInfo:PINTERFACEINFORMATION, pSelf:$ObjPtr(Application), xDummy:XWORD
+AddBrokenInterfaces proc uses xbx xdi xsi pInfo:PINTERFACEINFORMATION, \
+                                          pSelf:$ObjPtr(Application), xDummy:XWORD
   SetObject xsi, Application, pSelf
   mov xax, pInfo
   .ifBitClr [xax].INTERFACEINFORMATION.dFlags, INF_INTREE
@@ -1149,7 +1197,8 @@ AddBrokenInterfaces proc uses xbx xdi xsi pInfo:PINTERFACEINFORMATION, pSelf:$Ob
         BitSet [xcx].INTERFACEINFORMATION.dFlags, INF_INVALID
         OCall xbx::InfoTree.Insert, xdi, NULL, XTVN_INSERT_AS_LAST_CHILD
         mov xcx, [xsi].pObjDB
-        OCall [xcx].$Obj(OA_ObjDB).InterfaceColl::IntInfoCollection.ForEach, addr AddInterfaceBranch, xdi, xsi
+        OCall [xcx].$Obj(OA_ObjDB).InterfaceColl::IntInfoCollection.ForEach, \
+                                                    addr AddInterfaceBranch, xdi, xsi
       .endif
     .endif
   .endif
@@ -1170,7 +1219,7 @@ RefreshMdiChild proc uses xbx hWnd:HANDLE, lParam:LPARAM
     .if xax != NULL
       mov xbx, xax
       invoke GetObjectID, xbx
-      mov xcx, [xbx].$Obj(PropWnd).pOwner                     ;xcx -> ClientWnd
+      mov xcx, [xbx].$Obj(PropWnd).pOwner               ;xcx -> ClientWnd
       .if eax == OAE_ObjPropWndID
         OCall [xcx].$Obj(ClientWnd).pOwner::Application.FindObjInfo, [xbx].$Obj(PropWnd).pName
       .elseif eax == OAE_IntPropWndID
@@ -1190,7 +1239,7 @@ RefreshMdiChild proc uses xbx hWnd:HANDLE, lParam:LPARAM
       .endif
     .endif
   .endif
-  mov eax, TRUE                                       ;Continue enumeration
+  mov eax, TRUE                                         ;Continue enumeration
   ret
 RefreshMdiChild endp
 
@@ -1261,7 +1310,7 @@ MethodEnd
 
 Method Application.TreeDecimate, uses xbx xdi xsi, pNode:$ObjPtr(InfoNode)
   SetObject xsi
-  xor edi, edi                                        ;edi = HasChanged flag
+  xor edi, edi                                          ;edi = HasChanged flag
   mov xbx, pNode
   .if xbx != NULL
     .if [xbx].$Obj(InfoNode).pNextSibling != NULL

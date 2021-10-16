@@ -2,7 +2,7 @@
 ; Title:      OAE_IntPropWnd.inc
 ; Author:     G. Friedrich
 ; Version:    Check OA_ObjExplorer.asm
-; Purpose:    IntPropWnd implementation for OA_ObjBrowser. 
+; Purpose:    IntPropWnd implementation for OA_ObjExplorer.
 ; ==================================================================================================
 
 

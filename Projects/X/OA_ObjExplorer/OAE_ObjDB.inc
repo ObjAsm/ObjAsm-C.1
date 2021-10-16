@@ -2,7 +2,7 @@
 ; Title:      OAE_ObjDB.inc
 ; Author:     G. Friedrich
 ; Version:    Check OA_ObjExplorer.asm
-; Purpose:    OA_ObjDB implementation for OA_ObjBrowser. 
+; Purpose:    OA_ObjDB implementation for OA_ObjExplorer.
 ; ==================================================================================================
 
 
@@ -104,7 +104,8 @@ if IMPLEMENT
 ; Return:     Nothing.
 
 align ALIGN_CODE
-DelMatchingObjVariable proc pItem:POBJVARINFORMATION, pFileInfo:PFILEINFORMATION, pColl:$ObjPtr(ObjVarInfoCollection)
+DelMatchingObjVariable proc pItem:POBJVARINFORMATION, pFileInfo:PFILEINFORMATION, \
+                            pColl:$ObjPtr(ObjVarInfoCollection)
   mov xax, pItem
   mov xcx, [xax].OBJVARINFORMATION.pFileInfo
   .if xcx == pFileInfo
@@ -114,7 +115,8 @@ DelMatchingObjVariable proc pItem:POBJVARINFORMATION, pFileInfo:PFILEINFORMATION
 DelMatchingObjVariable endp
 
 align ALIGN_CODE
-DelMatchingObjMethod proc pItem:POBJMTDINFORMATION, pFileInfo:PFILEINFORMATION, pColl:$ObjPtr(ObjMtdInfoCollection)
+DelMatchingObjMethod proc pItem:POBJMTDINFORMATION, pFileInfo:PFILEINFORMATION, \
+                          pColl:$ObjPtr(ObjMtdInfoCollection)
   mov xax, pItem
   mov xcx, [xax].OBJMTDINFORMATION.pFileInfo
   .if xcx == pFileInfo
@@ -124,7 +126,8 @@ DelMatchingObjMethod proc pItem:POBJMTDINFORMATION, pFileInfo:PFILEINFORMATION, 
 DelMatchingObjMethod endp
 
 align ALIGN_CODE
-DelMatchingObject proc pItem:POBJECTINFORMATION, pFileInfo:PFILEINFORMATION, pColl:$ObjPtr(ObjInfoCollection)
+DelMatchingObject proc pItem:POBJECTINFORMATION, pFileInfo:PFILEINFORMATION, \
+                       pColl:$ObjPtr(ObjInfoCollection)
   mov xax, pItem
   mov xcx, [xax].OBJECTINFORMATION.pFileInfo
   .if xcx == pFileInfo
@@ -134,7 +137,8 @@ DelMatchingObject proc pItem:POBJECTINFORMATION, pFileInfo:PFILEINFORMATION, pCo
 DelMatchingObject endp
 
 align ALIGN_CODE
-DelMatchingIntMethod proc pItem:PINTMTDINFORMATION, pFileInfo:PFILEINFORMATION, pColl:$ObjPtr(IntMtdInfoCollection)
+DelMatchingIntMethod proc pItem:PINTMTDINFORMATION, pFileInfo:PFILEINFORMATION, \
+                          pColl:$ObjPtr(IntMtdInfoCollection)
   mov xax, pItem
   mov xcx, [xax].INTMTDINFORMATION.pFileInfo
   .if xcx == pFileInfo
@@ -144,7 +148,8 @@ DelMatchingIntMethod proc pItem:PINTMTDINFORMATION, pFileInfo:PFILEINFORMATION, 
 DelMatchingIntMethod endp
 
 align ALIGN_CODE
-DelMatchingInterface proc pItem:PINTERFACEINFORMATION, pFileInfo:PFILEINFORMATION, pColl:$ObjPtr(IntInfoCollection)
+DelMatchingInterface proc pItem:PINTERFACEINFORMATION, pFileInfo:PFILEINFORMATION, \
+                          pColl:$ObjPtr(IntInfoCollection)
   mov xax, pItem
   mov xcx, [xax].INTERFACEINFORMATION.pFileInfo
   .if xcx == pFileInfo
@@ -154,7 +159,8 @@ DelMatchingInterface proc pItem:PINTERFACEINFORMATION, pFileInfo:PFILEINFORMATIO
 DelMatchingInterface endp
 
 align ALIGN_CODE
-DelMatchingImpMethod proc pItem:PIMPMTDINFORMATION, pFileInfo:PFILEINFORMATION, pColl:$ObjPtr(ImpMtdInfoCollection)
+DelMatchingImpMethod proc pItem:PIMPMTDINFORMATION, pFileInfo:PFILEINFORMATION, \
+                          pColl:$ObjPtr(ImpMtdInfoCollection)
   mov xax, pItem
   mov xcx, [xax].IMPMTDINFORMATION.pFileInfo
   .if xcx == pFileInfo
@@ -424,7 +430,7 @@ FindHelpLines proc uses xbx xdi xsi pTextSrc:$ObjPtr(TextSource), pInfo:PINFORMA
 ;    add xdx, [xbx].$Obj(TextSource).MemStream.pBuffer
 ;    sub xdx, xsi                                        ;edx = # of chars included ZTC
 ;
-;    inc xsi                                             ;Move to next character                                             
+;    inc xsi                                             ;Move to next character
 ;    add edx, sizeof(POINTER)                            ;Room for block chaining POINTER
 ;    mov eax, edx
 ;    MemAlloc eax
@@ -482,9 +488,10 @@ endm
 FileNotListed proc pFileNameInCollection:PSTRING, pTestFileName:PSTRING, xDummy:XWORD
   invoke StrIComp, pFileNameInCollection, pTestFileName
   ret
-FileNotListed endp 
+FileNotListed endp
 
-Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FILETIME, dInfoFlags:DWORD
+Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FILETIME, \
+                                            dInfoFlags:DWORD
   local pWord:PSTRINGA, dWordLength:DWORD
   local pName:POINTER, dNameLength:DWORD
   local dIncludeLength:DWORD, pExtension:PSTRING, dFlags:DWORD
@@ -511,7 +518,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
         mov ecx, [xdi + sizeof PCRE_OUTDATA].PCRE_OUTDATA.dBegIndex
         sub eax, ecx                                    ;eax = # of CHRs
         lea xdx, [xbx + sizeof(CHR)*xcx]
-        invoke StrCIComp, pExtension, xdx, eax          ;Compare file with allowed extension   
+        invoke StrCIComp, pExtension, xdx, eax          ;Compare file with allowed extension
         .break .if eax == 0
         mov ecx, [xdi].PCRE_OUTDATA.dEndIndex
         lea xbx, [xbx + sizeof(CHR)*xcx]                ;Move to next extension
@@ -556,10 +563,10 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
       mov pWord, xax
       mov dWordLength, ecx
 
-      .if ecx == 6                                      ;lengthof(bObject) and lengthof(bMethod) 
+      .if ecx == 6                                      ;lengthof(bObject) and lengthof(bMethod)
         invoke StrCCompA, pWord, offset bObject, dWordLength
         .if eax == 0
-          OCall TextSrc::TextSource.GetNextWord      ;Get object name
+          OCall TextSrc::TextSource.GetNextWord         ;Get object name
           .if ecx != 0
             mov pWord, xax
             mov dWordLength, ecx
@@ -575,12 +582,12 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
             m2m [xbx].OBJECTINFORMATION.dLineNumber, TextSrc.dLineNumber, ecx
             m2m [xbx].OBJECTINFORMATION.dFlags, dInfoFlags, edx
             m2m [xbx].OBJECTINFORMATION.pFileInfo, pFileInfo, xcx
-            m2z [xbx].OBJECTINFORMATION.pHelpData     ;Ignore this now
+            m2z [xbx].OBJECTINFORMATION.pHelpData       ;Ignore this now
             m2z [xbx].OBJECTINFORMATION.dHelpLineCount
             OCall [xsi].ObjectColl::ObjInfoCollection.Insert, xbx
 
-            OCall TextSrc::TextSource.GetNextWord    ;Skip object ID
-            OCall TextSrc::TextSource.GetNextWord    ;Get object ancestor name
+            OCall TextSrc::TextSource.GetNextWord       ;Skip object ID
+            OCall TextSrc::TextSource.GetNextWord       ;Get object ancestor name
             .if ecx != 0
               mov edx, ecx
               invoke StrCNewA, xax, edx
@@ -589,7 +596,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
             .endif
             mov [xbx].OBJECTINFORMATION.pAncestorName, xax  ;Store ancestor name
 
-            invoke FindHelpLines, addr TextSrc, xbx       ;Get the help lines now
+            invoke FindHelpLines, addr TextSrc, xbx     ;Get the help lines now
 
             ;Scan now for object members
             .repeat
@@ -602,7 +609,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
                 mov dWordLength, ecx
                 .if ecx == lengthof bObjectEnd
                   invoke StrCCompA, pWord, offset bObjectEnd, dWordLength
-                  .break .if eax == 0                 ;We are done
+                  .break .if eax == 0                   ;We are done
                 .endif
 
                 CheckMthWord bVirtualMethod,    METHODTYPE_VIRTUAL
@@ -624,10 +631,10 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
                 CheckVarWord bEmbed,            VARIABLETYPE_OBJECT
 
               .endif
-              .continue                             ;Check next line
+              .continue                                 ;Check next line
 
           @@AddNewMethod:
-              OCall TextSrc::TextSource.GetNextWord  ;Get method name
+              OCall TextSrc::TextSource.GetNextWord     ;Get method name
               .if ecx != 0
                 mov edx, ecx
                 mov xbx, $invoke(StrCNewA, xax, edx)
@@ -641,11 +648,11 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
                 m2z [xbx].OBJMTDINFORMATION.pHelpData                   ;Ignore this now
                 m2z [xbx].OBJMTDINFORMATION.dHelpLineCount
 
-                mov pWord, $OCall(TextSrc::TextSource.GetNextWord)     ;xax -> parameters
+                mov pWord, $OCall(TextSrc::TextSource.GetNextWord)      ;xax -> parameters
                 .if xax != NULL
-                  invoke StrRScanA, xax, ';'          ;Look for a remark at the end of line
+                  invoke StrRScanA, xax, ';'            ;Look for a remark at the end of line
                   .if xax != NULL
-                    m2z CHRA ptr [xax]                ;Set ZTC to ignore the remark
+                    m2z CHRA ptr [xax]                  ;Set ZTC to ignore the remark
                     invoke StrRTrimA, pWord, pWord
                   .endif
                 .endif
@@ -656,13 +663,13 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
                 .endif
                 OCall [xsi].ObjMethodColl::ObjMtdInfoCollection.Insert, xbx
 
-                invoke FindHelpLines, addr TextSrc, xbx   ;Get the help lines now    
+                invoke FindHelpLines, addr TextSrc, xbx ;Get the help lines now
 
               .endif
               .continue
 
           @@AddNewVariable:
-              OCall TextSrc::TextSource.GetNextWord  ;Get variable name
+              OCall TextSrc::TextSource.GetNextWord     ;Get variable name
               .if ecx != 0
                 mov edx, ecx
                 mov xbx, $invoke(StrCNewA, xax, edx)
@@ -673,13 +680,13 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
                 m2m [xbx].OBJVARINFORMATION.dLineNumber, TextSrc.dLineNumber, ecx
                 m2m [xbx].OBJVARINFORMATION.pFileInfo, pFileInfo, xdx  ;From FilesCollection
                 m2m [xbx].OBJVARINFORMATION.dFlags, dFlags, ecx
-                m2z [xbx].OBJVARINFORMATION.pHelpData ;Ignore this now
+                m2z [xbx].OBJVARINFORMATION.pHelpData   ;Ignore this now
                 m2z [xbx].OBJVARINFORMATION.dHelpLineCount
                 mov pWord, $OCall(TextSrc::TextSource.GetNextWord)
                 .if xax != NULL
-                  invoke StrRScanA, xax, ';'          ;Look for a remark at the end of line
+                  invoke StrRScanA, xax, ';'            ;Look for a remark at the end of line
                   .if xax != NULL
-                    m2z CHRA ptr [xax]                ;Set ZTC to ignore the remark
+                    m2z CHRA ptr [xax]                  ;Set ZTC to ignore the remark
                     invoke StrRTrimA, pWord, pWord
                   .endif
                 .endif
@@ -687,7 +694,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
                 OCall [xsi].ObjVariableColl::ObjVarInfoCollection.Insert, xbx
               .endif
 
-              invoke FindHelpLines, addr TextSrc, xbx     ;Get the help lines now    
+              invoke FindHelpLines, addr TextSrc, xbx   ;Get the help lines now
 
             .until FALSE
           .endif
@@ -695,7 +702,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
           ;-- Method implementation --------------------------------------------------
           invoke StrCCompA, pWord, offset bMethod, dWordLength
           .if eax == 0
-            OCall TextSrc::TextSource.GetNextWord    ;Get object/interface name
+            OCall TextSrc::TextSource.GetNextWord       ;Get object/interface name
             mov pWord, xax
             mov dWordLength, ecx
             .if ecx == lengthof(bMacro)
@@ -710,11 +717,11 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
             m2m [xbx].IMPMTDINFORMATION.dLineNumber, TextSrc.dLineNumber, ecx
             m2z [xbx].IMPMTDINFORMATION.dFlags
             m2z [xbx].IMPMTDINFORMATION.pArguments
-            m2z [xbx].IMPMTDINFORMATION.pHelpData   ;Ignore this now
+            m2z [xbx].IMPMTDINFORMATION.pHelpData       ;Ignore this now
             m2z [xbx].IMPMTDINFORMATION.dHelpLineCount
 
             ;Get the method name
-            OCall TextSrc::TextSource.GetNextWord  ;xax -> parameters
+            OCall TextSrc::TextSource.GetNextWord       ;xax -> parameters
             mov pWord, xax
             mov dWordLength, ecx
             add pWord, xcx
@@ -739,7 +746,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
         invoke StrCCompA, pWord, offset bBeginInterface, dWordLength
         .if eax == 0
           int 3
-          OCall TextSrc::TextSource.GetNextWord     ;Get interface name
+          OCall TextSrc::TextSource.GetNextWord         ;Get interface name
           mov pWord, xax
           mov dWordLength, ecx
           .if ecx != 0
@@ -760,7 +767,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
             m2z [xbx].INTERFACEINFORMATION.pHelpData
             m2z [xbx].INTERFACEINFORMATION.dHelpLineCount
 
-            OCall TextSrc::TextSource.GetNextWord   ;Get interface ancestor
+            OCall TextSrc::TextSource.GetNextWord       ;Get interface ancestor
             mov pWord, xax
             mov dWordLength, ecx
             .if ecx != 0
@@ -824,7 +831,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
                     mov [xbx].INTMTDINFORMATION.pArguments, $invoke(StrNewA, xax)
                     OCall [xsi].IntMethodColl::IntMtdInfoCollection.Insert, xbx
 
-                    invoke FindHelpLines, addr TextSrc, xbx     ;Get the help lines now    
+                    invoke FindHelpLines, addr TextSrc, xbx     ;Get the help lines now
 
                   .endif
                 .endif

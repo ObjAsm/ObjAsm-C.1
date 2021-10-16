@@ -1,27 +1,25 @@
 ; ==================================================================================================
 ; Title:      OA_ObjExplorer_Shared.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    Check OA_ObjExplorer.asm
 ; Purpose:    ObjAsm Object Explorer.
-; Notes:      Version C.1.0, December 2020
-;               - First release.
 ; ==================================================================================================
 
 
 ;General information
-APP_TITLE                     textequ   <ObjAsm Object Explorer>
-ABOUT_TEXT                    textequ   <ObjAsm Object Explorer>
-COPYRIGHT                     textequ   <G. Friedrich   December 2020>
-VER_FILEVERSION               equ       2,0,0,0
-VER_FILEVERSION_STR           textequ   <2.0>
-VER_PRODUCTVERSION            equ       2,0,0,0
-VER_PRODUCTVERSION_STR        equ       <2.0>
+APP_TITLE                     textequ   <Object Explorer>
+ABOUT_TEXT                    textequ   <ObjAsm - Object Explorer>
+COPYRIGHT                     textequ   <G. Friedrich   October 2021>
+VER_FILEVERSION               equ       2,1,0,0
+VER_FILEVERSION_STR           textequ   <2.1>
+VER_PRODUCTVERSION            equ       2,1,0,0
+VER_PRODUCTVERSION_STR        equ       <2.1>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       126
-BUILD_DATE_STR                textequ   <13.10.2021>
+BUILD_NUMBER                  equ       29
+BUILD_DATE_STR                textequ   <2021-10-16>
 BUILD_BITNESS                 equ       64
-BUILD_MODE                    equ       DBG
+BUILD_MODE                    equ       RLS
 
 ;Menu IDs
 IDM_FILE                      equ       050
@@ -49,10 +47,12 @@ IDM_WIND_NEXT                 equ       085
 IDM_WIND_PREV                 equ       086
 IDM_WIND_CLOSE                equ       087
 IDM_WIND_CLOSEALL             equ       088
+IDM_WIND_ZOOMIN               equ       089
+IDM_WIND_ZOOMOUT              equ       090
 
-IDM_HELP                      equ       090
-IDM_HELP_HELP                 equ       091
-IDM_HELP_ABOUT                equ       092
+IDM_HELP                      equ       100
+IDM_HELP_HELP                 equ       101
+IDM_HELP_ABOUT                equ       102
 
 IDM_OPEN_OBJ_PROP_WND         equ       500
 IDM_OPEN_INT_PROP_WND         equ       501
@@ -76,8 +76,10 @@ IDB_WIND_NEXT                 equ       009
 IDB_WIND_PREV                 equ       010
 IDB_WIND_CLOSE                equ       011
 IDB_WIND_CLOSEALL             equ       012
-IDB_HELP_HELP                 equ       013
-IDB_HELP_ABOUT                equ       014
+IDB_WIND_ZOOMIN               equ       013
+IDB_WIND_ZOOMOUT              equ       014
+IDB_HELP_HELP                 equ       015
+IDB_HELP_ABOUT                equ       016
 
 ;Control IDs
 IDC_TEXT_ABOUT                equ       100
@@ -104,10 +106,13 @@ IDS_WIND_NEXT                 equ       87
 IDS_WIND_PREV                 equ       88
 IDS_WIND_CLOSE                equ       89
 IDS_WIND_CLOSE_ALL            equ       90
-IDS_SHOW_OBJ                  equ       91
-IDS_SHOW_INT                  equ       92
-IDS_SHOW_PRJ                  equ       93
-IDS_SHOW_ERR                  equ       94
+IDS_WIND_ZOOMIN               equ       91
+IDS_WIND_ZOOMOUT              equ       92
+
+IDS_SHOW_OBJ                  equ       95
+IDS_SHOW_INT                  equ       96
+IDS_SHOW_PRJ                  equ       97
+IDS_SHOW_ERR                  equ       98
 
 IDS_SETUP_CAPTION             equ       100
 IDS_SETUP_OK                  equ       101
@@ -121,7 +126,7 @@ IDS_SETUP_PROP_CHK_VAR        equ       108
 IDS_SELECT                    equ       109
 
 IDS_FIND_CAPTION              equ       120
-IDS_FIND_GO                   equ       121
+IDS_FIND_SEARCH               equ       121
 IDS_FIND_OBJ                  equ       122
 IDS_FIND_INT                  equ       123
 IDS_FIND_HELP                 equ       124

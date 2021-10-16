@@ -161,6 +161,7 @@ Object TextView, TextViewID, Window
   StaticMethod      Parse
   StaticMethod      Reset
   VirtualMethod     SetExtent
+  VirtualMethod     SetZoomFactor,      DWORD
   StaticMethod      Startup
   StaticMethod      WidthToNextStop,    DWORD
   RedefineMethod    WndProc,            DWORD, WPARAM, LPARAM
@@ -170,8 +171,9 @@ Object TextView, TextViewID, Window
   VirtualEvent      OnCommand,          WM_COMMAND         ;Parent forwarded
   VirtualEvent      OnCreate,           WM_CREATE
   VirtualEvent      OnCtlColorStatic,   WM_CTLCOLORSTATIC
-  VirtualEvent      OnGetFont,          WM_GETFONT
   VirtualEvent      OnGesture,          WM_GESTURE
+  VirtualEvent      OnGetFont,          WM_GETFONT
+  VirtualEvent      OnGetZoom,          EM_GETZOOM
   VirtualEvent      OnHScroll,          WM_HSCROLL
   VirtualEvent      OnMouseMove,        WM_MOUSEMOVE
   VirtualEvent      OnMouseWheel,       WM_MOUSEWHEEL
@@ -180,6 +182,7 @@ Object TextView, TextViewID, Window
   VirtualEvent      OnPrintClient,      WM_PRINTCLIENT    ;Requirend by AnimanteWindow
   VirtualEvent      OnSetFont,          WM_SETFONT
   VirtualEvent      OnSetText,          WM_SETTEXT
+  VirtualEvent      OnSetZoom,          EM_SETZOOM
   VirtualEvent      OnVScroll,          WM_VSCROLL
 
   DefineVariable    pMarkupText,        PSTRING,    NULL
@@ -1737,22 +1740,6 @@ Method TextView.OnCtlColorStatic, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     TextView.OnGetFont
-; Purpose:    Event procedure for WM_GETFONT message.
-; Arguments:  Arg1: First message parameter.
-;             Arg2: Second message parameter.
-; Return:     xax = Font handle or zero.
-
-Method TextView.OnGetFont, uses xsi, wParam:WPARAM, lParam:LPARAM
-;  DbgText "TextView.OnGetFont"
-  SetObject xsi
-  xor eax, eax
-  .if [xsi].GdiObjects.dCount != 0
-    OCall [xsi].GdiObjects::XWCollection.ItemAt, 0
-  .endif
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     TextView.OnGesture
 ; Purpose:    Event procedure for WM_GESTURE message.
 ; Arguments:  Arg1: First message parameter.
@@ -1773,8 +1760,7 @@ Method TextView.OnGesture, uses xsi, wParam:WPARAM, lParam:LPARAM
   mov bResult, $32($invoke(GetGestureInfo, lParam, addr GestInfo))
   mov bHandled, FALSE
 
-  DbgDec GestInfo.dwID
-
+  ;DbgDec GestInfo.dwID
   .if bResult != FALSE
     ;Now interpret the gesture
     .if GestInfo.dwID == GID_ZOOM
@@ -1790,18 +1776,9 @@ Method TextView.OnGesture, uses xsi, wParam:WPARAM, lParam:LPARAM
             sub ecx, [xsi].dGestureZoomFirst
 
             invoke MulDiv, ecx, TVZOOM_STEP, WHEEL_DELTA  ;Handle it like the mousewheel
-            mov ecx, [xsi].dZoomFactor
-            add ecx, eax
-            .if SDWORD ptr ecx <= TVZOOM_MIN
-              mov [xsi].dZoomFactor, TVZOOM_MIN
-            .elseif SDWORD ptr ecx >= TVZOOM_MAX
-              mov [xsi].dZoomFactor, TVZOOM_MAX
-            .else
-              mov [xsi].dZoomFactor, ecx
-            .endif
-            invoke MulDiv, TVDEFAULT_FONT_SIZE, [xsi].dZoomFactor, TVZOOM_BASE
-            mov [xsi].dDefaultFontSize, eax
-
+            mov edx, [xsi].dZoomFactor
+            add edx, eax
+            OCall xsi.SetZoomFactor, edx
             OCall xsi.Reset
             OCall xsi.Parse                               ;Required to rebuild all styles
             OCall xsi.SetExtent
@@ -1909,6 +1886,38 @@ Method TextView.OnGesture, uses xsi, wParam:WPARAM, lParam:LPARAM
   .else
     invoke DefWindowProc, [xsi].hWnd, WM_GESTURE, wParam, lParam
   .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     TextView.OnGetFont
+; Purpose:    Event procedure for WM_GETFONT message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     xax = Font handle or zero.
+
+Method TextView.OnGetFont, uses xsi, wParam:WPARAM, lParam:LPARAM
+;  DbgText "TextView.OnGetFont"
+  SetObject xsi
+  xor eax, eax
+  .if [xsi].GdiObjects.dCount != 0
+    OCall [xsi].GdiObjects::XWCollection.ItemAt, 0
+  .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     TextView.OnGetZoom
+; Purpose:    Event procedure for EM_GETZOOM message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     Nothing.
+
+Method TextView.OnGetZoom, uses xsi, wParam:WPARAM, lParam:LPARAM
+;  DbgText "TextView.OnGetZoom"
+  SetObject xsi
+  mov xcx, wParam
+  m2m DWORD ptr [xcx], [xsi].dZoomFactor, eax 
+  mov xcx, lParam
+  mov DWORD ptr [xcx], TVZOOM_BASE 
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -2057,18 +2066,9 @@ Method TextView.OnMouseWheel, uses xsi, wParam:WPARAM, lParam:LPARAM
     .ifBitSet [xsi].dOptions, TVO_ZOOMABLE
       sar eax, 16                                       ;ax = multiples or divisions of WHEEL_DELTA
       invoke MulDiv, eax, TVZOOM_STEP, WHEEL_DELTA
-      mov ecx, [xsi].dZoomFactor
-      add ecx, eax
-      .if SDWORD ptr ecx <= TVZOOM_MIN
-        mov [xsi].dZoomFactor, TVZOOM_MIN
-      .elseif SDWORD ptr ecx >= TVZOOM_MAX
-        mov [xsi].dZoomFactor, TVZOOM_MAX
-      .else
-        mov [xsi].dZoomFactor, ecx
-      .endif
-      invoke MulDiv, TVDEFAULT_FONT_SIZE, [xsi].dZoomFactor, TVZOOM_BASE
-      mov [xsi].dDefaultFontSize, eax
-
+      mov edx, [xsi].dZoomFactor
+      add edx, eax
+      OCall xsi.SetZoomFactor, edx
       OCall xsi.Reset
       OCall xsi.Parse                                   ;Required to rebuild all styles
       OCall xsi.SetExtent
@@ -2356,6 +2356,24 @@ Method TextView.OnSettingChange, uses xsi, wParam:WPARAM, lParam:LPARAM
   OCall xsi.Calc
   Pnt2Reg32 eax, ([xsi].ClientRect.right).POINT
   invoke SendMessage, [xsi].hWnd, WM_SIZE, SIZE_RESTORED, eax
+  invoke RedrawWindow, [xsi].hWnd, NULL, 0, RDW_INVALIDATE or RDW_UPDATENOW
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     TextView.OnSetZoom
+; Purpose:    Event procedure for EM_SETZOOM message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     Nothing.
+
+Method TextView.OnSetZoom, uses xsi, wParam:WPARAM, lParam:LPARAM
+;  DbgText "TextView.OnSetZoom"
+  SetObject xsi
+  invoke MulDiv, 1, DWORD ptr wParam, DWORD ptr lParam
+  OCall xsi.SetZoomFactor, eax
+  OCall xsi.Reset
+  OCall xsi.Parse                               ;Required to rebuild all styles
+  OCall xsi.SetExtent
   invoke RedrawWindow, [xsi].hWnd, NULL, 0, RDW_INVALIDATE or RDW_UPDATENOW
 MethodEnd
 
@@ -3636,6 +3654,25 @@ Method TextView.SetExtent, uses xsi
       .endif
     .endif
   .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     TextView.SetZoomFactor
+; Purpose:    Set the zoom factor within min max limits.
+; Arguments:  Arg1: New zoom factor candidate.
+; Return:     Nothing.
+
+Method TextView.SetZoomFactor, uses xsi, dNewZoomFactor:DWORD
+  SetObject xsi
+  mov eax, dNewZoomFactor
+  .if SDWORD ptr eax <= TVZOOM_MIN
+    mov eax, TVZOOM_MIN
+  .elseif SDWORD ptr eax >= TVZOOM_MAX
+    mov eax, TVZOOM_MAX
+  .endif
+  mov [xsi].dZoomFactor, eax
+  invoke MulDiv, TVDEFAULT_FONT_SIZE, eax, TVZOOM_BASE
+  mov [xsi].dDefaultFontSize, eax
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

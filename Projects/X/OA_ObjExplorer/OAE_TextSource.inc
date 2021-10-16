@@ -2,7 +2,7 @@
 ; Title:      OAE_TextSource.inc
 ; Author:     G. Friedrich
 ; Version:    Check OA_ObjExplorer.asm
-; Purpose:    TextSource implementation for OA_ObjBrowser. 
+; Purpose:    TextSource implementation for OA_ObjExplorer.
 ; ==================================================================================================
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -212,7 +212,7 @@ Method TextSource.GetNextWord, uses xbx xdi xsi
       xor eax, eax
       xor ecx, ecx
       xor edx, edx
-      mov [xsi].bCommentChar, al                        ;Reset CommentChar 
+      mov [xsi].bCommentChar, al                        ;Reset CommentChar
     .endif
   .endif
   mov xdi, xbx                                          ;Word beginning pointer
@@ -268,8 +268,8 @@ Method TextSource.GetNextWord, uses xbx xdi xsi
               al == "=" || al == "!" || al == "<" || al == ">" || \
               al == "[" || al == "]" || \
               al == "(" || al == ")" || \
-              al == "{" || al == "}"
-            mov xax, xdi
+              al == "{" || al == "}"                    ;":" is excluded to allow the
+            mov xax, xdi                                ;addtion of NameSpaces
             inc xbx
             jmp @@Exit
           .elseif al == "\"                             ;Line break

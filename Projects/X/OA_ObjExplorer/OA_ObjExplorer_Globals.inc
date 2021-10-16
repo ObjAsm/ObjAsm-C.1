@@ -1,23 +1,14 @@
 ; ==================================================================================================
 ; Title:      OA_ObjExplorer_Globals.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    Check OA_ObjExplorer.asm
 ; Purpose:    ObjAsm Object Explorer globals.
-; Notes:      Version C.1.0, December 2020
-;               - First release.
 ; ==================================================================================================
 
 
 include OA_ObjExplorer_Shared.inc
 
-%CStr szAppTitle, "&APP_TITLE"
-%CStr szAboutText,"&ABOUT_TEXT", 13, 10, \
-                  "Version &VER_PRODUCTVERSION_STR", 13, 10, \
-                  "Designed with ObjAsm", 13, 10, \
-                  "© &COPYRIGHT", 13, 10, 13, 10, \
-                  @CatStr(<!">, %BUILD_DATE_STR, \
-                          <  -  Build: >, %BUILD_NUMBER, <->, %ASSEMBLER, <->, \
-                          %TARGET_MODE_STR, <->, %TARGET_BITNESS, <!">)
+%CStr cAppTitle, "&APP_TITLE"
 
 INF_PRJ               equ   BIT00             ;This Info belongs to the current project
 INF_INVALID           equ   BIT01             ;This is an info about an invalid object or interface
@@ -43,8 +34,6 @@ CStr  cLanguage,      "Language"
 CStr  cShowRedefMtds, "ShowRedefinedMethods"
 CStr  cShowRedefVars, "ShowRedefinedVariables"
 
-CStr  cShow,          "show"
-CStr  cViewerError,   "Can't start the specified viewer.", CRLF, "Please check the application setup.", CRLF
 CStr  cOpen,          "open"
 
 ;Markup Texts
@@ -145,10 +134,3 @@ OMT_TEXT_TABLE \
   PSTRING $OfsTStr("Interface")
   PSTRING $OfsTStr("Inline")
   PSTRING $OfsTStr("Redefined")
-
-
-
-
-
-
-

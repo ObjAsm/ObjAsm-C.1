@@ -2,7 +2,7 @@
 ; Title:      OAE_ObjPropWnd.inc
 ; Author:     G. Friedrich
 ; Version:    Check OA_ObjExplorer.asm
-; Purpose:    ObjPropWnd implementation for OA_ObjBrowser.
+; Purpose:    ObjPropWnd implementation for OA_ObjExplorer.
 ; ==================================================================================================
 
 
@@ -67,7 +67,8 @@ Method ObjPropWnd.CreateMarkupText, uses xbx xdi xsi
   invoke PathFindExtension, addr cLibFile
   FillString [xax], <.lib>
   OCall [xsi].MarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_FILE_LIB32A)
-  OCall xsi.ShowFileInfo, addr cLibFile, FALSE, 0, addr LastWriteTime, addr LastWriteTimeDef, addr LastWriteTimeAsm
+  OCall xsi.ShowFileInfo, addr cLibFile, FALSE, 0, addr LastWriteTime, \
+                          addr LastWriteTimeDef, addr LastWriteTimeAsm
   OCall [xsi].MarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_BREAK)
 
   invoke ExpandEnvironmentStrings, $OfsCStr("%OBJASM_PATH%\Code\Objects\Lib\32W\"), \
@@ -78,7 +79,8 @@ Method ObjPropWnd.CreateMarkupText, uses xbx xdi xsi
   invoke PathFindExtension, addr cLibFile
   FillString [xax], <.lib>
   OCall [xsi].MarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_FILE_LIB32W)
-  OCall xsi.ShowFileInfo, addr cLibFile, FALSE, 0, addr LastWriteTime, addr LastWriteTimeDef, addr LastWriteTimeAsm
+  OCall xsi.ShowFileInfo, addr cLibFile, FALSE, 0, addr LastWriteTime, \
+                          addr LastWriteTimeDef, addr LastWriteTimeAsm
   OCall [xsi].MarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_PARA)
 
   invoke ExpandEnvironmentStrings, $OfsCStr("%OBJASM_PATH%\Code\Objects\Lib\64A\"), \
@@ -89,7 +91,8 @@ Method ObjPropWnd.CreateMarkupText, uses xbx xdi xsi
   invoke PathFindExtension, addr cLibFile
   FillString [xax], <.lib>
   OCall [xsi].MarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_FILE_LIB64A)
-  OCall xsi.ShowFileInfo, addr cLibFile, FALSE, 0, addr LastWriteTime, addr LastWriteTimeDef, addr LastWriteTimeAsm
+  OCall xsi.ShowFileInfo, addr cLibFile, FALSE, 0, addr LastWriteTime, \
+                          addr LastWriteTimeDef, addr LastWriteTimeAsm
   OCall [xsi].MarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_BREAK)
 
   invoke ExpandEnvironmentStrings, $OfsCStr("%OBJASM_PATH%\Code\Objects\Lib\64W\"), \
@@ -100,7 +103,8 @@ Method ObjPropWnd.CreateMarkupText, uses xbx xdi xsi
   invoke PathFindExtension, addr cLibFile
   FillString [xax], <.lib>
   OCall [xsi].MarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_FILE_LIB64W)
-  OCall xsi.ShowFileInfo, addr cLibFile, FALSE, 0, addr LastWriteTime, addr LastWriteTimeDef, addr LastWriteTimeAsm
+  OCall xsi.ShowFileInfo, addr cLibFile, FALSE, 0, addr LastWriteTime, \
+                          addr LastWriteTimeDef, addr LastWriteTimeAsm
   OCall [xsi].MarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_PARA)
 
   ;Show inheritance path
@@ -123,7 +127,7 @@ Method ObjPropWnd.CreateMarkupText, uses xbx xdi xsi
     OCall [xsi].MarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_REDEF_CHECK)
   .endif
   OCall [xsi].MarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_STYLE_CLOSE)
-  
+
   OCall [xsi].MarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_MTDS_HEADER)
   OCall [xsi].Methods::DataCollection.ForEach, offset ShowObjMtd, xsi, NULL
   OCall [xsi].MarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_PARA)
@@ -244,8 +248,9 @@ ShowObjMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropW
 
     ;Get the method implementation info
     mov xcx, $ObjTmpl(Application).pObjDB
-    OCall [xcx].$Obj(OA_ObjDB).ImpMethodColl::Collection.FirstThatNot, offset MatchObjectImpMethod, \
-                           [xbx].OBJMTDINFORMATION.pObjectName, [xbx].OBJMTDINFORMATION.pName
+    OCall [xcx].$Obj(OA_ObjDB).ImpMethodColl::Collection.FirstThatNot, \
+                            offset MatchObjectImpMethod, \
+                            [xbx].OBJMTDINFORMATION.pObjectName, [xbx].OBJMTDINFORMATION.pName
     mov pImpMtdInfo, xax
 
     ;Display object and method names
@@ -369,7 +374,7 @@ ShowObjMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropW
           lea xdx, [xsi + sizeof(POINTER)]
           OCall pSelf::PropWnd.WriteString, xdx
           OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_BREAK)
-          mov esi, [xsi]                              ;Move to next string
+          mov esi, [xsi]                                ;Move to next string
         .endw
       .else
         OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_NO_INFO)
@@ -474,7 +479,7 @@ ShowObjVar proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropW
     m2z dLength1
     m2z dLength2
     .if xbx != NULL && [xbx].OBJVARINFORMATION.pArgType != NULL
-      .if [xbx].OBJVARINFORMATION.dFlags != VARIABLETYPE_OBJECT     ;Handled separately
+      .if [xbx].OBJVARINFORMATION.dFlags != VARIABLETYPE_OBJECT   ;Handled separately
         invoke StrLScan, [xbx].OBJVARINFORMATION.pArgType, ","
         mov pText, xax
         .if xax != NULL
@@ -618,7 +623,8 @@ MethodEnd
 ;             Arg3: -> ObjPropWnd.
 ; Return:     Nothing.
 
-GatherObjMtds proc uses xbx xdi xsi pObjMtdInfo:POBJMTDINFORMATION, pObjName:PSTRING, pSelf:$ObjPtr(ObjPropWnd)
+GatherObjMtds proc uses xbx xdi xsi pObjMtdInfo:POBJMTDINFORMATION, pObjName:PSTRING, \
+                                    pSelf:$ObjPtr(ObjPropWnd)
   SetObject xsi, ObjPropWnd
   mov xbx, pObjMtdInfo
   .if $invoke(StrCompA, [xbx].OBJMTDINFORMATION.pObjectName, pObjName) == 0
@@ -674,7 +680,8 @@ MethodEnd
 ;             Arg3: -> ObjPropWnd.
 ; Return:     Nothing.
 
-GatherObjVars proc uses xbx xdi xsi pObjVarInfo:POBJVARINFORMATION, pObjName:PSTRING, pSelf:$ObjPtr(ObjPropWnd)
+GatherObjVars proc uses xbx xdi xsi pObjVarInfo:POBJVARINFORMATION, pObjName:PSTRING, \
+                                    pSelf:$ObjPtr(ObjPropWnd)
   SetObject xsi, ObjPropWnd
   mov xbx, pObjVarInfo
   .if $invoke(StrCompA, [xbx].OBJVARINFORMATION.pObjectName, pObjName) == 0
@@ -771,6 +778,7 @@ Method ObjPropWnd.OnNotify, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   local Img:$Obj(Image), DstRect:RECT
   local StartupInfo:STARTUPINFO, ProcessInfo:PROCESS_INFORMATION
   local cFormat[2*MAX_PATH]:CHR, cCommand[2*MAX_PATH]:CHR
+  local cCaption[512]:CHR, cText[1024]:CHR
 
   SetObject xsi
   mov xax, wParam
@@ -787,6 +795,8 @@ Method ObjPropWnd.OnNotify, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
           mov xcx, $ObjTmpl(Application).pViewerApp
           .if xcx == NULL || CHR ptr [xcx] == 0
             invoke ShellExecute, 0, offset cOpen, addr [xax].LINK_INFO.FileName, NULL, NULL, SW_SHOW
+            ;If ShellExecute succeeds, it returns a value greater than 32.
+            cmp eax, 32 
           .else
             invoke ExpandEnvironmentStrings, xcx, addr cFormat, lengthof cFormat
             invoke wsprintf, addr cCommand, addr cFormat, addr [xbx].LINK_INFO.FileName, [xbx].LINK_INFO.dParam
@@ -795,24 +805,34 @@ Method ObjPropWnd.OnNotify, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
             invoke GetStartupInfo, addr StartupInfo
             mov StartupInfo.dwFlags, STARTF_USESHOWWINDOW
             mov StartupInfo.wShowWindow, SW_SHOW
-            
+
             invoke CreateProcess, NULL, addr cCommand, NULL, NULL, TRUE, NULL, NULL, NULL, \
                                   addr StartupInfo, addr ProcessInfo
+            ;If CreateProcess succeeds, the return value is nonzero.
+            cmp eax, 0
           .endif
-
+          ja @F
+            mov edx, $ObjTmpl(Application).dLanguage
+            add edx, 150
+            invoke LoadString, hInstance, edx, addr cCaption, lengthof cCaption
+            mov edx, $ObjTmpl(Application).dLanguage
+            add edx, 151
+            invoke LoadString, hInstance, edx, addr cText, lengthof cText
+            invoke MsgBox, [xsi].hWnd, addr cText, addr cCaption, MB_OK + MB_ICONERROR
+          @@:
         .elseif [xax].LINK_INFO.dAction == LIA_SHOW_REDEF_MTDS
-          xor [xsi].dShowRedefMtds, TRUE                                  ;Toggle
-          OCall xsi.CreateMarkupText                                      ;Create new markup text
-          invoke SendMessage, [xsi].InfoPane.hWnd, WM_SETTEXT, 0, [xsi].MarkupStream.pBuffer 
+          xor [xsi].dShowRedefMtds, TRUE                ;Toggle
+          OCall xsi.CreateMarkupText                    ;Create new markup text
+          invoke SendMessage, [xsi].InfoPane.hWnd, WM_SETTEXT, 0, [xsi].MarkupStream.pBuffer
 
         .elseif [xax].LINK_INFO.dAction == LIA_SHOW_REDEF_VARS
-          xor [xsi].dShowRedefVars, TRUE                                  ;Toggle
-          OCall xsi.CreateMarkupText                                      ;Create new markup text
-          invoke SendMessage, [xsi].InfoPane.hWnd, WM_SETTEXT, 0, [xsi].MarkupStream.pBuffer 
+          xor [xsi].dShowRedefVars, TRUE                ;Toggle
+          OCall xsi.CreateMarkupText                    ;Create new markup text
+          invoke SendMessage, [xsi].InfoPane.hWnd, WM_SETTEXT, 0, [xsi].MarkupStream.pBuffer
         .endif
       .endif
 
-;    .elseif [xdi].NMHDR.code == TVNMC_TIP
+;    .elseif [xdi].NMHDR.code == TVNMC_TIP              ;NOT USED
 ;      .if [xdi].TVNM_TIP.dID == INFO_BUILD
 ;        c2m [xdi].TVNM_TIP.pText, $OfsCStr("BuildInfo"), xax
 ;

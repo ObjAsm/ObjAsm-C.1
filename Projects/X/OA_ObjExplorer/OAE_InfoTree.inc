@@ -2,7 +2,7 @@
 ; Title:      OAE_InfoTree.inc
 ; Author:     G. Friedrich
 ; Version:    Check OA_ObjExplorer.asm
-; Purpose:    InfoTree implementation for OA_ObjBrowser. 
+; Purpose:    InfoTree implementation for OA_ObjExplorer. 
 ; ==================================================================================================
 
 
@@ -17,10 +17,10 @@ PXTVN_TREE_DISP_INFO typedef ptr XTVN_TREE_DISP_INFO
 Object InfoTree, 0, XTreeView
   VirtualMethod     FindNode,           PSTRINGA, DWORD
   RedefineMethod    Init,               POINTER, HANDLE, PDEF_XTV
-  RedefineMethod    OnCreate,           WPARAM, LPARAM            ;Create icons
-  RedefineMethod    OnDestroy,          WPARAM, LPARAM            ;Destroy icons
+  RedefineMethod    OnCreate,           WPARAM, LPARAM          ;Create icons
+  RedefineMethod    OnDestroy,          WPARAM, LPARAM          ;Destroy icons
   RedefineMethod    OnLButtonDblClk,    WPARAM, LPARAM
-  RedefineMethod    Startup                                       ;Register new Window Class
+  RedefineMethod    Startup                                     ;Register new Window Class
   RedefineMethod    WndProc,            DWORD, WPARAM, LPARAM
 
   RedefineVariable  dFlags,             XTV_FLAGS or XTVF_DISABLE_DEL_KEY
@@ -129,14 +129,14 @@ Method InfoNode.RenderContent, uses xbx xdi xsi, pDispInfo:PXTVN_TREE_DISP_INFO
     shr eax, 1
     mov ecx, [xdi].ContentRect.bottom
     sub ecx, eax
-    sub ecx, XTV_ICON_SIZE                          ;ecx = Icon top
+    sub ecx, XTV_ICON_SIZE                              ;ecx = Icon top
 
     mov edx, [xdi].ContentRect.left
-    add edx, 3                                      ;edx = Icon left
+    add edx, 3                                          ;edx = Icon left
     mov eax, edx
     add eax, 3
     add eax, XTV_ICON_SIZE
-    mov [xdi].TextRect.left, eax                    ;TextRect.left
+    mov [xdi].TextRect.left, eax                        ;TextRect.left
     mov dIconWidth, edx
     mov dIconHeight, ecx
 
@@ -175,7 +175,7 @@ Method InfoNode.RenderContent, uses xbx xdi xsi, pDispInfo:PXTVN_TREE_DISP_INFO
       ;Enabled
       .if xsi == [xbx].pSelectedNode
         .ifBitSet [xbx].dState, XTVS_FOCUSED
-          .ifBitSet [xsi].dState, XTVNS_HOTTRACK      ;Check if the node is beeing hottracked
+          .ifBitSet [xsi].dState, XTVNS_HOTTRACK        ;Check if the node is beeing hottracked
             mov dPrevColor, $32($invoke(SetTextColor, [xbx].hMemDC, $RGB(255,255,0)))
           .else
             invoke GetSysColor, COLOR_HIGHLIGHTTEXT
@@ -191,7 +191,7 @@ Method InfoNode.RenderContent, uses xbx xdi xsi, pDispInfo:PXTVN_TREE_DISP_INFO
           mov dPrevBkColor, $32($invoke(SetBkColor, [xbx].hMemDC, eax))
           mov dPrevBkMode, $32($invoke(SetBkMode, [xbx].hMemDC, OPAQUE))
         .endif
-      .elseIfBitSet [xsi].dState, XTVNS_HOTTRACK      ;Check if the node is beeing hottracked
+      .elseIfBitSet [xsi].dState, XTVNS_HOTTRACK        ;Check if the node is beeing hottracked
         invoke GetSysColor, COLOR_HOTLIGHT
         mov dPrevColor, $32($invoke(SetTextColor, [xbx].hMemDC, eax))
         mov dPrevBkMode, $32($invoke(SetBkMode, [xbx].hMemDC, TRANSPARENT))
@@ -383,8 +383,8 @@ Method InfoTree.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
     invoke SetWindowLongPtr, pSelf, GWLP_USERDATA, xsi
     OCall xsi::InfoTree.Dispatch, pSelf, uMsg, wParam, lParam
   .else
-    invoke GetWindowLongPtr, pSelf, GWLP_USERDATA         ;if GWL_USERDATA wasn't set,
-    .if eax == NULL                                       ;GetWindowLongPtr returns NULL
+    invoke GetWindowLongPtr, pSelf, GWLP_USERDATA       ;if GWL_USERDATA wasn't set,
+    .if eax == NULL                                     ;GetWindowLongPtr returns NULL
       invoke DefWindowProc, pSelf, uMsg, wParam, lParam
     .else
       OCall xax::InfoTree.Dispatch, pSelf, uMsg, wParam, lParam

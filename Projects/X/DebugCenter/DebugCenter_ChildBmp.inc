@@ -240,6 +240,7 @@ MethodEnd
 Method DbgMdiChildBmp.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRING
   SetObject xsi
   ACall xsi.Init, pOwner, NULL                          ;hWnd is set in WndProc
+  m2m [xsi].dZoomFactor, $ObjTmpl(DebugCenter).dTxtZoomFactor, eax
   mov xdi, pOwner
   invoke CreateMDIWindow, offset szDbgMdiChildBmp, pTitle, \
              WS_HSCROLL or WS_VSCROLL, CW_USEDEFAULT, CW_USEDEFAULT, \
@@ -298,11 +299,11 @@ Method DbgMdiChildBmp.OnPaint, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   .if [xsi].pBmp != NULL
     mov xdi, [xsi].pBmp
     mov eax, [xdi].BITMAPINFO.bmiHeader.biWidth
-    mul [xsi].dZoom
+    mul [xsi].dZoomFactor
     shr eax, 6
     mov dWidth, eax
     mov eax, [xdi].BITMAPINFO.bmiHeader.biHeight
-    mul [xsi].dZoom
+    mul [xsi].dZoomFactor
     shr eax, 6
     mov dHeight, eax
 
@@ -425,7 +426,7 @@ Method DbgMdiChildBmp.OnHScroll, uses xsi, wParam:WPARAM, lParam:LPARAM
     mov [xsi].dHorzOffset, eax
 
   .elseif ax == SB_LINELEFT
-    mov edx, [xsi].dZoom
+    mov edx, [xsi].dZoomFactor
     shr edx, 6
     sub [xsi].dHorzOffset, edx
     .if SDWORD ptr [xsi].dHorzOffset < 0
@@ -439,7 +440,7 @@ Method DbgMdiChildBmp.OnHScroll, uses xsi, wParam:WPARAM, lParam:LPARAM
 
     mov xax, wParam
     .if ax == SB_LINERIGHT
-      mov eax, [xsi].dZoom
+      mov eax, [xsi].dZoomFactor
       shr eax, 6
       add eax, [xsi].dHorzOffset
       mov edx, ScrollInfo.nMax
@@ -492,7 +493,7 @@ Method DbgMdiChildBmp.OnVScroll, uses xsi, wParam:WPARAM, lParam:LPARAM
     mov [xsi].dVertOffset, eax
 
   .elseif ax == SB_LINEUP
-    mov edx, [xsi].dZoom
+    mov edx, [xsi].dZoomFactor
     shr edx, 6
     sub [xsi].dVertOffset, edx
     .if SDWORD ptr [xsi].dVertOffset < 0
@@ -506,7 +507,7 @@ Method DbgMdiChildBmp.OnVScroll, uses xsi, wParam:WPARAM, lParam:LPARAM
 
     mov xax, wParam
     .if ax == SB_LINEDOWN
-      mov eax, [xsi].dZoom
+      mov eax, [xsi].dZoomFactor
       shr eax, 6
       add eax, [xsi].dVertOffset
       mov edx, ScrollInfo.nMax
@@ -903,10 +904,10 @@ Method DbgMdiChildBmp.ZoomIn, uses xsi
   local HScrollInfo:SCROLLINFO, VScrollInfo:SCROLLINFO
 
   SetObject xsi
-  invoke MulDiv, [xsi].dZoom, 67145533, 56462438        ;Rational approximation of Sqrt(Sqrt(2))
-  mov [xsi].dZoom, eax                                  ;https://www.johndcook.com/rational_approximation.html
-  .if [xsi].dZoom > BMP_ZOOM_MAX
-    mov [xsi].dZoom, BMP_ZOOM_MAX
+  invoke MulDiv, [xsi].dZoomFactor, 67145533, 56462438  ;Rational approximation of Sqrt(Sqrt(2))
+  mov [xsi].dZoomFactor, eax                            ;https://www.johndcook.com/rational_approximation.html
+  .if [xsi].dZoomFactor > BMP_ZOOM_MAX
+    mov [xsi].dZoomFactor, BMP_ZOOM_MAX
   .else
     mov HScrollInfo.cbSize, sizeof(HScrollInfo)
     mov HScrollInfo.fMask, SIF_RANGE or SIF_PAGE
@@ -955,10 +956,10 @@ Method DbgMdiChildBmp.ZoomOut, uses xsi
   local HScrollInfo:SCROLLINFO, VScrollInfo:SCROLLINFO
 
   SetObject xsi
-  invoke MulDiv, [xsi].dZoom, 56462438, 67145533        ;Rational approximation of 1/Sqrt(Sqrt(2))
-  mov [xsi].dZoom, eax                                  ;https://www.johndcook.com/rational_approximation.html
-  .if [xsi].dZoom < BMP_ZOOM_MIN
-    mov [xsi].dZoom, BMP_ZOOM_MIN
+  invoke MulDiv, [xsi].dZoomFactor, 56462438, 67145533  ;Rational approximation of 1/Sqrt(Sqrt(2))
+  mov [xsi].dZoomFactor, eax                            ;https://www.johndcook.com/rational_approximation.html
+  .if [xsi].dZoomFactor < BMP_ZOOM_MIN
+    mov [xsi].dZoomFactor, BMP_ZOOM_MIN
   .else
     mov HScrollInfo.cbSize, sizeof(HScrollInfo)
     mov HScrollInfo.fMask, SIF_RANGE or SIF_PAGE

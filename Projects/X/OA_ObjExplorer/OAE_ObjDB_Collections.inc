@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      OA_ObjDB_Collections.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    Check OA_ObjExplorer.asm
 ; Purpose:    ObjAsm Collections managed by the OA_ObjDB.
-; Notes:      Version C.1.0, December 2020
-;               - First release.
 ; ==================================================================================================
 
 
@@ -304,7 +302,7 @@ Method ObjInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
     dec edi
   .endw
   m2z POINTER ptr [xsi]
-  OCall pStream::Stream.BinRead32                     ;FILEINFORMATION index
+  OCall pStream::Stream.BinRead32                       ;FILEINFORMATION index
   SetObject xcx
   OCall [xcx].pFilesColl::FilesCollection.ItemAt, eax
   mov [xbx].OBJECTINFORMATION.pFileInfo, xax
@@ -319,7 +317,7 @@ MethodEnd
 
 Method ObjInfoCollection.KeyOf,, pItem:POBJECTINFORMATION
   mov xcx, pItem
-  mov xax, [xcx].OBJECTINFORMATION.pName              ;xax -> Object name
+  mov xax, [xcx].OBJECTINFORMATION.pName                ;xax -> Object name
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -415,7 +413,7 @@ Method ObjMtdInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
     dec edi
   .endw
   m2z POINTER ptr [xsi]
-  OCall pStream::Stream.BinRead32                     ;FILEINFORMATION index
+  OCall pStream::Stream.BinRead32                       ;FILEINFORMATION index
   SetObject xcx
   OCall [xcx].pFilesColl::FilesCollection.ItemAt, eax
   mov [xbx].OBJMTDINFORMATION.pFileInfo, xax
@@ -432,7 +430,8 @@ MethodEnd
 ;             Arg4: -> Files collection.
 ; Return:     Nothing.
 
-Method ObjMtdInfoCollection.Init,, pOwner:POINTER, dLimit:DWORD, dDelta:DWORD, pFilesColl:$ObjPtr(FilesCollection)
+Method ObjMtdInfoCollection.Init,, pOwner:POINTER, dLimit:DWORD, dDelta:DWORD, \
+                                   pFilesColl:$ObjPtr(FilesCollection)
   SetObject xcx
   m2m [xcx].pFilesColl, pFilesColl, xdx
   ACall xcx.Init, pOwner, dLimit, dDelta, COL_MAX_CAPACITY
@@ -533,7 +532,8 @@ MethodEnd
 ;             Arg4: -> Files collection.
 ; Return:     Nothing.
 
-Method ObjVarInfoCollection.Init,, pOwner:POINTER, dLimit:DWORD, dDelta:DWORD, pFilesColl:$ObjPtr(FilesCollection)
+Method ObjVarInfoCollection.Init,, pOwner:POINTER, dLimit:DWORD, dDelta:DWORD, \
+                                   pFilesColl:$ObjPtr(FilesCollection)
   SetObject xcx
   m2m [xcx].pFilesColl, pFilesColl, xdx
   ACall xcx.Init, pOwner, dLimit, dDelta, COL_MAX_CAPACITY
@@ -656,7 +656,8 @@ MethodEnd
 ;             Arg4: -> Files collection.
 ; Return:     Nothing.
 
-Method IntInfoCollection.Init,, pOwner:POINTER, dLimit:DWORD, dDelta:DWORD, pFilesColl:$ObjPtr(FilesCollection)
+Method IntInfoCollection.Init,, pOwner:POINTER, dLimit:DWORD, dDelta:DWORD, \
+                                pFilesColl:$ObjPtr(FilesCollection)
   SetObject xcx
   m2m [xcx].pFilesColl, pFilesColl, xdx
   mov [xcx].dDuplicates, TRUE
@@ -757,7 +758,8 @@ MethodEnd
 ;             Arg4: -> Files collection.
 ; Return:     Nothing.
 
-Method IntMtdInfoCollection.Init,, pOwner:POINTER, dLimit:DWORD, dDelta:DWORD, pFilesColl:$ObjPtr(FilesCollection)
+Method IntMtdInfoCollection.Init,, pOwner:POINTER, dLimit:DWORD, dDelta:DWORD, \
+                                   pFilesColl:$ObjPtr(FilesCollection)
   SetObject xcx
   m2m [xcx].pFilesColl, pFilesColl, xdx
   ACall xcx.Init, pOwner, dLimit, dDelta, COL_MAX_CAPACITY
@@ -858,7 +860,8 @@ MethodEnd
 ;             Arg4: -> Files collection.
 ; Return:     Nothing.
 
-Method ImpMtdInfoCollection.Init,, pOwner:POINTER, dLimit:DWORD, dDelta:DWORD, pFilesColl:$ObjPtr(FilesCollection)
+Method ImpMtdInfoCollection.Init,, pOwner:POINTER, dLimit:DWORD, dDelta:DWORD, \
+                                   pFilesColl:$ObjPtr(FilesCollection)
   SetObject xcx
   m2m [xcx].pFilesColl, pFilesColl, xdx
   ACall xcx.Init, pOwner, dLimit, dDelta, COL_MAX_CAPACITY

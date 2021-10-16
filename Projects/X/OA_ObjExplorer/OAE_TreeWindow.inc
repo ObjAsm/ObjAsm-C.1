@@ -2,7 +2,7 @@
 ; Title:      OAE_TreeWindow.inc
 ; Author:     G. Friedrich
 ; Version:    Check OA_ObjExplorer.asm
-; Purpose:    TreeWindow implementation for OA_ObjBrowser. 
+; Purpose:    TreeWindow implementation for OA_ObjExplorer.
 ; ==================================================================================================
 
 
@@ -48,13 +48,20 @@ CStr cTreeWindowClass, "TreeWindow"
 .const
 
 ProjToolbar DEF_TOOLBAR {101, PROJTBSTYLE, 0, NULL, {<0,0,0,0>}, 7}
-  TBBUTTON {IDB_TREE_REFRESH, IDM_FILE_REFRESH,   TBSTATE_ENABLED,  TBSTYLE_BUTTON}
-  TBBUTTON {IDB_TREE_SEARCH,  IDM_FILE_SEARCH,    TBSTATE_ENABLED,  TBSTYLE_BUTTON}
-  TBBUTTON {0,                    -1,                     TBSTATE_ENABLED,  TBSTYLE_SEP}
-  TBBUTTON {IDB_TREE_OBJ,     IDM_TREE_SHOW_OBJ,  TBSTATE_ENABLED or TBSTATE_CHECKED,  TBSTYLE_BUTTON or TBSTYLE_CHECK}
-  TBBUTTON {IDB_TREE_COM,     IDM_TREE_SHOW_INT,  TBSTATE_ENABLED or TBSTATE_CHECKED,  TBSTYLE_BUTTON or TBSTYLE_CHECK}
-  TBBUTTON {0,                -1,                 TBSTATE_ENABLED,  TBSTYLE_SEP}
-  TBBUTTON {IDB_TREE_ERR,     IDM_TREE_SHOW_ERR,  TBSTATE_ENABLED,  TBSTYLE_BUTTON or TBSTYLE_CHECK}
+  TBBUTTON {IDB_TREE_REFRESH, IDM_FILE_REFRESH,   TBSTATE_ENABLED,
+                                                  TBSTYLE_BUTTON}
+  TBBUTTON {IDB_TREE_SEARCH,  IDM_FILE_SEARCH,    TBSTATE_ENABLED,
+                                                  TBSTYLE_BUTTON}
+  TBBUTTON {0,                -1,                 TBSTATE_ENABLED,
+                                                  TBSTYLE_SEP}
+  TBBUTTON {IDB_TREE_OBJ,     IDM_TREE_SHOW_OBJ,  TBSTATE_ENABLED or TBSTATE_CHECKED,
+                                                  TBSTYLE_BUTTON or TBSTYLE_CHECK}
+  TBBUTTON {IDB_TREE_COM,     IDM_TREE_SHOW_INT,  TBSTATE_ENABLED or TBSTATE_CHECKED,
+                                                  TBSTYLE_BUTTON or TBSTYLE_CHECK}
+  TBBUTTON {0,                -1,                 TBSTATE_ENABLED,
+                                                  TBSTYLE_SEP}
+  TBBUTTON {IDB_TREE_ERR,     IDM_TREE_SHOW_ERR,  TBSTATE_ENABLED,
+                                                  TBSTYLE_BUTTON or TBSTYLE_CHECK}
 
 .code
 ; —————————————————————————————————————————————————————————————————————————————————————————————————

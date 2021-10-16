@@ -26,7 +26,7 @@ Object DbgMdiChild, DbgMdiChildID, MdiChildWnd                  ;MDI Child desce
 
   VirtualEvent      OnMdiActivate,    WM_MDIACTIVATE
 
-  DefineVariable    dZoom,            DWORD,              ZOOM_BASE
+  DefineVariable    dZoomFactor,      DWORD,              ZOOM_BASE
   DefineVariable    pFileName,        PSTRING,            NULL
   DefineVariable    pMagnetism,       $ObjPtr(Magnetism), NULL
 ObjectEnd
