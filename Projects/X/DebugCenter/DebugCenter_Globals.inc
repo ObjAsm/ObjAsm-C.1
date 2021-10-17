@@ -27,19 +27,6 @@ CStr szRtfFilter,       "Rich Text Format files (*.rtf)", 0, "*.rtf", 0
 CStr szRtfExt,          ".rtf"
 CStr szBmpExt,          ".bmp"
 
-CStr szLoadOneFile,     "Only one file will be loaded."
-CStr szFileReadErr,     "Error while reading from file."
-CStr szFileWriteErr,    "Error while saving to file."
-CStr szFileTypeErr,     "File type error."
-CStr szPrtBitBltErr,    "Printer doesn't support BitBlt functions."
-CStr szMdiChildWndErr,  "Failed to create a MDI child window."
-CStr szOutOfMemoryErr,  "Not enought memory."
-CStr szNotBitmapErr,    "Not a bitmap file."
-CStr szNothingToSearch, "Nothing to search for."
-CStr szNoMatches,       "No more matches found."
-CStr szCanNotOpen,      "Can't open this file type..."
-
-
 CStr szDebugCenter,     "Debug Center"
 CStr szOAPath,          "OBJASM_PATH"
 

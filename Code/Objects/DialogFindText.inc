@@ -63,8 +63,6 @@ GROUPBOX      "Direction",IDC_STATIC,82,25,45,40
 CONTROL       "&Up",   IDC_FTXT_FINDUPRADIO,   "Button", BS_AUTORADIOBUTTON, 88,37,36,11
 CONTROL       "&Down", IDC_FTXT_FINDDOWNRADIO, "Button", BS_AUTORADIOBUTTON, 88,49,36,11
 
-externdef szNothingToSearch:CHR
-externdef szNoMatches:CHR
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -196,7 +194,7 @@ MethodEnd
 
 Method DialogFindText.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   local FTXTX:FINDTEXTEX, dSelBeg:DWORD, dSelEnd:DWORD, dFlags:DWORD, pBuffer:POINTER, dSize:dWORD
-  local dComboIndex:DWORD
+  local dComboIndex:DWORD, cMsg[1024]:CHR
 
   SetObject xsi
   LoWord(wParam)
@@ -224,8 +222,10 @@ Method DialogFindText.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
     .if xax == -1
       invoke SendMessage, xbx, WM_GETTEXTLENGTH, 0, 0
       .if xax == 0
-        invoke MessageBox, [xsi].hWnd, offset szNothingToSearch, \
-                           offset szNotification, MB_OK or MB_ICONEXCLAMATION
+        mov edx, $ObjTmpl(DebugCenter).dLanguage
+        add edx, 127
+        invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
+        invoke MessageBox, [xsi].hWnd, addr cMsg, offset szNotification, MB_OK or MB_ICONEXCLAMATION
         ExitMethod
       .endif
       lea xax, [sizeof(CHR)*xax + sizeof(CHR)]          ;Add room for the ZTC
@@ -251,8 +251,10 @@ Method DialogFindText.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
     invoke SendMessage, xbx, CB_GETLBTEXT, xdi, xax
     invoke SendMessage, [xsi].hParent, EM_FINDTEXTEX, dFlags, addr FTXTX
     .if eax == -1
-      invoke MessageBox, [xsi].hWnd, offset szNoMatches, \
-                     offset szNotification, MB_OK or MB_ICONEXCLAMATION
+      mov edx, $ObjTmpl(DebugCenter).dLanguage
+      add edx, 128
+      invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
+      invoke MessageBox, [xsi].hWnd, addr cMsg, offset szNotification, MB_OK or MB_ICONEXCLAMATION
     .else
       invoke SendMessage, [xsi].hParent, EM_SETSEL, FTXTX.chrgText.cpMin, FTXTX.chrgText.cpMax
       invoke SetFocus, [xsi].hParent

@@ -338,17 +338,13 @@ MethodEnd
 ; Return:     Nothing.
 
 Method TextSource.Reset, uses xsi
-  local qZero:QWORD
-
   SetObject xsi
   xor eax, eax
   mov [xsi].MemStream.dPosition, eax                    ;Position = 0
   mov [xsi].MemStream.dCurrSize, eax                    ;Fill level = 0
   mov [xsi].dLineNumber, eax
 
-  mov (QUADWORD ptr qZero).LoDWord, eax
-  mov (QUADWORD ptr qZero).HiDWord, eax
-;  OCall [xsi].::Stream.Seek, QWORD ptr 0, STM_BEGIN
+  OCall [xsi].MemStream::Stream.Seek, QWORD ptr 0, STM_BEGIN
 MethodEnd
 
 endif

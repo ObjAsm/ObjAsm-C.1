@@ -14,10 +14,11 @@
 ;Interfaces are not recognized --> API convention change! See h2incX project
 ;HelpLines are not collected nor displayed
 ;Set some information on the StatusBar from resources
+;Context menu is not used. Code remains for future use.
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc
-SysSetup OOP, WIN64, ANSI_STRING;, DEBUG(WND)
+SysSetup OOP, WIN64, ANSI_STRING;, DEBUG(WND)           ;MUST be ANSI!!!
 
 % includelib &LibPath&Windows\Kernel32.lib
 % includelib &LibPath&Windows\Shell32.lib

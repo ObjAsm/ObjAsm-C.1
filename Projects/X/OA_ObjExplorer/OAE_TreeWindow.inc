@@ -146,15 +146,13 @@ MethodEnd
 ; Return:    Nothing.
 
 Method TreeWindow.OnNotify, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
-  local cToolTipText[256]:CHR
-
   SetObject xsi
   mov xdi, lParam
   assume xdi: ptr TOOLTIPTEXT
   .if [xdi].hdr.code == TTN_NEEDTEXT
     mov xax, [xsi].pLanguage
     mov edx, DWORD ptr [xax]
-    lea xbx, cToolTipText
+    lea xbx, [xdi].szText
     .if [xdi].hdr.idFrom == IDM_FILE_REFRESH
       add edx, IDS_REFRESH
     .elseif [xdi].hdr.idFrom == IDM_FILE_SEARCH
@@ -168,7 +166,7 @@ Method TreeWindow.OnNotify, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
     .elseif [xdi].hdr.idFrom == IDM_TREE_SHOW_ERR
       add edx, IDS_SHOW_ERR
     .endif
-    invoke LoadString, hInstance, edx, xbx, lengthof cToolTipText
+    invoke LoadString, hInstance, edx, xbx, 80
     mov [xdi].lpszText, xbx
   .endif
   assume xdi:nothing

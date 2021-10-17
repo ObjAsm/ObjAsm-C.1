@@ -924,14 +924,12 @@ MethodEnd
 ; Return:     eax = Zero if handled.
 
 Method Application.OnNotify, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
-  local cToolTipText[256]:CHR
-
   SetObject xsi
   mov xdi, lParam
   assume xdi: ptr TOOLTIPTEXT
   .if [xdi].hdr.code == TTN_NEEDTEXT
     mov edx, [xsi].dLanguage
-    lea xbx, cToolTipText
+    lea xbx, [xdi].szText
     .if [xdi].hdr.idFrom == IDM_FILE_SETUP
       add edx, IDS_SETUP
     .elseif [xdi].hdr.idFrom == IDM_WIND_CASCADE
@@ -955,7 +953,7 @@ Method Application.OnNotify, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
     .elseif [xdi].hdr.idFrom == IDM_WIND_ZOOMOUT
       add edx, IDS_WIND_ZOOMOUT
     .endif
-    invoke LoadString, hInstance, edx, xbx, lengthof cToolTipText
+    invoke LoadString, hInstance, edx, xbx, 80
     mov [xdi].lpszText, xbx
   .endif
   assume xdi:nothing

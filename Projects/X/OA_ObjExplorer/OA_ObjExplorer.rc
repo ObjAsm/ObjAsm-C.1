@@ -65,7 +65,6 @@ CURSOR_XTV_ARROW      CURSOR DISCARDABLE "CUR\\Arrow.cur"
 BMP_BACKGROUND        BITMAP "BMP\WndBkgnd.bmp"
 
 
-
 // Dialogs -----------------------------------------------------------------------------------------
 
 #include "..\OA_ObjExplorer\Res\OA_ObjExplorer_FindDlg.rc"
@@ -198,8 +197,8 @@ BEGIN
   IDLANG_ENGLISH + 88, "Shows the previous child window"
   IDLANG_ENGLISH + 89, "Closes the active window"
   IDLANG_ENGLISH + 90, "Closes all windows"
-  IDLANG_ENGLISH + 91, "Zoom in"
-  IDLANG_ENGLISH + 92, "Zoom out"
+  IDLANG_ENGLISH + 91, "Enlarges the content of the active window"
+  IDLANG_ENGLISH + 92, "Reduces the content of the active window"
 
   IDLANG_ENGLISH + 95, "Displays ObjAsm objects"
   IDLANG_ENGLISH + 96, "Displays COM interfaces"
@@ -280,8 +279,8 @@ BEGIN
   IDLANG_GERMAN  + 88, "Zeigt das vorherige Fenster an"
   IDLANG_GERMAN  + 89, "Schliesst das aktive Fenster"
   IDLANG_GERMAN  + 90, "Schliesst alle Fenster"
-  IDLANG_GERMAN  + 91, "Vergrößern"
-  IDLANG_GERMAN  + 92, "Verkleinern"
+  IDLANG_GERMAN  + 91, "Vergrößert den Inhalt des aktiven Fensters"
+  IDLANG_GERMAN  + 92, "Verkleinert den Inhalt des aktiven Fensters"
 
   IDLANG_GERMAN  + 95, "Zeigt ObjAsm Objekte an"
   IDLANG_GERMAN  + 96, "Zeigt COM Schittstellen an"
@@ -361,8 +360,8 @@ BEGIN
   IDLANG_SPANISH + 88, "Muestra la ventana previa"
   IDLANG_SPANISH + 89, "Cierra la ventana seleccionada"
   IDLANG_SPANISH + 90, "Cierra todas las ventanas"
-  IDLANG_SPANISH + 91, "Ampliar"
-  IDLANG_SPANISH + 92, "Reducir"
+  IDLANG_SPANISH + 91, "Amplía el contenido de la ventana activa"
+  IDLANG_SPANISH + 92, "Reduce el contenido de la ventana activa"
 
   IDLANG_SPANISH + 95, "Muestra objetos de ObjAsm"
   IDLANG_SPANISH + 96, "Muestra interfaces COM"

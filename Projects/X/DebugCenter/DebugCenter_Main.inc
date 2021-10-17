@@ -526,30 +526,31 @@ Method DebugCenter.ManageOptions, uses xbx xdi xsi, dObjID:DWORD
     invoke SendMessage, [xbx].$Obj(Toolbar).hWnd, TB_ENABLEBUTTON, IDM_WINDOW_ZOOMOUT, FALSE
 
     mov xdi, hMenu
-    invoke EnableMenuItem, xdi, IDM_FILE_SAVE, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_FILE_SAVEAS, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_FILE_CLOSE, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_FILE_PRINT, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_EDIT_CUT, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_EDIT_COPY, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_EDIT_PASTE, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_EDIT_CLEAR, MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_FILE_SAVE,      MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_FILE_SAVEAS,    MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_FILE_CLOSE,     MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_FILE_PAGESETUP, MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_FILE_PRINT,     MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_CUT,       MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_COPY,      MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_PASTE,     MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_CLEAR,     MF_BYCOMMAND or MF_GRAYED
     invoke EnableMenuItem, xdi, IDM_EDIT_SELECTALL, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_EDIT_ERASE, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_EDIT_ERASEALL, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_EDIT_FIND, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_EDIT_CALC, MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_ERASE,     MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_ERASEALL,  MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_FIND,      MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_CALC,      MF_BYCOMMAND or MF_GRAYED
 
     mov xdi, [xsi].hMenuContext
-    invoke EnableMenuItem, xdi, IDM_EDIT_CUT, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_EDIT_COPY, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_EDIT_PASTE, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_EDIT_CLEAR, MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_CUT,       MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_COPY,      MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_PASTE,     MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_CLEAR,     MF_BYCOMMAND or MF_GRAYED
     invoke EnableMenuItem, xdi, IDM_EDIT_SELECTALL, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_EDIT_ERASE, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_EDIT_ERASEALL, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_EDIT_FIND, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_EDIT_CALC, MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_ERASE,     MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_ERASEALL,  MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_FIND,      MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_CALC,      MF_BYCOMMAND or MF_GRAYED
 
   .elseif dObjID == DbgMdiChildTxtID
     mov xbx, [xsi].pToolbarFile
@@ -568,20 +569,21 @@ Method DebugCenter.ManageOptions, uses xbx xdi xsi, dObjID:DWORD
     invoke SendMessage, [xbx].$Obj(Toolbar).hWnd, TB_ENABLEBUTTON, IDM_WINDOW_ZOOMOUT, TRUE
 
     mov xdi, hMenu
-    invoke EnableMenuItem, xdi, IDM_FILE_SAVE, MF_BYCOMMAND or MF_ENABLED
-    invoke EnableMenuItem, xdi, IDM_FILE_SAVEAS, MF_BYCOMMAND or MF_ENABLED
-    invoke EnableMenuItem, xdi, IDM_FILE_CLOSE, MF_BYCOMMAND or MF_ENABLED
-    invoke EnableMenuItem, xdi, IDM_FILE_PRINT, MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_FILE_SAVE,      MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_FILE_SAVEAS,    MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_FILE_CLOSE,     MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_FILE_PAGESETUP, MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_FILE_PRINT,     MF_BYCOMMAND or MF_ENABLED
     invoke EnableMenuItem, xdi, IDM_EDIT_SELECTALL, MF_BYCOMMAND or MF_ENABLED
-    invoke EnableMenuItem, xdi, IDM_EDIT_ERASE, MF_BYCOMMAND or MF_ENABLED
-    invoke EnableMenuItem, xdi, IDM_EDIT_ERASEALL, MF_BYCOMMAND or MF_ENABLED
-    invoke EnableMenuItem, xdi, IDM_EDIT_FIND, MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_EDIT_ERASE,     MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_EDIT_ERASEALL,  MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_EDIT_FIND,      MF_BYCOMMAND or MF_ENABLED
 
     mov xdi, [xsi].hMenuContext
     invoke EnableMenuItem, xdi, IDM_EDIT_SELECTALL, MF_BYCOMMAND or MF_ENABLED
-    invoke EnableMenuItem, xdi, IDM_EDIT_ERASE, MF_BYCOMMAND or MF_ENABLED
-    invoke EnableMenuItem, xdi, IDM_EDIT_ERASEALL, MF_BYCOMMAND or MF_ENABLED
-    invoke EnableMenuItem, xdi, IDM_EDIT_FIND, MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_EDIT_ERASE,     MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_EDIT_ERASEALL,  MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_EDIT_FIND,      MF_BYCOMMAND or MF_ENABLED
 
   .else                                                 ;DbgMdiChildBmp
     mov xbx, [xsi].pToolbarFile
@@ -600,21 +602,22 @@ Method DebugCenter.ManageOptions, uses xbx xdi xsi, dObjID:DWORD
     invoke SendMessage, [xbx].$Obj(Toolbar).hWnd, TB_ENABLEBUTTON, IDM_WINDOW_ZOOMOUT, TRUE
 
     mov xdi, hMenu
-    invoke EnableMenuItem, xdi, IDM_FILE_OPEN, MF_BYCOMMAND or MF_ENABLED
-    invoke EnableMenuItem, xdi, IDM_FILE_SAVE, MF_BYCOMMAND or MF_ENABLED
-    invoke EnableMenuItem, xdi, IDM_FILE_SAVEAS, MF_BYCOMMAND or MF_ENABLED
-    invoke EnableMenuItem, xdi, IDM_FILE_CLOSE, MF_BYCOMMAND or MF_ENABLED
-    invoke EnableMenuItem, xdi, IDM_FILE_PRINT, MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_FILE_OPEN,      MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_FILE_SAVE,      MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_FILE_SAVEAS,    MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_FILE_CLOSE,     MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_FILE_PAGESETUP, MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_FILE_PRINT,     MF_BYCOMMAND or MF_ENABLED
     invoke EnableMenuItem, xdi, IDM_EDIT_SELECTALL, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_EDIT_ERASE, MF_BYCOMMAND or MF_ENABLED
-    invoke EnableMenuItem, xdi, IDM_EDIT_ERASEALL, MF_BYCOMMAND or MF_ENABLED
-    invoke EnableMenuItem, xdi, IDM_EDIT_FIND, MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_ERASE,     MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_EDIT_ERASEALL,  MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_EDIT_FIND,      MF_BYCOMMAND or MF_GRAYED
 
     mov xdi, [xsi].hMenuContext
     invoke EnableMenuItem, xdi, IDM_EDIT_SELECTALL, MF_BYCOMMAND or MF_GRAYED
-    invoke EnableMenuItem, xdi, IDM_EDIT_ERASE, MF_BYCOMMAND or MF_ENABLED
-    invoke EnableMenuItem, xdi, IDM_EDIT_ERASEALL, MF_BYCOMMAND or MF_ENABLED
-    invoke EnableMenuItem, xdi, IDM_EDIT_FIND, MF_BYCOMMAND or MF_GRAYED
+    invoke EnableMenuItem, xdi, IDM_EDIT_ERASE,     MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_EDIT_ERASEALL,  MF_BYCOMMAND or MF_ENABLED
+    invoke EnableMenuItem, xdi, IDM_EDIT_FIND,      MF_BYCOMMAND or MF_GRAYED
   .endif
 MethodEnd
 
@@ -718,7 +721,7 @@ EraseChild proc hWnd:HWND, lParam:DWORD
 EraseChild endp
 
 Method DebugCenter.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
-  local hChildWnd:HWND, pDlg:POINTER, pChild:POINTER
+  local hChildWnd:HWND, pDlg:POINTER, pChild:POINTER, cMsg[1024]:CHR
   local OpenFileName:OPENFILENAME, cInitDir[MAX_PATH]:CHR, cFileName[MAX_PATH]:CHR
   local PageSetup:PAGESETUPDLG, AboutDlg:$Obj(DialogAbout)
 
@@ -768,8 +771,10 @@ Method DebugCenter.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
             OCall xdi::DbgMdiChildBmp.Init, [xsi].pClientWnd, addr cFileName
             OCall xdi::DbgMdiChildBmp.Open, addr cFileName
           .else
-            invoke MessageBox, [xsi].hWnd, offset szCanNotOpen, \
-                               offset szDebugCenter, MB_OK or MB_ICONERROR
+            mov edx, $ObjTmpl(DebugCenter).dLanguage
+            add edx, 123
+            invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
+            invoke MessageBox, [xsi].hWnd, addr cMsg, offset szDebugCenter, MB_OK or MB_ICONERROR
           .endif
         .endif
         ;Remember this new path
@@ -1599,7 +1604,7 @@ MethodEnd
 ; Return:     eax = Zero.
 
 Method DbgMdiClient.OnDropFiles, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
-  local pFileName:PSTRING
+  local pFileName:PSTRING, cMsg[1024]:CHR
 
   SetObject xsi
   mov xbx, $invoke(DragQueryFile, wParam, -1, NULL, 0)
@@ -1632,7 +1637,10 @@ Method DbgMdiClient.OnDropFiles, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
     .endif
     jmp @@OK
   @@Error:
-    invoke MessageBox, [xsi].hWnd, offset szFileTypeErr, \
+    mov edx, $ObjTmpl(DebugCenter).dLanguage
+    add edx, 123
+    invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
+    invoke MessageBox, [xsi].hWnd, addr cMsg, \
                        offset szDebugCenter, MB_OK or MB_ICONEXCLAMATION
   @@OK:
     invoke StrDispose, pFileName

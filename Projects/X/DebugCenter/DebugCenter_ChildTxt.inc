@@ -218,6 +218,8 @@ MethodEnd
 ; Return:     Nothing.
 
 Method DbgMdiChildTxt.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRINGW, hFont:HFONT
+  local cMsg[1024]:CHR
+
   SetObject xsi
   ACall xsi.Init, pOwner, NULL                          ;hWnd is set in WndProc
 
@@ -246,8 +248,11 @@ Method DbgMdiChildTxt.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRINGW, h
 
       invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL
   	.else
-    	invoke MessageBox, [xbx].$Obj(DebugCenter).hWnd, offset szMdiChildWndErr, offset szError, \
-                           MB_OK or MB_ICONERROR
+      mov edx, $ObjTmpl(DebugCenter).dLanguage
+      add edx, 125
+      invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
+    	invoke MessageBox, [xbx].$Obj(DebugCenter).hWnd, addr cMsg, offset szError, \
+    	                   MB_OK or MB_ICONERROR
   	.endif
 MethodEnd
 
@@ -359,7 +364,7 @@ REOpenText proc pStream:$ObjPtr(Stream), pBuffer:POINTER, dNumBytes:DWORD, pByte
 REOpenText endp
 
 Method DbgMdiChildTxt.Open, uses xsi, pFileName:PSTRING
-  local pStream:$ObjPtr(Stream), EdtStrm:EDITSTREAM
+  local pStream:$ObjPtr(Stream), EdtStrm:EDITSTREAM, cMsg[1024]:CHR
 
   SetObject xsi
   mov pStream, $New(DiskStream)
@@ -369,7 +374,10 @@ Method DbgMdiChildTxt.Open, uses xsi, pFileName:PSTRING
   c2m EdtStrm.pfnCallback, offset REOpenText, xax
   invoke SendMessage, [xsi].hEdit, EM_STREAMIN, SF_RTF, addr EdtStrm
   .if EdtStrm.dwError != 0
-    invoke MessageBox, [xsi].hWnd, offset szFileReadErr, offset szDebugCenter, \
+    mov edx, $ObjTmpl(DebugCenter).dLanguage
+    add edx, 121
+    invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
+    invoke MessageBox, [xsi].hWnd, addr cMsg, offset szDebugCenter, \
                        MB_OK or MB_ICONERROR
   .endif
   Destroy pStream
@@ -383,7 +391,7 @@ MethodEnd
 ; Return:     Nothing.
 
 Method DbgMdiChildTxt.Print, uses xbx xdi xsi
-  local PrtDlg:PRINTDLG, DocInfo:DOCINFO
+  local PrtDlg:PRINTDLG, DocInfo:DOCINFO, cMsg[1024]:CHR
   local LogFnt:LOGFONT, hFont:HFONT, hPrvFont:HFONT, dLineCount:DWORD
   local cPrtBuffer[256]:CHR, dPosY:DWORD, TM:TEXTMETRIC
   local LogPix:POINT, PageSize:POINT, PageOffset:POINT, PrintSize:POINT
@@ -509,7 +517,10 @@ Method DbgMdiChildTxt.Print, uses xbx xdi xsi
       invoke EndDoc, PrtDlg.hDC
       invoke DeleteDC, PrtDlg.hDC
     .else
-      invoke MessageBox, [xsi].hWnd, offset szPrtBitBltErr, offset szDebugCenter, \
+      mov edx, $ObjTmpl(DebugCenter).dLanguage
+      add edx, 124
+      invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
+      invoke MessageBox, [xsi].hWnd, addr cMsg, offset szDebugCenter, \
                          MB_OK or MB_ICONERROR
     .endif
   .endif
@@ -541,7 +552,7 @@ RESaveText proc pStream:$ObjPtr(Stream), pBuffer:POINTER, dNumBytes:DWORD, pByte
 RESaveText endp
 
 Method DbgMdiChildTxt.SaveTo, uses xsi, pFileName:PSTRING
-  local pStream:$ObjPtr(Stream), EdtStrm:EDITSTREAM
+  local pStream:$ObjPtr(Stream), EdtStrm:EDITSTREAM, cMsg[1024]:CHR
 
   SetObject xsi
   mov pStream, $New(DiskStream)
@@ -551,7 +562,10 @@ Method DbgMdiChildTxt.SaveTo, uses xsi, pFileName:PSTRING
   m2m EdtStrm.pfnCallback, offset RESaveText, xax
   invoke SendMessage, [xsi].hEdit, EM_STREAMOUT, SF_RTF, addr EdtStrm
   .if EdtStrm.dwError != 0
-    invoke MessageBox, [xsi].hWnd, offset szFileWriteErr, offset szDebugCenter, \
+    mov edx, $ObjTmpl(DebugCenter).dLanguage
+    add edx, 122
+    invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
+    invoke MessageBox, [xsi].hWnd, addr cMsg, offset szDebugCenter, \
                        MB_OK or MB_ICONERROR
   .endif
   Destroy pStream
@@ -672,10 +686,14 @@ MethodEnd
 ; Return:     eax = Zero.
 
 Method REdtIptor.OnDropFiles, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
+  local cMsg[1024]:CHR
+
   SetObject xsi
   .if $invoke(DragQueryFile, wParam, -1, NULL, 0) > 1
-    mov xcx, [xsi].pOwner
-    invoke MessageBox, [xcx].$Obj(DebugCenter).hWnd, offset szLoadOneFile, offset szDebugCenter, \
+    mov edx, $ObjTmpl(DebugCenter).dLanguage
+    add edx, 120
+    invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
+    invoke MessageBox, $ObjTmpl(DebugCenter).hWnd, addr cMsg, offset szDebugCenter, \
                        MB_OK or MB_ICONEXCLAMATION
   .endif
   invoke DragQueryFile, wParam, 0, NULL, 0
@@ -694,10 +712,16 @@ Method REdtIptor.OnDropFiles, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
         jmp @@Exit
       .endif
     .endif
-    invoke MessageBox, [xsi].hWnd, offset szCanNotOpen, \
+    mov edx, $ObjTmpl(DebugCenter).dLanguage
+    add edx, 121
+    invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
+    invoke MessageBox, [xsi].hWnd, addr cMsg, \
                        offset szDebugCenter, MB_OK or MB_ICONERROR
   .else
-    invoke MessageBox, [xsi].hWnd, offset szOutOfMemoryErr, \
+    mov edx, $ObjTmpl(DebugCenter).dLanguage
+    add edx, 126
+    invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
+    invoke MessageBox, [xsi].hWnd, addr cMsg, \
                        offset szDebugCenter, MB_OK or MB_ICONERROR
   .endif
 

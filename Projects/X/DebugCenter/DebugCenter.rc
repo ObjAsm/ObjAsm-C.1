@@ -288,8 +288,8 @@ BEGIN
   IDLANG_ENGLISH + 94, "Tile all windows vertically"
   IDLANG_ENGLISH + 95, "Arrange all window icons"
   IDLANG_ENGLISH + 96, "Close all windows"
-  IDLANG_ENGLISH + 97, "Increase the window output size"
-  IDLANG_ENGLISH + 98, "Decrease the window output size"
+  IDLANG_ENGLISH + 97, "Enlarges the content of the active window"
+  IDLANG_ENGLISH + 98, "Reduces the content of the active window"
 
   IDLANG_ENGLISH + 100, "Debug Center exit"
   IDLANG_ENGLISH + 101, "Are you sure you want to exit ?\nUnsaved data will be lost !"
@@ -300,6 +300,16 @@ BEGIN
   IDLANG_ENGLISH + 105, "Designed with ObjAsm"
   IDLANG_ENGLISH + 106, "Visit our Homepage"
   IDLANG_ENGLISH + 107, "Send us an Email to"
+
+  IDLANG_ENGLISH + 120, "Only one file will be loaded."
+  IDLANG_ENGLISH + 121, "Error reading the file."
+  IDLANG_ENGLISH + 122, "Error while saving to file."
+  IDLANG_ENGLISH + 123, "Unsupported file type."
+  IDLANG_ENGLISH + 124, "Printer doesn't support BitBlt functions."
+  IDLANG_ENGLISH + 125, "Failed to create a MDI child window."
+  IDLANG_ENGLISH + 126, "Not enought memory."
+  IDLANG_ENGLISH + 127, "Nothing to search for."
+  IDLANG_ENGLISH + 128, "No further hits found."
 
   IDLANG_ENGLISH + ID_MDI_MORE, "&More windows...|Select a window"
   IDLANG_ENGLISH + ID_MDI_LIST, "Window List"
@@ -388,6 +398,16 @@ BEGIN
   IDLANG_GERMAN  + 106, "Besuchen Sie unsere Homepage"
   IDLANG_GERMAN  + 107, "Senden Sie uns eine Email an"
 
+  IDLANG_GERMAN  + 120, "Nur eine Datei wird geöffnet."
+  IDLANG_GERMAN  + 121, "Fehler beim Lesen der Datei."
+  IDLANG_GERMAN  + 122, "Fehler beim Speichern der Datei."
+  IDLANG_GERMAN  + 123, "Nicht unterstützter Dateityp."
+  IDLANG_GERMAN  + 124, "Printer doesn't support BitBlt functions."
+  IDLANG_GERMAN  + 125, "Der Drucker unterstützt keine BitBlt-Funktionen."
+  IDLANG_GERMAN  + 126, "Nicht genug Speicher."
+  IDLANG_GERMAN  + 127, "Es gibt nichts zu suchen."
+  IDLANG_GERMAN  + 128, "Keine weiteren Treffer gefunden."
+
   IDLANG_GERMAN + ID_MDI_MORE, "&Weitere Fenster...|Fenster auswählen"
   IDLANG_GERMAN + ID_MDI_LIST, "Fensterliste"
 END
@@ -462,8 +482,8 @@ BEGIN
   IDLANG_ITALIAN + 94, "Dispone le finestre a tegole verticali"
   IDLANG_ITALIAN + 95, "Ordina tutti gli iconi delle finestre"
   IDLANG_ITALIAN + 96, "Chiude tutte le finestre"
-  IDLANG_ITALIAN + 97, "Aumenta la grandezza dell' uscita"
-  IDLANG_ITALIAN + 98, "Riduce la grandezza dell' uscita"
+  IDLANG_ITALIAN + 97, "Ingrandisce il contenuto della finestra attiva"
+  IDLANG_ITALIAN + 98, "Riduce il contenuto della finestra attiva"
 
   IDLANG_ITALIAN + 100, "Debug Center uscita"
   IDLANG_ITALIAN + 101, "Sei sicuro di voler uscire ?\nDati non salvati verranno persi !"
@@ -474,6 +494,16 @@ BEGIN
   IDLANG_ITALIAN + 105, "Progettato con ObjAsm"
   IDLANG_ITALIAN + 106, "Visita la nostra Homepage"
   IDLANG_ITALIAN + 107, "Inviaci una mail a"
+
+  IDLANG_ENGLISH + 120, "Verrà caricato solo un file."
+  IDLANG_ENGLISH + 121, "Errore nella lettura del file."
+  IDLANG_ENGLISH + 122, "Errore durante il salvataggio su file."
+  IDLANG_ENGLISH + 123, "Tipo di file non supportato."
+  IDLANG_ENGLISH + 124, "La stampante non supporta le funzioni BitBlt."
+  IDLANG_ENGLISH + 125, "Fallita la creazione di una finestra figlio MDI."
+  IDLANG_ENGLISH + 126, "Non c'è abbastanza memoria."
+  IDLANG_ENGLISH + 127, "Niente da cercare."
+  IDLANG_ENGLISH + 128, "Nessun altro riscontro trovato."
 
   IDLANG_ITALIAN + ID_MDI_MORE, "&Più finestre...|Selezionare una finestra"
   IDLANG_ITALIAN + ID_MDI_LIST, "Lista di finestre"
@@ -562,6 +592,16 @@ BEGIN
   IDLANG_RUSSIAN + 106, L"\x041F\x043E\x0441\x0435\x0442\x0438\x0442\x0435\x0020\x043D\x0430\x0448\x0020\x0441\x0430\x0439\x0442"
   IDLANG_RUSSIAN + 107, L"\x041E\x0442\x043F\x0440\x0430\x0432\x044C\x0442\x0435\x0020\x043D\x0430\x043C\x0020\x043F\x0438\x0441\x044C\x043C\x043E\x0020\x043F\x043E\x0020\x0430\x0434\x0440\x0435\x0441\x0443"
 
+  IDLANG_RUSSIAN + 120, L"\x0443\x0434\x0435\x0442\x0420\x0037\x0430\x0433\x0440\x0443\x0436\x0435\x043D\x0420\x0042\x043E\x043B\x044C\x043A\x043E\x0420\x003E\x0434\x0438\x043D\x0420\x0044\x0430\x0439\x043B."
+  IDLANG_RUSSIAN + 121, L"\x001E\x0448\x0438\x0431\x043A\x0430\x0420\x003F\x0440\x0438\x0420\x0047\x0442\x0435\x043D\x0438\x0438\x0420\x0044\x0430\x0439\x043B\x0430."
+  IDLANG_RUSSIAN + 122, L"\x001E\x0448\x0438\x0431\x043A\x0430\x0420\x003F\x0440\x0438\x0420\x0041\x043E\x0445\x0440\x0430\x043D\x0435\x043D\x0438\x0438\x0420\x0032\x0420\x0044\x0430\x0439\x043B."
+  IDLANG_RUSSIAN + 123, L"\x001D\x0435\x043F\x043E\x0434\x0434\x0435\x0440\x0436\x0438\x0432\x0430\x0435\x043C\x044B\x0439\x0420\x0042\x0438\x043F\x0420\x0044\x0430\x0439\x043B\x0430."
+  IDLANG_RUSSIAN + 124, L"\x001F\x0440\x0438\x043D\x0442\x0435\x0440\x0420\x003D\x0435\x0420\x003F\x043E\x0434\x0434\x0435\x0440\x0436\x0438\x0432\x0430\x0435\x0442\x0420\x0044\x0443\x043D\x043A\x0446\x0438\x0438 BitBlt."
+  IDLANG_RUSSIAN + 125, L"\x001D\x0435\x0420\x0043\x0434\x0430\x043B\x043E\x0441\x044C\x0420\x0041\x043E\x0437\x0434\x0430\x0442\x044C\x0420\x0034\x043E\x0447\x0435\x0440\x043D\x0435\x0435\x0420\x003E\x043A\x043D\x043E MDI."
+  IDLANG_RUSSIAN + 126, L"\x001D\x0435\x0434\x043E\x0441\x0442\x0430\x0442\x043E\x0447\x043D\x043E\x0420\x003F\x0430\x043C\x044F\x0442\x0438."
+  IDLANG_RUSSIAN + 127, L"\x0018\x0441\x043A\x0430\x0442\x044C\x0420\x003D\x0435\x0447\x0435\x0433\x043E."
+  IDLANG_RUSSIAN + 128, L"\x0014\x0440\x0443\x0433\x0438\x0445\x0420\x0041\x043E\x0432\x043F\x0430\x0434\x0435\x043D\x0438\x0439\x0420\x003D\x0435\x0420\x003E\x0431\x043D\x0430\x0440\x0443\x0436\x0435\x043D\x043E."
+
   IDLANG_RUSSIAN + ID_MDI_MORE, L"\x0026\x041F\x043E\x043A\x0430\x0437\x0430\x0442\x044C\x0020\x0435\x0449\x0435\x0020\x043E\x043A\x043D\x0430\x002E\x002E\x002E\x007C\x0412\x044B\x0431\x0440\x0430\x0442\x044C\x0020\x043E\x043A\x043D\x043E"
   IDLANG_RUSSIAN + ID_MDI_LIST, L"\x0421\x043F\x0438\x0441\x043E\x043A\x0020\x043E\x043A\x043E\x043D"
 END
@@ -637,7 +677,7 @@ BEGIN
   IDLANG_SPANISH + 94, "Ordena las ventanas en forma vertical"
   IDLANG_SPANISH + 95, "Ordena los iconos"
   IDLANG_SPANISH + 96, "Cierra todas la ventanas"
-  IDLANG_SPANISH + 97, "Agranda el contenido de la ventana activa"
+  IDLANG_SPANISH + 97, "Amplía el contenido de la ventana activa"
   IDLANG_SPANISH + 98, "Reduce el contenido de la ventana activa"
 
   IDLANG_SPANISH + 100, "Debug Center salida"
@@ -649,6 +689,16 @@ BEGIN
   IDLANG_SPANISH + 105, "Diseñado con ObjAsm"
   IDLANG_SPANISH + 106, "Visite nuesta página Web"
   IDLANG_SPANISH + 107, "Envíenos un Email a"
+
+  IDLANG_SPANISH + 120, "Sólo se cargará un archivo."
+  IDLANG_SPANISH + 121, "Error al leer el archivo."
+  IDLANG_SPANISH + 122, "Error al guardar en el archivo."
+  IDLANG_SPANISH + 123, "Tipo de archivo no soportado."
+  IDLANG_SPANISH + 124, "La impresora no soporta las funciones BitBlt."
+  IDLANG_SPANISH + 125, "Fallo al crear una ventana MDI hija."
+  IDLANG_SPANISH + 126, "No hay suficiente memoria."
+  IDLANG_SPANISH + 127, "No hay nada que buscar."
+  IDLANG_SPANISH + 128, "No se han encontrado más resultados."
 
   IDLANG_SPANISH + ID_MDI_MORE, "&Otras ventanas...|Seleccione una ventana"
   IDLANG_SPANISH + ID_MDI_LIST, "Lista de ventanas"

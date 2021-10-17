@@ -36,9 +36,9 @@ include Demo06_Main.inc                                 ;Application object
 start proc                                              ;Program entry point
   SysInit                                               ;Runtime initialization of OOP model
 
-  OCall $ObjTmpl(Application)::Application.Init             ;Initialize the object data
-  OCall $ObjTmpl(Application)::Application.Run              ;Execute application
-  OCall $ObjTmpl(Application)::Application.Done             ;Finalize application
+  OCall $ObjTmpl(Application)::Application.Init         ;Initialize the object data
+  OCall $ObjTmpl(Application)::Application.Run          ;Execute application
+  OCall $ObjTmpl(Application)::Application.Done         ;Finalize application
 
   SysDone                                               ;Runtime finalization of the OOP model
   invoke ExitProcess, 0                                 ;Exit program returning 0 to the OS

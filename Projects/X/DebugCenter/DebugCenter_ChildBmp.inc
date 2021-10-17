@@ -238,6 +238,8 @@ MethodEnd
 ; Return:     Nothing.
 
 Method DbgMdiChildBmp.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRING
+  local cMsg[1024]:CHR
+
   SetObject xsi
   ACall xsi.Init, pOwner, NULL                          ;hWnd is set in WndProc
   m2m [xsi].dZoomFactor, $ObjTmpl(DebugCenter).dTxtZoomFactor, eax
@@ -264,7 +266,10 @@ Method DbgMdiChildBmp.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRING
 
     invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL
   .else
-    invoke MessageBox, [xbx].$Obj(DebugCenter).hWnd, offset szMdiChildWndErr, offset szError, \
+    mov edx, $ObjTmpl(DebugCenter).dLanguage
+    add edx, 125
+    invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
+    invoke MessageBox, [xbx].$Obj(DebugCenter).hWnd, addr cMsg, offset szError, \
                        MB_OK or MB_ICONERROR
   .endif
 MethodEnd
@@ -662,6 +667,7 @@ MethodEnd
 
 Method DbgMdiChildBmp.Open, uses xbx xdi xsi, pFileName:PSTRING
   local BMFH:BITMAPFILEHEADER, pBmp:POINTER
+  local cMsg[1024]:CHR
 
   SetObject xsi
   mov pBmp, NULL
@@ -687,17 +693,24 @@ Method DbgMdiChildBmp.Open, uses xbx xdi xsi, pFileName:PSTRING
           jmp @@Error
         .endif
       .else
-        invoke MessageBox, [xsi].hWnd, offset szOutOfMemoryErr, \
-                           offset szDebugCenter, MB_OK or MB_ICONERROR
+        mov edx, $ObjTmpl(DebugCenter).dLanguage
+        add edx, 126
+        invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
+        invoke MessageBox, [xsi].hWnd, addr cMsg, offset szDebugCenter, MB_OK or MB_ICONERROR
       .endif
     .else
-      invoke MessageBox, [xsi].hWnd, offset szNotBitmapErr, \
-                           offset szDebugCenter, MB_OK or MB_ICONERROR
+      mov edx, $ObjTmpl(DebugCenter).dLanguage
+      add edx, 123
+      invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
+      invoke MessageBox, [xsi].hWnd, addr cMsg, offset szDebugCenter, MB_OK or MB_ICONERROR
     .endif
   .else
 @@Error:
-    invoke MessageBox, [xsi].hWnd, offset szFileReadErr, \
-                       offset szDebugCenter, MB_OK or MB_ICONERROR
+    mov edx, $ObjTmpl(DebugCenter).dLanguage
+    add edx, 121
+    invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
+    invoke MessageBox, [xsi].hWnd, addr cMsg, offset szDebugCenter, \
+                       MB_OK or MB_ICONERROR
     .if pBmp != NULL
       MemFree pBmp
     .endif
@@ -714,7 +727,7 @@ MethodEnd
 ; Return:     Nothing.
 
 Method DbgMdiChildBmp.Print, uses xbx xdi xsi
-  local PrtDlg:PRINTDLG, DocInfo:DOCINFO
+  local PrtDlg:PRINTDLG, DocInfo:DOCINFO, cMsg[1024]:CHR
   local LogPix:POINT, Pagrsize:POINT, PageOffset:POINT, PrintSize:POINT
 
   SetObject xsi
@@ -797,8 +810,10 @@ Method DbgMdiChildBmp.Print, uses xbx xdi xsi
       invoke EndDoc, PrtDlg.hDC
       invoke DeleteDC, PrtDlg.hDC
     .else
-      invoke MessageBox, [xsi].hWnd, offset szPrtBitBltErr, offset szDebugCenter, \
-                         MB_OK or MB_ICONERROR
+      mov edx, $ObjTmpl(DebugCenter).dLanguage
+      add edx, 124
+      invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
+      invoke MessageBox, [xsi].hWnd, addr cMsg, offset szDebugCenter, MB_OK or MB_ICONERROR
     .endif
   .endif
 MethodEnd

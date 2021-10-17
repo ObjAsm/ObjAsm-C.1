@@ -230,7 +230,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=16
+MilestoneOnDateDate=17
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -266,15 +266,15 @@ ProductVer4Range=0
 
 [Size]
 2=0,0,0,0,1191
-3=0,0,756,582,3520
-1=453,0,453,706,1222
-4=540,0,412,843,19346
+3=0,0,756,582,1742
+1=453,0,453,706,889
+4=540,0,412,843,409
 1001=0,0,0,0,460
 5=0,0,0,0,45179
 6=0,0,0,0,811
 7=0,0,0,0,133188
 8=0,0,0,0,3145
-9=0,0,1878,628,2007
+9=0,0,1878,628,3505
 11=0,0,0,0,5447
 13=0,0,0,0,1451
 14=0,0,0,0,5427
@@ -309,12 +309,12 @@ ProductVer4Range=0
 42=0,0,0,0,4810
 41=0,0,0,0,2073
 45=0,0,0,0,407
-44=0,0,0,0,11609
+44=0,0,0,0,11252
 43=0,0,0,0,0
 46=0,0,0,0,0
 47=0,0,0,0,1162
 48=0,0,0,0,3155
-49=0,0,0,0,6520
+49=0,0,0,0,6181
 50=0,0,0,0,3539
 51=0,0,0,0,860
 52=0,0,0,0,5352
@@ -326,7 +326,7 @@ ProductVer4Range=0
 59=0,0,0,0,2302
 60=0,0,0,0,5227
 58=0,0,1902,628,81838
-61=0,0,0,0,81
+61=0,0,0,0,22606
 77=
 76=
 75=
@@ -361,16 +361,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="OnMouseWheel"
-2="TVZOOM_STEP"
-3="SetZoomFactor"
-4="OnGetZoom"
-5="OnGesture"
-6="OnVScroll"
-7="OnSetZoom"
-8="OnGetFont"
-9="IDM_WIND_ZOOMOUT"
-10="PROPCONTEXT"
+1="hMenuContext"
+2="PROPCONTEXT"
+3="TTN_NEEDTEXT"
+4="cToolTipText"
+5="LoadString"
+6="OnMouseWheel"
+7="TVZOOM_STEP"
+8="SetZoomFactor"
+9="OnGetZoom"
+10="OnGesture"
 [Collapse]
 2=
 8=302,67371072,12449
@@ -443,7 +443,7 @@ ProductVer4Range=0
 70=
 71=
 [AutoLoad]
-AutoLoad=1,61,27,4,3,34,2,24
+AutoLoad=
 [RADebugBP]
 4=
 6=
@@ -497,6 +497,6 @@ AutoLoad=1,61,27,4,3,34,2,24
 69=
 71=
 [PTimer]
-PTimer=3687838262
+PTimer=3702438277
 [GroupExpand]
 GroupExpand=1,1,1,1,1,1,0
