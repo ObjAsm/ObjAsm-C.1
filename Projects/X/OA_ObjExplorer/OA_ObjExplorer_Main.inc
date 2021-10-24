@@ -548,6 +548,7 @@ Method Application.Init, uses xbx xdi xsi
 
   OCall xsi.EnableActions                               ;Disable toolbar buttons
 
+  invoke MoveWindowVisible, [xsi].hWnd, dWtx, dWty
   invoke ShowWindow, [xsi].hWnd, SW_SHOW
   invoke UpdateWindow, [xsi].hWnd
 

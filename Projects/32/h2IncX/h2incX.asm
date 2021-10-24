@@ -27,11 +27,13 @@
 ;todo: numerical constants beginning with 0 (not 0x) are octals! Not used yet on the header set.
 ;todo: Comment list: AddComment adds a string to the stack, while PrintComment writes all strings to
 ;      the output stream
-;todo: better COM support for OA32/OA64.
+;todo: better COM support for OA32/OA64. ObjExplorer doesn't detect COM interfaces
 ;todo: renamed reserved words used as structure named must be added to the known structure names, like SIZE_.
 ;todo: check for reserved words in STD_METHOD names, like Kill.
 ;idea: replace ... equ <ptr ... by ... typedef ptr ... were possible
 ;idea: dont include non .h files like "include DirectXMathConvert.inl"
+;todo: check alignment
+;todo: correct bit fields (ASm != C++)
 
 
 
@@ -534,27 +536,27 @@ start proc uses ebx edi esi
     SysInit
     DbgClearAll
 
-    mov argc, 9
-    lea eax, Arg1
-    mov argv, eax
-    mov Arg1, $OfsCStrA("h2incX.exe")
-    mov Arg2, $OfsCStrA("-b")            ;Batch mode, no user interaction
-    mov Arg3, $OfsCStrA("-y")            ;Overwrite existing .inc files without confirmation
-    mov Arg4, $OfsCStrA("-d3")           ;If possible use @DefProto macro to define prototypes
-    mov Arg5, $OfsCStrA("-i")            ;Process #include lines
-    mov Arg6, $OfsCStrA("-S")            ;Print summary (structures, macros)
-    mov Arg7, $OfsCStrA("-o")            ;Set output directory
-  if 0
-    mov Arg8, $OfsCStrA("\ObjAsm\Projects\32\h2IncX\Inc")
-    mov Arg9, $OfsCStrA("\ObjAsm\Projects\32\h2IncX\Header_10.0.17763.0\h2incX_MasterInclude.h")   ;Convert all files at a time
-    ;h2incX_MasterInclude
-  else
-    mov Arg8, $OfsCStrA("\ObjAsm\Projects\32\h2IncX\Inc\SFML")
-    mov Arg9, $OfsCStrA("D:\ObjAsm\Projects\32\h2IncX\SFML\SFML_Master.h")
+;    mov argc, 9
+;    lea eax, Arg1
+;    mov argv, eax
+;    mov Arg1, $OfsCStrA("h2incX.exe")
+;    mov Arg2, $OfsCStrA("-b")            ;Batch mode, no user interaction
+;    mov Arg3, $OfsCStrA("-y")            ;Overwrite existing .inc files without confirmation
+;    mov Arg4, $OfsCStrA("-d3")           ;If possible use @DefProto macro to define prototypes
+;    mov Arg5, $OfsCStrA("-i")            ;Process #include lines
+;    mov Arg6, $OfsCStrA("-S")            ;Print summary (structures, macros)
+;    mov Arg7, $OfsCStrA("-o")            ;Set output directory
+;  if 1
+;    mov Arg8, $OfsCStrA("\ObjAsm\Projects\32\h2IncX\Inc")
+;    mov Arg9, $OfsCStrA("\ObjAsm\Projects\32\h2IncX\Header_10.0.17763.0\h2incX_MasterInclude.h")   ;Convert all files at a time
+;    ;h2incX_MasterInclude
 ;  else
-;    mov Arg8, $OfsCStrA("\ObjAsm\Projects\32\h2IncX\CUDA_10.1\Inc")
-;    mov Arg9, $OfsCStrA("\ObjAsm\Projects\32\h2IncX\CUDA_10.1\Include\CudaMaster.h")   ;Convert all files at a time
-  endif
+;    mov Arg8, $OfsCStrA("\ObjAsm\Projects\32\h2IncX\Inc\SFML")
+;    mov Arg9, $OfsCStrA("D:\ObjAsm\Projects\32\h2IncX\SFML\SFML_Master.h")
+;;  else
+;;    mov Arg8, $OfsCStrA("\ObjAsm\Projects\32\h2IncX\CUDA_10.1\Inc")
+;;    mov Arg9, $OfsCStrA("\ObjAsm\Projects\32\h2IncX\CUDA_10.1\Include\CudaMaster.h")   ;Convert all files at a time
+;  endif
 
     mov g_dResult, 1
     mov g_pMemPool, $New(MemPool)

@@ -19,6 +19,7 @@ SysSetup OOP, WIN64, WIDE_STRING;, DEBUG(WND)
 % include &IncPath&Windows\CommCtrl.inc
 % include &IncPath&Windows\UxTheme.inc
 % include &IncPath&Windows\vsstyle.inc
+% include &IncPath&Windows\richedit.inc
 
 % includelib &LibPath&Windows\Shell32.lib
 % includelib &LibPath&Windows\Comdlg32.lib

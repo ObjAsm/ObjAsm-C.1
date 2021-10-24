@@ -48,36 +48,36 @@ ObjectEnd
 ;             and implements a way to reuse other COM objects called aggregation, shown in the
 ;             following diagram:
 ;
-;                                                                ———
+;                                                                ——E
 ;                                                               |   |
-;                                                                ———
+;                                                                ——E
 ;                                                                 |
 ;              Outer Component                                    |
 ;              ———————————————————————————————————————————————————|——————————————————————————————
 ;             |                                                   |                              |
-;             |                                      —————————————————       — — — — — — — — —   |
+;             |                                      ————————————————E      EEEEEEEEE  |
 ;             |                                     |                 |     |                 |  |
 ;             |                                     |      Outer      |        Outer IUnknown    |
 ;             |                                     |     IUnknown    |————>|  Non Delegating |  |
 ;             |                                     |                 |                          |
 ;             |                                     |        I.RefCnt |     |     C.+A.RefCnt |  |
-;             |                                     '—————————————————'      — — — — — — — — —   |
+;             |                                     '————————————————E      EEEEEEEEE  |
 ;             |                                                                  /|\   /|\       |
 ;             |                                                                   |     |        |
-;             |                    ———                 aggr. redirection          |     |        |
-;             |                   |   |        ———————————————————————————————————'     |        |
-;             |                    ———        |                                         |        |
+;             |                    ——E                aggr. redirection          |     |        |
+;             |                   |   |        ——————————————————————————————————E     |        |
+;             |                    ——E       |                                         |        |
 ;             |                     |         |                                         |        |
 ;             |    Inner Component  |         |                                         |        |
-;             |    —————————————————|—————————|———————————————————————————              |        |
+;             |    —————————————————|—————————|——————————————————————————E             |        |
 ;             |   |                 |         |                           |             |        |
-;             |   |    —————————————————      |      — — — — — — — — —    |             |        |
+;             |   |    ————————————————E     |      EEEEEEEEE   |             |        |
 ;             |   |   |                 |     |     |                 |   |             |        |
 ;             |   |   |                 |     |           IUnknown        |             |        |
-;             |   |   |     IUnknown    |————— — — >|  Non Delegating |   |             |        |
+;             |   |   |     IUnknown    |————EEE>|  Non Delegating |   |             |        |
 ;             |   |   |                 |                                 |             |        |
 ;             |   |   |        I.RefCnt |           |        C.RefCnt |   |             |        |
-;             |   |   '—————————————————'            — — — — — — — — —    |             |        |
+;             |   |   '————————————————E            EEEEEEEEE   |             |        |
 ;             |   |                                         /|\           |             |        |
 ;             |   |                                                       |             |        |
 ;             |   |  Aggregated Interface                    |            |             |        |
@@ -85,14 +85,14 @@ ObjectEnd
 ;             |   | |                                        |         |  |             |        |
 ;             |   | |   ————————————————                               |  |             |        |
 ;             |   |    |                |                    |            |             |        |
-;     ———     |   | |  |    IUnknown    |                          aggr. redirection    |        |
-;    |   |—————————————|   Descendant   |———————————————————————————————————————————————'        |
-;     ———     |   | |  |                |                              |  |                      |
+;     ——E    |   | |  |    IUnknown    |                          aggr. redirection    |        |
+;    |   |—————————————|   Descendant   |——————————————————————————————————————————————E        |
+;     ——E    |   | |  |                |                              |  |                      |
 ;             |   |    |       I.RefCnt |                                 |                      |
 ;             |   | |  '————————————————'                              |  |                      |
 ;             |   | |                                                  |  |                      |
 ;             |   |  ——  ——  ——  ——  ——  ——  ——  ——  ——  ——  ——  ——  ——   |                      |
-;             |   '———————————————————————————————————————————————————————'                      |
+;             |   '——————————————————————————————————————————————————————E                      |
 ;             |                                                                                  |
 ;             '——————————————————————————————————————————————————————————————————————————————————'
 ;
@@ -558,7 +558,7 @@ Method Component.GetInterface, uses xsi, pReqIID:REFIID, ppInterface:POINTER
     mov eax, E_NOINTERFACE                              ; [:-(    Return error
   .else
     ICall xax::IUnknown.AddRef
-    xor eax, eax                                        ;  ¦-)    Return S_OK
+    xor eax, eax                                        ;  :-)    Return S_OK
   .endif
 MethodEnd
 

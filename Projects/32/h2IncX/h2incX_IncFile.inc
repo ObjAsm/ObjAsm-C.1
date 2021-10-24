@@ -90,9 +90,9 @@ Object IncFile, 123456, Primer
   DefineVariable  bInsideInterface,   BYTE,     FALSE   ;Inside an interface definition
   DefineVariable  bSkipUselessCode,   BYTE,     FALSE   ;Flag to avoid [...] repetitions
   DefineVariable  bIfLevel,           BYTE,     0       ;Current 'if' level
-  DefineVariable  bIfStructure,       BYTE,     MAX_IF_LEVEL dup (0)  ;If structure stack
-  DefineVariable  bIfResult,          BYTE,     MAX_IF_LEVEL dup (0)  ;If result stack
-  DefineVariable  bIfHistory,         BYTE,     MAX_IF_LEVEL dup (0)  ;If history stack
+  DefineVariable  bIfStructure,       BYTE,     MAX_IF_LEVEL dup(0)  ;If structure stack
+  DefineVariable  bIfResult,          BYTE,     MAX_IF_LEVEL dup(0)  ;If result stack
+  DefineVariable  bIfHistory,         BYTE,     MAX_IF_LEVEL dup(0)  ;If history stack
 
 ObjectEnd
 
@@ -1111,7 +1111,7 @@ Method IncFile.ShowError, uses ebx edi, pFormat:PSTRINGA, Args:vararg
     inc [ebx].dErrors
 
     if DEBUGGING
-      DbgSaveContext TRUE, FALSE, edi                   ;ebx = edi
+      DbgSaveContext TRUE, edi                   ;ebx = edi
       DbgSetDestWnd "Output"
       invoke DbgOutTextA, ebx, $RGB(255,0,0), DBG_EFFECT_NEWLINE, ??DbgDstWnd
       DbgLoadContext
@@ -1138,7 +1138,7 @@ Method IncFile.ShowWarning, uses ebx edi, pFormat:PSTRINGA, Args:vararg
     inc [ebx].dWarnings
 
     if DEBUGGING
-      DbgSaveContext TRUE, FALSE, edi                   ;ebx = edi
+      DbgSaveContext TRUE, edi                   ;ebx = edi
       DbgSetDestWnd "Output"
       invoke DbgOutTextA, ebx, $RGB(128,0,0), DBG_EFFECT_NEWLINE, ??DbgDstWnd
       DbgLoadContext

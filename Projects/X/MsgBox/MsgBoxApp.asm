@@ -19,6 +19,7 @@ SysSetup OOP, WIN64, WIDE_STRING;, DEBUG(WND)
 % include &COMPath&COM.inc                              ;COM basic support
 % include &IncPath&Windows\CommCtrl.inc
 % include &IncPath&Windows\IImgCtx.inc
+% include &IncPath&Windows\richedit.inc
 
 ;Load or build the following objects
 MakeObjects Primer, Stream, WinPrimer
