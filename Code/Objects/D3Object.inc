@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      D3Object.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    See Api3DEng.asm
 ; Purpose:    ObjAsm D3Object implementation.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
 ; ==================================================================================================
 
 

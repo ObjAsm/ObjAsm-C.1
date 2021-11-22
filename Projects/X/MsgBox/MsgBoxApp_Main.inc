@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      MsgBoxApp_Main.inc
 ; Author:     G. Friedrich
-; Version:    C.1.1
+; Version:    See ViewDemo.asm
 ; Purpose:    ObjAsm MsgBox Application.
-; Notes:      Version C.1.1, April 2020
-;               - First release.
 ; ==================================================================================================
 
 ;Problem: [xsi].DrawExtent.y is not set

@@ -1,7 +1,7 @@
 ; ==================================================================================================
 ; Title:      Json.inc
 ; Author:     G. Friedrich
-; Version:    C.1.3
+; Version:    C.1.1
 ; Purpose:    ObjAsm support of JSON (JavaScript Object Notation) objects.
 ; Links:      https://www.json.org/json-en.html
 ;             https://www.ietf.org/rfc/rfc4627.txt
@@ -9,11 +9,11 @@
 ;             https://www.w3schools.com/js/js_json.asp
 ;             https://jsonformatter.curiousconcept.com/#
 ; References: RFC8259, RFC7159, RFC4627, EMCA-404
-; Notes:      Version C.1.3, June 2021.
+; Notes:      Version C.1.0, December 2020.
+;               - First release.
+;             Version C.1.1, June 2021.
 ;               - Booleans were saved now in double quotes.
 ;               - Comments added.
-;             Version C.1.2, December 2020.
-;               - First release.
 ; ==================================================================================================
 
 
@@ -513,7 +513,7 @@ Method Json.GetArrayItem,, pParent:PJSON_PROPERTY, dIndex:DWORD
     mov xax, [xax].JSON_PROPERTY.Children.pFirstMember
     mov edx, dIndex
     .while xax != NULL
-      lea xcx, [xax - offset JSON_PROPERTY.Siblings]      ;xcx -> JSON_PROPERTY
+      lea xcx, [xax - offset JSON_PROPERTY.Siblings]    ;xcx -> JSON_PROPERTY
       .if edx == 0
         mov xax, xcx
         .break
@@ -536,7 +536,7 @@ Method Json.GetPrevProperty,, pProperty:PJSON_PROPERTY
   .if xax != NULL
     mov xax, [xax].JSON_PROPERTY.Siblings.pLinkBack
     .if xax != NULL
-      lea xax, [xax - offset JSON_PROPERTY.Siblings]      ;xax -> JSON_PROPERTY
+      lea xax, [xax - offset JSON_PROPERTY.Siblings]    ;xax -> JSON_PROPERTY
     .endif
   .endif
 ;  DbgHex xax, "GetNextProperty"
@@ -553,7 +553,7 @@ Method Json.GetNextProperty,, pProperty:PJSON_PROPERTY
   .if xax != NULL
     mov xax, [xax].JSON_PROPERTY.Siblings.pLinkFwrd
     .if xax != NULL
-      lea xax, [xax - offset JSON_PROPERTY.Siblings]      ;xax -> JSON_PROPERTY
+      lea xax, [xax - offset JSON_PROPERTY.Siblings]    ;xax -> JSON_PROPERTY
     .endif
   .endif
 ;  DbgHex xax, "GetNextProperty"
@@ -562,7 +562,7 @@ MethodEnd
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Json.GetProperty
 ; Purpose:    Find the JSON_PROPERTY with a specific name.
-; Arguments:  Arg1: -> Owner JSON_PROPERTY.
+; Arguments:  Arg1: -> Parent JSON_PROPERTY.
 ;             Arg2: Property type [JSON_TYPE_STRING, JSON_TYPE_NUMBER, JSON_TYPE_BOOLEAN].
 ;             Arg3: -> String representation of the value.
 ; Return:     xax -> JSON_PROPERTY or NULL if not found.
@@ -572,9 +572,9 @@ Method Json.GetProperty, uses xbx, pParent:PJSON_PROPERTY, pName:PSTRING
   .if xax != NULL
     mov xax, [xax].JSON_PROPERTY.Children.pFirstMember
     .while xax != NULL
-      lea xbx, [xax - offset JSON_PROPERTY.Siblings]      ;xbx -> JSON_PROPERTY
+      lea xbx, [xax - offset JSON_PROPERTY.Siblings]    ;xbx -> JSON_PROPERTY
       invoke StrComp, [xbx].JSON_PROPERTY.pName, pName
-      .if eax == 0                                        ;Found if eax = 0
+      .if eax == 0                                      ;Found if eax = 0
         mov xax, xbx
         .break
       .endif
@@ -904,7 +904,8 @@ JsonGetValue proc pParent:PJSON_PROPERTY, pName:PSTRING
     mov [xdi].JSON_PROPERTY.dType, JSON_TYPE_BOOLEAN
     mov [xdi].JSON_PROPERTY.pValue, $invoke(StrNew, offset JSON_TRUE)
     ;DbgStr [xdi].JSON_PROPERTY.pValue
-    add xsi, 4*sizeof(CHR)
+    add xsi, 4*sizeof(CHRW)
+    invoke JsonSkipBlanks
     mov eax, TRUE
     jmp @@Exit
   .endif
@@ -914,7 +915,8 @@ JsonGetValue proc pParent:PJSON_PROPERTY, pName:PSTRING
     mov [xdi].JSON_PROPERTY.dType, JSON_TYPE_BOOLEAN
     mov [xdi].JSON_PROPERTY.pValue, $invoke(StrNew, offset JSON_FALSE)
     ;DbgStr [xdi].JSON_PROPERTY.pValue
-    add xsi, 5*sizeof(CHR)
+    add xsi, 5*sizeof(CHRW)
+    invoke JsonSkipBlanks
     mov eax, TRUE
     jmp @@Exit
   .endif
@@ -924,7 +926,8 @@ JsonGetValue proc pParent:PJSON_PROPERTY, pName:PSTRING
     mov [xdi].JSON_PROPERTY.dType, JSON_TYPE_NULL
     mov [xdi].JSON_PROPERTY.pValue, $invoke(StrNew, offset JSON_NULL)
     ;DbgStr [xdi].JSON_PROPERTY.pValue
-    add xsi, 4*sizeof(CHR)
+    add xsi, 4*sizeof(CHRW)
+    invoke JsonSkipBlanks
     mov eax, TRUE
     jmp @@Exit
   .endif
@@ -1066,14 +1069,14 @@ Method Json.WriteProperty, uses xbx xdi xsi, pStream:$ObjPtr(Stream), pProperty:
     .if [xbx].JSON_PROPERTY.pValue != NULL
       invoke StrSize, [xbx].JSON_PROPERTY.pValue
       if TARGET_STR_TYPE eq STR_TYPE_WIDE
-        shl eax, 1                                        ;Each UTF8 char can have at max 4 bytes
+        shl eax, 1                                      ;Each UTF8 char can have at max 4 bytes
         mov xsi, $MemAlloc(eax)
         invoke WideToUTF8, xsi, [xbx].JSON_PROPERTY.pValue, -1
-        dec eax                                           ;Discard ZTC
+        dec eax                                         ;Discard ZTC
         OCall pStream::Stream.BinWrite, xsi, eax
         MemFree xsi
       else
-        dec eax                                           ;Discard ZTC
+        dec eax                                         ;Discard ZTC
         OCall pStream::Stream.BinWrite, [xbx].JSON_PROPERTY.pValue, eax
       endif
     .endif

@@ -16,7 +16,7 @@
 ; Procedure:  StrUpperW
 ; Purpose:    Convert all WIDE string characters into uppercase.
 ; Arguments:  Arg1: -> Source WIDE string.
-; Return:     Nothing.
+; Return:     eax -> String.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE
@@ -24,21 +24,20 @@ OPTION EPILOGUE:NONE
 align ALIGN_CODE
 StrUpperW proc pStringW:POINTER
   mov ecx, [esp + 4]                                    ;ecx -> StringW
-  sub ecx, 2
-@@Char:
-  add ecx, 2
+  sub ecx, sizeof(CHRW)
+@@:
+  add ecx, sizeof(CHRW)
   mov ax, [ecx]
   or ax, ax
-  je @@Exit                                             ;End of string
+  je @F                                                 ;End of string
   cmp ax, 'a'
-  jb @@Char
+  jb @B
   cmp ax, 'z'
-  ja @@Char
+  ja @B
   sub ax, 20H
   mov [ecx], ax
-  jmp @@Char
-align ALIGN_CODE
-@@Exit:
+  jmp @B
+@@:
   mov eax, [esp + 4]                                    ;Return string address
   ret 4
 StrUpperW endp

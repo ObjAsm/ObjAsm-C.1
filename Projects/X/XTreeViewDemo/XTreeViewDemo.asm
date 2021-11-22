@@ -1,9 +1,9 @@
 ; ==================================================================================================
 ; Title:      XTreeViewDemo.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    1.0.0
 ; Purpose:    ObjAsm XTreeview Demo Application.
-; Notes:      Version C.1.0, October 2017
+; Notes:      Version 1.0.0, October 2017
 ;               - First release.
 ; ==================================================================================================
 

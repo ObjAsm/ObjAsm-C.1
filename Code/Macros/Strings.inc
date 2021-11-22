@@ -46,10 +46,10 @@ PDCHR     typedef ptr DCHR                              ;Generic double characte
 PQCHR     typedef ptr QCHR                              ;Generic quadruple character POINTER type
 PSTRING   typedef ptr CHR                               ;Generic string POINTER type
 
-
-CR   equ 13
-LF   equ 10
-CRLF equ <13,10>
+TAB   equ 9
+CR    equ 13
+LF    equ 10
+CRLF  equ <13,10>
 
 ;Now include ANSI and WIDE string support
 

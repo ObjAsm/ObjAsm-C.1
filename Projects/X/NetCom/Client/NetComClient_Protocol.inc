@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      NetComClient_Protocol.inc
 ; Author:     G. Friedrich
-; Purpose:    ObjAsm support of NetComClientProtocol objects.
-; Version:    C.1.0
-;             Version C.1.0, October 2017
-;               - First release.
+; Version:    See NetComClient.asm
+; Purpose:    NetCom Client Application.
 ; ==================================================================================================
 
 

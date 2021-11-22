@@ -24,7 +24,7 @@
 
 align ALIGN_CODE
 DbgOutTextCA proc pStringA:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD, pDest:POINTER
-  local CDS:COPYDATASTRUCT, dBytesWritten:DWORD, wAttrib:WORD
+  local CDS:COPYDATASTRUCT, dCharsWritten:DWORD, wAttrib:WORD
   local dInfo1:DWORD, dInfo2:DWORD, dInfo3:DWORD, dInfo4:DWORD
 
   .if pStringA == NULL
@@ -77,10 +77,10 @@ DbgOutTextCA proc pStringA:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD,
         .endif
       .endif
       invoke SetConsoleTextAttribute, hDbgDev, wAttrib
-      lea r9, dBytesWritten
+      lea r9, dCharsWritten
       invoke WriteConsoleA, hDbgDev, pStringA, dLength, r9, NULL
       .ifBitSet dEffects, DBG_EFFECT_NEWLINE
-        invoke WriteConsoleA, hDbgDev, offset bCRLF, 2, addr dBytesWritten, NULL
+        invoke WriteConsoleA, hDbgDev, offset bCRLF, 2, addr dCharsWritten, NULL
       .endif
     .endif
 

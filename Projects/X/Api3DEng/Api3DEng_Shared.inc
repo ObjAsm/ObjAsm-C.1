@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      Api3DEng_Shared.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm Api3DEng demonstration program.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See Api3DEng.asm
+; Purpose:    ObjAsm Api3DEng program.
 ; ==================================================================================================
 
 
@@ -15,11 +13,11 @@ COPYRIGHT                     textequ   <G. Friedrich   October 2017>
 VER_FILEVERSION               equ       2,0,0,0
 VER_FILEVERSION_STR           textequ   <2.0>
 VER_PRODUCTVERSION            equ       2,0,0,0
-VER_PRODUCTVERSION_STR        equ       <2.0>
+VER_PRODUCTVERSION_STR        textequ   <2.0>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       133
-BUILD_DATE_STR                textequ   <2021-10-17>
+BUILD_NUMBER                  equ       1
+BUILD_DATE_STR                textequ   <2021-11-14>
 BUILD_BITNESS                 equ       64
 BUILD_MODE                    equ       DBG
 

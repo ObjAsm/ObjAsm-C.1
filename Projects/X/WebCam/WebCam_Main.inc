@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      WebCam_Main.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm WebCam demonstration program.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See WebCam_Main.asm
+; Purpose:    ObjAsm WebCam Application.
 ; ==================================================================================================
 
 

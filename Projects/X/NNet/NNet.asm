@@ -1,11 +1,11 @@
 ; ==================================================================================================
 ; Title:      NNet.asm
 ; Author:     Homer
-; Version:    C.1.0
-; Purpose:    ObjAsm Neural Net demo.
+; Version:    1.0.0
+; Purpose:    ObjAsm Neural Network Application.
 ; Links:      https://de.wikipedia.org/wiki/Perzeptron    --> XOR problem
 ;             https://towardsdatascience.com/perceptrons-logical-functions-and-the-xor-problem-37ca5025790a
-; Notes:      Version C.1.0, October 2017
+; Notes:      Version 1.0.0, October 2017
 ;               - First release.
 ; ==================================================================================================
 

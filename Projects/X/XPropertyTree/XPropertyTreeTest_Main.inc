@@ -1,21 +1,21 @@
 ; ==================================================================================================
-; Title:   XPropertyTreeTest_Main.inc
-; Author:  G. Friedrich  @ August 2007
-; Version: 1.0.0
-; Purpose: Demonstration program of ObjAsm32.
+; Title:      XPropertyTreeTest_Main.inc
+; Author:     G. Friedrich
+; Version:    XPropertyTreeTest.asm
+; Purpose:    ObjAsm XPropertyTree Test Application.
 ; ==================================================================================================
 
 
 CLSSTYLE equ CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW; or CS_DROPSHADOW
 
-CStr szDemoApp02, "DemoApp02"
+CStr cAppClassName, "Application"
 
 .const
 XPT_Def DEF_XTV {100, WS_CLIPSIBLINGS, WS_EX_ACCEPTFILES or WS_EX_NOPARENTNOTIFY,
                  $OfsTStr("XControl"), {<0,0,200,300>}}
 
 
-Object DemoApp02, MySdiAppID, SdiApp
+Object Application, MySdiAppID, SdiApp
   RedefineMethod    Done
   RedefineMethod    Init
   RedefineMethod    OnSize,             WPARAM, LPARAM
@@ -64,28 +64,28 @@ ColorRef    DWORD           16 dup(0)
 .code
 
 ; ==================================================================================================
-;    DemoApp02 implementation
+;    Application implementation
 ; ==================================================================================================
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp02.Done
+; Method:     Application.Done
 ; Purpose:    Finalize the SDI application object.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method DemoApp02.Done, uses xsi
+Method Application.Done, uses xsi
   SetObject xsi
   OCall [xsi].XPT::XPropertyTree.Done
   ACall xsi.Done
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp02.Init
+; Method:     Application.Init
 ; Purpose:    Initialize the SDI application object.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method DemoApp02.Init, uses xsi
+Method Application.Init, uses xsi
   local dWndPosX:DWORD, dWndPosY:DWORD, dWndWidth:DWORD, dWndHeight:DWORD
 
   SetObject xsi
@@ -98,7 +98,7 @@ Method DemoApp02.Init, uses xsi
   mov dWndPosY, $32($invoke(CenterForm, dWndHeight, $32($invoke(GetSystemMetrics, SM_CYSCREEN))))
 
   invoke CreateWindowEx, WS_EX_LEFT or WS_EX_APPWINDOW, \
-                         offset szDemoApp02, offset szAppTitle, WS_OVERLAPPEDWINDOW, \
+                         offset cAppClassName, offset cAppCaption, WS_OVERLAPPEDWINDOW, \
                          dWndPosX, dWndPosY, dWndWidth, dWndHeight, NULL, NULL, hInstance, pSelf
 
   invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL
@@ -143,13 +143,13 @@ Validate proc uses xbx xdi xsi hEdit:HWND
 Validate endp
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp02.OnCreate
+; Method:     Application.OnCreate
 ; Purpose:    Event procedure for WM_CREATE message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero.
 
-Method DemoApp02.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   local pNodeCat:ptr $Obj(XPT_CategoryNode), pNodePrp:ptr $Obj(XPT_PropertyNode)
   local hIconStrMain:HICON, hIconStrItem:HICON
   local hIconSize:HICON, hIconWidth:HICON, hIconHeight:HICON, hIconAverage:HICON
@@ -317,7 +317,7 @@ Method DemoApp02.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   mov OFN.nFilterIndex, 1
   lea xcx, [xsi].cConfigFile
   mov OFN.lpstrFile, xcx
-  mov OFN.nMaxFile, lengthof $Obj(DemoApp02).cConfigFile
+  mov OFN.nMaxFile, lengthof $Obj(Application).cConfigFile
   m2z OFN.lpstrFileTitle
   m2z OFN.nMaxFileTitle
   invoke ExpandEnvironmentStrings, $OfsCStr("%OBJASM_PATH%"), addr cBuffer, lengthof(cBuffer)
@@ -358,13 +358,13 @@ Method DemoApp02.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp02.OnCommand
+; Method:     Application.OnCommand
 ; Purpose:    Event procedure for WM_COMMAND message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoApp02.OnCommand, uses xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnCommand, uses xsi, wParam:WPARAM, lParam:LPARAM
   local cBuffer[MAX_PATH]:CHR, Dlg:$Obj(DialogAbout)
 
   SetObject xsi
@@ -393,13 +393,13 @@ Method DemoApp02.OnCommand, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp02.OnClose
+; Method:     Application.OnClose
 ; Purpose:    Event procedure for WM_CLOSE message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoApp02.OnClose, uses xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnClose, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   invoke MessageBox, [xsi].hWnd, $OfsCStr("Are you sure ?"), $OfsCStr("Application exit"), \
                  MB_YESNO or MB_ICONQUESTION
@@ -411,42 +411,42 @@ Method DemoApp02.OnClose, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp02.OnFocus
+; Method:     Application.OnFocus
 ; Purpose:    Event procedure for WM_KILLFOCUS and WM_SETFOCUS messages.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero.
 
-Method DemoApp02.OnFocus,, wParam:WPARAM, lParam:LPARAM
-  ;DbgText "DemoApp02.OnFocus"
+Method Application.OnFocus,, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "Application.OnFocus"
   SetObject xcx
   invoke SendMessage, [xcx].XPT.hWnd, eax, wParam, lParam
   xor eax, eax
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp02.OnMouseWheel
+; Method:     Application.OnMouseWheel
 ; Purpose:    Forward the message WM_MOUSEWHEEL to the focused window.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method DemoApp02.OnMouseWheel,, wParam:WPARAM, lParam:LPARAM
+Method Application.OnMouseWheel,, wParam:WPARAM, lParam:LPARAM
   SetObject xcx
   invoke SendMessage, [xcx].XPT.hWnd, WM_MOUSEWHEEL, wParam, lParam
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp02.OnSize
+; Method:     Application.OnSize
 ; Purpose:    Event procedure for WM_SIZE message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero.
 
-Method DemoApp02.OnSize, uses xsi, wParam:WPARAM, lParam:LPARAM
+Method Application.OnSize, uses xsi, wParam:WPARAM, lParam:LPARAM
   local WndSize:POINT
 
-  ;DbgText "DemoApp02.OnSize"
+  ;DbgText "Application.OnSize"
   SetObject xsi
   .if [xsi].XPT.hWnd != 0
     PntS2Pnt WndSize, lParam
@@ -457,47 +457,47 @@ Method DemoApp02.OnSize, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp02.OnKeyDown
+; Method:     Application.OnKeyDown
 ; Purpose:    Forward this message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Message return value.
 
-Method DemoApp02.OnKeyDown,, wParam:WPARAM, lParam:LPARAM
+Method Application.OnKeyDown,, wParam:WPARAM, lParam:LPARAM
   SetObject xcx
   invoke SendMessage, [xcx].XPT.hWnd, WM_KEYDOWN, wParam, lParam
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp02.OnKeyUp
+; Method:     Application.OnKeyUp
 ; Purpose:    Forward this message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Message return value.
 
-Method DemoApp02.OnKeyUp,, wParam:WPARAM, lParam:LPARAM
+Method Application.OnKeyUp,, wParam:WPARAM, lParam:LPARAM
   SetObject xcx
   invoke SendMessage, [xcx].XPT.hWnd, WM_KEYUP, wParam, lParam
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp02.Startup
+; Method:     Application.Startup
 ; Purpose:    Register the object class with the OS.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method DemoApp02.Startup
+Method Application.Startup
   local WC:WNDCLASSEX
 
   mov WC.cbSize, sizeof WNDCLASSEX
   mov WC.style, CLSSTYLE
-  m2m WC.lpfnWndProc, $MethodAddr(DemoApp02.WndProc), xdx
+  m2m WC.lpfnWndProc, $MethodAddr(Application.WndProc), xdx
   m2z WC.cbClsExtra
   m2z WC.cbWndExtra
   m2m WC.hInstance, hInstance, xdx
   m2z WC.hbrBackground
   c2m WC.lpszMenuName, $OfsCStr("MENU_APP"), xax
-  c2m WC.lpszClassName, offset szDemoApp02, xax
+  c2m WC.lpszClassName, offset cAppClassName, xax
   mov WC.hIcon, $invoke(LoadIcon, hInstance, $OfsCStr("ICON_APP"))
   mov WC.hCursor, $invoke(LoadCursor, 0, IDC_ARROW)
   m2z WC.hIconSm
@@ -506,7 +506,7 @@ Method DemoApp02.Startup
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DemoApp02.WindowProc
+; Method:     Application.WindowProc
 ; Purpose:    Dispatching of window messages.
 ; Arguments:  Arg1: Message identifier.
 ;             Arg2: First message parameter.
@@ -514,8 +514,8 @@ MethodEnd
 ;             Window handle is passed in pSelf.
 ; Return:     eax = Result of the message processing and depends on the message.
 
-Method DemoApp02.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-  ;DbgMessage uMsg,, "DemoApp02 Messages"
+Method Application.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
+  ;DbgMessage uMsg,, "Application Messages"
   .if uMsg == WM_NCCREATE
     mov xax, lParam
     mov xsi, [xax].CREATESTRUCT.lpCreateParams

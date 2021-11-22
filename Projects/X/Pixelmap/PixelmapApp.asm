@@ -1,9 +1,9 @@
 ; ==================================================================================================
 ; Title:      PixelmapApp.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    Pixelmap application using ObjAsm.
-; Notes:      Version C.1.0, October 2017
+; Version:    1.0.0
+; Purpose:    ObjAsm Pixelmap Application.
+; Notes:      Version 1.0.0, October 2017
 ;               - First release.
 ; ==================================================================================================
 

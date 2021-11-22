@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      NetComServer_Globals.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm NetComCnt program.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See NetComServer.asm
+; Purpose:    NetCom Server application.
 ; ==================================================================================================
 
 

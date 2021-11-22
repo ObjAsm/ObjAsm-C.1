@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      DatabaseApp_Main.inc
 ; Author:     G. Friedrich
-; Version:    C.1.1
+; Version:    See DatabaseApp.asm
 ; Purpose:    ObjAsm Database Application.
-; Notes:      Version C.1.1, August 2019
-;             - First release.
 ; ==================================================================================================
 
 

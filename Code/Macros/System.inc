@@ -1234,36 +1234,42 @@ endm
 
 DReal4 macro Name, Value
   S_DATA segment
+  align @WordSize
   Name REAL4 Value
   S_DATA ends
 endm
 
 DReal8 macro Name, Value
   S_DATA segment
+  align @WordSize
   Name REAL8 Value
   S_DATA ends
 endm
 
 DReal10 macro Name, Value
   S_DATA segment
+  align @WordSize
   Name REAL10 Value
   S_DATA ends
 endm
 
 CReal4 macro Name, Value
   S_CONST segment
+  align @WordSize
   Name REAL4 Value
   S_CONST ends
 endm
 
 CReal8 macro Name, Value
   S_CONST Segment
+  align @WordSize
   Name REAL8 Value
   S_CONST ends
 endm
 
 CReal10 macro Name, Value
   S_CONST segment
+  align @WordSize
   Name REAL10 Value
   S_CONST ends
 endm
@@ -1293,6 +1299,7 @@ $CReal4 macro Value
   endif
 
   $$RealDotPos InStr $$StartPos, <Value>, <.>
+  align @WordSize
   if $$RealDotPos eq 0
     $$RealName CatStr $$RealName, @SubStr(Value, $$StartPos), <p0>
   else      ;Check for additional <+> or <-> in the exponent
@@ -1325,6 +1332,7 @@ $CReal4 macro Value
   ;;Check if it does exist
 %   ifndef $$RealName
     S_CONST segment
+      align @WordSize
       if $$RealDotPos eq 0
 ;;        %echo @CatStr(<Defining CONST REAL4=>, Value, <.0 using >, %$$RealName, < symbol name at line >, %@Line, < of >, @FileCur)
         $$RealName REAL4 @CatStr(Value, <.0>)
@@ -1388,6 +1396,7 @@ $CReal8 macro Value
   ;;Check if it does exist
 %   ifndef $$RealName
     S_CONST segment
+      align @WordSize
       if $$RealDotPos eq 0
 ;;        %echo @CatStr(<Defining CONST REAL8=>, Value, <.0 using >, %$$RealName, < symbol name at line >, %@Line, < of >, @FileCur)
         $$RealName REAL8 @CatStr(Value, <.0>)
@@ -1451,6 +1460,7 @@ $CReal10 macro Value
   ;;Check if it does exist
 %   ifndef $$RealName
     S_CONST segment
+      align @WordSize
       if $$RealDotPos eq 0
 ;;        %echo @CatStr(<Defining CONST REAL10=>, Value, <.0 using >, %$$RealName, < symbol name at line >, %@Line, < of >, @FileCur)
         $$RealName REAL10 @CatStr(Value, <.0>)
@@ -1473,18 +1483,21 @@ endm
 
 $DReal4 macro Value
   local Name
+  align @WordSize
   DReal4 Name, Value
   exitm <Name>
 endm
 
 $DReal8 macro Value
   local Name
+  align @WordSize
   DReal8 Name, Value
   exitm <Name>
 endm
 
 $DReal10 macro Value
   local Name
+  align @WordSize
   DReal10 Name, Value
   exitm <Name>
 endm

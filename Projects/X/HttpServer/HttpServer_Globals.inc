@@ -1,10 +1,9 @@
 ; ==================================================================================================
 ; Title:      HttpServer_Globals.inc
 ; Author:     G. Friedrich
-; Version:    C.1.2
+; Version:    See HttpServer.asm
 ; Purpose:    ObjAsm HTTP Server.
-; Notes:      Version C.1.2, December 2020
-;               - First release.
+; Version:    See HttpServer.asm
 ; ==================================================================================================
 
 

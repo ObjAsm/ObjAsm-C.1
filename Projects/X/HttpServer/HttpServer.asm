@@ -1,9 +1,9 @@
 ; ==================================================================================================
 ; Title:      HttpServer.asm
 ; Author:     G. Friedrich 
-; Version:    C.1.2
+; Version:    1.2.0
 ; Purpose:    ObjAsm HTTP Server.
-; Notes:      Version C.1.2, December 2020
+; Notes:      Version 1.2.0, December 2020
 ;               - First release.
 ;               - Run the server as admin to be able to register the URL.
 ;               - Create an exception rule for incomming connections on the local windows firewall

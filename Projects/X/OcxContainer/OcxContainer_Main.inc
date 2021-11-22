@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      OcxContainer_Main.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    See OcxContainer.asm
 ; Purpose:    ObjAsm OCX Control Container.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
 ; ==================================================================================================
 
 

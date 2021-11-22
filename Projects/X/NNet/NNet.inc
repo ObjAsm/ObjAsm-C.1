@@ -2,7 +2,7 @@
 ; Title:      Demo10.asm
 ; Author:     T.Bleek's NeuralNetwork. Ported by Homer (2005).
 ; Version:    C.1.0
-; Purpose:    ObjAsm Neural Network demonstration.
+; Purpose:    ObjAsm Neural Network implementation.
 ; Links:      https://en.wikipedia.org/wiki/Neural_circuit
 ;             https://en.wikipedia.org/wiki/Artificial_neural_network
 ;             https://en.wikipedia.org/wiki/Backpropagation

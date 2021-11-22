@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      OcxContainer_Shared.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    See OcxContainer.asm
 ; Purpose:    ObjAsm OCX Control Container.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
 ; ==================================================================================================
 
 
@@ -12,14 +10,14 @@
 APP_TITLE                     textequ   <OcxContainer>
 ABOUT_TEXT                    textequ   <Active X Control Container>
 COPYRIGHT                     textequ   <G. Friedrich   October 2017> 
-VER_FILEVERSION               equ       2,0,0,0
-VER_FILEVERSION_STR           textequ   <2.0>
-VER_PRODUCTVERSION            equ       2,0,0,0
-VER_PRODUCTVERSION_STR        equ       <2.0>
+VER_FILEVERSION               equ       1,0,0,0
+VER_FILEVERSION_STR           textequ   <1.0>
+VER_PRODUCTVERSION            equ       1,0,0,0
+VER_PRODUCTVERSION_STR        textequ   <1.0>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       166
-BUILD_DATE_STR                textequ   <2021-10-17>
+BUILD_NUMBER                  equ       3
+BUILD_DATE_STR                textequ   <2021-11-21>
 BUILD_BITNESS                 equ       64
 BUILD_MODE                    equ       RLS
 

@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      DLApp_Main.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    See DLApp.asm
 ; Purpose:    ObjAsm Dynamic Window Layout Application.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
 ; ==================================================================================================
 
 

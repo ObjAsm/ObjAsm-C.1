@@ -1,10 +1,8 @@
 ; =================================================================================================
 ; Title:      NetComClient_Globals.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm NetComClient program.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See NetComClient.asm
+; Purpose:    NetCom Client Application.
 ; =================================================================================================
 
 

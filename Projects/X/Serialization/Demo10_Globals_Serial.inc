@@ -1,14 +1,12 @@
 ; ==================================================================================================
-; Title:      Demo10_Globals.inc
+; Title:      Demo10_Globals_Serial.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    Demo10 globals.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See Demo10_Serial.asm
+; Purpose:    ObjAsm Demo Application 10 with serialization.
 ; ==================================================================================================
 
 
-include Demo10_Shared.inc
+include Demo10_Shared_Serial.inc
 
 %CStr szAppTitle, "&APP_TITLE"
 %CStr szAboutText,"&ABOUT_TEXT", 13, 10, \

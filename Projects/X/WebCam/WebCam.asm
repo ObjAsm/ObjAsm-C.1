@@ -1,9 +1,9 @@
 ; ==================================================================================================
 ; Title:      WebCam.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm WebCam demonstration program.
-; Notes:      Version C.1.0, October 2017
+; Version:    1.0.0
+; Purpose:    ObjAsm WebCam Application.
+; Notes:      Version 1.0.0, October 2017
 ;               - First release.
 ; ==================================================================================================
 

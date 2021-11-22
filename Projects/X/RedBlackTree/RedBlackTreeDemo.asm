@@ -1,9 +1,9 @@
 ; ==================================================================================================
 ; Title:      RedBlackTreeDemo.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm Red-Black Tree demo.
-; Notes:      Version C.1.0, October 2017
+; Version:    1.0.0
+; Purpose:    ObjAsm Red-Black Tree Demo Application.
+; Notes:      Version 1.0.0, October 2017
 ;               - First release.
 ; ==================================================================================================
 

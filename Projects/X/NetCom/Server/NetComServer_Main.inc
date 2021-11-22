@@ -1,8 +1,8 @@
 ; ==================================================================================================
-; Title:   NetComServer.inc
-; Author:  G. Friedrich  @ July 2003
-; Version: 1.0.0
-; Purpose: NetCom Server application.
+; Title:      NetComServer.inc
+; Author:     G. Friedrich
+; Version:    See NetComServer.asm
+; Purpose:    NetCom Server Application.
 ; ==================================================================================================
 
 

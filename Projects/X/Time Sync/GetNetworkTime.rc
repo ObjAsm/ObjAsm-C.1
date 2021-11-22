@@ -1,10 +1,8 @@
 ; ==================================================================================================
-; Title:      GetInternetTime.rc
+; Title:      GetNetworkTime.rc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm resource file.
-; Notes:      Version C.1.0, January 2021
-;               - First release.
+; Version:    See GetNetworkTime.asm 
+; Purpose:    ObjAsm GetNetworkTime Application resource file.
 ; ==================================================================================================
 
 

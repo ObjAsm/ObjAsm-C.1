@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      MsgBoxApp_Globals.inc
 ; Author:     G. Friedrich
-; Version:    C.1.1
+; Version:    See ViewDemo.asm
 ; Purpose:    ObjAsm MsgBox Application.
-; Notes:      Version C.1.1, April 2020
-;               - First release.
 ; ==================================================================================================
 
 

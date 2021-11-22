@@ -1,12 +1,8 @@
 ; ==================================================================================================
 ; Title:      DebugCenter_ChildTxt.inc
 ; Author:     G. Friedrich
-; Version:    C.1.1
+; Version:    See DebugCenter.asm
 ; Purpose:    ObjAsm DebugCenter text MDI child window.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
-;             Version C.1.1, October 2019
-;               - Added more color and font customization by HSE.
 ; ==================================================================================================
 
 
@@ -70,11 +66,11 @@ Object DbgMdiChildTxt, DbgMdiChildTxtID, DbgMdiChild
 ObjectEnd
 
 
-.code
 ; ==================================================================================================
 ;    DbgMdiChildTxt implementation
 ; ==================================================================================================
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     DbgMdiChildTxt.ClpBrdClear
 ; Purpose:    Delete the selection to the clipboard.
@@ -210,6 +206,112 @@ Method DbgMdiChildTxt.Erase, uses xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  DbgMdiChildTxt_WordBreak
+; Purpose:    Callback proc to to break a line of text.
+; Arguments:  Arg1: -> Wide character Buffer.
+;             Arg2: Current character index.
+;             Arg3: Number of BYTEs in the buffer.
+;             Arg4: Action to be taken [WB_LEFT..WB_RIGHTBREAK].
+; Return:     Nothing.
+; Link:       https://docs.microsoft.com/en-us/windows/win32/controls/use-word-and-line-break-information
+
+.const
+RE_WordBreakLUT label CHRA                              ;Word break character lookup table
+  ;     NUL  SOH  STX  ETX  EDT  ENQ  ACK  BEL  BS   TAB  LF   VF   FF   CR   SO   SI
+  CHRA 000h,000h,000h,000h,000h,000h,000h,000h,000h,001h,001h,001h,001h,001h,000h,000h
+  ;     DLE  DC1  DC2  DC3  DC4  NAK  SYN  ETB  CAN  BM   SUB  ESC  FS   GS   RS   US
+  CHRA 000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+  ;     SPC   !    "    #    $    %    &    '    (    )    *    +    ,    -    .    /
+  CHRA 001h,001h,001h,001h,001h,001h,001h,001h,001h,001h,001h,001h,001h,001h,000h,001h  ;#, $
+  ;      0    1    2    3    4    5    6    7    8    9    :    ;    <    =    >    ?
+  CHRA 000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h,001h,001h,001h,001h,001h  ;0..9, ?
+  ;      @    A    B    C    D    E    F    G    H    I    J    K    L    M    N    O
+  CHRA 000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h  ;@, A..O
+  ;      P    Q    R    S    T    U    V    W    X    Y    Z    [    \    ]    ^    _
+  CHRA 000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h,001h,001h,001h,000h  ;P..Z, _
+  ;      `    a    b    c    d    e    f    g    h    i    j    k    l    m    n    o
+  CHRA 001h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h  ;a..o
+  ;      p    q    r    s    t    u    v    w    x    y    z    {    |    }    ~
+  CHRA 000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h,001h,001h,001h,000h  ;p..z
+
+.code
+DbgMdiChildTxt_WordBreak proc uses xbx xsi pCharBuffer:POINTER, \
+                                           dCharIndex:DWORD, dByteCount:DWORD, dCode:DWORD
+  .if dCode == WB_LEFT                                  ;0
+    xor eax, eax
+  .elseif dCode == WB_RIGHT                             ;1
+    xor eax, eax
+  .elseif dCode == WB_ISDELIMITER                       ;2
+    xor eax, eax
+  .elseif dCode == WB_CLASSIFY                          ;3
+    xor eax, eax
+  .elseif dCode == WB_MOVEWORDLEFT                      ;4 = WB_MOVEWORDPREV
+    mov xbx, offset RE_WordBreakLUT
+    mov eax, dCharIndex
+    dec eax
+    mov xsi, pCharBuffer
+
+    movzx xdx, CHRW ptr [xsi + sizeof(CHRW)*xax]
+    .if ((xdx >= 128) || ((xdx < 128) && (BYTE ptr [xbx + xdx] == 0)))
+      ;Search first break char
+      .while eax != 0
+        movzx xdx, CHRW ptr [xsi + sizeof(CHRW)*xax]
+        .if ((xdx < 128) && (BYTE ptr [xbx + xdx] == 1))
+          inc eax
+          .break
+        .endif
+        dec eax
+      .endw
+    .else
+      ;Search first non-break char
+      .while eax != 0
+        movzx xdx, CHRW ptr [xsi + sizeof(CHRW)*xax]
+        .if ((xdx >= 128) || ((xdx < 128) && (BYTE ptr [xbx + xdx] == 0)))
+          inc eax
+          .break
+        .endif
+        dec eax
+      .endw
+    .endif
+
+  .elseif dCode == WB_MOVEWORDRIGHT                     ;5 = WB_MOVEWORDNEXT
+    mov xbx, offset RE_WordBreakLUT
+    mov eax, dCharIndex
+    mov xsi, pCharBuffer
+    mov ecx, dByteCount
+    shr ecx, 1
+
+    movzx xdx, CHRW ptr [xsi + sizeof(CHRW)*xax]
+    .if ((xdx >= 128) || ((xdx < 128) && (BYTE ptr [xbx + xdx] == 0)))
+    ;Search first break char
+      .while eax != ecx
+        movzx xdx, CHRW ptr [xsi + sizeof(CHRW)*xax]
+        .if ((xdx < 128) && (BYTE ptr [xbx + xdx] == 1))
+          .break
+        .endif
+        inc eax
+      .endw
+    .else
+      ;Search first non-break char
+      .while eax != ecx
+        movzx xdx, CHRW ptr [xsi + sizeof(CHRW)*xax]
+        .if ((xdx >= 128) || ((xdx < 128) && (BYTE ptr [xbx + xdx] == 0)))
+          .break
+        .endif
+        inc eax
+      .endw
+    .endif
+  .elseif dCode == WB_LEFTBREAK                         ;6 = WB_PREVBREAK
+    xor eax, eax
+  .elseif dCode == WB_RIGHTBREAK                        ;7 = WB_NEXTBREAK
+    xor eax, eax
+  .else
+    xor eax, eax
+  .endif
+  ret
+DbgMdiChildTxt_WordBreak endp
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     DbgMdiChildTxt.Init
 ; Purpose:    Initialize the DbgMdiChildTxt object.
 ; Arguments:  Arg1: -> Owner object.
@@ -227,33 +329,36 @@ Method DbgMdiChildTxt.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRINGW, h
   invoke CreateMDIWindow, offset szDbgMdiChildTxt, pTitle, 0, \
                           CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, \
                           [xdi].$Obj(DbgMdiClient).hWnd, hInstance, pSelf
-	.if eax != 0
-    	invoke SendMessage, [xsi].hEdit, WM_SETFONT, hFont, FALSE
+  .if xax != 0
+    invoke SendMessage, [xsi].hEdit, WM_SETFONT, hFont, FALSE
 
-    	;Manage the main Menu
-    	inc [xdi].$Obj(DbgMdiClient).dChildCount
-    	mov xbx, [xdi].$Obj(DbgMdiClient).pOwner
-    	.if [xdi].$Obj(DbgMdiClient).dChildCount == 1       ;First child window ?
-    		invoke SendMessage, [xbx].$Obj(DebugCenter).hWnd, WM_CANCELMODE, 0, 0   ;Close any opened submenu
-    		invoke SendMessage, [xdi].$Obj(DbgMdiClient).hWnd, WM_MDISETMENU, \
-            	              [xbx].$Obj(DebugCenter).hMenuChild, [xbx].$Obj(DebugCenter).hMenuChildWnd
-    		OCall xbx::DebugCenter.EnableActions, TRUE
-    		invoke DrawMenuBar, [xbx].$Obj(DebugCenter).hWnd        ;Redraw the new menu bar
-    		OCall xbx::DebugCenter.ManageOptions, DbgMdiChildTxtID
-    	.endif
+    ;Set our new WordBreak procedure
+    invoke SendMessage, [xsi].hEdit, EM_SETWORDBREAKPROC, 0, addr DbgMdiChildTxt_WordBreak
 
-    	;Install Magnetism
-    	mov [xsi].pMagnetism, $New(Magnetism)
-    	OCall [xsi].pMagnetism::Magnetism.Init, xsi, [xsi].hWnd, 10
+    ;Manage the main Menu
+    inc [xdi].$Obj(DbgMdiClient).dChildCount
+    mov xbx, [xdi].$Obj(DbgMdiClient).pOwner
+    .if [xdi].$Obj(DbgMdiClient).dChildCount == 1       ;First child window ?
+      invoke SendMessage, [xbx].$Obj(DebugCenter).hWnd, WM_CANCELMODE, 0, 0 ;Close any opened submenu
+      invoke SendMessage, [xdi].$Obj(DbgMdiClient).hWnd, WM_MDISETMENU, \
+                          [xbx].$Obj(DebugCenter).hMenuChild, [xbx].$Obj(DebugCenter).hMenuChildWnd
+      OCall xbx::DebugCenter.EnableActions, TRUE
+      invoke DrawMenuBar, [xbx].$Obj(DebugCenter).hWnd  ;Redraw the new menu bar
+      OCall xbx::DebugCenter.ManageOptions, DbgMdiChildTxtID
+    .endif
 
-      invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL
-  	.else
-      mov edx, $ObjTmpl(DebugCenter).dLanguage
-      add edx, 125
-      invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
-    	invoke MessageBox, [xbx].$Obj(DebugCenter).hWnd, addr cMsg, offset szError, \
-    	                   MB_OK or MB_ICONERROR
-  	.endif
+    ;Install Magnetism
+    mov [xsi].pMagnetism, $New(Magnetism)
+    OCall [xsi].pMagnetism::Magnetism.Init, xsi, [xsi].hWnd, 10
+
+    invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL
+  .else
+    mov edx, $ObjTmpl(DebugCenter).dLanguage
+    add edx, 125
+    invoke LoadString, hInstance, edx, addr cMsg, lengthof cMsg - 1
+    invoke MessageBox, [xbx].$Obj(DebugCenter).hWnd, addr cMsg, offset szError, \
+                       MB_OK or MB_ICONERROR
+  .endif
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -328,7 +433,7 @@ Method DbgMdiChildTxt.OnNotify, uses xsi, wParam:WPARAM, lParam:LPARAM
       .endif
     .endif
   .endif
-  invoke DefMDIChildProc, [xsi].hWnd, WM_NOTIFY, wParam, lParam
+  mov eax, 1
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -346,7 +451,7 @@ Method DbgMdiChildTxt.OnSize, uses xsi, wParam:WPARAM, lParam:LPARAM
     invoke GetClientRect, [xsi].hWnd, addr CRect
     invoke MoveWindow, [xsi].hEdit, 0, 0, CRect.right, CRect.bottom, TRUE
   .endif
-  invoke DefMDIChildProc, [xsi].hWnd, WM_SIZE, wParam, lParam
+  xor eax, eax
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

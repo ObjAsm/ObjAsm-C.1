@@ -1,12 +1,8 @@
 ; ==================================================================================================
 ; Title:      DebugCenter_ChildBmp.inc
 ; Author:     G. Friedrich
-; Version:    C.1.1
+; Version:    See DebugCenter.asm
 ; Purpose:    ObjAsm DebugCenter Bitmap MDI child window.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
-;             Version C.1.1, October 2019
-;               - Added more color customization by HSE.
 ; ==================================================================================================
 
 
@@ -247,7 +243,7 @@ Method DbgMdiChildBmp.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRING
   invoke CreateMDIWindow, offset szDbgMdiChildBmp, pTitle, \
              WS_HSCROLL or WS_VSCROLL, CW_USEDEFAULT, CW_USEDEFAULT, \
              CW_USEDEFAULT, CW_USEDEFAULT, [xdi].$Obj(DbgMdiClient).hWnd, hInstance, pSelf
-  .if eax != 0
+  .if xax != 0
     ;Manage the main Menu
     inc [xdi].$Obj(DbgMdiClient).dChildCount
     mov xbx, [xdi].$Obj(DbgMdiClient).pOwner
@@ -407,7 +403,7 @@ Method DbgMdiChildBmp.OnPaint, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
     mov hBrush, $invoke(CreateSolidBrush, DBG_COLOR_BACKGROUND)
     invoke FillRect, PS.hdc, addr Rct, hBrush
     invoke DeleteObject, hBrush
-    
+
     invoke ShowScrollBar, [xsi].hWnd, SB_BOTH, FALSE
   .endif
   invoke EndPaint, [xsi].hWnd, addr PS
@@ -559,7 +555,7 @@ Method DbgMdiChildBmp.OnRButtonDown,, wParam:WPARAM, lParam:LPARAM
   SetObject xax
   mov xcx, [xax].pOwner                                 ;xcx -> DbgMdiClient
   invoke SendMessage, [xcx].$Obj(DbgMdiClient).hWnd, WM_MDIACTIVATE, \
-                      [xax].$Obj(DbgMdiChildBmp).hWnd, 0   
+                      [xax].$Obj(DbgMdiChildBmp).hWnd, 0
   xor eax, eax
 MethodEnd
 

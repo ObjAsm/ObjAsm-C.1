@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      NetComClient.inc
 ; Author:     G. Friedrich
-; Purpose:    NetCom Client application.
-; Version:    C.1.0
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See NetComClient.asm
+; Purpose:    NetCom Client Application.
 ; ==================================================================================================
 
 

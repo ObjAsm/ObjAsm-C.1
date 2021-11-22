@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      RibbonApp_Globals.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    See RibbonApp.asm
 ; Purpose:    ObjAsm Ribbon Application globals.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
 ; ==================================================================================================
 
 

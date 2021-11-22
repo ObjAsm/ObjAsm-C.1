@@ -13,32 +13,31 @@
 .code
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure: StrLowerW
-; Purpose:   Convert all WIDE string characters into lowercase.
-; Arguments: Arg1: -> Source WIDE string.
-; Return:    Nothing.
+; Procedure:  StrLowerW
+; Purpose:    Convert all WIDE string characters into lowercase.
+; Arguments:  Arg1: -> Source WIDE string.
+; Return:     eax -> string.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE
 
 align ALIGN_CODE
 StrLowerW proc pStringW:POINTER
-  mov ecx, [esp + 4]                                    ;ecx -> String
-  sub ecx, 2
-@@Char:
-  add ecx, 2
+  mov ecx, [esp + 4]                                    ;ecx -> StringW
+  sub ecx, sizeof(CHRW)
+@@:
+  add ecx, sizeof(CHRW)
   mov ax, [ecx]
   or ax, ax
-  je @@Exit                                             ;End of string
+  je @F                                                 ;End of string
   cmp ax, 'A'
-  jb @@Char
+  jb @B
   cmp ax, 'Z'
-  ja @@Char
+  ja @B
   add ax, 20H
   mov [ecx], ax
-  jmp @@Char
-align ALIGN_CODE
-@@Exit:
+  jmp @B
+@@:
   mov eax, [esp + 4]                                    ;Return string address
   ret 4
 StrLowerW endp

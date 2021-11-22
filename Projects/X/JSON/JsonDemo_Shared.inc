@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      JsonDemo_Shared.inc
 ; Author:     G. Friedrich
-; Version:    C.1.2
-; Purpose:    ObjAsm JSON demonstration program.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See JsonDemo.asm
+; Purpose:    ObjAsm JSON Application.
 ; ==================================================================================================
 
 
@@ -12,14 +10,14 @@
 APP_TITLE                     textequ   <JSON Demo>
 ABOUT_TEXT                    textequ   <JSON Demo>
 COPYRIGHT                     textequ   <G. Friedrich   December 2020> 
-VER_FILEVERSION               equ       2,0,0,0
-VER_FILEVERSION_STR           textequ   <2.0>
-VER_PRODUCTVERSION            equ       2,0,0,0
-VER_PRODUCTVERSION_STR        equ       <2.0>
+VER_FILEVERSION               equ       1,0,0,0
+VER_FILEVERSION_STR           textequ   <1.0>
+VER_PRODUCTVERSION            equ       1,0,0,0
+VER_PRODUCTVERSION_STR        textequ   <1.0>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       11
-BUILD_DATE_STR                textequ   <2021-10-17>
+BUILD_NUMBER                  equ       2
+BUILD_DATE_STR                textequ   <2021-11-14>
 BUILD_BITNESS                 equ       64
 BUILD_MODE                    equ       DBG
 

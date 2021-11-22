@@ -1,14 +1,10 @@
 ; ==================================================================================================
 ; Title:      SplashDemo_Main.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm SplashDemo.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See SplashDemo.asm
+; Purpose:    ObjAsm Splash Application.
 ; ==================================================================================================
 
-
-CLSSTYLE equ CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW; or CS_DROPSHADOW
 
 CStr szSplashDemo, "SplashDemo"                         ;Creates szSplashDemo string in .const
 
@@ -136,7 +132,7 @@ Method SplashDemo.Startup
   local WC:WNDCLASSEX
 
   mov WC.cbSize, sizeof WNDCLASSEX
-  mov WC.style, CLSSTYLE
+  m2z WC.style
   m2m WC.lpfnWndProc, $MethodAddr(SplashDemo.WndProc), xdx
   m2z WC.cbClsExtra
   m2z WC.cbWndExtra

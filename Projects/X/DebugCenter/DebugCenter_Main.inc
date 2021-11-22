@@ -1,12 +1,8 @@
 ; ==================================================================================================
 ; Title:      DebugCenter_Main.inc
 ; Author:     G. Friedrich
-; Version:    C.1.1
-; Purpose:    ObjAsm DebugCenter.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
-;             Version C.1.1, October 2019
-;               - Added more color and font customization by HSE.
+; Version:    See DebugCenter.asm
+; Purpose:    ObjAsm DebugCenter application.
 ; ==================================================================================================
 
 
@@ -1167,8 +1163,8 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
           mov CFD.cbSize, sizeof(CFD)
           mov CFD.dwMask, CFM_COLOR or CFM_BOLD or CFM_ITALIC or CFM_STRIKEOUT or CFM_UNDERLINE
 
-			;m2z CFD.crTextColor
-		  	mov CFD.crTextColor, DBG_COLOR_LINE
+      ;m2z CFD.crTextColor
+        mov CFD.crTextColor, DBG_COLOR_LINE
 
           m2z CFD.dwEffects
           invoke SendMessage, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_SETCHARFORMAT, SCF_SELECTION, addr CFD

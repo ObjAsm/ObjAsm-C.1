@@ -1,11 +1,8 @@
 ; ==================================================================================================
 ; Title:      DebugShare.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
 ; Purpose:    ObjAsm debug shared definitions.
 ;             This file provides definitions used by the "application debug system" and DebugCenter.
-;             Version C.1.0, October 2017
-;               - First release.
 ; ==================================================================================================
 
 

@@ -1,8 +1,8 @@
 ; ==================================================================================================
 ; Title:      ShortCut.asm
 ; Author:     G. Friedrich & Jaymeson Trudgen (NaN)
-; Version:    C.1.0
-; Purpose:    ObjAsm demonstration program.
+; Version:    1.0.0
+; Purpose:    ObjAsm Shortcut Application.
 ;             (Source is a direct transcription from Ernest Murphy's origional COM examples)
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.

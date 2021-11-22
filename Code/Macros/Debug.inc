@@ -280,8 +280,8 @@ endm
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      DbgSetDestWnd
 ; Purpose:    Set the global symbol ??DbgDstWnd.
-; Arguments:  Arg1: Debug Center MDI destination child window name on which will be directed
-;                   the information.
+; Arguments:  Arg1: Name of the child window of the Debug Center MDI target to which the information
+;                   is directed.
 ; Returns:    Nothing.
 
 DbgSetDestWnd macro DestWnd
@@ -522,7 +522,7 @@ endm
 ;             Arg2: Optional text color.
 ;             Arg3: Format text.
 ;             Arg4: Text paramters.
-; Example:    DbgTextF "Output", $RGB(0,0,0), "Data = '%s'", xax
+; Example:    DbgTextF "Output", $RGB(000,000,000), "Data = '%s'", xax
 
 DbgTextF macro Dest, Color:=<DBG_COLOR_TEXT>, Message:req, Args:vararg
   if DEBUGGING
@@ -531,7 +531,7 @@ DbgTextF macro Dest, Color:=<DBG_COLOR_TEXT>, Message:req, Args:vararg
     ifnb <Args>
       ifndef DebugTextF
         S_DATA segment
-         DebugTextF CHRA 1024 dup (?)
+         DebugTextF CHRA 1024 dup(?)
         S_DATA ends
       endif
 

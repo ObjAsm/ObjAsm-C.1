@@ -19,8 +19,8 @@
 ; Return:     rax -> String.
 
 align ALIGN_CODE
-StrLowerW proc pStrW:POINTER
-  push rcx
+StrLowerW proc pStringW:POINTER
+  push rcx                                              ;rcx -> StringW
   sub rcx, sizeof(CHRW)
 @@:
   add rcx, sizeof(CHRW)
@@ -35,7 +35,7 @@ StrLowerW proc pStrW:POINTER
   mov [rcx], ax
   jmp @B
 @@:
-  pop rax
+  pop rax                                               ;Return string address
   ret
 StrLowerW endp
 

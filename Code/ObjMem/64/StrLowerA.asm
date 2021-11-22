@@ -19,8 +19,8 @@
 ; Return:     rax -> String.
 
 align ALIGN_CODE
-StrLowerA proc pStrA:POINTER
-  push rcx
+StrLowerA proc pStringA:POINTER
+  push rcx                                              ;rcx -> StringA
   dec rcx
 @@:
   inc rcx
@@ -28,14 +28,14 @@ StrLowerA proc pStrA:POINTER
   or al, al
   je @F                                                 ;End of string
   cmp al, 'A'
-  jb @F
+  jb @B
   cmp al, 'Z'
-  ja @F
+  ja @B
   add al, 20H
   mov [rcx], al
   jmp @B
 @@:
-  pop rax
+  pop rax                                               ;Return string address
   ret
 StrLowerA endp
 

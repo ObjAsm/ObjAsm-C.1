@@ -1,20 +1,22 @@
 ; ==================================================================================================
 ; Title:      OA_ObjExplorer.asm
 ; Author:     G. Friedrich
-; Version:    C.1.1
-; Purpose:    ObjAsm Object Explorer.
-; Notes:      Version C.1.1, October 2021
-;               - COM stuff replaced by TextView.
-;             Version C.1.0, December 2020
+; Version:    2.0.0
+; Purpose:    ObjAsm Object Explorer Application.
+; Notes:      Version 1.0.0, December 2017
 ;               - First release.
+;             Version 1.1.0, August 2020
+;               - WebBrowser rendering replaced by TextView.
+;             Version 2.0.0, October 2021
+;               - General overhaul.
+;
+; Todos:      - Namespaces need better handling
+;             - Interfaces are not recognized --> API convention change! See h2incX project
+;             - HelpLines are not collected nor displayed
+;             - Set some information on the StatusBar from resources
+;             - Context menu is not used. Code remains for future use.
 ; ==================================================================================================
 
-;Todos:
-;Namespaces need better handling
-;Interfaces are not recognized --> API convention change! See h2incX project
-;HelpLines are not collected nor displayed
-;Set some information on the StatusBar from resources
-;Context menu is not used. Code remains for future use.
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc

@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      IFileDialogApp_Main.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm IFileDialog demo.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See IFileDialog.asm
+; Purpose:    ObjAsm IFileDialog Application.
 ; ==================================================================================================
 
 

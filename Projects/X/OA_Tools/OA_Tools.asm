@@ -1,9 +1,9 @@
 ; ==================================================================================================
 ; Title:      OA_Tools.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    Tools for ObjAsm.
-; Notes:      Version C.1.0, October 2017
+; Version:    1.0.0
+; Purpose:    ObjAsm Tools.
+; Notes:      Version 1.0.0, October 2017
 ;               - First release.
 ; ==================================================================================================
 

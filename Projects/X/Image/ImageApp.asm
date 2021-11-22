@@ -1,9 +1,9 @@
 ; ==================================================================================================
 ; Title:      ImageApp.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm Image demonstration program.
-; Notes:      Version C.1.0, October 2017
+; Version:    1.0.0
+; Purpose:    ObjAsm Image Application.
+; Notes:      Version 1.0.0, October 2017
 ;               - First release.
 ; ==================================================================================================
 

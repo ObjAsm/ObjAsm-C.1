@@ -1,10 +1,16 @@
 ; ==================================================================================================
 ; Title:      DebugCenter.asm
 ; Authors:    G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm DebugCenter.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version     2.1.1
+; Purpose:    ObjAsm DebugCenter application.
+; Notes:      Version 1.1.0, October 2017
+;               - First release. Ported to BNC. 
+;             Version 2.1.0, October 2019
+;               - Added more color and font customization by HSE.
+;             Version 2.1.1, October 2021
+;               - First click into ChildTxt bug corrected.
+;               - Find text bug corrected.
+;               - Word break routine added to ChildTxt to improve usability. 
 ; ==================================================================================================
 
 
@@ -46,12 +52,13 @@ MakeObjects WinPrimer, Window, WinApp, MdiApp
 MakeObjects Button, Hyperlink, IconButton
 MakeObjects RegKey, IDL, IniFile
 MakeObjects Dialog, DialogModal, DialogModalIndirect
-MakeObjects DialogModeless, DialogModelessIndirect, DialogFindText
+MakeObjects DialogModeless, DialogModelessIndirect
 MakeObjects SimpleImageList, MaskedImageList
 MakeObjects MsgInterceptor, XMenu, Magnetism
 MakeObjects WinControl, Toolbar, Rebar, Statusbar, Tooltip, TextView, Image
 
 include DebugCenter_Globals.inc                         ;Include application globals
+include DebugCenter_DlgFindText.inc
 include DebugCenter_Main.inc                            ;Include DebugCenter main object
 
 start proc uses xbx                                     ;Program entry point

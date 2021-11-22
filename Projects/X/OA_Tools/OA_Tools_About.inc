@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      OA_Tools_About.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    Tools for ObjAsm.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See OA_Tools.asm
+; Purpose:    ObjAsm Tools.
 ; ==================================================================================================
 
 

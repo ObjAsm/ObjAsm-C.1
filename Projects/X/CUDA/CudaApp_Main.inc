@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      CudaApp_Main.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm CUDA demo application.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See CudaApp.asm
+; Purpose:    ObjAsm CUDA application.
 ; ==================================================================================================
 
 

@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      SkinApp.rc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm SkinApp resource file.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See SkinApp.asm
+; Purpose:    ObjAsm Skined Application resource file.
 ; ==================================================================================================
 
 

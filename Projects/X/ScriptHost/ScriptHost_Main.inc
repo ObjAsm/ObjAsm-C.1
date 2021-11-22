@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      ScriptHost_Main.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm ScriptHost demonstration.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See ScriptHost.asm
+; Purpose:    ObjAsm ScriptHost Application.
 ; ==================================================================================================
 
 

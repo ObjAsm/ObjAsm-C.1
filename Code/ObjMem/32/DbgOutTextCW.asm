@@ -24,7 +24,7 @@
 
 align ALIGN_CODE
 DbgOutTextCW proc pStr:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD, pDest:POINTER
-  local dBytesWritten:DWORD, wAttrib:WORD, dResult:DWORD
+  local dCharsWritten:DWORD, wAttrib:WORD, dResult:DWORD
   local CDS:COPYDATASTRUCT
 
   .if pStr == NULL
@@ -37,12 +37,12 @@ DbgOutTextCW proc pStr:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD, pDe
     invoke DbgLogOpen
     .if $invoke(DbgLogOpen)
       mov eax, dLength
-      lea ecx, dBytesWritten
+      lea ecx, dCharsWritten
       add eax, eax
       invoke WriteFile, hDbgDev, pStr, eax, ecx, NULL
     .endif
     .ifBitSet dEffects, DBG_EFFECT_NEWLINE
-      invoke WriteFile, hDbgDev, offset wCRLF, 4, addr dBytesWritten, NULL
+      invoke WriteFile, hDbgDev, offset wCRLF, 4, addr dCharsWritten, NULL
     .endif
 
   .elseif eax == DBG_DEV_CON
@@ -74,10 +74,10 @@ DbgOutTextCW proc pStr:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD, pDe
         .endif
       .endif
       invoke SetConsoleTextAttribute, hDbgDev, wAttrib
-      lea ecx, dBytesWritten
+      lea ecx, dCharsWritten
       invoke WriteConsoleW, hDbgDev, pStr, dLength, ecx, NULL
       .ifBitSet dEffects, DBG_EFFECT_NEWLINE
-        invoke WriteConsoleW, hDbgDev, offset wCRLF, 2, addr dBytesWritten, NULL
+        invoke WriteConsoleW, hDbgDev, offset wCRLF, 2, addr dCharsWritten, NULL
       .endif
     .endif
 

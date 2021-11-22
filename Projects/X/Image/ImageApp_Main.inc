@@ -1,8 +1,8 @@
 ; ==================================================================================================
 ; Title:      ImageApp_Main.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm Image demonstration program.
+; Version:    See ImageApp.asm
+; Purpose:    ObjAsm Image Application.
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
 ; ==================================================================================================

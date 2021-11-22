@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      ArduinoCom.rc
 ; Author:     G. Friedrich
-; Version:    C.1.1
+; Version:    See ArduinoCom.asm
 ; Purpose:    ObjAsm resource file.
-; Notes:      Version C.1.1, October 2020
-;               - First release.
 ; ==================================================================================================
 
 

@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      JsonDemo_Main.inc
 ; Author:     G. Friedrich
-; Version:    C.1.2
-; Purpose:    ObjAsm JSON demonstration program.
-; Notes:      Version C.1.2, October 2017
-;               - First release.
+; Version:    See JsonDemo.asm
+; Purpose:    ObjAsm JSON Application.
 ; ==================================================================================================
 
 

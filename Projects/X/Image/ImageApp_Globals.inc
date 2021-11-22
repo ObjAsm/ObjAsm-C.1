@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      ImageApp_Globals.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm Image demonstration program.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See ImageApp.asm
+; Purpose:    ObjAsm Image Application.
 ; ==================================================================================================
 
 

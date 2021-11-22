@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      DebugCenter_Child.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm DebugCenter MDI child ancestor for ObjAsm.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See DebugCenter.asm
+; Purpose:    ObjAsm DebugCenter MDI child ancestor.
 ; ==================================================================================================
 
 

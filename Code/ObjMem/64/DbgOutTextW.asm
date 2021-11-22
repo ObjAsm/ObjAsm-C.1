@@ -23,7 +23,7 @@
 
 align ALIGN_CODE
 DbgOutTextW proc pStringW:POINTER, dColor:DWORD, dEffects:DWORD, pDest:POINTER
-  local CDS:COPYDATASTRUCT, dBytesWritten:DWORD, wAttrib:WORD
+  local CDS:COPYDATASTRUCT, dCharsWritten:DWORD, wAttrib:WORD
   local dInfo1:DWORD, dInfo2:DWORD, dInfo3:DWORD, dInfo4:DWORD
 
   .if pStringW == NULL
@@ -74,10 +74,10 @@ DbgOutTextW proc pStringW:POINTER, dColor:DWORD, dEffects:DWORD, pDest:POINTER
       .endif
       invoke SetConsoleTextAttribute, hDbgDev, wAttrib
       invoke StrLengthW, pStringW
-      lea r9, dBytesWritten
+      lea r9, dCharsWritten
       invoke WriteConsoleW, hDbgDev, pStringW, eax, r9, NULL
       .ifBitSet dEffects, DBG_EFFECT_NEWLINE
-        invoke WriteConsoleW, hDbgDev, offset wCRLF, 4, addr dBytesWritten, NULL
+        invoke WriteConsoleW, hDbgDev, offset wCRLF, 4, addr dCharsWritten, NULL
       .endif
     .endif
 

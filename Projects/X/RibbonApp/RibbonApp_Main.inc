@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      RibbonApp_Main.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    See RibbonApp.asm
 ; Purpose:    ObjAsm Ribbon Application.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
 ; ==================================================================================================
 
 

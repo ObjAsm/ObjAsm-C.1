@@ -20,8 +20,8 @@ Debug=0
 9=..\..\..\Code\Macros\System.inc
 10=GetNetworkTime_Shared.inc
 11=GetNetworkTime_Shared.rc
-12=sync_3.inc
-13=Neuer Ordner\Sync.asm
+12=
+13=
 14=..\..\..\Code\Macros\QuadWord.inc
 15=
 16=
@@ -108,7 +108,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=17
+MilestoneOnDateDate=14
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -143,22 +143,22 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,0,0,721
+2=0,0,0,0,6947
 3=0,0,0,0,12079
-1=0,0,0,0,498
+1=0,0,0,0,125
 4=0,0,562,490,7119
 5=0,0,694,587,12924
 6=0,0,0,0,885
 8=0,0,0,0,19422
 7=0,0,0,0,1563
 9=0,0,0,0,0
-10=0,0,1300,628,225
+10=0,0,1300,628,845
 11=0,0,1300,628,144
-12=0,0,0,0,6931
+12=
 16=
 15=
 14=0,0,0,0,6999
-13=0,0,0,0,6003
+13=
 
 [BookMark]
 0=
@@ -205,9 +205,9 @@ ProductVer4Range=0
 13=,
 8=
 [AutoLoad]
-AutoLoad=2,4,3
+AutoLoad=2,1,10
 [PTimer]
-PTimer=845507061
+PTimer=845858327
 [GroupExpand]
 GroupExpand=0,1,1,0,0,1,1,0
 [RADebugBP]

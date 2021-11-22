@@ -1,9 +1,9 @@
 ; ==================================================================================================
 ; Title:      ViewDemo.asm
 ; Author:     G. Friedrich
-; Version:    C.1.1
+; Version:    1.0.0
 ; Purpose:    ObjAsm MsgBox Application.
-; Notes:      Version C.1.1, April 2020
+; Notes:      Version 1.0.0, April 2020
 ;               - First release.
 ; ==================================================================================================
 

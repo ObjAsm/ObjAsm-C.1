@@ -81,7 +81,6 @@ Ribbon
 Dialog
 DialogAbout
 DialogAboutIndirect
-DialogFindText
 DialogModal
 DialogModalIndirect
 DialogModeless

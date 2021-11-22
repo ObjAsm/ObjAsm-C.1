@@ -1,25 +1,23 @@
 ; ==================================================================================================
 ; Title:      DatabaseApp_Shared.inc
 ; Author:     G. Friedrich
-; Version:    C.1.11
-; Purpose:    ObjAsm Database program.
-; Notes:      Version C.1.1, August 2019
-;             - First release.
+; Version:    See DatabaseApp.asm
+; Purpose:    ObjAsm Database Application.
 ; ==================================================================================================
 
 
 ;General information
 APP_TITLE                     textequ   <Database Explorer>
 ABOUT_TEXT                    textequ   <Database Explorer - test version ->
-COPYRIGHT                     textequ   <G. Friedrich   January 2020> 
-VER_FILEVERSION               equ       0,1,0,0
-VER_FILEVERSION_STR           textequ   <0.1>
-VER_PRODUCTVERSION            equ       0,1,0,0
-VER_PRODUCTVERSION_STR        equ       <0.1>
+COPYRIGHT                     textequ   <G. Friedrich   August 2019> 
+VER_FILEVERSION               equ       1,1,0,0
+VER_FILEVERSION_STR           textequ   <1.1>
+VER_PRODUCTVERSION            equ       1,1,0,0
+VER_PRODUCTVERSION_STR        textequ   <1.1>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       40
-BUILD_DATE_STR                textequ   <2021-10-17>
+BUILD_NUMBER                  equ       2
+BUILD_DATE_STR                textequ   <2021-11-21>
 BUILD_BITNESS                 equ       64
 BUILD_MODE                    equ       RLS
 

@@ -1,9 +1,9 @@
 ; ==================================================================================================
 ; Title:      SkinApp.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm Skin application.
-; Notes:      Version C.1.0, November 2017
+; Version:    1.0.0
+; Purpose:    ObjAsm Skined Application.
+; Notes:      Version 1.0.0, November 2017
 ;               - First release.
 ; ==================================================================================================
 

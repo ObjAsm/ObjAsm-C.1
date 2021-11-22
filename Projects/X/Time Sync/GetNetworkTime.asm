@@ -1,10 +1,10 @@
 ; ==================================================================================================
 ; Title:      GetNetworkTime.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm GetNetworkTime.
+; Version:    1.0.0
+; Purpose:    ObjAsm GetNetworkTime Application.
 ; Link:       https://en.wikipedia.org/wiki/Network_Time_Protocol
-; Notes:      Version C.1.0, January 2021
+; Notes:      Version 1.0.0, January 2021
 ;               - First release.
 ; ==================================================================================================
 
@@ -209,7 +209,7 @@ start proc
   GetTimeInfo "time.windows.com"
   GetTimeInfo "time.euro.apple.com"
   
-  invoke MessageBox, 0, $OfsCStr("NTP-Server requests ready."), $OfsCStr("Information"), MB_OK or MB_ICONINFORMATION   
+  invoke MessageBox, 0, $OfsCStr("NTP-Server requests ready.", CRLF, "Check the GetNetworkTime.dbg file to see the results."), $OfsCStr("Information"), MB_OK or MB_ICONINFORMATION   
   SysDone
 
   invoke ExitProcess, 0

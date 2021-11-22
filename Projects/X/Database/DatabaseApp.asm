@@ -1,9 +1,9 @@
 ; ==================================================================================================
 ; Title:      DatabaseApp.asm
 ; Author:     G. Friedrich
-; Version:    C.1.1
+; Version:    1.1.0
 ; Purpose:    ObjAsm Database Application.
-; Notes:      Version C.1.1, August 2019
+; Notes:      Version 1.1.0, August 2019
 ;             - First release.
 ; ==================================================================================================
 
@@ -66,8 +66,7 @@ MakeObjects DB_SeekDlg, DB_QueryDlg, DB_IndexDlg
 
 include DatabaseApp_Main.inc
 
-start proc uses xbx
-  mov xbx, $invoke(LoadLibrary, $OfsCStr("RichEd20.dll"))
+start proc
   SysInit
   invoke CoInitialize, 0
   invoke InitCommonControls
@@ -79,7 +78,6 @@ start proc uses xbx
 
   invoke CoUninitialize
   SysDone
-  invoke FreeLibrary, xbx                               ;Unload RichEdit library
 
   invoke ExitProcess, 0
 start endp

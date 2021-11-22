@@ -1,9 +1,9 @@
 ; ==================================================================================================
 ; Title:      TextViewDemo.asm
 ; Author:     G. Friedrich
-; Version:    C.1.1
-; Purpose:    ObjAsm TextView demonstration program.
-; Notes:      Version C.1.1, April 2020
+; Version:    1.0.0
+; Purpose:    ObjAsm TextView Demo Application with Controls.
+; Notes:      Version 1.0.0, April 2020
 ;               - First release.
 ; ==================================================================================================
 

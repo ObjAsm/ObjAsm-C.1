@@ -103,7 +103,7 @@ StringW macro StrName, QuotedText:vararg
     endif
   endm
 
-  StrName WORD ??CharCount dup (?)
+  StrName WORD ??CharCount dup(?)
   org $ - ??CharCount*2
 
   ;;Continue regular processing

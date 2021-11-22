@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      ArduinoCom_Main.inc
 ; Author:     G. Friedrich
-; Version:    C.1.1
-; Purpose:    ObjAsm Arduino Communication demonstration program.
-; Notes:      Version C.1.1, October 2020
-;               - First release.
+; Version:    See ArduinoCom.asm
+; Purpose:    ObjAsm Arduino Communication program.
 ; ==================================================================================================
 
 

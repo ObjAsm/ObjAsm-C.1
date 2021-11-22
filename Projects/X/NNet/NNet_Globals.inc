@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      NNet_Globals.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm Neural Net demo.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See NNet.asm
+; Purpose:    ObjAsm Neural Network Application.
 ; ==================================================================================================
 
 

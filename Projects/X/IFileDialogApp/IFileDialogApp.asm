@@ -1,10 +1,10 @@
 ; ==================================================================================================
 ; Title:      IFileDialogApp.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm IFileDialog demo.
+; Version:    1.0.0
+; Purpose:    ObjAsm IFileDialog Application.
 ; Link:       https://msdn.microsoft.com/en-us/library/windows/desktop/dd316924(v=vs.85).aspx
-; Notes:      Version C.1.0, October 2017
+; Notes:      Version 1.0.0, October 2017
 ;               - First release.
 ; ==================================================================================================
 

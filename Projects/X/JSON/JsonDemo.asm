@@ -1,9 +1,9 @@
 ; ==================================================================================================
 ; Title:      JsonDemo.asm
 ; Author:     G. Friedrich
-; Version:    C.1.2
-; Purpose:    ObjAsm JSON demonstration program.
-; Notes:      Version C.1.2, October 2017
+; Version:    1.0.0
+; Purpose:    ObjAsm JSON Application.
+; Notes:      Version 1.0.0, October 2017
 ;               - First release.
 ; ==================================================================================================
 

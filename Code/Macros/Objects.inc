@@ -5,6 +5,7 @@
 ; Purpose:    ObjAsm object support using MASM compatible assembers (UASM, ASMC, JWASM, ML)
 ; Notes:      Version C.1.3, May 2021
 ;               - VARARG stack correction bug corrected.
+;               - dup spacing issue coorected.
 ;             Version C.1.2, December 2020
 ;               - $MethodAddr can handle addresses of embedded objects.
 ;             Version C.1.1, September 2019
@@ -93,12 +94,14 @@ else
 endif
 ??RegisterCasted        textequ <>
 
+??OBJERR_UNDEFINED      equ -1
 ??OBJERR_NONE           equ 0                           ;Flags != ??OBJERR_NONE stops compilation
-??OBJERR_UNK_ANCESTOR   equ 1                           ;  of object related macros like
-??OBJERR_VAR_OVERRIDE   equ 2                           ;  New, OCall, Override, etc.
-??OBJERR_MTD_OVERRIDE   equ 3
-??OBJERR_TYPE_ID        equ 4
-??OBJERR_UNDEFINED      equ 5
+??OBJERR_SYNTAX         equ 1                           ;  of object related macros like
+??OBJERR_UNK_ANCESTOR   equ 2                           ;  New, OCall, Override, etc.
+??OBJERR_VAR_OVERRIDE   equ 3
+??OBJERR_MTD_OVERRIDE   equ 4
+??OBJERR_TYPE_ID        equ 5
+??OBJERR_TEMPLATE       equ 6
 
 ??MTDTYPE_UNKNOWN       equ 0
 ??MTDTYPE_STATIC        equ 1
@@ -1118,6 +1121,7 @@ CreateTemplate macro MglObjName:req
   ;;Checks if the logical structure has the same size as the template structure
   if sizeof(@CatStr(MglObjName)) ne sizeof(@CatStr(<TPL_>, MglObjName))
     .err <CreateTemplate - object structure error: MglObjName>
+    ??&MglObjName&_Error = ??OBJERR_TEMPLATE
   endif
 
   .code
@@ -1177,12 +1181,13 @@ CreateDynamicTemplate macro MglObjName:req, Init:=<TRUE>
         if @InStr(1, %$$sz3, <{>) eq 1
 %         $$sz1 $$sz2 {}
         else
-          $$sz4 textequ <$Lower($$sz3)>                 ;;Convert symbol to lowercase
-          if @InStr(1, %$$sz4, < dup>) gt 0
+          $$sz4 textequ <$Lower($$sz3)>                 ;;Convert to lowercase
+          ??Pos1 = @InStr(1, %$$sz4, < dup>)
+          if ??Pos1 gt 0
             if @InStr(1, %$$sz4, <{>) gt 0
-              $$sz1 $$sz2 @CatStr(@SubStr(%$$sz3, 1, @InStr(1, %$$sz4, < dup(>)), < dup({})>)
+              $$sz1 $$sz2 @CatStr(@SubStr(%$$sz3, 1, ??Pos1), < dup({})>)
             else
-              $$sz1 $$sz2 @CatStr(@SubStr(%$$sz3, 1, @InStr(1, %$$sz4, < dup(>)), < dup(?)>)
+              $$sz1 $$sz2 @CatStr(@SubStr(%$$sz3, 1, ??Pos1), < dup(?)>)
             endif
           else
             $$sz1 $$sz2 ?
@@ -2740,7 +2745,7 @@ SetVarargPassedParams macro Args
     if $$PassedParamCount eq 0
       xor eax, eax
     else
-      mov eax, $$PassedParamCount                       ;;eax = Total number of passed arguments, 
+      mov eax, $$PassedParamCount                       ;;eax = Total number of passed arguments,
     endif
   endif
 endm

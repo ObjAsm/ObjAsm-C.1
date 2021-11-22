@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      Api3DEng_Main.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm API 3D Engine demonstration program.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See Api3DEng.asm
+; Purpose:    ObjAsm API 3D Engine program.
 ; ==================================================================================================
 
 

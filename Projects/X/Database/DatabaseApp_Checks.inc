@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      DatabaseApp_Checks.inc
 ; Author:     G. Friedrich
-; Version:    C.1.1
-; Purpose:    ObjAsm Database demonstration Application.
-; Notes:      Version C.1.1, August 2019
-;             - First release.
+; Version:    See DatabaseApp.asm
+; Purpose:    ObjAsm Database Application.
 ; ==================================================================================================
 
 

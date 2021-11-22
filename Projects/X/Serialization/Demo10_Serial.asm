@@ -1,9 +1,9 @@
 ; ==================================================================================================
-; Title:      Demo10.asm
+; Title:      Demo10_Serial.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm demonstration program 10.
-; Notes:      Version C.1.0, October 2017
+; Version:    1.0.0
+; Purpose:    ObjAsm Demo Application 10 with serialization.
+; Notes:      Version 1.0.0, October 2017
 ;               - First release.
 ; ==================================================================================================
 
@@ -34,8 +34,8 @@ MakeObjects WinControl, Toolbar, Rebar, Statusbar, ComboBox, TreeView, ListView,
 MakeObjects FlipBox, Splitter, ProjectWnd, PropertiesWnd
 MakeObjects WinApp, MdiApp
 
-include Demo10_Globals.inc                              ;Application globals
-include Demo10_Main.inc                                 ;DemoApp10 object
+include Demo10_Globals_Serial.inc                       ;Application globals
+include Demo10_Main_Serial.inc                          ;DemoApp10 object
 
 start proc                                              ;Program entry point
   SysInit                                               ;Runtime initialization of OOP model

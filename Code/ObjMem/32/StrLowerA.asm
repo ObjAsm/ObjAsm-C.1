@@ -25,20 +25,19 @@ align ALIGN_CODE
 StrLowerA proc pStringA:POINTER
   mov ecx, [esp + 4]                                    ;ecx -> StringA
   dec ecx
-@@Char:
+@@:
   inc ecx
   mov al, [ecx]
   or al, al
-  je @@Exit                                             ;End of string
+  je @F                                                 ;End of string
   cmp al, 'A'
-  jb @@Char
+  jb @B
   cmp al, 'Z'
-  ja @@Char
+  ja @B
   add al, 20H
   mov [ecx], al
-  jmp @@Char
-align ALIGN_CODE
-@@Exit:
+  jmp @B
+@@:
   mov eax, [esp + 4]                                    ;Return string address
   ret 4
 StrLowerA endp

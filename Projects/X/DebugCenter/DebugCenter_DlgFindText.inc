@@ -1,10 +1,8 @@
 ; ==================================================================================================
-; Title:      DialogFindText.inc
+; Title:      DebugCenter_DlgFindText.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    See DebugCenter.asm
 ; Purpose:    ObjAsm support of Find Text dialog objects.
-;             Version C.1.0, October 2017
-;               - First release.
 ; ==================================================================================================
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -46,8 +44,8 @@ FTXT_STYLE  equ   WS_CHILD or DS_MODALFRAME or DS_3DLOOK or DS_CENTER or DS_CENT
 CStr szNotification, "Notification"
 
 DIALOGEX DIALOGFINDTEXT, 0, 0, 200, 75, 0, 10, \
-              FTXT_STYLE, WS_EX_TOOLWINDOW, \; or WS_EX_LAYERED, \
-              0, , " Find Text", "MS Sans Serif", 8, 700, FALSE, ANSI_CHARSET
+              FTXT_STYLE, 0, \
+              0, , " Find Text", "Segoe UI", 9, 700, FALSE, ANSI_CHARSET
 
 DEFPUSHBUTTON "&Find", IDC_FTXT_FIND, 140,51,52,15
 PUSHBUTTON    "&Close", IDCANCEL, 140,32,52,15
@@ -240,15 +238,15 @@ Method DialogFindText.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
       MemFree xdi
       invoke SendMessage, xbx, CB_SETCURSEL, dComboIndex, 0
     .else
-      mov xdi, xax
+      mov dComboIndex, eax
     .endif
 
-    invoke SendMessage, xbx, CB_GETLBTEXTLEN, xdi, 0
+    invoke SendMessage, xbx, CB_GETLBTEXTLEN, dComboIndex, 0
     lea xax, [sizeof(CHR)*xax + sizeof(CHR)]            ;Add room for the ZTC
     mov dSize, eax
     mov pBuffer, $MemAlloc(dSize)
     mov FTXTX.lpstrText, xax
-    invoke SendMessage, xbx, CB_GETLBTEXT, xdi, xax
+    invoke SendMessage, xbx, CB_GETLBTEXT, dComboIndex, xax
     invoke SendMessage, [xsi].hParent, EM_FINDTEXTEX, dFlags, addr FTXTX
     .if eax == -1
       mov edx, $ObjTmpl(DebugCenter).dLanguage

@@ -1,24 +1,22 @@
 ; ==================================================================================================
-; Title:      Demo10_Shared.inc
+; Title:      Demo10_Shared_Serial.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm demonstration program 10.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See Demo10_Serial.asm
+; Purpose:    ObjAsm Demo Application 10 with serialization.
 ; ==================================================================================================
 
 
 ;General information
 APP_TITLE                     textequ   <Demo10>
-ABOUT_TEXT                    textequ   <Demo10 - Advanced Controls>
+ABOUT_TEXT                    textequ   <Demo10 - Serialization>
 COPYRIGHT                     textequ   <G. Friedrich   October 2017> 
-VER_FILEVERSION               equ       2,0,0,0
-VER_FILEVERSION_STR           textequ   <2.0>
-VER_PRODUCTVERSION            equ       2,0,0,0
-VER_PRODUCTVERSION_STR        equ       <2.0>
+VER_FILEVERSION               equ       1,0,0,0
+VER_FILEVERSION_STR           textequ   <1.0>
+VER_PRODUCTVERSION            equ       1,0,0,0
+VER_PRODUCTVERSION_STR        textequ   <1.0>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       126
+BUILD_NUMBER                  equ       1
 BUILD_DATE_STR                textequ   <2021-10-17>
 BUILD_BITNESS                 equ       64
 BUILD_MODE                    equ       RLS

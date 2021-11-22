@@ -1,7 +1,8 @@
 ; ==================================================================================================
 ; Title:      DebugCenter_About.inc
 ; Author:     G. Friedrich
-; Purpose:    PowerBox Calibrator About dialog.
+; Version:    See DebugCenter.asm
+; Purpose:    ObjAsm DebugCenter application.
 ; ==================================================================================================
 
 

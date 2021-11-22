@@ -16,7 +16,7 @@
 ; Procedure:  StrUpperA
 ; Purpose:    Convert all ANSI string characters into uppercase.
 ; Arguments:  Arg1: -> Source ANSI string.
-; Return:     Nothing.
+; Return:     eax -> String.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE
@@ -25,20 +25,19 @@ align ALIGN_CODE
 StrUpperA proc pStringA:POINTER
   mov ecx, [esp + 4]                                    ;ecx -> StringA
   dec ecx
-@@Char:
+@@:
   inc ecx
   mov al, [ecx]
   or al, al
-  je @@Exit                                             ;End of string
+  je @F                                                 ;End of string
   cmp al, 'a'
-  jb @@Char
+  jb @B
   cmp al, 'z'
-  ja @@Char
+  ja @B
   sub al, 20H
   mov [ecx], al
-  jmp @@Char
-align ALIGN_CODE
-@@Exit:
+  jmp @B
+@@:
   mov eax, [esp + 4]                                    ;Return string address
   ret 4
 StrUpperA endp

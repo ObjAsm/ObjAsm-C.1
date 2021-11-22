@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      D3Math.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    See Api3DEng.asm
 ; Purpose:    ObjAsm D3Vector math procedures.
-; Notes:      Version C.1.0, October 2017
-;               - First release.
 ; ==================================================================================================
 
 

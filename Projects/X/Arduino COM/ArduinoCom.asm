@@ -1,9 +1,9 @@
 ; ==================================================================================================
 ; Title:      ArduinoCom.asm
 ; Author:     G. Friedrich
-; Version:    C.1.1
-; Purpose:    ObjAsm Arduino Communication demonstration program.
-; Notes:      Version C.1.1, October 2020
+; Version:    1.0.0
+; Purpose:    ObjAsm Arduino Communication program.
+; Notes:      Version 1.0.0, October 2020
 ;               - First release.
 ;               - https://www.xanthium.in/Serial-Port-Programming-using-Win32-API
 ;               - https://docs.microsoft.com/en-us/previous-versions/ff802693(v=msdn.10)?redirectedfrom=MSDN

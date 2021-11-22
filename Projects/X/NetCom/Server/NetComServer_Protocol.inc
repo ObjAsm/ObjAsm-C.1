@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      NetComServer_Protocol.inc
 ; Author:     G. Friedrich
-; Purpose:    Demonstration program.
-; Version:    C.1.0
-; Notes:      Version C.1.0, October 2017
-;               - First release.
+; Version:    See NetComServer.asm
+; Purpose:    NetCom Server Application.
 ; ==================================================================================================
 
 

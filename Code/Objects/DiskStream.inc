@@ -356,10 +356,10 @@ Method DiskStream.GetPos
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:   	DiskStream.GetSize
-; Purpose:  	Return the current file size of the stream.
-; Arguments:	None.
-; Return:   	rax or edx::eax = Size of stream or -1 if failed.
+; Method:     DiskStream.GetSize
+; Purpose:    Return the current file size of the stream.
+; Arguments:  None.
+; Return:     rax or edx::eax = Size of stream or -1 if failed.
 
 Method DiskStream.GetSize
   local qFileSize:QWORD

@@ -1,10 +1,8 @@
 ; ==================================================================================================
-; Title:      GetInternetTime_Shared.inc
+; Title:      GetNetworkTime_Shared.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm GetInternetTime.
-; Notes:      Version C.1.0, January 2021
-;               - First release.
+; Version:    See GetNetworkTime.asm 
+; Purpose:    ObjAsm GetNetworkTime Application.
 ; ==================================================================================================
 
 
@@ -12,14 +10,14 @@
 APP_TITLE                     textequ   <GetInternetTime>
 ABOUT_TEXT                    textequ   <GetInternetTime>
 COPYRIGHT                     textequ   <G. Friedrich   January 2021> 
-VER_FILEVERSION               equ       2,0,0,0
-VER_FILEVERSION_STR           textequ   <2.0>
-VER_PRODUCTVERSION            equ       2,0,0,0
-VER_PRODUCTVERSION_STR        equ       <2.0>
+VER_FILEVERSION               equ       1,0,0,0
+VER_FILEVERSION_STR           textequ   <1.0>
+VER_PRODUCTVERSION            equ       1,0,0,0
+VER_PRODUCTVERSION_STR        textequ       <1.0>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       23
-BUILD_DATE_STR                textequ   <2021-10-17>
+BUILD_NUMBER                  equ       1
+BUILD_DATE_STR                textequ   <2021-11-14>
 BUILD_BITNESS                 equ       32
 BUILD_MODE                    equ       DBG
 

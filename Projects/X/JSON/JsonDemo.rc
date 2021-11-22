@@ -1,15 +1,13 @@
 ; ==================================================================================================
 ; Title:      JsonDemo.rc
 ; Author:     G. Friedrich
-; Version:    C.1.2
-; Purpose:    ObjAsm resource file.
-; Notes:      Version C.1.2, October 2017
-;               - First release.
+; Version:    See JsonDemo.asm
+; Purpose:    ObjAsm JSON Application resource file.
 ; ==================================================================================================
 
 
 #include "Resource.h"               //Windows resource definitions
-#include "JsonDemo_Shared.rc"         //Application shared definitions
+#include "JsonDemo_Shared.rc"       //Application shared definitions
 #include "VER\Version.rc"           //Application version definition
 #include "MFT\Manifest_Invoker.rc"  //Application manifest definition
 

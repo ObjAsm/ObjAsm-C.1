@@ -1,10 +1,8 @@
 ; ==================================================================================================
 ; Title:      OA_ObjExplorer.rc
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm Object Explorer resource file.
-; Notes:      Version C.1.0, December 2020
-;               - First release.
+; Version:    Check OA_ObjExplorer.asm
+; Purpose:    OA_ObjExplorer resource file.
 ; ==================================================================================================
 
 
@@ -238,7 +236,7 @@ BEGIN
 
 
   IDLANG_GERMAN  + 00, "&Datei|Dateibefehle"
-  IDLANG_GERMAN  + 01, "Erf&rischen~Strg+R$80"
+  IDLANG_GERMAN  + 01, "&Aktualisierung~Strg+R$80"
   IDLANG_GERMAN  + 02, "&Object suchen...~Strg+F$81"
   IDLANG_GERMAN  + 03, "Anwendung"
   IDLANG_GERMAN  + 04, "&Einstellung...$82"
@@ -268,7 +266,7 @@ BEGIN
   IDLANG_GERMAN  + 41, "&Anwendungshilfe~F1|Startet das Hilfesystem"
   IDLANG_GERMAN  + 42, "Ü&ber...|Zeigt Informationen über diese Anwendung an"
 
-  IDLANG_GERMAN  + 80, "Läd erneut die Daten des browsers"
+  IDLANG_GERMAN  + 80, "Aktualisiert die Programmdaten"
   IDLANG_GERMAN  + 81, "Sucht Information"
   IDLANG_GERMAN  + 82, "Stellt die Anwendung ein"
   IDLANG_GERMAN  + 83, "Ordnet alle Fenster überlappend an"
@@ -319,7 +317,7 @@ BEGIN
   IDLANG_GERMAN  + 151, "{PA20}[FI55][B,H+3,C#FF4F4F]Der Datei-Viewer konnte nicht geöffnet werden![~]{P}Bitte überprüfen Sie die Einstellungen der Anwendung.{P}Um fortzufahren drücken Sie die OK Taste.[~]"
 
   IDLANG_SPANISH + 00, "&Archivo|Comandos de archivo"
-  IDLANG_SPANISH + 01, "&Refrescar~Ctrl+R$80"
+  IDLANG_SPANISH + 01, "Actualiza&r~Ctrl+R$80"
   IDLANG_SPANISH + 02, "&Buscar object...~Ctrl+F$81"
   IDLANG_SPANISH + 03, "Aplicación"
   IDLANG_SPANISH + 04, "&Configurar...$82"
@@ -349,7 +347,7 @@ BEGIN
   IDLANG_SPANISH + 41, "&Ayuda sobre la aplicación~F1|Ejecuta el sistema de ayuda"
   IDLANG_SPANISH + 42, "&Sobre...|Muestra información sobre la aplicación"
 
-  IDLANG_SPANISH + 80, "Refresca los datos del Explorer"
+  IDLANG_SPANISH + 80, "Actualiza los datos del Explorer"
   IDLANG_SPANISH + 81, "Busca información"
   IDLANG_SPANISH + 82, "Configura la aplicación"
   IDLANG_SPANISH + 83, "Ordena todas las ventanas en cascada"

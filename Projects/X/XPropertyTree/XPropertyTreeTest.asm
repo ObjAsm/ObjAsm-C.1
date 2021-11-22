@@ -1,9 +1,9 @@
 ; ==================================================================================================
 ; Title:      XPropertyTreeTest.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Purpose:    ObjAsm XPropertyTree Demo Application.
-; Notes:      Version C.1.0, October 2017
+; Version:    1.0.0
+; Purpose:    ObjAsm XPropertyTree Test Application.
+; Notes:      Version 1.1.0, October 2017
 ;               - First release.
 ; ==================================================================================================
 
@@ -40,9 +40,9 @@ include XPropertyTreeTest_Main.inc
 start proc
   SysInit
 
-  OCall $ObjTmpl(DemoApp02)::DemoApp02.Init
-  OCall $ObjTmpl(DemoApp02)::DemoApp02.Run
-  OCall $ObjTmpl(DemoApp02)::DemoApp02.Done
+  OCall $ObjTmpl(Application)::Application.Init
+  OCall $ObjTmpl(Application)::Application.Run
+  OCall $ObjTmpl(Application)::Application.Done
 
   SysDone
   invoke ExitProcess, 0
