@@ -175,7 +175,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=22
+MilestoneOnDateDate=27
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -212,10 +212,10 @@ ProductVer4Range=0
 [Size]
 2=0,0,806,424,47957
 3=0,0,2127,589,200
-1=0,0,694,487,644
+1=0,0,694,487,995
 4=0,0,706,573,552
 1001=0,0,0,0,460
-5=0,0,0,0,12131
+5=0,0,0,0,8113
 6=0,0,601,582,72601
 7=0,0,0,0,876
 8=0,0,0,0,25796
@@ -283,16 +283,16 @@ ProductVer4Range=0
 0=724,30,
 
 [Find]
-1="^I"
-2="pDefWordBreakProc"
-3="RE_WordBreakLookupTable"
-4="3.2"
-5="3,2"
-6="VER_PRODUCTVERSION_STR"
-7="VERSION"
-8="xdi"
-9="dComboIndex"
-10="Find"
+1="DbgMdiChildTxt_WordBreak"
+2="ebx"
+3="RE_"
+4="WndProc"
+5="^I"
+6="pDefWordBreakProc"
+7="RE_WordBreakLookupTable"
+8="3.2"
+9="3,2"
+10="VER_PRODUCTVERSION_STR"
 "
 [Collapse]
 7=,,
@@ -351,7 +351,7 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,5,2
 [PTimer]
-PTimer=1931370091
+PTimer=1938421154
 [RADebugBP]
 5=
 2=

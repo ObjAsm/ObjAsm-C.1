@@ -848,7 +848,7 @@ endif
 ; Arguments:  Arg1: Location containing the word to be compared.
 ;             Arg2: Text.
 ; Returns:    In case that NoMatchLabel is not specified use the flags.
-;             Zero indicates that the word matches.
+;             ZERO? indicates that the word matches.
 ; Example:    DoesWordMatchA? myWord, <Hello>
 ;             DoesWordMatchA? myWord, !<  >
 
@@ -906,7 +906,7 @@ endm
 ; Arguments:  Arg1: Location containing the word to be compared.
 ;             Arg2: Text.
 ; Returns:    In case that NoMatchLabel is not specified use the flags.
-;             Zero indicates that the word matches.
+;             ZERO? indicates that the word matches.
 ; Example:    DoesWordMatchW? myWord, <Hello>
 ;             DoesWordMatchW? myWord, !<  >
 

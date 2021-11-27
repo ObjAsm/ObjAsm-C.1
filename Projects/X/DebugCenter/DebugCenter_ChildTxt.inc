@@ -206,7 +206,7 @@ Method DbgMdiChildTxt.Erase, uses xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgMdiChildTxt_WordBreak
+; Procedure:  DbgMdiChildTxt_WordBreak_Callback
 ; Purpose:    Callback proc to to break a line of text.
 ; Arguments:  Arg1: -> Wide character Buffer.
 ;             Arg2: Current character index.
@@ -214,6 +214,14 @@ MethodEnd
 ;             Arg4: Action to be taken [WB_LEFT..WB_RIGHTBREAK].
 ; Return:     Nothing.
 ; Link:       https://docs.microsoft.com/en-us/windows/win32/controls/use-word-and-line-break-information
+; Notes:      The char buffer passed to this callback has a very limitid size (usually 20 BYTE).
+;             The content of the buffer are always WIDE charaters.
+;             It is possible that the callback will be called many times until the goal is achieved.
+;             This happens, for example, if an index = 0 is returned, which means that the word break
+;             is not found.
+;             Thanks to this behavior and the lack of an lParam to store additional information,
+;             the implementation has to work on its own, which is somewhat difficult to code.
+;             From my observations, only WB_MOVEWORDLEFT and WB_MOVEWORDRIGHT are used.
 
 .const
 RE_WordBreakLUT label CHRA                              ;Word break character lookup table
@@ -235,7 +243,7 @@ RE_WordBreakLUT label CHRA                              ;Word break character lo
   CHRA 000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h,001h,001h,001h,000h  ;p..z
 
 .code
-DbgMdiChildTxt_WordBreak proc uses xbx xsi pCharBuffer:POINTER, \
+DbgMdiChildTxt_WordBreak_Callback proc uses xbx xsi pCharBuffer:POINTER, \
                                            dCharIndex:DWORD, dByteCount:DWORD, dCode:DWORD
   .if dCode == WB_LEFT                                  ;0
     xor eax, eax
@@ -246,17 +254,18 @@ DbgMdiChildTxt_WordBreak proc uses xbx xsi pCharBuffer:POINTER, \
   .elseif dCode == WB_CLASSIFY                          ;3
     xor eax, eax
   .elseif dCode == WB_MOVEWORDLEFT                      ;4 = WB_MOVEWORDPREV
-    mov xbx, offset RE_WordBreakLUT
     mov eax, dCharIndex
-    dec eax
     mov xsi, pCharBuffer
+    dec eax
+    mov xbx, offset RE_WordBreakLUT
 
+    ;If we start with a non-break char
     movzx xdx, CHRW ptr [xsi + sizeof(CHRW)*xax]
-    .if ((xdx >= 128) || ((xdx < 128) && (BYTE ptr [xbx + xdx] == 0)))
+    .if ((xdx >= 128) || ((xdx < 128) && (CHRA ptr [xbx + xdx] == 0)))
       ;Search first break char
       .while eax != 0
         movzx xdx, CHRW ptr [xsi + sizeof(CHRW)*xax]
-        .if ((xdx < 128) && (BYTE ptr [xbx + xdx] == 1))
+        .if ((xdx < 128) && (CHRA ptr [xbx + xdx] == 1))
           inc eax
           .break
         .endif
@@ -266,7 +275,7 @@ DbgMdiChildTxt_WordBreak proc uses xbx xsi pCharBuffer:POINTER, \
       ;Search first non-break char
       .while eax != 0
         movzx xdx, CHRW ptr [xsi + sizeof(CHRW)*xax]
-        .if ((xdx >= 128) || ((xdx < 128) && (BYTE ptr [xbx + xdx] == 0)))
+        .if ((xdx >= 128) || ((xdx < 128) && (CHRA ptr [xbx + xdx] == 0)))
           inc eax
           .break
         .endif
@@ -275,29 +284,26 @@ DbgMdiChildTxt_WordBreak proc uses xbx xsi pCharBuffer:POINTER, \
     .endif
 
   .elseif dCode == WB_MOVEWORDRIGHT                     ;5 = WB_MOVEWORDNEXT
-    mov xbx, offset RE_WordBreakLUT
     mov eax, dCharIndex
     mov xsi, pCharBuffer
     mov ecx, dByteCount
-    shr ecx, 1
+    mov xbx, offset RE_WordBreakLUT
+    shr ecx, 1                                          ;ecx = # of chars
 
+    ;If we start with a non-break char
     movzx xdx, CHRW ptr [xsi + sizeof(CHRW)*xax]
-    .if ((xdx >= 128) || ((xdx < 128) && (BYTE ptr [xbx + xdx] == 0)))
+    .if ((xdx >= 128) || ((xdx < 128) && (CHRA ptr [xbx + xdx] == 0)))
     ;Search first break char
       .while eax != ecx
         movzx xdx, CHRW ptr [xsi + sizeof(CHRW)*xax]
-        .if ((xdx < 128) && (BYTE ptr [xbx + xdx] == 1))
-          .break
-        .endif
+        .break .if ((xdx < 128) && (CHRA ptr [xbx + xdx] == 1))
         inc eax
       .endw
     .else
       ;Search first non-break char
       .while eax != ecx
         movzx xdx, CHRW ptr [xsi + sizeof(CHRW)*xax]
-        .if ((xdx >= 128) || ((xdx < 128) && (BYTE ptr [xbx + xdx] == 0)))
-          .break
-        .endif
+        .break .if ((xdx >= 128) || ((xdx < 128) && (CHRA ptr [xbx + xdx] == 0)))
         inc eax
       .endw
     .endif
@@ -309,7 +315,7 @@ DbgMdiChildTxt_WordBreak proc uses xbx xsi pCharBuffer:POINTER, \
     xor eax, eax
   .endif
   ret
-DbgMdiChildTxt_WordBreak endp
+DbgMdiChildTxt_WordBreak_Callback endp
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     DbgMdiChildTxt.Init
@@ -333,7 +339,7 @@ Method DbgMdiChildTxt.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRINGW, h
     invoke SendMessage, [xsi].hEdit, WM_SETFONT, hFont, FALSE
 
     ;Set our new WordBreak procedure
-    invoke SendMessage, [xsi].hEdit, EM_SETWORDBREAKPROC, 0, addr DbgMdiChildTxt_WordBreak
+    invoke SendMessage, [xsi].hEdit, EM_SETWORDBREAKPROC, 0, offset DbgMdiChildTxt_WordBreak_Callback
 
     ;Manage the main Menu
     inc [xdi].$Obj(DbgMdiClient).dChildCount
@@ -778,7 +784,7 @@ MethodEnd
 ; Return:     eax = Result of the message processing and depends on the message.
 
 Method REdtIptor.WndProc,, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-  ;DbgMessage uMsg
+  DbgMessage uMsg
   invoke GetProp, pSelf, offset szPropREdtIptor
   OCall xax::REdtIptor.Dispatch, pSelf, uMsg, wParam, lParam
 MethodEnd
