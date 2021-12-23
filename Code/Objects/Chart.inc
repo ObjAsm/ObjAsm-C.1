@@ -217,8 +217,8 @@ Object ChartWnd, ChartWndID, Window
   DefineVariable    hFontVert,          HFONT,            0           ;Vertical font
   DefineVariable    TextMetricHorz,     TEXTMETRIC,       {}
   DefineVariable    TextMetricVert,     TEXTMETRIC,       {}
-  DefineVariable    bMovingOn,          BYTE,             CHT_ID_NONE ;Selected element
-  DefineVariable    MovedLastPoint,     POINT,            {}
+  DefineVariable    sbMovingOn,         SBYTE,            CHT_ID_NONE ;Selected element
+  DefineVariable    LastCursorPos,      POINT,            {}
   DefineVariable    dGestureZoomFirst,  DWORD,            0
   DefineVariable    dGestureZoomLast,   DWORD,            0
   DefineVariable    hToolTip,           HWND,             0

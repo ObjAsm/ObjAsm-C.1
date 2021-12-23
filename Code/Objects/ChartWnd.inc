@@ -1084,8 +1084,8 @@ Method ChartWnd.Load, uses xsi, pStream:$ObjPtr(Stream), pDeserInfo:PDESER_INFO
   OCall pStream::Stream.BinRead, addr [xsi].PlotRect, sizeof(RECT)
   OCall pStream::Stream.BinRead, addr [xsi].TextMetricHorz,  sizeof(TEXTMETRIC)
   OCall pStream::Stream.BinRead, addr [xsi].TextMetricVert,  sizeof(TEXTMETRIC)
-  mov [xsi].bMovingOn, $8($OCall(pStream::Stream.BinRead8))
-  OCall pStream::Stream.BinRead, addr [xsi].MovedLastPoint,  sizeof(POINT)
+  mov [xsi].sbMovingOn, $8($OCall(pStream::Stream.BinRead8))
+  OCall pStream::Stream.BinRead, addr [xsi].LastCursorPos,  sizeof(POINT)
   mov [xsi].dGestureZoomFirst, $32($OCall(pStream::Stream.BinRead32))
   mov [xsi].dGestureZoomLast, $32($OCall(pStream::Stream.BinRead32))
   OCall [xsi].Data::Collection.Load, pStream, pDeserInfo
@@ -1419,34 +1419,35 @@ MethodEnd
 ; Return:     eax = Zero if handled.
 
 Method ChartWnd.OnLButtonDown, uses xsi, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "ChartWnd.OnLButtonDown"
   SetObject xsi
   PntS2Regs lParam
-  mov [xsi].MovedLastPoint.x, eax
-  mov [xsi].MovedLastPoint.y, ecx
+  mov [xsi].LastCursorPos.x, eax
+  mov [xsi].LastCursorPos.y, ecx
 
   ;Check if X scale was clicked
   .if (SDWORD ptr eax >= [xsi].PlotRect.left) && (SDWORD ptr eax <= [xsi].ViewRect.right) && \
     (SDWORD ptr ecx >= [xsi].PlotRect.bottom) && (SDWORD ptr ecx <= [xsi].ViewRect.bottom)
-    mov [xsi].bMovingOn, CHT_ID_SCALEX
+    mov [xsi].sbMovingOn, CHT_ID_SCALEX
     invoke SetCapture, [xsi].hWnd
   ;Check if Y scale was clicked
   .elseif (SDWORD ptr eax >= [xsi].ViewRect.left) && (SDWORD ptr eax <= [xsi].PlotRect.left) && \
     (SDWORD ptr ecx >= [xsi].ViewRect.top) && (SDWORD ptr ecx <= [xsi].PlotRect.bottom)
-    mov [xsi].bMovingOn, CHT_ID_SCALEY1
+    mov [xsi].sbMovingOn, CHT_ID_SCALEY1
     invoke SetCapture, [xsi].hWnd
   ;Check if plot area was clicked
   .elseif (SDWORD ptr eax >= [xsi].PlotRect.left) && (SDWORD ptr eax <= [xsi].PlotRect.right) && \
     (SDWORD ptr ecx >= [xsi].PlotRect.top) && (SDWORD ptr ecx <= [xsi].PlotRect.bottom)
-    mov [xsi].bMovingOn, CHT_ID_PLOT
+    mov [xsi].sbMovingOn, CHT_ID_PLOT
     invoke SetCapture, [xsi].hWnd
   ;Check if lower left area was clicked => behave like plot area
   .elseif (SDWORD ptr eax >= [xsi].ViewRect.left) && (SDWORD ptr eax <= [xsi].PlotRect.left) && \
     (SDWORD ptr ecx >= [xsi].PlotRect.bottom) && (SDWORD ptr ecx <= [xsi].ViewRect.bottom)
-    mov [xsi].bMovingOn, CHT_ID_PLOT
+    mov [xsi].sbMovingOn, CHT_ID_PLOT
     invoke SetCapture, [xsi].hWnd
   .else
     ;It was clicked somewhere else
-    mov [xsi].bMovingOn, CHT_ID_NONE
+    mov [xsi].sbMovingOn, CHT_ID_NONE
   .endif
   xor eax, eax
 MethodEnd
@@ -1459,8 +1460,9 @@ MethodEnd
 ; Return:     eax = Zero if handled.
 
 Method ChartWnd.OnLButtonUp,, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "ChartWnd.OnLButtonUp"
   SetObject xcx
-  mov [xcx].bMovingOn, CHT_ID_NONE
+  mov [xcx].sbMovingOn, CHT_ID_NONE
   invoke ReleaseCapture
   xor eax, eax
 MethodEnd
@@ -1477,7 +1479,16 @@ Method ChartWnd.OnMouseMove, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   local xCursor:XWORD, ToolInfo:TOOLINFO
   local cBuffer[1024]:CHR
 
+  ;DbgText "ChartWnd.OnMouseMove"
   SetObject xsi
+
+  ;Eliminate sprious WM_MOUSEMOVE messages
+  ;https://devblogs.microsoft.com/oldnewthing/20031001-00/?p=42343
+  PntS2Pnt MouseClientPos, lParam
+  mov eax, MouseClientPos.x
+  mov ecx, MouseClientPos.y
+  ExitMethod .if eax == [xsi].LastCursorPos.x && ecx == [xsi].LastCursorPos.y  
+
   mov dDoPan, FALSE
   mov dDoZoom, FALSE
   .ifBitClr wParam, MK_CONTROL
@@ -1491,13 +1502,13 @@ Method ChartWnd.OnMouseMove, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   .endif
 
   .if dDoPan != FALSE || dDoZoom != FALSE
-    .if [xsi].bMovingOn == CHT_ID_SCALEX
+    .if [xsi].sbMovingOn == CHT_ID_SCALEX
       BitClr [xsi].ScaleX.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
 
       mov xax, lParam
       cwde
-      mov ecx, [xsi].MovedLastPoint.x
-      mov [xsi].MovedLastPoint.x, eax
+      mov ecx, [xsi].LastCursorPos.x
+      mov [xsi].LastCursorPos.x, eax
       sub eax, ecx
       mov sdValue, eax
 
@@ -1516,14 +1527,14 @@ Method ChartWnd.OnMouseMove, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
       fUnload 1                                           ;Unload FPU stack
       OCall xsi.Refresh
 
-    .elseif [xsi].bMovingOn == CHT_ID_SCALEY1
+    .elseif [xsi].sbMovingOn == CHT_ID_SCALEY1
       BitClr [xsi].ScaleY1.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
 
       mov xax, lParam
       shr eax, 16
       cwde
-      mov ecx, [xsi].MovedLastPoint.y
-      mov [xsi].MovedLastPoint.y, eax
+      mov ecx, [xsi].LastCursorPos.y
+      mov [xsi].LastCursorPos.y, eax
       sub ecx, eax
       mov sdValue, ecx
 
@@ -1542,13 +1553,13 @@ Method ChartWnd.OnMouseMove, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
       fUnload 1                                         ;Unload FPU stack
       OCall xsi.Refresh
 
-    .elseif [xsi].bMovingOn == CHT_ID_PLOT
+    .elseif [xsi].sbMovingOn == CHT_ID_PLOT
       BitClr [xsi].ScaleX.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
 
       mov xax, lParam
       cwde
-      mov ecx, [xsi].MovedLastPoint.x
-      mov [xsi].MovedLastPoint.x, eax
+      mov ecx, [xsi].LastCursorPos.x
+      mov [xsi].LastCursorPos.x, eax
       sub eax, ecx
       mov sdValue, eax
 
@@ -1571,8 +1582,8 @@ Method ChartWnd.OnMouseMove, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
       mov xax, lParam
       shr eax, 16
       cwde
-      mov ecx, [xsi].MovedLastPoint.y
-      mov [xsi].MovedLastPoint.y, eax
+      mov ecx, [xsi].LastCursorPos.y
+      mov [xsi].LastCursorPos.y, eax
       sub ecx, eax
       mov sdValue, ecx
 
@@ -1593,11 +1604,9 @@ Method ChartWnd.OnMouseMove, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
     .endif
   .endif
 
-  mov xCursor, IDC_ARROW
+  mov xCursor, IDC_ARROW                                ;Set default cursor
   .ifBitSet [xsi].dFlags, CHT_FLAG_DATA_TOOLTIPS_SHOW
-    .if [xsi].bMovingOn == CHT_ID_NONE
-      mov xdx, lParam                                   ;Mouse client position
-      PntS2Pnt MouseClientPos, edx
+    .if [xsi].sbMovingOn == CHT_ID_NONE                 ;Nothing clicked on
       invoke PtInRect, addr [xsi].PlotRect, MouseClientPos
       .if eax != FALSE
         xor ebx, ebx
@@ -1633,13 +1642,14 @@ Method ChartWnd.OnMouseMove, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
           .endif
         .endif
       .endif
-    .elseif [xsi].bMovingOn == CHT_ID_SCALEX
-      mov xCursor, IDC_SIZEWE                           ;Moving horz direction
-    .elseif [xsi].bMovingOn == CHT_ID_SCALEY1 || [xsi].bMovingOn == CHT_ID_SCALEY2
-      mov xCursor, IDC_SIZENS                           ;Moving vert direction
-    .elseif [xsi].bMovingOn == CHT_ID_PLOT
-      mov xCursor, IDC_SIZEALL                          ;Moving all directions
     .endif
+  .endif
+  .if [xsi].sbMovingOn == CHT_ID_SCALEX
+    mov xCursor, IDC_SIZEWE                             ;Moving horz direction
+  .elseif [xsi].sbMovingOn == CHT_ID_SCALEY1 || [xsi].sbMovingOn == CHT_ID_SCALEY2
+    mov xCursor, IDC_SIZENS                             ;Moving vert direction
+  .elseif [xsi].sbMovingOn == CHT_ID_PLOT
+    mov xCursor, IDC_SIZEALL                            ;Moving all directions
   .endif
 @@:
   invoke SetCursor, $invoke(LoadCursor, 0, xCursor)
@@ -1860,8 +1870,8 @@ Method ChartWnd.Store, uses xsi, pStream:$ObjPtr(Stream)
   OCall pStream::Stream.BinWrite, addr [xsi].PlotRect, sizeof(RECT)
   OCall pStream::Stream.BinWrite, addr [xsi].TextMetricHorz,  sizeof(TEXTMETRIC)
   OCall pStream::Stream.BinWrite, addr [xsi].TextMetricVert,  sizeof(TEXTMETRIC)
-  OCall pStream::Stream.BinWrite8, [xsi].bMovingOn
-  OCall pStream::Stream.BinWrite, addr [xsi].MovedLastPoint,  sizeof(POINT)
+  OCall pStream::Stream.BinWrite8, [xsi].sbMovingOn
+  OCall pStream::Stream.BinWrite, addr [xsi].LastCursorPos,   sizeof(POINT)
   OCall pStream::Stream.BinWrite32, addr [xsi].dGestureZoomFirst
   OCall pStream::Stream.BinWrite32, addr [xsi].dGestureZoomLast
   OCall [xsi].Data::Collection.Store, pStream

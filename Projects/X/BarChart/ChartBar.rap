@@ -217,12 +217,12 @@ ProductVer4Range=0
 [Size]
 2=0,0,0,0,30818
 3=0,0,0,0,893
-1=0,0,0,0,1042
+1=0,0,0,0,535
 4=0,0,0,0,1651
 1001=0,0,0,0,460
 5=0,0,0,0,3315
 6=0,0,0,0,236
-9=0,0,0,0,12443
+9=0,0,0,0,12199
 7=0,0,0,0,1709
 8=0,0,0,0,11413
 11=0,0,0,0,252
@@ -239,7 +239,7 @@ ProductVer4Range=0
 22=0,0,0,0,940
 24=0,0,0,0,4637
 23=0,0,0,0,3907
-26=0,0,0,0,52076
+26=0,0,0,0,55474
 25=0,0,0,0,32160
 28=0,0,0,0,2954
 27=0,0,0,0,14171
@@ -285,16 +285,16 @@ ProductVer4Range=0
 0=724,30,
 
 [Find]
-1="IndexOf"
-2="InitMoreTabs"
-3="dTabID"
-4="ChartSetup"
-5="ShowSetupDlg"
-6="OnLButtonDblClk"
-7="DblClkPnt"
-8="CHT_SERIES_DEFAULT_FLAGS"
-9="GetDataTipText"
-10="Scan"
+1="MouseClientPos"
+2="LastCursorPos"
+3="MovedLastPoint"
+4="sbMovingOn"
+5="bMovingOn"
+6="CHT_ID_NONE"
+7="IndexOf"
+8="InitMoreTabs"
+9="dTabID"
+10="ChartSetup"
 [Collapse]
 1=
 8=
@@ -319,7 +319,7 @@ ProductVer4Range=0
 22=,
 24=
 23=
-26=131648,704,,1048576,67108864,
+26=131648,,11,10485760,134217728,
 25=,,,,,,,,,
 28=
 27=,
@@ -383,6 +383,6 @@ AutoLoad=1,2,9,26,52,51
 52=
 50=
 [PTimer]
-PTimer=1579949054
+PTimer=1584456132
 [GroupExpand]
 GroupExpand=0,1,1,1,0,1,1,0
