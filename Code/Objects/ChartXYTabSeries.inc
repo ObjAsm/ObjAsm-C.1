@@ -1,46 +1,46 @@
 ; ==================================================================================================
-; Title:      ChartFlatTabSeries.inc
+; Title:      ChartXYTabSeries.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:    ObjAsm support of ChartFlatTabSeries objects.
-; Notes:      Version C.1.0, August 2021
+; Purpose:    ObjAsm support of ChartXYTabSeries objects.
+; Notes:      Version 1.0.0, August 2021
 ;               - First release.
 ; ==================================================================================================
 
 
 
 ; ==================================================================================================
-;    ChartFlatTabSeries implementation
+;    ChartXYTabSeries implementation
 ; ==================================================================================================
 
 
-IDD_CHT_SER_TAB                 equ   5300
-IDC_CHT_SER_NAME_STC            equ   5301
-IDC_CHT_SER_NAME_EDT            equ   5302
-IDC_CHT_SER_DESC_STC            equ   5303
-IDC_CHT_SER_DESC_EDT            equ   5304
+IDD_CHT_SER_TAB                   equ   5300
+IDC_CHT_SER_NAME_STC              equ   5301
+IDC_CHT_SER_NAME_EDT              equ   5302
+IDC_CHT_SER_DESC_STC              equ   5303
+IDC_CHT_SER_DESC_EDT              equ   5304
 
-IDC_CHT_SER_LINE_GRP            equ   5310
-IDC_CHT_SER_LINE_SHOW_CHK       equ   5311
-IDC_CHT_SER_LINE_COLOR_BTN      equ   5312
-IDC_CHT_SER_LINE_WIDTH_STC      equ   5314
-IDC_CHT_SER_LINE_WIDTH_EDT      equ   5315
-IDC_CHT_SER_LINE_WIDTH_UDN      equ   5316
-IDC_CHT_SER_LINE_STYLE_STC      equ   5317
-IDC_CHT_SER_LINE_STYLE_CBO      equ   5318
+IDC_CHT_SER_LINE_GRP              equ   5310
+IDC_CHT_SER_LINE_SHOW_CHK         equ   5311
+IDC_CHT_SER_LINE_COLOR_BTN        equ   5312
+IDC_CHT_SER_LINE_WIDTH_STC        equ   5314
+IDC_CHT_SER_LINE_WIDTH_EDT        equ   5315
+IDC_CHT_SER_LINE_WIDTH_UDN        equ   5316
+IDC_CHT_SER_LINE_STYLE_STC        equ   5317
+IDC_CHT_SER_LINE_STYLE_CBO        equ   5318
 
-IDC_CHT_SER_MARKER_GRP          equ   5320
-IDC_CHT_SER_MARKER_SHOW_CHK     equ   5321
-IDC_CHT_SER_MARKER_COLOR_B_BTN  equ   5322
-IDC_CHT_SER_MARKER_COLOR_F_BTN  equ   5323
-IDC_CHT_SER_MARKER_SIZE_STC     equ   5324
-IDC_CHT_SER_MARKER_SIZE_EDT     equ   5325
-IDC_CHT_SER_MARKER_SIZE_UDN     equ   5326
-IDC_CHT_SER_MARKER_TYPE_STC     equ   5327
-IDC_CHT_SER_MARKER_TYPE_CBO     equ   5328
-IDC_CHT_SER_MARKER_WIDTH_STC    equ   5329
-IDC_CHT_SER_MARKER_WIDTH_EDT    equ   5330
-IDC_CHT_SER_MARKER_WIDTH_UDN    equ   5331
+IDC_CHT_SER_XY_MARK_GRP           equ   5320
+IDC_CHT_SER_XY_MARK_SHOW_CHK      equ   5321
+IDC_CHT_SER_XY_MARK_COLOR_B_BTN   equ   5322
+IDC_CHT_SER_XY_MARK_COLOR_F_BTN   equ   5323
+IDC_CHT_SER_XY_MARK_SIZE_STC      equ   5324
+IDC_CHT_SER_XY_MARK_SIZE_EDT      equ   5325
+IDC_CHT_SER_XY_MARK_SIZE_UDN      equ   5326
+IDC_CHT_SER_XY_MARK_TYPE_STC      equ   5327
+IDC_CHT_SER_XY_MARK_TYPE_CBO      equ   5328
+IDC_CHT_SER_XY_MARK_WIDTH_STC     equ   5329
+IDC_CHT_SER_XY_MARK_WIDTH_EDT     equ   5330
+IDC_CHT_SER_XY_MARK_WIDTH_UDN     equ   5331
 
 LINE_WIDTH_MIN    equ   1
 LINE_WIDTH_MAX    equ   10
@@ -48,21 +48,19 @@ LINE_WIDTH_MAX    equ   10
 MARKER_SIZE_MIN   equ   1
 MARKER_SIZE_MAX   equ   50
 
-
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlatTabSeries.CtlsGet
+; Method:     ChartXYTabSeries.CtlsGet
 ; Purpose:    Read the setting of all controls.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ChartFlatTabSeries.CtlsGet, uses xbx xdi xsi
-  local cBuffer[1024]:CHR, dFailure:DWORD
+Method ChartXYTabSeries.CtlsGet, uses xbx xdi xsi
+  local cBuffer[1024]:CHR, dTranslated:DWORD
 
   SetObject xsi
   lea xbx, cBuffer
   mov xdi, [xsi].pChartSeries
-  assume xdi:$ObjPtr(ChartSeries)
+  assume xdi:$ObjPtr(ChartXYSeries)
 
   invoke StrDispose, [xdi].pName
   invoke GetDlgItemText, [xsi].hWnd, IDC_CHT_SER_NAME_EDT, xbx, lengthof cBuffer
@@ -84,51 +82,51 @@ Method ChartFlatTabSeries.CtlsGet, uses xbx xdi xsi
 
   invoke IsDlgButtonChecked, [xsi].hWnd, IDC_CHT_SER_LINE_SHOW_CHK
   .if eax == BST_CHECKED
-    BitSet [xdi].dFlags, CHT_SERIES_SHOW_LINE
+    BitSet [xdi].dFlags, CHT_SERIES_SHOW_DEPICTION
   .else
-    BitClr [xdi].dFlags, CHT_SERIES_SHOW_LINE
+    BitClr [xdi].dFlags, CHT_SERIES_SHOW_DEPICTION
   .endif
 
   invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_LINE_COLOR_BTN
-  mov [xdi].LineColor, $32($invoke(SendMessage, xax, BM_GETCOLOR, 0, 0))
+  mov [xdi].Setup.LineColor, $32($invoke(SendMessage, xax, BM_GETCOLOR, 0, 0))
 
-  invoke GetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_LINE_WIDTH_EDT, addr dFailure, FALSE
-  .if dFailure != FALSE
-    .if (eax >= LINE_WIDTH_MIN) && (eax <= LINE_WIDTH_MAX)
-      mov [xdi].dLineWidth, eax
+  invoke GetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_LINE_WIDTH_EDT, addr dTranslated, FALSE
+  .if dTranslated != FALSE
+    .if (SDWORD ptr eax >= LINE_WIDTH_MIN) && (SDWORD ptr eax <= LINE_WIDTH_MAX)
+      mov [xdi].Setup.dLineWidth, eax
     .endif
   .endif
 
   invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_LINE_STYLE_CBO
-  mov [xdi].dLineStyle, $32($invoke(SendMessage, xax, CB_GETCURSEL, 0, 0))
+  mov [xdi].Setup.dLineStyle, $32($invoke(SendMessage, xax, CB_GETCURSEL, 0, 0))
 
-  invoke IsDlgButtonChecked, [xsi].hWnd, IDC_CHT_SER_MARKER_SHOW_CHK
+  invoke IsDlgButtonChecked, [xsi].hWnd, IDC_CHT_SER_XY_MARK_SHOW_CHK
   .if eax == BST_CHECKED
     BitSet [xdi].dFlags, CHT_SERIES_SHOW_MARKER
   .else
     BitClr [xdi].dFlags, CHT_SERIES_SHOW_MARKER
   .endif
 
-  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_MARKER_COLOR_B_BTN
-  mov [xdi].MarkerBorderColor, $32($invoke(SendMessage, xax, BM_GETCOLOR, 0, 0))
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_MARK_COLOR_B_BTN
+  mov [xdi].Setup.MarkerBorderColor, $32($invoke(SendMessage, xax, BM_GETCOLOR, 0, 0))
 
-  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_MARKER_COLOR_F_BTN
-  mov [xdi].MarkerFillColor, $32($invoke(SendMessage, xax, BM_GETCOLOR, 0, 0))
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_MARK_COLOR_F_BTN
+  mov [xdi].Setup.MarkerFillColor, $32($invoke(SendMessage, xax, BM_GETCOLOR, 0, 0))
 
-  invoke GetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_MARKER_SIZE_EDT, addr dFailure, FALSE
-  .if dFailure != FALSE
-    .if (eax >= MARKER_SIZE_MIN) && (eax <= MARKER_SIZE_MAX)
-      mov [xdi].dMarkerSize, eax
+  invoke GetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_XY_MARK_SIZE_EDT, addr dTranslated, FALSE
+  .if dTranslated != FALSE
+    .if (SDWORD ptr eax >= MARKER_SIZE_MIN) && (SDWORD ptr eax <= MARKER_SIZE_MAX)
+      mov [xdi].Setup.dMarkerSize, eax
     .endif
   .endif
 
-  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_MARKER_TYPE_CBO
-  mov [xdi].dMarkerShape, $32($invoke(SendMessage, xax, CB_GETCURSEL, 0, 0))
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_MARK_TYPE_CBO
+  mov [xdi].Setup.dMarkerShape, $32($invoke(SendMessage, xax, CB_GETCURSEL, 0, 0))
 
-  invoke GetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_MARKER_WIDTH_EDT, addr dFailure, FALSE
-  .if dFailure != FALSE
+  invoke GetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_XY_MARK_WIDTH_EDT, addr dTranslated, FALSE
+  .if dTranslated != FALSE
     .if (eax >= LINE_WIDTH_MIN) && (eax <= LINE_WIDTH_MAX)
-      mov [xdi].dMarkerBorderWidth, eax
+      mov [xdi].Setup.dMarkerBorderWidth, eax
     .endif
   .endif
 
@@ -136,30 +134,29 @@ Method ChartFlatTabSeries.CtlsGet, uses xbx xdi xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlatTabSeries.CtlsSet
+; Method:     ChartXYTabSeries.CtlsSet
 ; Purpose:    Set the controls of the setup dialog.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ChartFlatTabSeries.CtlsSet, uses xbx xdi xsi
+Method ChartXYTabSeries.CtlsSet, uses xbx xdi xsi
   SetObject xsi
   mov xdi, [xsi].pChartSeries
-  assume xdi:$ObjPtr(ChartSeries)
+  assume xdi:$ObjPtr(ChartXYSeries)
 
   invoke SetDlgItemText, [xsi].hWnd, IDC_CHT_SER_NAME_EDT, [xdi].pName
-
   invoke SetDlgItemText, [xsi].hWnd, IDC_CHT_SER_DESC_EDT, [xdi].pDescription
 
-  .ifBitSet [xdi].dFlags, CHT_SERIES_SHOW_LINE
+  .ifBitSet [xdi].dFlags, CHT_SERIES_SHOW_DEPICTION
     invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_LINE_SHOW_CHK, BST_CHECKED
   .else
     invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_LINE_SHOW_CHK, BST_UNCHECKED
   .endif
 
   invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_LINE_COLOR_BTN
-  invoke SendMessage, xax, BM_SETCOLOR, 0, [xdi].LineColor
+  invoke SendMessage, xax, BM_SETCOLOR, 0, [xdi].Setup.LineColor
 
-  invoke SetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_LINE_WIDTH_EDT, [xdi].dLineWidth, FALSE
+  invoke SetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_LINE_WIDTH_EDT, [xdi].Setup.dLineWidth, FALSE
 
   invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_LINE_STYLE_CBO
   mov xbx, xax
@@ -169,23 +166,23 @@ Method ChartFlatTabSeries.CtlsSet, uses xbx xdi xsi
   invoke SendMessage, xbx, CB_ADDSTRING, 0, $OfsCStr("Dot")
   invoke SendMessage, xbx, CB_ADDSTRING, 0, $OfsCStr("Dash-Dot")
   invoke SendMessage, xbx, CB_ADDSTRING, 0, $OfsCStr("Dash-Dot-Dot")
-  invoke SendMessage, xbx, CB_SETCURSEL, [xdi].dLineStyle, 0
+  invoke SendMessage, xbx, CB_SETCURSEL, [xdi].Setup.dLineStyle, 0
 
   .ifBitSet [xdi].dFlags, CHT_SERIES_SHOW_MARKER
-    invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_MARKER_SHOW_CHK, BST_CHECKED
+    invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_XY_MARK_SHOW_CHK, BST_CHECKED
   .else
-    invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_MARKER_SHOW_CHK, BST_UNCHECKED
+    invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_XY_MARK_SHOW_CHK, BST_UNCHECKED
   .endif
 
-  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_MARKER_COLOR_B_BTN
-  invoke SendMessage, xax, BM_SETCOLOR, 0, [xdi].MarkerBorderColor
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_MARK_COLOR_B_BTN
+  invoke SendMessage, xax, BM_SETCOLOR, 0, [xdi].Setup.MarkerBorderColor
 
-  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_MARKER_COLOR_F_BTN
-  invoke SendMessage, xax, BM_SETCOLOR, 0, [xdi].MarkerFillColor
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_MARK_COLOR_F_BTN
+  invoke SendMessage, xax, BM_SETCOLOR, 0, [xdi].Setup.MarkerFillColor
 
-  invoke SetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_MARKER_SIZE_EDT, [xdi].dMarkerSize, FALSE
+  invoke SetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_XY_MARK_SIZE_EDT, [xdi].Setup.dMarkerSize, FALSE
 
-  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_MARKER_TYPE_CBO
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_MARK_TYPE_CBO
   mov xbx, xax
   invoke SendMessage, xbx, CB_RESETCONTENT, 0, 0
   invoke SendMessage, xbx, CB_ADDSTRING, 0, $OfsCStr("Square")
@@ -200,20 +197,20 @@ Method ChartFlatTabSeries.CtlsSet, uses xbx xdi xsi
   invoke SendMessage, xbx, CB_ADDSTRING, 0, $OfsCStr("Cross")
   invoke SendMessage, xbx, CB_ADDSTRING, 0, $OfsCStr("4 Point Star")
   invoke SendMessage, xbx, CB_ADDSTRING, 0, $OfsCStr("8 Point Star")
-  invoke SendMessage, xbx, CB_SETCURSEL, [xdi].dMarkerShape, 0
+  invoke SendMessage, xbx, CB_SETCURSEL, [xdi].Setup.dMarkerShape, 0
 
-  invoke SetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_MARKER_WIDTH_EDT, [xdi].dMarkerBorderWidth, FALSE
+  invoke SetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_XY_MARK_WIDTH_EDT, [xdi].Setup.dMarkerBorderWidth, FALSE
 
   assume xdi:NOTHING
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlatTabSeries.Done
-; Purpose:    Finalize the ChartFlatTabSeries object.
+; Method:     ChartXYTabSeries.Done
+; Purpose:    Finalize the ChartTabSeries object.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ChartFlatTabSeries.Done, uses xbx xsi
+Method ChartXYTabSeries.Done, uses xsi
   SetObject xsi
   invoke StrDispose, [xsi].pLocalName
   invoke StrDispose, [xsi].pLocalDescription
@@ -221,49 +218,41 @@ Method ChartFlatTabSeries.Done, uses xbx xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlatTabSeries.Init
-; Purpose:    Initialize the ChartFlatTabSeries object.
+; Method:     ChartXYTabSeries.Init
+; Purpose:    Initialize the ChartXYTabSeries object.
 ; Arguments:  Arg1: -> Owner object.
-;             Arg2: -> ChartSeries.
+;             Arg2: -> ChartFlatSeries.
 ; Return:     Nothing.
 
-Method ChartFlatTabSeries.Init, uses xbx xsi, pOwner:POINTER, pChartSeries:$ObjPtr(ChartSeries)
+Method ChartXYTabSeries.Init, uses xbx xsi, pOwner:POINTER, pChartSeries:$ObjPtr(ChartXYSeries)
   SetObject xsi
   mov xbx, pOwner
-  ACall xsi.Init, xbx, [xbx].$Obj(TabCtrl).hWnd, IDD_CHT_SER_TAB, \
-                  offset $ObjTmpl(Application).hActiveMlsDlg
+  TCall xsi::DialogModeless.Init, xbx, [xbx].$Obj(TabCtrl).hWnd, IDD_CHT_SER_TAB, \
+                                  offset $ObjTmpl(Application).hActiveMlsDlg
   mrm [xsi].pChartSeries, pChartSeries, xbx
 
   ;Create local copies
-  assume xbx:$ObjPtr(ChartSeries)
+  assume xbx:$ObjPtr(ChartXYSeries)
   mov [xsi].pLocalName, $invoke(StrNew, [xbx].pName)
   mov [xsi].pLocalDescription, $invoke(StrNew, [xbx].pDescription)
-  m2m [xsi].LocalLineColor, [xbx].LineColor, eax
-  m2m [xsi].dLocalLineWidth, [xbx].dLineWidth, ecx
-  m2m [xsi].dLocalLineStyle, [xbx].dLineStyle, edx
-;  m2m [xsi].LocalLineFillColor, [xbx].LineFillColor, eax
-  m2m [xsi].LocalMarkerBorderColor, [xbx].MarkerBorderColor, ecx
-  m2m [xsi].dLocalMarkerBorderWidth, [xbx].dMarkerBorderWidth, edx
-  m2m [xsi].LocalMarkerFillColor, [xbx].MarkerFillColor, eax
-  m2m [xsi].dLocalMarkerSize, [xbx].dMarkerSize, ecx
-  m2m [xsi].dLocalMarkerShape, [xbx].dMarkerShape, edx
+  s2s [xsi].LocalSetup, [xbx].Setup, xax, xcx, xdx, xmm0, xmm1, xmm2
   assume xbx:NOTHING
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlatTabSeries.OnCommand
+; Method:     ChartXYTabSeries.OnCommand
 ; Purpose:    Event procedure for WM_COMMAND message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method ChartFlatTabSeries.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
+Method ChartXYTabSeries.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   local ChooseClr:CHOOSECOLOR, ColorRef[16]:DWORD
 
   SetObject xsi
   .if (WORD ptr wParam == IDC_CHT_SER_LINE_COLOR_BTN) || \
-      (WORD ptr wParam == IDC_CHT_SER_MARKER_COLOR_B_BTN) || \
-      (WORD ptr wParam == IDC_CHT_SER_MARKER_COLOR_F_BTN)
+      (WORD ptr wParam == IDC_CHT_SER_XY_MARK_COLOR_B_BTN) || \
+      (WORD ptr wParam == IDC_CHT_SER_XY_MARK_COLOR_F_BTN)
     mov xbx, [xsi].pChartSeries
 
     ;Launch ChooseColor system dialog
@@ -299,11 +288,11 @@ Method ChartFlatTabSeries.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPA
     mov ColorRef[15*sizeof(COLORREF)], $RGB(255,255,255)
 
     .if DWORD ptr wParam == IDC_CHT_SER_LINE_COLOR_BTN
-      lea xbx, [xbx].$Obj(ChartSeries).LineColor
-    .elseif DWORD ptr wParam ==  IDC_CHT_SER_MARKER_COLOR_B_BTN
-      lea xbx, [xbx].$Obj(ChartSeries).MarkerBorderColor
+      lea xbx, [xbx].$Obj(ChartXYSeries).Setup.LineColor
+    .elseif DWORD ptr wParam ==  IDC_CHT_SER_XY_MARK_COLOR_B_BTN
+      lea xbx, [xbx].$Obj(ChartXYSeries).Setup.MarkerBorderColor
     .else
-      lea xbx, [xbx].$Obj(ChartSeries).MarkerFillColor
+      lea xbx, [xbx].$Obj(ChartXYSeries).Setup.MarkerFillColor
     .endif
 
     m2m ChooseClr.rgbResult, COLORREF ptr [xbx], edx
@@ -318,69 +307,55 @@ Method ChartFlatTabSeries.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPA
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlatTabSeries.OnCtlColorDlg
+; Method:     ChartXYTabSeries.OnCtlColorDlg
 ; Purpose:    Event procedure for WM_CTLCOLORDLG message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Brush to paint the background.
 
-Method ChartFlatTabSeries.OnCtlColorDlg,, wParam:WPARAM, lParam:LPARAM
+Method ChartXYTabSeries.OnCtlColorDlg,, wParam:WPARAM, lParam:LPARAM
   invoke GetStockObject, WHITE_BRUSH
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlatTabSeries.OnInitDialog
+; Method:     ChartXYTabSeries.OnInitDialog
 ; Purpose:    Event procedure for WM_INITDIALOG message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = FALSE.
 
-Method ChartFlatTabSeries.OnInitDialog, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+Method ChartXYTabSeries.OnInitDialog, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
 
-  ;Associate UDN-Controls
-  mov xbx, $invoke(GetDlgItem, [xsi].hWnd, IDC_CHT_SER_LINE_WIDTH_UDN)
-  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_LINE_WIDTH_EDT
-  invoke SendMessage, xbx, UDM_SETBUDDY, xax, 0
-  invoke SendMessage, xbx, UDM_SETRANGE32, LINE_WIDTH_MIN, LINE_WIDTH_MAX
+  ;Set UDN-Controls
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_LINE_WIDTH_UDN
+  invoke SendMessage, xax, UDM_SETRANGE32, LINE_WIDTH_MIN, LINE_WIDTH_MAX
 
-  mov xbx, $invoke(GetDlgItem, [xsi].hWnd, IDC_CHT_SER_MARKER_SIZE_UDN)
-  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_MARKER_SIZE_EDT
-  invoke SendMessage, xbx, UDM_SETBUDDY, xax, 0
-  invoke SendMessage, xbx, UDM_SETRANGE32, MARKER_SIZE_MIN, MARKER_SIZE_MAX
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_MARK_SIZE_UDN
+  invoke SendMessage, xax, UDM_SETRANGE32, MARKER_SIZE_MIN, MARKER_SIZE_MAX
 
-  mov xbx, $invoke(GetDlgItem, [xsi].hWnd, IDC_CHT_SER_MARKER_WIDTH_UDN)
-  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_MARKER_WIDTH_EDT
-  invoke SendMessage, xbx, UDM_SETBUDDY, xax, 0
-  invoke SendMessage, xbx, UDM_SETRANGE32, LINE_WIDTH_MIN, LINE_WIDTH_MAX
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_MARK_WIDTH_UDN
+  invoke SendMessage, xax, UDM_SETRANGE32, LINE_WIDTH_MIN, LINE_WIDTH_MAX
 
   ACall xsi.OnInitDialog, wParam, lParam
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlatTabSeries.Restore
+; Method:     ChartXYTabSeries.Restore
 ; Purpose:    Restore original values.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ChartFlatTabSeries.Restore, uses xbx xsi
+Method ChartXYTabSeries.Restore, uses xbx xsi
   SetObject xsi
   mov xbx, [xsi].pChartSeries
-  assume xbx:$ObjPtr(ChartSeries)
+  assume xbx:$ObjPtr(ChartXYSeries)
 
-  ;Restore from Create local copies
+  ;Restore from local copies
   invoke StrDispose, [xbx].pName
   mov [xbx].pName, $invoke(StrNew, [xsi].pLocalName)
   invoke StrDispose, [xbx].pDescription
   mov [xbx].pDescription, $invoke(StrNew, [xsi].pLocalDescription)
-  m2m [xbx].LineColor, [xsi].LocalLineColor, eax
-  m2m [xbx].dLineWidth, [xsi].dLocalLineWidth, ecx
-  m2m [xbx].dLineStyle, [xsi].dLocalLineStyle, edx
-;  m2m [xbx].LineFillColor, [xsi].LocalLineFillColor, eax
-  m2m [xsi].LocalMarkerBorderColor, [xbx].MarkerBorderColor, ecx
-  m2m [xbx].dMarkerBorderWidth, [xsi].dLocalMarkerBorderWidth, edx
-  m2m [xbx].MarkerFillColor, [xsi].LocalMarkerFillColor, eax
-  m2m [xbx].dMarkerSize, [xsi].dLocalMarkerSize, ecx
-  m2m [xbx].dMarkerShape, [xsi].dLocalMarkerShape, edx
+  s2s [xbx].Setup, [xsi].LocalSetup, xax, xcx, xdx, xmm0, xmm1, xmm2
   assume xbx:NOTHING
 MethodEnd

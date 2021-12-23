@@ -431,6 +431,24 @@ Method DataPool.NewItem, uses xbx xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     DataPool.Reset
+; Purpose:    Restore initial state, releasing the complete allocated memory.
+; Arguments:  None.
+; Return:     Nothing.
+
+Method DataPool.Reset, uses xbx xdi xsi
+  SetObject xcx
+  lea xdi, [xcx].Blobs
+  mov xbx, [xcx].Blobs.pFirstItem
+  .while xbx != xdi
+    mov xsi, [xbx].DPL_CONTROLDATA.pNextItem
+    invoke VirtualFree, xbx, 0, MEM_RELEASE
+    mov xbx, xsi
+  .endw
+  SDLL_Init xdi                                         ;Reset the list
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     DataPool.Store
 ; Purpose:    Store object data in a stream.
 ; Arguments:  Arg1: -> Stream object.
@@ -539,24 +557,6 @@ Method DataPool.StoreItem,, pStream:$ObjPtr(Stream), pItem:POINTER
   OCall pStream::Stream.BinWrite, pItem, [xcx].dItemSize
   mov xdx, pStream
   mov eax, [xdx].$Obj(Stream).dErrorCode
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     DataPool.Reset
-; Purpose:    Restore initial state, releasing the complete allocated memory.
-; Arguments:  None.
-; Return:     Nothing.
-
-Method DataPool.Reset, uses xbx xdi xsi
-  SetObject xcx
-  lea xdi, [xcx].Blobs
-  mov xbx, [xcx].Blobs.pFirstItem
-  .while xbx != xdi
-    mov xsi, [xbx].DPL_CONTROLDATA.pNextItem
-    invoke VirtualFree, xbx, 0, MEM_RELEASE
-    mov xbx, xsi
-  .endw
-  SDLL_Init xdi                                         ;Reset the list
 MethodEnd
 
 endif

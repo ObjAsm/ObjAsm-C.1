@@ -54,7 +54,7 @@ Object ChildWnd, , MdiChildWnd                          ;MDI child window.
   VirtualEvent      OnCreate,           WM_CREATE
   VirtualEvent      OnMouseWheel,       WM_MOUSEWHEEL
 
-  Embed     Chart,    ChartXY
+  Embed     Chart,    ChartXYWnd
 ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -551,7 +551,7 @@ Method ChildWnd.Done, uses xbx xdi xsi
     invoke DrawMenuBar, [xbx].$Obj(Application).hWnd    ;Redraw the new menu bar
   .endif
 
-  OCall [xsi].Chart::ChartXY.Done
+  OCall [xsi].Chart::ChartXYWnd.Done
   ACall xsi.Done
 MethodEnd
 
@@ -615,7 +615,7 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   mov ChartDef.dExStyle, 0
   invoke GetClientRect, [xsi].hWnd, addr ChartDef.rect
 
-  OCall [xsi].Chart::ChartXY.Init, xsi, [xsi].hWnd, addr ChartDef
+  OCall [xsi].Chart::ChartXYWnd.Init, xsi, [xsi].hWnd, addr ChartDef
 
 ;  mov [xsi].Chart.Colors.PlotArea,    $RGB(255,255,255)
 ;  mov [xsi].Chart.Colors.PlotBorder,  $RGB(000,000,000)
@@ -657,23 +657,23 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   mov [xsi].Chart.ScaleY1.pUnit, $invoke(StrNew, $OfsCStr("Volt"))
 
   ;Create Chart data
-  mov xdi, $New(ChartSeries)
-  OCall xdi::ChartSeries.Init, addr [xsi].Chart.Data, DATAPOINTS
-  mov [xdi].$Obj(ChartSeries).dDataFrom, 0 + 200
-  mov [xdi].$Obj(ChartSeries).dDataCount, DATAPOINTS - 400
-  mov [xdi].$Obj(ChartSeries).pName, $invoke(StrNew, $OfsCStr("Voltage 1"))
-  mov [xdi].$Obj(ChartSeries).pDescription, $invoke(StrNew, $OfsCStr("Signal 1"))
-  mov [xdi].$Obj(ChartSeries).LineColor, $RGB(000,192,000)
-  mov [xdi].$Obj(ChartSeries).dLineWidth, 1
-  mov [xdi].$Obj(ChartSeries).MarkerFillColor, $RGB(000,255,000)
-  mov [xdi].$Obj(ChartSeries).dMarkerSize, 7
-  mov [xdi].$Obj(ChartSeries).dMarkerShape, CHTXY_MARKER_SQUARE
-  mov [xdi].$Obj(ChartSeries).dFlags, CHT_SERIES_SHOW_LINE or CHT_SERIES_SHOW_MARKER or CHT_SERIES_SHOW_TAB
+  mov xdi, $New(ChartXYSeries)
+  OCall xdi::ChartXYSeries.Init, addr [xsi].Chart.Data, DATAPOINTS
+  mov [xdi].$Obj(ChartXYSeries).dDataFrom, 0 + 200
+  mov [xdi].$Obj(ChartXYSeries).dDataCount, DATAPOINTS - 400
+  mov [xdi].$Obj(ChartXYSeries).pName, $invoke(StrNew, $OfsCStr("Voltage 1"))
+  mov [xdi].$Obj(ChartXYSeries).pDescription, $invoke(StrNew, $OfsCStr("Signal 1"))
+  mov [xdi].$Obj(ChartXYSeries).Setup.LineColor, $RGB(000,192,000)
+  mov [xdi].$Obj(ChartXYSeries).Setup.dLineWidth, 1
+  mov [xdi].$Obj(ChartXYSeries).Setup.MarkerFillColor, $RGB(000,255,000)
+  mov [xdi].$Obj(ChartXYSeries).Setup.dMarkerSize, 7
+  mov [xdi].$Obj(ChartXYSeries).Setup.dMarkerShape, CHTXY_MARKER_SQUARE
+  mov [xdi].$Obj(ChartXYSeries).dFlags, CHT_SERIES_SHOW_DEPICTION or CHT_SERIES_SHOW_MARKER or CHT_SERIES_SHOW_TAB
 
   xor ebx, ebx
   .while ebx < DATAPOINTS
     mov dDataBuff, ebx
-    OCall xdi::ChartSeries.ItemAt, 0, ebx               ;Return a pointer to a CHT_FLOAT (x-value)
+    OCall xdi::ChartXYSeries.ItemAt, 0, ebx             ;Return a pointer to a CHT_FLOAT (x-value)
     .if xax != NULL
       fild dDataBuff
       fstp CHT_FLOAT ptr [xax]
@@ -686,7 +686,7 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   fldz
   fldz
   .while ebx < DATAPOINTS
-    OCall xdi::ChartSeries.ItemAt, 1, ebx               ;Return a pointer to a CHT_FLOAT (y-value)
+    OCall xdi::ChartXYSeries.ItemAt, 1, ebx             ;Return a pointer to a CHT_FLOAT (y-value)
     .if xax != NULL
       fsin
       fstp CHT_FLOAT ptr [xax]
@@ -697,29 +697,29 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   .endw
   fUnload 3
 
-  OCall xdi::ChartSeries.Scan, 0, DATAPOINTS
+  OCall xdi::ChartXYSeries.Scan, 0, DATAPOINTS
   OCall [xsi].Chart.Data::Collection.Insert, xdi
 
   ;Create Chart data
-  mov xdi, $New(ChartSeries)
-  OCall xdi::ChartSeries.Init, addr [xsi].Chart.Data, DATAPOINTS/32
-  mov [xdi].$Obj(ChartSeries).dDataFrom, 0
-  mov [xdi].$Obj(ChartSeries).dDataCount, DATAPOINTS/32
-  mov [xdi].$Obj(ChartSeries).pName, $invoke(StrNew, $OfsCStr("Voltage 2"))
-  mov [xdi].$Obj(ChartSeries).pDescription, $invoke(StrNew, $OfsCStr("Signal 2"))
-  mov [xdi].$Obj(ChartSeries).LineColor, $RGB(255,000,000)
-  mov [xdi].$Obj(ChartSeries).dLineWidth, 1
-  mov [xdi].$Obj(ChartSeries).MarkerFillColor, $RGB(255,000,000)
-  mov [xdi].$Obj(ChartSeries).dMarkerSize, 9
-  mov [xdi].$Obj(ChartSeries).dMarkerShape, CHTXY_MARKER_CIRCLE
-  mov [xdi].$Obj(ChartSeries).dFlags, CHT_SERIES_SHOW_LINE or CHT_SERIES_SHOW_MARKER or CHT_SERIES_SHOW_TAB
+  mov xdi, $New(ChartXYSeries)
+  OCall xdi::ChartXYSeries.Init, addr [xsi].Chart.Data, DATAPOINTS/32
+  mov [xdi].$Obj(ChartXYSeries).dDataFrom, 0
+  mov [xdi].$Obj(ChartXYSeries).dDataCount, DATAPOINTS/32
+  mov [xdi].$Obj(ChartXYSeries).pName, $invoke(StrNew, $OfsCStr("Voltage 2"))
+  mov [xdi].$Obj(ChartXYSeries).pDescription, $invoke(StrNew, $OfsCStr("Signal 2"))
+  mov [xdi].$Obj(ChartXYSeries).Setup.LineColor, $RGB(255,000,000)
+  mov [xdi].$Obj(ChartXYSeries).Setup.dLineWidth, 1
+  mov [xdi].$Obj(ChartXYSeries).Setup.MarkerFillColor, $RGB(255,000,000)
+  mov [xdi].$Obj(ChartXYSeries).Setup.dMarkerSize, 9
+  mov [xdi].$Obj(ChartXYSeries).Setup.dMarkerShape, CHTXY_MARKER_CIRCLE
+  mov [xdi].$Obj(ChartXYSeries).dFlags, CHT_SERIES_SHOW_DEPICTION or CHT_SERIES_SHOW_MARKER or CHT_SERIES_SHOW_TAB
 
   xor ebx, ebx
   .while ebx < DATAPOINTS/32
     mov ecx, ebx
     shl ecx, 5
     mov dDataBuff, ecx
-    OCall xdi::ChartSeries.ItemAt, 0, ebx               ;Return a pointer to a CHT_FLOAT (x-value)
+    OCall xdi::ChartXYSeries.ItemAt, 0, ebx             ;Return a pointer to a CHT_FLOAT (x-value)
     .if xax != NULL
       fild dDataBuff
       fstp CHT_FLOAT ptr [xax]
@@ -732,7 +732,7 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   fldz
   fldz
   .while ebx < DATAPOINTS/32
-    OCall xdi::ChartSeries.ItemAt, 1, ebx               ;Return a pointer to a CHT_FLOAT (y-value)
+    OCall xdi::ChartXYSeries.ItemAt, 1, ebx             ;Return a pointer to a CHT_FLOAT (y-value)
     .if xax != NULL
       fsqrt
       fstp CHT_FLOAT ptr [xax]
@@ -743,7 +743,7 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   .endw
   fUnload 3
 
-  OCall xdi::ChartSeries.Scan, 0, DATAPOINTS/32
+  OCall xdi::ChartXYSeries.Scan, 0, DATAPOINTS/32
   OCall [xsi].Chart.Data::Collection.Insert, xdi
 MethodEnd
 

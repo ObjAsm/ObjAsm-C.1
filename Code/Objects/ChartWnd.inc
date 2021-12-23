@@ -1,310 +1,30 @@
 ; ==================================================================================================
-; Title:      ChartFlat.inc
+; Title:      ChartWnd.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:    ObjAsm support of ChartFlat objects.
-; Notes:      Version 1.0.0, August 2021
-;               - First release. This code is based on the legacy PlotXY object.
-;                 This object has the ability to pan and zoom the plot area. It reacts in different
-;                 ways according to the mouse position on different chart areas loke scales or plot.
-;                 The flags CHT_FLAG_ZOOMABLE and CHT_FLAG_PANABLE control these features.
-;                 If activated, the following rules apply:
-;                   - pressing the CTRL key, a zooming action is performed
-;                   - pressing the SHIFT key, actions apply on the x axis, otherwise to the y axis
-;                 Touchpad or touch display gestures are also supported.
-;                 A double-click on the plot area shows up, if activated, the color setting dialog.
-;                 A double-click on a scale shows up, if activated, the scale setup dialog.
-;                 Holding down the CTRL key and double-clicking a scale will reset it to the
-;                 auto max & min values.
-;                 To seedup the line rendering, line clipping is implemented using an algorithm
-;                 described here https://arxiv.org/pdf/1908.01350.pdf
+; Purpose:    ObjAsm support of ChartWnd objects.
+; Notes:      Version C.1.0, August 2021
+;               - First release.
 ; ==================================================================================================
 
 
 
-DEF_CHART struc
-  xCtlID        XWORD     ?                             ;Contol ID
-  dStyle        DWORD     ?                             ;Style
-  dExStyle      DWORD     ?                             ;Extended style
-  union
-    rect        RECT      {}
-    struct
-      sdPosX    SDWORD    ?                             ;X position
-      sdPosY    SDWORD    ?                             ;Y position
-      dWidth    DWORD     ?                             ;Width
-      dHeight   DWORD     ?                             ;Height
-    ends
-  ends
-DEF_CHART ends
-PDEF_CHART typedef ptr DEF_CHART
-
-CHT_SCALE_AUTO_MIN          equ   BIT00
-CHT_SCALE_AUTO_MAX          equ   BIT01
-CHT_SCALE_AUTO_MJR_DIV      equ   BIT02
-CHT_SCALE_AUTO_MNR_DIV      equ   BIT03
-CHT_SCALE_SHOW_MJR_GRID     equ   BIT04
-CHT_SCALE_SHOW_MNR_GRID     equ   BIT05
-CHT_SCALE_SHOW_MJR_DIV      equ   BIT06
-CHT_SCALE_SHOW_MNR_DIV      equ   BIT07
-CHT_SCALE_SHOW_LABEL        equ   BIT08
-CHT_SCALE_SHOW_TITLE        equ   BIT09
-CHT_SCALE_SHOW_AS_DATE      equ   BIT10                 ;Int(VARINAT time), zero @ 30.12.1899
-CHT_SCALE_SHOW_AS_DATEDIFF  equ   BIT11
-CHT_SCALE_SHOW_AS_TIME      equ   BIT12                 ;Frac(VARINAT time)
-CHT_SCALE_SHOW_TAB          equ   BIT13                 ;Show scale tab on the setup dialog
-
-CHT_DEFAULT_SCALE_FLAGS = CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX or \
-                          CHT_SCALE_AUTO_MJR_DIV or CHT_SCALE_AUTO_MNR_DIV or \
-                          CHT_SCALE_SHOW_MJR_GRID or CHT_SCALE_SHOW_MNR_GRID or \
-                          CHT_SCALE_SHOW_MJR_DIV or CHT_SCALE_SHOW_MNR_DIV or \
-                          CHT_SCALE_SHOW_LABEL or CHT_SCALE_SHOW_TITLE or \
-                          CHT_SCALE_SHOW_TAB
-
-CHT_FLAG_SELF_INST          equ   BIT00                 ;Object was instanced by CreateWindowEx
-CHT_FLAG_PANABLE            equ   BIT01                 ;Plot is panable
-CHT_FLAG_ZOOMABLE           equ   BIT02                 ;Plot is zoomable
-CHT_FLAG_COLOR              equ   BIT03                 ;Color or B&W output
-CHT_FLAG_SHOW_GENERAL_TAB   equ   BIT04                 ;Show the general tab on the setup dialog
-CHT_FLAG_CTRL_DBLCLK        equ   BIT05                 ;Enable CTRL double click to center scale
-
-CHT_DEFAULT_FLAGS = CHT_FLAG_PANABLE or CHT_FLAG_ZOOMABLE or CHT_FLAG_COLOR or \
-                    CHT_FLAG_SHOW_GENERAL_TAB or CHT_FLAG_CTRL_DBLCLK
-
-CHT_SCALE_STRINGS struc
-  pDescription      PSTRING     NULL                    ;-> Description string
-  pUnit             PSTRING     NULL                    ;-> Unit string
-CHT_SCALE_STRINGS ends
-
-CHT_SCALE_BASIC_DATA struc
-  dFlags            DWORD       CHT_DEFAULT_SCALE_FLAGS ;Scale options
-  fSetupMax         CHT_FLOAT   1.0                     ;Setup max value
-  fSetupMin         CHT_FLOAT   0.0                     ;Setup min value
-  fDataMax          CHT_FLOAT   1.0                     ;Data max value
-  fDataMin          CHT_FLOAT   0.0                     ;Data min value
-  dSetupMjrDiv      DWORD       2                       ;Setup major divisions
-  dSetupMnrDiv      DWORD       2                       ;Setup minor divisions
-  dDataMjrDiv       DWORD       2                       ;Data major divisions
-  dDataMnrDiv       DWORD       2                       ;Data minor divisions
-  dGridMjrLineSize  DWORD       1
-  dGridMjrLineStyle DWORD       PS_DASH
-  dGridMnrLineSize  DWORD       1
-  dGridMnrLineStyle DWORD       PS_DASH
-  CHT_SCALE_STRINGS             {}
-CHT_SCALE_BASIC_DATA ends
-PCHT_SCALE_BASIC_DATA typedef ptr CHT_SCALE_BASIC_DATA
-
-CHT_SCALE_INTERNAL_DATA struc                           ;Do not use directly, internal data
-  dID               DWORD       0                       ;E.g.: CHT_ID_SCALEX
-  dDecimals         DWORD       1                       ;Nr of decimal digits used to draw labels
-  fScaleMax         CHT_FLOAT   1.0                     ;Max used for drawing scale
-  fScaleMin         CHT_FLOAT   0.0                     ;Min used for drawing scale
-  fDivMjrFst        CHT_FLOAT   0.0                     ;Value of first major division in plot range
-  fDivMjrStp        CHT_FLOAT   0.0                     ;Value major division step
-  dDivMjrLen        DWORD       0                       ;Size of major division
-  dDivMnrLen        DWORD       0                       ;Size of minor division
-  dDivMnrCount      DWORD       0                       ;Number of minor divs between major divs
-  dTitleSep         DWORD       0                       ;Separation between title and labels
-  dLabelSep         DWORD       0                       ;Separation between labels and divisions
-  pTitle            PSTRING     NULL                    ;Title string (local allocated)
-  fScaleFactor      CHT_FLOAT   1.0                     ;Scale drawing factor
-CHT_SCALE_INTERNAL_DATA ends
-PCHT_SCALE_INTERNAL_DATA typedef ptr CHT_SCALE_INTERNAL_DATA
-
-CHT_SCALE_DATA struc
-  CHT_SCALE_BASIC_DATA        {}
-  CHT_SCALE_INTERNAL_DATA     {}
-CHT_SCALE_DATA ends
-PCHT_SCALE_DATA typedef ptr CHT_SCALE_DATA
-
-CHT_COLOR_CONFIG struc
-  MjrGrid         COLORREF    $RGB(191,191,191)         ;Major grid color
-  MnrGrid         COLORREF    $RGB(235,235,235)         ;Minor grid color
-  PlotArea        COLORREF    $RGB(255,255,255)         ;Plot area color
-  PlotBorder      COLORREF    $RGB(128,128,128)         ;Plot border color
-  Scales          COLORREF    $RGB(096,096,096)         ;Scale divisions, labels and titles
-  Background      COLORREF    $RGB(240,240,240)         ;Background color
-CHT_COLOR_CONFIG ends
-PCHT_COLOR_CONFIG typedef ptr CHT_COLOR_CONFIG
-
-
-;CHT_ID identify different parts of the chart.
-;Positive numbers denote chart series 0..ChartFlat.Data.dCount - 1
-CHT_ID_NONE       equ     -1
-CHT_ID_SCALEX     equ     -2
-CHT_ID_SCALEY1    equ     -3
-CHT_ID_SCALEY2    equ     -4
-CHT_ID_PLOT       equ     -5
-
-externdef $ObjTmpl(Application):$Obj(WinApp)
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Object:  ChartFlat
-; Purpose: This object is the base for all flat chart descendants.
-;          It works using the ChartSeries object, that holds the information for each data
-;          representation.
-;          DialogChartScaleSetup and DialogChartSetup are used to customize the drawing. They are called
-;          when the user doubleclicks on some of the chart elements.
-;          Mouse drag actions move the chart area. Pressing simulaneously the CONTROL key, the chart
-;          area is resized.
-; Note:    - X and Y data must be floating point numbers (REAL4 or REAL8). See CHT_FLOAT.
-
-Object ChartFlat, ChartFlatID, Window
-  VirtualMethod     Calc,               HDC, PRECT
-  VirtualMethod     CalcScaleDivs,      PCHT_SCALE_DATA
-  VirtualMethod     Dispatch,           HWND, DWORD, WPARAM, LPARAM
-  RedefineMethod    Done
-  VirtualMethod     DrawFrame,          HDC                         ;hDC
-  VirtualAbstract   DrawSeries,         HDC, $ObjPtr(ChartSeries)   ;hDC, -> ChartSeries
-  VirtualMethod     Refresh
-  VirtualMethod     Show,               HDC, PRECT
-
-  VirtualEvent      OnCreate,           WM_CREATE
-  VirtualEvent      OnGesture,          WM_GESTURE
-  VirtualEvent      OnMouseMove,        WM_MOUSEMOVE
-  VirtualEvent      OnMouseWheel,       WM_MOUSEWHEEL
-  VirtualEvent      OnLButtonDblClk,    WM_LBUTTONDBLCLK
-  VirtualEvent      OnLButtonDown,      WM_LBUTTONDOWN
-  VirtualEvent      OnLButtonUp,        WM_LBUTTONUP
-  VirtualEvent      OnPaint,            WM_PAINT
-
-  DefineVariable    dFlags,             DWORD,            CHT_DEFAULT_FLAGS
-  DefineVariable    ScaleX,             CHT_SCALE_DATA,   {{},{CHT_ID_SCALEX}}
-  DefineVariable    ScaleY1,            CHT_SCALE_DATA,   {{},{CHT_ID_SCALEY1}}
-  DefineVariable    Colors,             CHT_COLOR_CONFIG, {}
-
-  DefineVariable    ViewRect,           RECT,             {}
-  DefineVariable    Padding,            RECT,             {}
-  DefineVariable    DrawRect,           RECT,             {}        ;DrawRect = ViewRect - Padding
-  DefineVariable    PlotRect,           RECT,             {}
-  DefineVariable    hFontHorz,          HFONT,            0         ;Horizontal font
-  DefineVariable    hFontVert,          HFONT,            0         ;Vertical font
-  DefineVariable    TextMetricHorz,     TEXTMETRIC,       {}
-  DefineVariable    TextMetricVert,     TEXTMETRIC,       {}
-  DefineVariable    bMovingOn,          BYTE,             CHT_ID_NONE ;Selected element
-  DefineVariable    MovedLastPoint,     POINT,            {}
-  DefineVariable    dGestureZoomFirst,  DWORD,            0
-  DefineVariable    dGestureZoomLast,   DWORD,            0
-
-  Embed    Data,    Collection                                      ;Collection of ChartSeries
-ObjectEnd
-
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Object:     ChartFlatTabGeneral
-; Purpose:    Color Tab of ChartFlatSetup.
-
-Object ChartFlatTabGeneral, , DialogModeless
-  RedefineMethod    Init,               POINTER, $ObjPtr(ChartFlat)
-  RedefineMethod    CtlsGet
-  RedefineMethod    CtlsSet
-  RedefineMethod    OnCommand,          WPARAM, LPARAM
-  RedefineMethod    OnInitDialog,       WPARAM, LPARAM
-  VirtualMethod     Restore
-
-  VirtualEvent      OnCtlColorDlg,      WM_CTLCOLORDLG, WM_CTLCOLORSTATIC
-
-  DefineVariable    LocalColors,        CHT_COLOR_CONFIG,     {}
-  DefineVariable    pChartFlat,         $ObjPtr(ChartFlat),   NULL
-ObjectEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Object:     ChartFlatTabScale
-; Purpose:    Scale Tab of ChartFlatSetup.
-
-Object ChartFlatTabScale, , DialogModeless
-  RedefineMethod    Done
-  RedefineMethod    Init,               POINTER, PCHT_SCALE_DATA
-  RedefineMethod    CtlsGet
-  RedefineMethod    CtlsSet
-  RedefineMethod    OnCommand,          WPARAM, LPARAM
-  RedefineMethod    OnInitDialog,       WPARAM, LPARAM
-  VirtualMethod     Restore
-
-  VirtualEvent      OnCtlColorDlg,      WM_CTLCOLORDLG, WM_CTLCOLORSTATIC
-
-  DefineVariable    pScaleData,         PCHT_SCALE_DATA,  NULL
-  DefineVariable    pLocalDescription,  PSTRING,          NULL
-  DefineVariable    pLocalUnit,         PSTRING,          NULL
-  DefineVariable    LocalScaleData,     CHT_SCALE_BASIC_DATA, {}    ;Only basic data!
-ObjectEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Object:     ChartFlatTabSeries
-; Purpose:    Series Tab of ChartFlatSetup.
-
-Object ChartFlatTabSeries, , DialogModeless
-  RedefineMethod    Done
-  RedefineMethod    Init,               POINTER, $ObjPtr(ChartSeries)
-  RedefineMethod    CtlsGet
-  RedefineMethod    CtlsSet
-  RedefineMethod    OnCommand,          WPARAM, LPARAM
-  RedefineMethod    OnInitDialog,       WPARAM, LPARAM
-  VirtualMethod     Restore
-
-  VirtualEvent      OnCtlColorDlg,      WM_CTLCOLORDLG, WM_CTLCOLORSTATIC
-
-  DefineVariable    pLocalName,         PSTRING,    NULL            ;-> Series name
-  DefineVariable    pLocalDescription,  PSTRING,    NULL            ;-> Series description
-
-  DefineVariable    LocalLineColor,     COLORREF,   $RGB(000,000,000)
-  DefineVariable    dLocalLineWidth,    DWORD,      1
-  DefineVariable    dLocalLineStyle,    DWORD,      PS_SOLID
-
-  DefineVariable    LocalMarkerBorderColor,   COLORREF,   $RGB(000,000,000)
-  DefineVariable    dLocalMarkerBorderWidth,  DWORD,      1
-  DefineVariable    LocalMarkerFillColor,     COLORREF,   $RGB(255,255,255)
-  DefineVariable    dLocalMarkerSize,   DWORD,      11
-  DefineVariable    dLocalMarkerShape,  DWORD,      0
-
-  DefineVariable    pChartSeries,       $ObjPtr(ChartSeries),   NULL
-ObjectEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Object:     ChartFlatSetup
-; Purpose:    Custom Setup dialog.
-
-Object ChartFlatSetup, , DialogModal
-  RedefineMethod    CtlsGet
-  RedefineMethod    CtlsSet
-  RedefineMethod    Done
-  RedefineMethod    Init,               POINTER, HWND, DWORD
-  RedefineMethod    OnCommand,          WPARAM, LPARAM
-  RedefineMethod    OnDestroy,          WPARAM, LPARAM
-  RedefineMethod    OnInitDialog,       WPARAM, LPARAM
-  VirtualMethod     Restore
-
-  DefineVariable    dTabID,             DWORD,  CHT_ID_NONE
-
-  Embed     TabControl,       TabCtrl
-  Embed     TabGeneral,       ChartFlatTabGeneral
-  Embed     TabScaleX,        ChartFlatTabScale
-  Embed     TabScaleY1,       ChartFlatTabScale
-  Embed     TabSeriesColl,    Collection
-  Embed     IconImageList,    MaskedImageList
-ObjectEnd
-
-
-
 ; ==================================================================================================
-
-if IMPLEMENT
-
-; ==================================================================================================
-;    ChartFlat implementation
+;    ChartWnd implementation
 ; ==================================================================================================
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlat.Calc
+; Method:     ChartWnd.Calc
 ; Purpose:    Compute internal values of the plot.
 ; Arguments:  Arg1: Output device context.
 ;             Arg2: -> Output rect.
 ; Return:     Nothing.
 
-Method ChartFlat.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
+Method ChartWnd.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
   local TextSize1:POINT, TextSize2:POINT, hPrevFont:HFONT
   local cBuffer[1024]:CHR, dValue:DWORD
 
-  ;DbgText "ChartFlat.Calc"
+  ;DbgText "ChartWnd.Calc"
   SetObject xsi
   mov hPrevFont, $invoke(SelectObject, hDC, [xsi].hFontHorz)
 
@@ -594,12 +314,12 @@ Method ChartFlat.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlat.CalcScaleDivs
+; Method:     ChartWnd.CalcScaleDivs
 ; Purpose:    Compute major and minor scale divisions and scale decimal digits.
 ; Arguments:  Arg1: -> Scale data.
 ; Return:     Nothing.
 
-Method ChartFlat.CalcScaleDivs, uses xbx, pScaleData:PCHT_SCALE_DATA
+Method ChartWnd.CalcScaleDivs, uses xbx, pScaleData:PCHT_SCALE_DATA
   local fNewLoLim:CHT_FLOAT, fNewUpLim:CHT_FLOAT        ;New Lower Limit (NLL)
   local dIndex:DWORD, dBuffer:DWORD                     ;  and New Upper Limit (NUL)
 
@@ -708,7 +428,7 @@ Method ChartFlat.CalcScaleDivs, uses xbx, pScaleData:PCHT_SCALE_DATA
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlat.Dispatch
+; Method:     ChartWnd.Dispatch
 ; Purpose:    Dispatching of window messages.
 ; Arguments:  Arg1: Window handle.
 ;             Arg2: Message identifier.
@@ -716,19 +436,19 @@ MethodEnd
 ;             Arg4: Second message parameter.
 ; Return:     eax = This value is the result of the message processing and depends on the message.
 
-Method ChartFlat.Dispatch, uses xsi, hWnd:HWND, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
+Method ChartWnd.Dispatch, uses xsi, hWnd:HWND, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
 ;  DbgMessage uMsg
   SetObject xsi
   DispatchEvent <DefWindowProc, hWnd>                   ;xsi -> Object instance
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlat.Done
-; Purpose:    Finalize the ChartFlat object.
+; Method:     ChartWnd.Done
+; Purpose:    Finalize the ChartWnd object.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ChartFlat.Done, uses xsi
+Method ChartWnd.Done, uses xsi
   SetObject xsi
 
   invoke StrDispose, [xsi].ScaleX.pTitle
@@ -740,6 +460,9 @@ Method ChartFlat.Done, uses xsi
   invoke StrDispose, [xsi].ScaleY1.pUnit
 
   OCall [xsi].Data::Collection.Done
+  OCall [xsi].InfoAreas::DataCollection.Done
+
+  invoke DestroyWindow, [xsi].hToolTip
 
   invoke DeleteObject, [xsi].hFontHorz
   invoke DeleteObject, [xsi].hFontVert
@@ -748,7 +471,7 @@ Method ChartFlat.Done, uses xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlat.DrawFrame
+; Method:     ChartWnd.DrawFrame
 ; Purpose:    Draw the plot frame.
 ; Arguments:  Arg1: Output device context.
 ; Return:     Nothing.
@@ -759,7 +482,7 @@ CHT_LABEL_INFO struc
 CHT_LABEL_INFO ends
 PCHT_LABEL_INFO typedef ptr CHT_LABEL_INFO
 
-Method ChartFlat.DrawFrame, uses xbx xdi xsi, hDC:HDC
+Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
   local hPrevPen:HPEN, hPrevBrush:HBRUSH, dPrevColor:DWORD, hPrevFont:HFONT
   local dPrevBkMode:DWORD, dPrevAlign:DWORD, dTempEDI:DWORD
   local LastPoint:POINT, cBuffer[256]:CHR
@@ -1328,19 +1051,82 @@ Method ChartFlat.DrawFrame, uses xbx xdi xsi, hDC:HDC
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlat.OnCreate
+; Method:     ChartWnd.GetDataTipText
+; Purpose:    Return a string inforation about data.
+; Arguments:  Arg1: -> Destination buffer. Max 1024 chars.
+;             Arg2: -> Series.
+;             Arg2: Data index into ChartSeries.
+; Return:     Nothing.
+
+Method ChartWnd.GetDataTipText,, pBuffer:PSTRING, pSeries:$ObjPtr(ChartSeries), dDataIndex:DWORD
+  mov xax, pSeries
+  invoke wsprintf, pBuffer, $OfsCStr("Name: %s", CRLF, "Description: %s"), \
+                   [xax].$Obj(ChartSeries).pName, \
+                   [xax].$Obj(ChartSeries).pDescription
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.Load
+; Purpose:    Load buffer data from a stream object.
+; Arguments:  Arg1: -> Stream object.
+; Return:     Nothing.
+
+Method ChartWnd.Load, uses xsi, pStream:$ObjPtr(Stream), pDeserInfo:PDESER_INFO
+  SetObject xsi
+  ACall xsi.Load, pStream, pDeserInfo
+  mov [xsi].dFlags, $32($OCall(pStream::Stream.BinRead32))
+  OCall pStream::Stream.BinRead, addr [xsi].ScaleX,   sizeof(CHT_SCALE_DATA)
+  OCall pStream::Stream.BinRead, addr [xsi].ScaleY1,  sizeof(CHT_SCALE_DATA)
+  OCall pStream::Stream.BinRead, addr [xsi].Colors,   sizeof(CHT_COLOR_CONFIG)
+  OCall pStream::Stream.BinRead, addr [xsi].ViewRect, sizeof(RECT)
+  OCall pStream::Stream.BinRead, addr [xsi].Padding,  sizeof(RECT)
+  OCall pStream::Stream.BinRead, addr [xsi].DrawRect, sizeof(RECT)
+  OCall pStream::Stream.BinRead, addr [xsi].PlotRect, sizeof(RECT)
+  OCall pStream::Stream.BinRead, addr [xsi].TextMetricHorz,  sizeof(TEXTMETRIC)
+  OCall pStream::Stream.BinRead, addr [xsi].TextMetricVert,  sizeof(TEXTMETRIC)
+  mov [xsi].bMovingOn, $8($OCall(pStream::Stream.BinRead8))
+  OCall pStream::Stream.BinRead, addr [xsi].MovedLastPoint,  sizeof(POINT)
+  mov [xsi].dGestureZoomFirst, $32($OCall(pStream::Stream.BinRead32))
+  mov [xsi].dGestureZoomLast, $32($OCall(pStream::Stream.BinRead32))
+  OCall [xsi].Data::Collection.Load, pStream, pDeserInfo
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.OnCreate
 ; Purpose:    Event procedure for WM_CREATE message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero to continue creation of the window, else -1.
 
-Method ChartFlat.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
-  local LogFnt:LOGFONT, hDC:HDC, hPrevFont:HFONT
+Method ChartWnd.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
+  local LogFnt:LOGFONT, hDC:HDC, hPrevFont:HFONT, ToolInfo:TOOLINFO
 
-;  DbgText "ChartFlat.OnCreate"
+;  DbgText "ChartWnd.OnCreate"
   SetObject xsi
 
+  ;Create a ToolTip window to display popup information when hoovering over an InfoArea
+  invoke CreateWindowEx, WS_EX_TOPMOST, $OfsCStr("tooltips_class32"), NULL, \
+                         WS_POPUP or TTS_NOPREFIX or TTS_ALWAYSTIP, \
+                         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, \
+                         [xsi].hWnd, 0, hInstance, NULL
+  mov [xsi].hToolTip, xax
+  invoke SendMessage, [xsi].hToolTip, TTM_ACTIVATE, FALSE, 0
+  BitClr [xsi].dFlags, CHT_FLAG_TOOLTIP_ACTIVE
+  invoke SetWindowPos, [xsi].hToolTip, HWND_TOPMOST, 0, 0, 0, 0, \
+                       SWP_NOMOVE or SWP_NOSIZE or SWP_NOACTIVATE
+  invoke SendMessage, [xsi].hToolTip, TTM_SETMAXTIPWIDTH, 0, 500    ;Set max width to
+                                                                    ;enable line breaks
+  mov ToolInfo.cbSize, sizeof(ToolInfo)
+  mov ToolInfo.uFlags, TTF_SUBCLASS or TTF_IDISHWND
+  mrm ToolInfo.hwnd, [xsi].hWnd, xax
+  mov ToolInfo.uId, xax
+  mov ToolInfo.hinst, 0
+  mov ToolInfo.lpszText, NULL
+  mov ToolInfo.lParam, 0
+  invoke SendMessage, [xsi].hToolTip, TTM_ADDTOOL, 0, addr ToolInfo ;Associate the tooltip
+
   OCall [xsi].Data::Collection.Init, xsi, 1, 1, COL_MAX_CAPACITY    ;Make Space for 1 series
+  OCall [xsi].InfoAreas::DataCollection.Init, xsi, 100, 100, COL_MAX_CAPACITY
 
   FillString LogFnt.lfFaceName, <Segoe UI>
   mov hDC, $invoke(GetDC, [xsi].hWnd)
@@ -1374,18 +1160,18 @@ Method ChartFlat.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlat.OnGesture
+; Method:     ChartWnd.OnGesture
 ; Purpose:    Event procedure for WM_GESTURE message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter. lParam = info HANDLE identifying the gesture command
 ; Return:     eax = Zero if handled.
 ; Link:       https://docs.microsoft.com/en-us/windows/win32/wintouch/improving-the-single-finger-panning-experience
 
-Method ChartFlat.OnGesture, uses xsi, wParam:WPARAM, lParam:LPARAM
+Method ChartWnd.OnGesture, uses xsi, wParam:WPARAM, lParam:LPARAM
   local GestInfo:GESTUREINFO, bResult:BOOL, bHandled:BOOL, sdValue:SDWORD
 ;  local Pnt1:POINT, bHasChanged:BOOL, dError:DWORD
 
-  ;DbgText "ChartFlat.OnGesture"
+  ;DbgText "ChartWnd.OnGesture"
   SetObject xsi
 
   ;Populate and retrieve the extra message info.
@@ -1545,14 +1331,151 @@ Method ChartFlat.OnGesture, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlat.OnMouseMove
+; Method:     ChartWnd.OnLButtonDblClk
+; Purpose:    Event procedure for WM_LBUTTONDBLCLK message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = Zero if handled.
+
+Method ChartWnd.OnLButtonDblClk, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
+  local DblClkPnt:POINT, PopupPnt:POINT
+
+  SetObject xsi
+  PntS2Pnt DblClkPnt, lParam
+  mrm PopupPnt.x, DblClkPnt.x, ebx 
+  mrm PopupPnt.y, DblClkPnt.y, edi 
+  mov eax, -1
+
+  .ifBitSet [xsi].dFlags, CHT_FLAG_CTRL_DBLCLK
+    .ifBitSet wParam, MK_CONTROL
+      ;Check if X scale was double clicked
+      .if (SDWORD ptr ebx >= [xsi].PlotRect.left) && (SDWORD ptr ebx <= [xsi].ViewRect.right) && \
+          (SDWORD ptr edi >= [xsi].PlotRect.bottom) && (SDWORD ptr edi <= [xsi].ViewRect.bottom)
+        BitSet [xsi].ScaleX.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
+        OCall xsi.Refresh
+      ;Check if Y scale was double clicked
+      .elseif (SDWORD ptr ebx >= [xsi].ViewRect.left) && (SDWORD ptr ebx <= [xsi].PlotRect.left) && \
+              (SDWORD ptr edi >= [xsi].ViewRect.top) && (SDWORD ptr edi <= [xsi].PlotRect.bottom)
+        BitSet [xsi].ScaleY1.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
+        OCall xsi.Refresh
+      .else
+        BitSet [xsi].ScaleX.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
+        BitSet [xsi].ScaleY1.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
+        OCall xsi.Refresh
+      .endif
+      xor eax, eax
+      ExitMethod
+    .endif
+  .endif
+
+  ;Get doubleclick client coordinates
+  add PopupPnt.x, 10                                   ;Place the Dialog 10 px at the right
+  add PopupPnt.y, 20                                   ;Place the Dialog 20 px below
+
+  invoke ClientToScreen, [xsi].hWnd, addr PopupPnt     ;Transform to screen coordiantes
+  ;Check if X scale was double clicked
+  .if (SDWORD ptr ebx >= [xsi].PlotRect.left) && (SDWORD ptr ebx <= [xsi].ViewRect.right) && \
+      (SDWORD ptr edi >= [xsi].PlotRect.bottom) && (SDWORD ptr edi <= [xsi].ViewRect.bottom)
+    .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_TAB
+      OCall xsi.ShowSetupDlg, PopupPnt.x, PopupPnt.y, CHT_ID_SCALEX
+    .endif
+  ;Check if Y1 scale was double clicked
+  .elseif (SDWORD ptr ebx >= [xsi].ViewRect.left) && (SDWORD ptr ebx <= [xsi].PlotRect.left) && \
+          (SDWORD ptr edi >= [xsi].ViewRect.top) && (SDWORD ptr edi <= [xsi].PlotRect.bottom)
+    .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_TAB
+      OCall xsi.ShowSetupDlg, PopupPnt.x, PopupPnt.y, CHT_ID_SCALEY1
+    .endif
+  .else
+    ;Check if a series was clicked
+    xor ebx, ebx
+    .while ebx != [xsi].InfoAreas.dCount
+      mov xdi, $OCall([xsi].InfoAreas::DataCollection.ItemAt, ebx)
+      invoke PtInRect, addr [xdi].InfoArea.Area, DblClkPnt
+      .if eax != FALSE
+        mov xdx, [xdi].InfoArea.pSeries
+        .ifBitSet [xdx].$Obj(ChartSeries).dFlags, CHT_SERIES_SHOW_TAB
+          OCall [xsi].Data::Collection.IndexOf, xdx 
+          OCall xsi.ShowSetupDlg, PopupPnt.x, PopupPnt.y, eax
+          .break
+        .endif
+      .endif
+      inc ebx
+    .endw
+    .if ebx == [xsi].InfoAreas.dCount
+      .ifBitSet [xsi].dFlags, CHT_FLAG_SHOW_GENERAL_TAB
+        ;Launch the color setup dialog
+        OCall xsi.ShowSetupDlg, PopupPnt.x, PopupPnt.y, CHT_ID_PLOT
+      .endif
+    .endif
+  .endif
+  xor eax, eax
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.OnLButtonDown
+; Purpose:    Event procedure for WM_LBUTTONDOWN message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = Zero if handled.
+
+Method ChartWnd.OnLButtonDown, uses xsi, wParam:WPARAM, lParam:LPARAM
+  SetObject xsi
+  PntS2Regs lParam
+  mov [xsi].MovedLastPoint.x, eax
+  mov [xsi].MovedLastPoint.y, ecx
+
+  ;Check if X scale was clicked
+  .if (SDWORD ptr eax >= [xsi].PlotRect.left) && (SDWORD ptr eax <= [xsi].ViewRect.right) && \
+    (SDWORD ptr ecx >= [xsi].PlotRect.bottom) && (SDWORD ptr ecx <= [xsi].ViewRect.bottom)
+    mov [xsi].bMovingOn, CHT_ID_SCALEX
+    invoke SetCapture, [xsi].hWnd
+  ;Check if Y scale was clicked
+  .elseif (SDWORD ptr eax >= [xsi].ViewRect.left) && (SDWORD ptr eax <= [xsi].PlotRect.left) && \
+    (SDWORD ptr ecx >= [xsi].ViewRect.top) && (SDWORD ptr ecx <= [xsi].PlotRect.bottom)
+    mov [xsi].bMovingOn, CHT_ID_SCALEY1
+    invoke SetCapture, [xsi].hWnd
+  ;Check if plot area was clicked
+  .elseif (SDWORD ptr eax >= [xsi].PlotRect.left) && (SDWORD ptr eax <= [xsi].PlotRect.right) && \
+    (SDWORD ptr ecx >= [xsi].PlotRect.top) && (SDWORD ptr ecx <= [xsi].PlotRect.bottom)
+    mov [xsi].bMovingOn, CHT_ID_PLOT
+    invoke SetCapture, [xsi].hWnd
+  ;Check if lower left area was clicked => behave like plot area
+  .elseif (SDWORD ptr eax >= [xsi].ViewRect.left) && (SDWORD ptr eax <= [xsi].PlotRect.left) && \
+    (SDWORD ptr ecx >= [xsi].PlotRect.bottom) && (SDWORD ptr ecx <= [xsi].ViewRect.bottom)
+    mov [xsi].bMovingOn, CHT_ID_PLOT
+    invoke SetCapture, [xsi].hWnd
+  .else
+    ;It was clicked somewhere else
+    mov [xsi].bMovingOn, CHT_ID_NONE
+  .endif
+  xor eax, eax
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.OnLButtonUp
+; Purpose:    Event procedure for WM_LBUTTONUP message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = Zero if handled.
+
+Method ChartWnd.OnLButtonUp,, wParam:WPARAM, lParam:LPARAM
+  SetObject xcx
+  mov [xcx].bMovingOn, CHT_ID_NONE
+  invoke ReleaseCapture
+  xor eax, eax
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.OnMouseMove
 ; Purpose:    Event procedure for WM_MOUSEMOVE message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method ChartFlat.OnMouseMove, uses xsi, wParam:WPARAM, lParam:LPARAM
-  local sdValue:SDWORD, dDoZoom:DWORD, dDoPan:DWORD
+Method ChartWnd.OnMouseMove, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
+  local sdValue:SDWORD, dDoZoom:DWORD, dDoPan:DWORD, MouseClientPos:POINT
+  local xCursor:XWORD, ToolInfo:TOOLINFO
+  local cBuffer[1024]:CHR
 
   SetObject xsi
   mov dDoPan, FALSE
@@ -1669,147 +1592,72 @@ Method ChartFlat.OnMouseMove, uses xsi, wParam:WPARAM, lParam:LPARAM
       OCall xsi.Refresh
     .endif
   .endif
-  xor eax, eax
-MethodEnd
 
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlat.OnLButtonDblClk
-; Purpose:    Event procedure for WM_LBUTTONDBLCLK message.
-; Arguments:  Arg1: First message parameter.
-;             Arg2: Second message parameter.
-; Return:     eax = Zero if handled.
+  mov xCursor, IDC_ARROW
+  .ifBitSet [xsi].dFlags, CHT_FLAG_DATA_TOOLTIPS_SHOW
+    .if [xsi].bMovingOn == CHT_ID_NONE
+      mov xdx, lParam                                   ;Mouse client position
+      PntS2Pnt MouseClientPos, edx
+      invoke PtInRect, addr [xsi].PlotRect, MouseClientPos
+      .if eax != FALSE
+        xor ebx, ebx
+        .while ebx != [xsi].InfoAreas.dCount
+          mov xdi, $OCall([xsi].InfoAreas::DataCollection.ItemAt, ebx)
+          invoke PtInRect, addr [xdi].InfoArea.Area, MouseClientPos
+          .if eax != FALSE
+            OCall xsi.GetDataTipText, addr cBuffer, [xdi].InfoArea.pSeries, [xdi].InfoArea.dDataIndex
+            .if CHR ptr cBuffer[0] != 0
+              .ifBitClr [xsi].dFlags, CHT_FLAG_TOOLTIP_ACTIVE
+                mov ToolInfo.cbSize, sizeof(ToolInfo)
+                lea xax, cBuffer
+                m2m ToolInfo.lpszText, xax
+                mrm ToolInfo.hwnd, [xsi].hWnd, xcx
+                mov ToolInfo.uId, xcx
+                invoke SendMessage, [xsi].hToolTip, TTM_UPDATETIPTEXT, 0, addr ToolInfo
+                invoke SendMessage, [xsi].hToolTip, TTM_ACTIVATE, TRUE, 0
+                BitSet [xsi].dFlags, CHT_FLAG_TOOLTIP_ACTIVE
+              .endif
+              .ifBitClr [xsi].dFlags, CHT_FLAG_TOOLTIP_SHOW
+                mov xCursor, IDC_HELP
+              .endif
+            .endif
+            jmp @F
+          .endif
+          inc ebx
+        .endw
 
-Method ChartFlat.OnLButtonDblClk, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
-  local SetupDlg:$Obj(ChartFlatSetup), DblClkPnt:POINT
-
-  SetObject xsi
-  PntS2Pnt DblClkPnt, lParam
-  mov ebx, DblClkPnt.x
-  mov edi, DblClkPnt.y
-  mov eax, -1
-
-  .ifBitSet [xsi].dFlags, CHT_FLAG_CTRL_DBLCLK
-    .ifBitSet wParam, MK_CONTROL
-      ;Check if X scale was double clicked
-      .if (SDWORD ptr ebx >= [xsi].PlotRect.left) && (SDWORD ptr ebx <= [xsi].ViewRect.right) && \
-          (SDWORD ptr edi >= [xsi].PlotRect.bottom) && (SDWORD ptr edi <= [xsi].ViewRect.bottom)
-        BitSet [xsi].ScaleX.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
-        OCall xsi.Refresh
-      ;Check if Y scale was double clicked
-      .elseif (SDWORD ptr ebx >= [xsi].ViewRect.left) && (SDWORD ptr ebx <= [xsi].PlotRect.left) && \
-              (SDWORD ptr edi >= [xsi].ViewRect.top) && (SDWORD ptr edi <= [xsi].PlotRect.bottom)
-        BitSet [xsi].ScaleY1.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
-        OCall xsi.Refresh
-      .else
-        BitSet [xsi].ScaleX.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
-        BitSet [xsi].ScaleY1.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
-        OCall xsi.Refresh
+        .if ebx == [xsi].InfoAreas.dCount               ;Nothing found
+          .ifBitSet [xsi].dFlags, CHT_FLAG_TOOLTIP_ACTIVE
+            invoke SendMessage, [xsi].hToolTip, TTM_ACTIVATE, FALSE, 0
+            BitClr [xsi].dFlags, CHT_FLAG_TOOLTIP_ACTIVE
+          .endif
+        .endif
       .endif
-      xor eax, eax
-      ExitMethod
+    .elseif [xsi].bMovingOn == CHT_ID_SCALEX
+      mov xCursor, IDC_SIZEWE                           ;Moving horz direction
+    .elseif [xsi].bMovingOn == CHT_ID_SCALEY1 || [xsi].bMovingOn == CHT_ID_SCALEY2
+      mov xCursor, IDC_SIZENS                           ;Moving vert direction
+    .elseif [xsi].bMovingOn == CHT_ID_PLOT
+      mov xCursor, IDC_SIZEALL                          ;Moving all directions
     .endif
   .endif
+@@:
+  invoke SetCursor, $invoke(LoadCursor, 0, xCursor)
 
-  ;Get doubleclick client coordinates
-  add DblClkPnt.x, 10                                   ;Place the Dialog 10 px at the right
-  add DblClkPnt.y, 20                                   ;Place the Dialog 20 px below
-  
-  invoke ClientToScreen, [xsi].hWnd, addr DblClkPnt     ;Transform to screen coordiantes
-  ;Check if X scale was double clicked
-  .if (SDWORD ptr ebx >= [xsi].PlotRect.left) && (SDWORD ptr ebx <= [xsi].ViewRect.right) && \
-      (SDWORD ptr edi >= [xsi].PlotRect.bottom) && (SDWORD ptr edi <= [xsi].ViewRect.bottom)
-    .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_TAB
-      New SetupDlg::ChartFlatSetup
-      OCall SetupDlg::ChartFlatSetup.Init, xsi, [xsi].hWnd, CHT_ID_SCALEX
-      OCall SetupDlg::ChartFlatSetup.ShowAt, DblClkPnt.x, DblClkPnt.y
-      OCall SetupDlg::ChartFlatSetup.Done
-    .endif
-  ;Check if Y1 scale was double clicked
-  .elseif (SDWORD ptr ebx >= [xsi].ViewRect.left) && (SDWORD ptr ebx <= [xsi].PlotRect.left) && \
-          (SDWORD ptr edi >= [xsi].ViewRect.top) && (SDWORD ptr edi <= [xsi].PlotRect.bottom)
-    .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_TAB
-      New SetupDlg::ChartFlatSetup
-      OCall SetupDlg::ChartFlatSetup.Init, xsi, [xsi].hWnd, CHT_ID_SCALEY1
-      OCall SetupDlg::ChartFlatSetup.ShowAt, DblClkPnt.x, DblClkPnt.y
-      OCall SetupDlg::ChartFlatSetup.Done
-    .endif
-  .else
-    .ifBitSet [xsi].dFlags, CHT_FLAG_SHOW_GENERAL_TAB
-      ;Launch the color setup dialog
-      New SetupDlg::ChartFlatSetup
-      OCall SetupDlg::ChartFlatSetup.Init, xsi, [xsi].hWnd, CHT_ID_PLOT
-      OCall SetupDlg::ChartFlatSetup.ShowAt, DblClkPnt.x, DblClkPnt.y
-      OCall SetupDlg::ChartFlatSetup.Done
-    .endif
-  .endif
   xor eax, eax
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlat.OnLButtonDown
-; Purpose:    Event procedure for WM_LBUTTONDOWN message.
-; Arguments:  Arg1: First message parameter.
-;             Arg2: Second message parameter.
-; Return:     eax = Zero if handled.
-
-Method ChartFlat.OnLButtonDown, uses xsi, wParam:WPARAM, lParam:LPARAM
-  SetObject xsi
-  PntS2Regs lParam
-  mov [xsi].MovedLastPoint.x, eax
-  mov [xsi].MovedLastPoint.y, ecx
-
-  ;Check if X scale was clicked
-  .if (SDWORD ptr eax >= [xsi].PlotRect.left) && (SDWORD ptr eax <= [xsi].ViewRect.right) && \
-    (SDWORD ptr ecx >= [xsi].PlotRect.bottom) && (SDWORD ptr ecx <= [xsi].ViewRect.bottom)
-    mov [xsi].bMovingOn, CHT_ID_SCALEX
-    invoke SetCapture, [xsi].hWnd
-  ;Check if Y scale was clicked
-  .elseif (SDWORD ptr eax >= [xsi].ViewRect.left) && (SDWORD ptr eax <= [xsi].PlotRect.left) && \
-    (SDWORD ptr ecx >= [xsi].ViewRect.top) && (SDWORD ptr ecx <= [xsi].PlotRect.bottom)
-    mov [xsi].bMovingOn, CHT_ID_SCALEY1
-    invoke SetCapture, [xsi].hWnd
-  ;Check if plot area was clicked
-  .elseif (SDWORD ptr eax >= [xsi].PlotRect.left) && (SDWORD ptr eax <= [xsi].PlotRect.right) && \
-    (SDWORD ptr ecx >= [xsi].PlotRect.top) && (SDWORD ptr ecx <= [xsi].PlotRect.bottom)
-    mov [xsi].bMovingOn, CHT_ID_PLOT
-    invoke SetCapture, [xsi].hWnd
-  ;Check if lower left area was clicked => behave like plot area
-  .elseif (SDWORD ptr eax >= [xsi].ViewRect.left) && (SDWORD ptr eax <= [xsi].PlotRect.left) && \
-    (SDWORD ptr ecx >= [xsi].PlotRect.bottom) && (SDWORD ptr ecx <= [xsi].ViewRect.bottom)
-    mov [xsi].bMovingOn, CHT_ID_PLOT
-    invoke SetCapture, [xsi].hWnd
-  .else
-    ;It was clicked somewhere else
-    mov [xsi].bMovingOn, CHT_ID_NONE
-  .endif
-  xor eax, eax
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlat.OnLButtonUp
-; Purpose:    Event procedure for WM_LBUTTONUP message.
-; Arguments:  Arg1: First message parameter.
-;             Arg2: Second message parameter.
-; Return:     eax = Zero if handled.
-
-Method ChartFlat.OnLButtonUp,, wParam:WPARAM, lParam:LPARAM
-  SetObject xcx
-  mov [xcx].bMovingOn, CHT_ID_NONE
-  invoke ReleaseCapture
-  xor eax, eax
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlat.OnMouseWheel
+; Method:     ChartWnd.OnMouseWheel
 ; Purpose:    Event procedure for WM_MOUSEWHEEL message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero.
 
-Method ChartFlat.OnMouseWheel, uses xsi, wParam:WPARAM, lParam:LPARAM
+Method ChartWnd.OnMouseWheel, uses xsi, wParam:WPARAM, lParam:LPARAM
   local sdValue:SDWORD, dDoZoom:DWORD, dDoPan:DWORD
 
-  ;DbgText "ChartFlat.OnMouseWheel"
+  ;DbgText "ChartWnd.OnMouseWheel"
   SetObject xsi
   mov dDoPan, FALSE
   mov dDoZoom, FALSE
@@ -1871,16 +1719,41 @@ Method ChartFlat.OnMouseWheel, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlat.OnPaint
+; Method:     ChartWnd.OnNotify
+; Purpose:    Event procedure for WM_NOTIFY message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = Zero.
+
+Method ChartWnd.OnNotify,, wParam:WPARAM, lParam:LPARAM
+;  DbgText "ChartWnd.OnNotify"
+  SetObject xcx
+  mov xax, lParam
+  mov xdx, [xcx].hToolTip
+  .if [xax].NMHDR.hwndFrom == xdx
+    .if [xax].NMHDR.code == TTN_SHOW
+      BitSet [xcx].dFlags, CHT_FLAG_TOOLTIP_SHOW
+    .elseif [xax].NMHDR.code == TTN_POP
+      BitClr [xcx].dFlags, CHT_FLAG_TOOLTIP_SHOW
+    .endif
+    xor eax, eax
+  .else
+    invoke GetParent, [xcx].hWnd
+    invoke SendMessage, xax, WM_NOTIFY, wParam, lParam  ;Forward the msg to the parent wnd
+  .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.OnPaint
 ; Purpose:    Event procedure for WM_PAINT message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero.
 
-Method ChartFlat.OnPaint, uses xsi, wParam:WPARAM, lParam:LPARAM
+Method ChartWnd.OnPaint, uses xsi, wParam:WPARAM, lParam:LPARAM
   local PS:PAINTSTRUCT, ClientRect:RECT
 
-  ;DbgText "ChartFlat.OnPaint"
+  ;DbgText "ChartWnd.OnPaint"
   SetObject xsi
   invoke BeginPaint, [xsi].hWnd, addr PS
   invoke GetClientRect, [xsi].hWnd, addr ClientRect
@@ -1890,15 +1763,15 @@ Method ChartFlat.OnPaint, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlat.Refresh
+; Method:     ChartWnd.Refresh
 ; Purpose:    Refresh the plot object.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ChartFlat.Refresh, uses xsi
+Method ChartWnd.Refresh, uses xsi
   local hDC:HDC
 
-  ;DbgText "ChartFlat.Refresh"
+  ;DbgText "ChartWnd.Refresh"
   SetObject xsi
   mov hDC, $invoke(GetDC, [xsi].hWnd)
   OCall xsi.Show, hDC, addr [xsi].ViewRect
@@ -1906,16 +1779,16 @@ Method ChartFlat.Refresh, uses xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlat.Show
-; Purpose:    Draw the ChartFlat object.
+; Method:     ChartWnd.Show
+; Purpose:    Draw the ChartWnd object.
 ; Arguments:  Arg1: DC handle.
 ;             Arg2: -> RECT structure that indicates where to draw.
 ; Return:     Nothing.
 
-Method ChartFlat.Show, uses xbx xdi xsi, hDC:HDC, pRect:PRECT
+Method ChartWnd.Show, uses xbx xdi xsi, hDC:HDC, pRect:PRECT
   local hPrevBmp:HBITMAP
 
-  ;DbgText "ChartFlat.Show"
+  ;DbgText "ChartWnd.Show"
   SetObject xsi
   ;Draw on a memory DC to avoid flicker
   mov xdi, $invoke(CreateCompatibleDC, hDC)             ;Create Mem DC
@@ -1928,6 +1801,7 @@ Method ChartFlat.Show, uses xbx xdi xsi, hDC:HDC, pRect:PRECT
   OCall xsi.DrawFrame, xdi
 
   ;Draw all series
+  OCall [xsi].InfoAreas::DataCollection.DisposeAll      ;Dispose all previous InfoAreas
   mov eax, [xsi].PlotRect.right
   mov ecx, [xsi].PlotRect.bottom
   .if (SDWORD ptr eax > [xsi].PlotRect.left) && (SDWORD ptr ecx > [xsi].PlotRect.top)
@@ -1949,10 +1823,47 @@ Method ChartFlat.Show, uses xbx xdi xsi, hDC:HDC, pRect:PRECT
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.ShowSetupDlg
+; Purpose:    Displays the chart setup dialog.
+; Arguments:  Arg1: Dialog popup X position on screen.
+;             Arg2: Dialog popup Y position on screen.
+;             Arg3: Selected tab on the dialog. 
+; Return:     Nothing.
 
-% include &ObjPath&ChartFlatTabGeneral.inc
-% include &ObjPath&ChartFlatTabScale.inc
-% include &ObjPath&ChartFlatTabSeries.inc
-% include &ObjPath&ChartFlatSetup.inc
+Method ChartWnd.ShowSetupDlg, uses xsi, sdPosX:SDWORD, sdPosY:SDWORD, dTabIndex:DWORD 
+  local SetupDlg:$Obj(ChartSetup)
 
-endif
+  ;DbgText "ChartWnd.ShowSetupDlg"
+  SetObject xsi
+  New SetupDlg::ChartSetup
+  OCall SetupDlg::ChartSetup.Init, xsi, [xsi].hWnd, dTabIndex
+  OCall SetupDlg::ChartSetup.ShowAt, sdPosX, sdPosY
+  OCall SetupDlg::ChartSetup.Done
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.Store
+; Purpose:    Store buffer data to a stream object.
+; Arguments:  Arg1: -> Stream object.
+; Return:     Nothing.
+
+Method ChartWnd.Store, uses xsi, pStream:$ObjPtr(Stream)
+  SetObject xsi
+  ACall xsi.Store, pStream
+  OCall pStream::Stream.BinWrite32, [xsi].dFlags
+  OCall pStream::Stream.BinWrite, addr [xsi].ScaleX,   sizeof(CHT_SCALE_DATA)
+  OCall pStream::Stream.BinWrite, addr [xsi].ScaleY1,  sizeof(CHT_SCALE_DATA)
+  OCall pStream::Stream.BinWrite, addr [xsi].Colors,   sizeof(CHT_COLOR_CONFIG)
+  OCall pStream::Stream.BinWrite, addr [xsi].ViewRect, sizeof(RECT)
+  OCall pStream::Stream.BinWrite, addr [xsi].Padding,  sizeof(RECT)
+  OCall pStream::Stream.BinWrite, addr [xsi].DrawRect, sizeof(RECT)
+  OCall pStream::Stream.BinWrite, addr [xsi].PlotRect, sizeof(RECT)
+  OCall pStream::Stream.BinWrite, addr [xsi].TextMetricHorz,  sizeof(TEXTMETRIC)
+  OCall pStream::Stream.BinWrite, addr [xsi].TextMetricVert,  sizeof(TEXTMETRIC)
+  OCall pStream::Stream.BinWrite8, [xsi].bMovingOn
+  OCall pStream::Stream.BinWrite, addr [xsi].MovedLastPoint,  sizeof(POINT)
+  OCall pStream::Stream.BinWrite32, addr [xsi].dGestureZoomFirst
+  OCall pStream::Stream.BinWrite32, addr [xsi].dGestureZoomLast
+  OCall [xsi].Data::Collection.Store, pStream
+MethodEnd
+

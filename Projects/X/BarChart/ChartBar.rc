@@ -1,0 +1,156 @@
+; ==================================================================================================
+; Title:      ChartBar.rc
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Purpose:    ObjAsm resource file for demonstration program 7.
+; Notes:      Version C.1.0, August 2021
+;               - First release.
+; ==================================================================================================
+
+
+#include "Resource.h"               //Windows resource definitions
+#include "ChartBar_Shared.rc"         //Application shared definitions
+#include "VER\Version.rc"           //Application version definition
+#include "MFT\Manifest_Invoker.rc"  //Application manifest definition
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+
+// Icons -------------------------------------------------------------------------------------------
+
+// App icons
+ICON_APP              ICON DISCARDABLE "ICO\OA.ico"
+ICON_APP_CHILD        ICON DISCARDABLE "ICO\ChartBar_16x16_04.ico"
+
+// Menu icons
+ICON_FILE_NEW         ICON DISCARDABLE "ICO\New_16x16_04.ico"
+ICON_FILE_CLOSE       ICON DISCARDABLE "ICO\Close_16x16_04.ico"
+ICON_FILE_EXIT        ICON DISCARDABLE "ICO\Exit_16x16_04.ico"
+ICON_WINDOW_CASCADE   ICON DISCARDABLE "ICO\WndCascade_16x16_04.ico"
+ICON_WINDOW_TILE_HOR  ICON DISCARDABLE "ICO\WndTileHorz_16x16_04.ico"
+ICON_WINDOW_TILE_VER  ICON DISCARDABLE "ICO\WndTileVert_16x16_04.ico"
+ICON_WINDOW_ARRANGE   ICON DISCARDABLE "ICO\WndArrange_16x16_04.ico"
+ICON_WINDOW_CLOSEALL  ICON DISCARDABLE "ICO\CloseAll_16x16_04.ico"
+ICON_HELP_HELP        ICON DISCARDABLE "ICO\Help_Red_16x16_04.ico"
+ICON_HELP_ABOUT       ICON DISCARDABLE "ICO\Info_Blue_16x16_04.ico"
+
+// Button icons
+ICON_BLOT             ICON DISCARDABLE "ICO\Blot_16x16_04.ico"
+ICON_OK               ICON DISCARDABLE "ICO\OK_16x16_04.ico"
+ICON_CANCEL           ICON DISCARDABLE "ICO\Cancel_16x16_04.ico"
+ICON_PREVIEW          ICON DISCARDABLE "ICO\Refresh_16x16_04.ico"
+
+// DialogAboutEx icons
+ICON_LINK             ICON DISCARDABLE "ICO\Link_16x16_04.ico"
+ICON_MAIL             ICON DISCARDABLE "ICO\Mail_16x16_04.ico"
+
+// Chart icons
+ICON_SETUP            ICON DISCARDABLE "ICO\Setup_16x16_04.ico"
+ICON_SCALEX           ICON DISCARDABLE "Res\ScaleX_16x16_04.ico"
+ICON_SCALEY           ICON DISCARDABLE "Res\ScaleY_16x16_04.ico"
+ICON_SERIESBAR        ICON DISCARDABLE "Res\SeriesBar_16x16_04.ico"
+
+// Cursors -----------------------------------------------------------------------------------------
+
+CURSOR_HAND           CURSOR DISCARDABLE "CUR\Hand.cur"
+
+
+// Bitmaps -----------------------------------------------------------------------------------------
+
+BMP_BACKGROUND        BITMAP "BMP\WndBkgnd.bmp"
+
+
+// Dialogs -----------------------------------------------------------------------------------------
+
+#include "DLG\DialogAlert.rc"
+#include "DLG\DialogPassword.rc"
+#include "DLG\DialogAboutEx.rc"
+#include "Res\ChartSetupDlg.rc"
+#include "Res\ChartTabGeneralDlg.rc"
+#include "Res\ChartTabScaleDlg.rc"
+#include "Res\ChartTabSeriesBarDlg.rc"
+
+
+// Gifs --------------------------------------------------------------------------------------------
+
+KEY GIF DISCARDABLE "GIF\Key.gif"
+
+
+// Menus -------------------------------------------------------------------------------------------
+
+MDIMENUINIT MENUEX DISCARDABLE
+BEGIN
+  POPUP "$00",          IDM_FILE,               MFT_STRING, MFS_ENABLED
+  BEGIN
+    MENUITEM "02$01",   IDM_FILE_NEW,           MFT_STRING, MFS_ENABLED
+    MENUITEM "-$03",    1000,                   MFT_STRING, MFS_ENABLED
+    MENUITEM "04$04",   IDM_FILE_EXIT,          MFT_STRING, MFS_ENABLED
+  END
+  POPUP "$40",          IDM_HELP,               MFT_STRING, MFS_ENABLED
+  BEGIN
+    MENUITEM "10$41",   IDM_HELP_HELP,          MFT_STRING, MFS_ENABLED
+    MENUITEM "11$42",   IDM_HELP_ABOUT,         MFT_STRING, MFS_ENABLED
+  END
+END
+
+MDIMENUCHILD MENUEX DISCARDABLE
+BEGIN
+  POPUP "$00",          IDM_FILE,               MFT_STRING, MFS_ENABLED
+  BEGIN
+    MENUITEM "02$01",   IDM_FILE_NEW,           MFT_STRING, MFS_ENABLED
+    MENUITEM "03$02",   IDM_FILE_CLOSE,         MFT_STRING, MFS_ENABLED
+    MENUITEM "-$03",    1000,                   MFT_STRING, MFS_ENABLED
+    MENUITEM "04$04",   IDM_FILE_EXIT,          MFT_STRING, MFS_ENABLED
+  END
+  POPUP "$30",          IDM_WINDOW,             MFT_STRING, MFS_ENABLED
+  BEGIN
+    MENUITEM "05$31",   IDM_WINDOW_CASCADE,     MFT_STRING, MFS_ENABLED
+    MENUITEM "06$32",   IDM_WINDOW_TILE_HOR,    MFT_STRING, MFS_ENABLED
+    MENUITEM "07$33",   IDM_WINDOW_TILE_VER,    MFT_STRING, MFS_ENABLED
+    MENUITEM "08$34",   IDM_WINDOW_ARRANGE,     MFT_STRING, MFS_ENABLED
+    MENUITEM "09$35",   IDM_WINDOW_CLOSEALL,    MFT_STRING, MFS_ENABLED
+  END
+  POPUP "$40",          IDM_HELP,               MFT_STRING, MFS_ENABLED
+  BEGIN
+    MENUITEM "10$41",   IDM_HELP_HELP,          MFT_STRING, MFS_ENABLED
+    MENUITEM "11$42",   IDM_HELP_ABOUT,         MFT_STRING, MFS_ENABLED
+  END
+END
+
+
+// Stringtable -------------------------------------------------------------------------------------
+
+STRINGTABLE
+MOVEABLE PURE LOADONCALL DISCARDABLE
+BEGIN
+  IDLANG_ENGLISH + 00, "&File|File commands"
+  IDLANG_ENGLISH + 01, "&New~Ctrl+N|Creates a new window"
+  IDLANG_ENGLISH + 02, "&Close~Ctrl+F4|Closes the active window"
+  IDLANG_ENGLISH + 03, "Application"
+  IDLANG_ENGLISH + 04, "E&xit...~Ctrl+X|Exits application"
+
+  IDLANG_ENGLISH + 30, "&Window|Window commands"
+  IDLANG_ENGLISH + 31, "&Cascade~Shift+F5|Cascades all windows"
+  IDLANG_ENGLISH + 32, "&Tile horizontally|Tiles all windows horizontally"
+  IDLANG_ENGLISH + 33, "&Tile vertically~Shift+F4|Tiles all windows vertically"
+  IDLANG_ENGLISH + 34, "Arrange &icons|Arranges all window icons"
+  IDLANG_ENGLISH + 35, "Close &all|Closes all windows"
+
+  IDLANG_ENGLISH + 40, "&Help|Invokes help"
+  IDLANG_ENGLISH + 41, "Application help~F1|Launches help system"
+  IDLANG_ENGLISH + 42, "&About...|Displays information about this application"
+
+  IDLANG_ENGLISH + ID_MDI_MORE, "&More windows...|Select a window"
+  IDLANG_ENGLISH + ID_MDI_LIST, "Window List"
+END
+
+
+// Accelerators ------------------------------------------------------------------------------------
+
+MDIACCEL ACCELERATORS DISCARDABLE
+BEGIN
+  VK_F1, IDM_HELP_HELP,       VIRTKEY, SHIFT,   NOINVERT
+  VK_F4, IDM_WINDOW_TILE_VER, VIRTKEY, SHIFT,   NOINVERT
+  VK_F5, IDM_WINDOW_CASCADE,  VIRTKEY, SHIFT,   NOINVERT
+  "n",   IDM_FILE_NEW,        VIRTKEY, CONTROL, NOINVERT
+END

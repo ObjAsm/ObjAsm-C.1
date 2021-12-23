@@ -713,7 +713,7 @@ MethodEnd
 ;             On exit, IdealDrawExtent is set.
 
 Method TextView.Calc, uses xbx xdi xsi
-  local dLineLength:DWORD, dLineAlignment:DWORD, TVTabStop:TVTABSTOP, pEntry:PTVENTRY
+  local dLineLength:DWORD, dLineAlignment:DWORD, TVTabStop:TVTABSTOP
   local dHangingFlag:DWORD, dLineIndent:DWORD, dAdjacentTextItems:DWORD, dWidth:DWORD
   local dLastAscent:DWORD, dMaxAscent:DWORD, dMaxDescent:DWORD, dMaxHeight:DWORD, dMaxExtLeading:DWORD
   local dCurEntryIdx:DWORD, dLineEntryIdx:DWORD, dLineBegEntryIdx:DWORD, dLineEndEntryIdx:DWORD
@@ -1479,15 +1479,15 @@ Method TextView.GetEntryFrom, uses xbx xdi xsi, pCollection:$ObjPtr(XWCollection
   SetObject xsi
   PntS2Pnt MouseClientPos, Point                        ;Uses eax
   mov ecx, MouseClientPos.x
-  .if ecx >= [xsi].Padding.left
+  .if SDWORD ptr ecx >= [xsi].Padding.left
     mov eax, [xsi].ClientRect.right
     sub eax, [xsi].Padding.left
-    .if ecx < eax
+    .if SDWORD ptr ecx < eax
       mov edx, MouseClientPos.y
-      .if edx >= [xsi].Padding.top
+      .if SDWORD ptr edx >= [xsi].Padding.top
         mov eax, [xsi].ClientRect.bottom
         sub eax, [xsi].Padding.top
-        .if edx < eax
+        .if SDWORD ptr edx < eax
           sub ecx, [xsi].Padding.left
           sub edx, [xsi].Padding.top
           add ecx, [xsi].Origin.x
@@ -1681,7 +1681,7 @@ Method TextView.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
   invoke SetWindowPos, [xsi].hToolTip, HWND_TOPMOST, 0, 0, 0, 0, \
                        SWP_NOMOVE or SWP_NOSIZE or SWP_NOACTIVATE
   invoke SendMessage, [xsi].hToolTip, TTM_SETMAXTIPWIDTH, 0, 500    ;Set max width to
-                                                                    ;allow line breaks
+                                                                    ;enable line breaks
   mov ToolInfo.cbSize, sizeof(ToolInfo)
   mov ToolInfo.uFlags, TTF_SUBCLASS or TTF_IDISHWND
   mrm ToolInfo.hwnd, [xsi].hWnd, xax
@@ -1915,9 +1915,9 @@ Method TextView.OnGetZoom, uses xsi, wParam:WPARAM, lParam:LPARAM
 ;  DbgText "TextView.OnGetZoom"
   SetObject xsi
   mov xcx, wParam
-  m2m DWORD ptr [xcx], [xsi].dZoomFactor, eax 
+  m2m DWORD ptr [xcx], [xsi].dZoomFactor, eax
   mov xcx, lParam
-  mov DWORD ptr [xcx], TVZOOM_BASE 
+  mov DWORD ptr [xcx], TVZOOM_BASE
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

@@ -1,8 +1,8 @@
 ; ==================================================================================================
-; Title:      ChartFlatTabScale.inc
+; Title:      ChartTabScale.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:    ObjAsm support of ChartFlatTabScale objects.
+; Purpose:    ObjAsm support of ChartTabScale objects.
 ; Notes:      Version C.1.0, August 2021
 ;               - First release.
 ; ==================================================================================================
@@ -10,7 +10,7 @@
 
 
 ; ==================================================================================================
-;    ChartFlatTabScale implementation
+;    ChartTabScale implementation
 ; ==================================================================================================
 
 
@@ -48,12 +48,12 @@ SCL_MNRDIV_MIN    equ   0
 SCL_MNRDIV_MAX    equ   10
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlatTabScale.CtlsGet
+; Method:     ChartTabScale.CtlsGet
 ; Purpose:    Read the setting of all controls.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ChartFlatTabScale.CtlsGet, uses xbx xdi xsi
+Method ChartTabScale.CtlsGet, uses xbx xdi xsi
   local cBuffer[1024]:CHR, dFailure:DWORD
 
   SetObject xsi
@@ -167,12 +167,12 @@ Method ChartFlatTabScale.CtlsGet, uses xbx xdi xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlatTabScale.CtlsSet
+; Method:     ChartTabScale.CtlsSet
 ; Purpose:    Set the controls of the setup dialog.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ChartFlatTabScale.CtlsSet, uses xbx xdi xsi
+Method ChartTabScale.CtlsSet, uses xbx xdi xsi
   local cBuffer[256]:CHR
 
   SetObject xsi
@@ -258,12 +258,12 @@ Method ChartFlatTabScale.CtlsSet, uses xbx xdi xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlatTabScale.Done
-; Purpose:    Finalize the ChartFlatTabSeries object.
+; Method:     ChartTabScale.Done
+; Purpose:    Finalize the ChartTabSeries object.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ChartFlatTabScale.Done, uses xsi
+Method ChartTabScale.Done, uses xsi
   SetObject xsi
   invoke StrDispose, [xsi].pLocalDescription
   invoke StrDispose, [xsi].pLocalUnit
@@ -271,13 +271,13 @@ Method ChartFlatTabScale.Done, uses xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlatTabScale.Init
-; Purpose:    Initialize the ChartFlatTabScale object.
+; Method:     ChartTabScale.Init
+; Purpose:    Initialize the ChartTabScale object.
 ; Arguments:  Arg1: -> Owner object.
 ;             Arg2: -> CHT_SCALE_DATA.
 ; Return:     Nothing.
 
-Method ChartFlatTabScale.Init, uses xbx xsi, pOwner:POINTER, pScaleData:PCHT_SCALE_DATA
+Method ChartTabScale.Init, uses xbx xsi, pOwner:POINTER, pScaleData:PCHT_SCALE_DATA
   SetObject xsi
   mov xbx, pOwner
   ACall xsi.Init, xbx, [xbx].$Obj(TabCtrl).hWnd, IDD_CHT_SCL_TAB, \
@@ -294,13 +294,13 @@ Method ChartFlatTabScale.Init, uses xbx xsi, pOwner:POINTER, pScaleData:PCHT_SCA
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlatTabScale.OnCommand
+; Method:     ChartTabScale.OnCommand
 ; Purpose:    Event procedure for WM_COMMAND message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero if handled.
 
-Method ChartFlatTabScale.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
+Method ChartTabScale.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   movZX edi, WORD ptr wParam                            ;Get Low WORD in edi
   .if (edi >= IDC_CHT_SCL_MINVAL_CHK) && (edi <= IDC_CHT_SCL_MNRDIV_CHK)
@@ -319,27 +319,27 @@ Method ChartFlatTabScale.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPAR
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlatTabScale.OnCtlColorDlg
+; Method:     ChartTabScale.OnCtlColorDlg
 ; Purpose:    Event procedure for WM_CTLCOLORDLG message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = Brush to paint the background.
 
-Method ChartFlatTabScale.OnCtlColorDlg,, wParam:WPARAM, lParam:LPARAM
+Method ChartTabScale.OnCtlColorDlg,, wParam:WPARAM, lParam:LPARAM
   invoke GetStockObject, WHITE_BRUSH
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlatTabScale.OnInitDialog
+; Method:     ChartTabScale.OnInitDialog
 ; Purpose:    Event procedure for WM_INITDIALOG message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
 ; Return:     eax = FALSE.
 
-Method ChartFlatTabScale.OnInitDialog, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+Method ChartTabScale.OnInitDialog, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
 
-  ;Hide radiobuttons if the sacale is nit ScaleX
+  ;Hide radiobuttons if the sacale is not ScaleX
   mov xcx, [xsi].pScaleData
   .if [xcx].CHT_SCALE_DATA.dID != CHT_ID_SCALEX
     invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SCL_SHOW_VAL_CHK
@@ -352,27 +352,23 @@ Method ChartFlatTabScale.OnInitDialog, uses xbx xsi, wParam:WPARAM, lParam:LPARA
     invoke ShowWindow, xax, SW_HIDE
   .endif
 
-  ;Associate UDN-Controls
-  mov xbx, $invoke(GetDlgItem, [xsi].hWnd, IDC_CHT_SCL_MJRDIV_UDN)
-  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SCL_MJRDIV_EDT
-  invoke SendMessage, xbx, UDM_SETBUDDY, xax, 0
-  invoke SendMessage, xbx, UDM_SETRANGE32, SCL_MJRDIV_MIN, SCL_MJRDIV_MAX
+  ;Set UDN-Controls
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SCL_MJRDIV_UDN
+  invoke SendMessage, xax, UDM_SETRANGE32, SCL_MJRDIV_MIN, SCL_MJRDIV_MAX
 
-  mov xbx, $invoke(GetDlgItem, [xsi].hWnd, IDC_CHT_SCL_MNRDIV_UDN)
-  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SCL_MNRDIV_EDT
-  invoke SendMessage, xbx, UDM_SETBUDDY, xax, 0
-  invoke SendMessage, xbx, UDM_SETRANGE32, SCL_MNRDIV_MIN, SCL_MNRDIV_MAX
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SCL_MNRDIV_UDN
+  invoke SendMessage, xax, UDM_SETRANGE32, SCL_MNRDIV_MIN, SCL_MNRDIV_MAX
 
   ACall xsi.OnInitDialog, wParam, lParam
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartFlatTabScale.Restore
+; Method:     ChartTabScale.Restore
 ; Purpose:    Restore original values.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ChartFlatTabScale.Restore, uses xbx xsi
+Method ChartTabScale.Restore, uses xbx xsi
   SetObject xsi
 
   ;Restore from local copies

@@ -2,7 +2,7 @@
 ; Title:      Demo06_Main.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:     ObjAsm demonstration program 6.
+; Purpose:    ObjAsm demonstration program 6.
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
 ; ==================================================================================================
@@ -30,7 +30,7 @@ ToolbarWindow DEF_TOOLBAR {IDC_TOOLBARWINDOW, TB_STYLE, TBSTYLE_EX_MIXEDBUTTONS,
   TBBUTTON {IDB_WINDOW_ARRANGE,  IDM_WINDOW_ARRANGE,  TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, \
             $OfsTStr("Arrange")}
   TBBUTTON {IDB_WINDOW_ARRANGE,  -1                ,  TBSTATE_ENABLED, TBSTYLE_SEP}
-  
+
   TBBUTTON {IDB_WINDOW_CLOSEALL, IDM_WINDOW_CLOSEALL, TBSTATE_ENABLED, TBSTYLE_BUTTON,, 0, \
             $OfsTStr("Close all")}
 
@@ -651,7 +651,7 @@ Method MyChildWnd.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRING
   .else
     invoke MessageBox, [xdi].$Obj(Application).hWnd, $OfsCStr("Window creation error"), \
                        offset szError, MB_OK or MB_ICONERROR
-  .endif 
+  .endif
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

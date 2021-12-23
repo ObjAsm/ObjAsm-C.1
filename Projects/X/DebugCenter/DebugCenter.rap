@@ -215,7 +215,7 @@ ProductVer4Range=0
 1=0,0,694,487,995
 4=0,0,706,573,552
 1001=0,0,0,0,460
-5=0,0,0,0,8113
+5=0,0,0,0,14146
 6=0,0,601,582,72601
 7=0,0,0,0,876
 8=0,0,0,0,25796
@@ -283,16 +283,16 @@ ProductVer4Range=0
 0=724,30,
 
 [Find]
-1="DbgMdiChildTxt_WordBreak"
-2="ebx"
-3="RE_"
-4="WndProc"
-5="^I"
-6="pDefWordBreakProc"
-7="RE_WordBreakLookupTable"
-8="3.2"
-9="3,2"
-10="VER_PRODUCTVERSION_STR"
+1="DbgMdiChildTxt_WordBreak_Callback"
+2="DbgMdiChildTxt_WordBreak"
+3="ebx"
+4="RE_"
+5="WndProc"
+6="^I"
+7="pDefWordBreakProc"
+8="RE_WordBreakLookupTable"
+9="3.2"
+10="3,2"
 "
 [Collapse]
 7=,,
@@ -351,7 +351,7 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,5,2
 [PTimer]
-PTimer=1938421154
+PTimer=1949437498
 [RADebugBP]
 5=
 2=

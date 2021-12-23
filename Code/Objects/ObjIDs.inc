@@ -122,11 +122,15 @@ XMenuSelectDlgID                  equ     0000000263
 
 ;Data buffering objects
 ChartSeriesID                     equ     0000000270
-DataBufferXYID                    equ     0000000271                  ;deprecated
+ChartXYSeriesID                   equ     0000000271
+ChartBarSeriesID                  equ     0000000272
+
+DataBufferXYID                    equ     0000000275                  ;deprecated
 
 ;Plot objects
-ChartFlatID                       equ     0000000280
-ChartXYID                         equ     0000000281
+ChartWndID                        equ     0000000280
+ChartXYWndID                      equ     0000000281
+ChartBarWndID                     equ     0000000282
 PlotXYID                          equ     0000000285                  ;deprecated
 
 ;Buttons objects

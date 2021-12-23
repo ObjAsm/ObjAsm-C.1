@@ -48,7 +48,7 @@ ICON_MAIL             ICON DISCARDABLE "ICO\Mail_16x16_04.ico"
 ICON_SETUP            ICON DISCARDABLE "ICO\Setup_16x16_04.ico"
 ICON_SCALEX           ICON DISCARDABLE "Res\ScaleX_16x16_04.ico"
 ICON_SCALEY           ICON DISCARDABLE "Res\ScaleY_16x16_04.ico"
-ICON_SERIES           ICON DISCARDABLE "Res\Series_16x16_04.ico"
+ICON_SERIESXY         ICON DISCARDABLE "Res\SeriesXY_16x16_04.ico"
 
 // Cursors -----------------------------------------------------------------------------------------
 
@@ -65,10 +65,10 @@ BMP_BACKGROUND        BITMAP "BMP\WndBkgnd.bmp"
 #include "DLG\DialogAlert.rc"
 #include "DLG\DialogPassword.rc"
 #include "DLG\DialogAboutEx.rc"
-#include "Res\ChartFlatSetupDlg.rc"
-#include "Res\ChartFlatTabGeneralDlg.rc"
-#include "Res\ChartFlatTabScaleDlg.rc"
-#include "Res\ChartFlatTabSeriesDlg.rc"
+#include "Res\ChartSetupDlg.rc"
+#include "Res\ChartTabGeneralDlg.rc"
+#include "Res\ChartTabScaleDlg.rc"
+#include "Res\ChartTabSeriesXYDlg.rc"
 
 
 // Gifs --------------------------------------------------------------------------------------------

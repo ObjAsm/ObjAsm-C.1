@@ -84,7 +84,6 @@ RB_CHEVRONWIDTH     equ     15
 RB_CHEVRONGAP       equ     04      ;Gap between the last button anf the start of the Chevron button
 RB_BORDERWIDTH      equ     05
 
-WS_BANDFRAME        equ     0;WS_BORDER or WS_CLIPSIBLINGS or WS_CAPTION or WS_VISIBLE
 
 CStr szRbMsgIptorProp, "OA_RbMsgIptor"
 CStr szBandFrameClass, "OA_BandFrame"
@@ -321,7 +320,7 @@ Method Rebar.OnMouseMove, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
       invoke ReleaseCapture
 
       mov pBandFrame, $New(BandFrame)
-      
+
       invoke SendMessage, RbInfo.hwndChild, TB_GETMAXSIZE, 0, addr TotSize
       invoke GetParent, [xsi].hWnd
       dec TotSize.cy
@@ -507,7 +506,7 @@ Method BandFrame.Init, uses xsi, pOwner:POINTER, hParent:HWND, pSrcRebar:POINTER
   shr eax, 1
   sub CurPos.x, eax
   sub CurPos.y, eax
-  
+
   invoke CreateWindowEx, WS_EX_TOOLWINDOW, offset szBandFrameClass, NULL, WS_VISIBLE, \
                          CurPos.x, CurPos.y, 200, 50, hParent, 0, hInstance, xsi
   ACall xsi.Init, pOwner, xax

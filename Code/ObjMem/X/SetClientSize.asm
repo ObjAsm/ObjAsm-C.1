@@ -42,7 +42,6 @@ SetClientSize proc uses xbx hWnd:HWND, dCx:DWORD, dCy:DWORD
   .if hMenu != 0
     inc ebx
   .endif
-  
   invoke AdjustWindowRectEx, xcx, edx, ebx, eax
 
   ;If there is a menu, then check how much wrapping occurs when we set a
@@ -56,13 +55,13 @@ SetClientSize proc uses xbx hWnd:HWND, dCx:DWORD, dCy:DWORD
     ;Adjust our previous calculation to compensate for menu wrapping.
     mov eax, rcTemp.top
     add rcWindow.bottom, eax
-
-    mov eax, rcWindow.right
-    sub eax, rcWindow.left
-    mov ebx, rcWindow.bottom
-    sub ebx, rcWindow.top 
-    invoke SetWindowPos, hWnd, NULL, 0, 0, eax, ebx, SWP_NOMOVE or SWP_NOZORDER
   .endif
+
+  mov eax, rcWindow.right
+  sub eax, rcWindow.left
+  mov ebx, rcWindow.bottom
+  sub ebx, rcWindow.top 
+  invoke SetWindowPos, hWnd, NULL, 0, 0, eax, ebx, SWP_NOMOVE or SWP_NOZORDER
   ret
 SetClientSize endp
 
