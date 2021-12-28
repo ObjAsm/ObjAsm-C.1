@@ -175,7 +175,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=27
+MilestoneOnDateDate=28
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -210,20 +210,20 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,806,424,47957
-3=0,0,2127,589,200
+2=0,0,806,424,42268
+3=0,0,2127,589,1905
 1=0,0,694,487,995
-4=0,0,706,573,552
+4=0,0,706,573,12300
 1001=0,0,0,0,460
-5=0,0,0,0,14146
+5=0,0,0,0,3328
 6=0,0,601,582,72601
-7=0,0,0,0,876
+7=0,0,0,0,34209
 8=0,0,0,0,25796
 11=0,0,706,600,14568
 10=0,0,0,0,10132
 9=0,0,0,0,2776
 12=0,0,848,586,305
-13=0,0,738,582,1660
+13=0,0,738,582,3757
 14=
 15=0,0,0,0,4702
 16=0,0,0,0,30
@@ -241,7 +241,7 @@ ProductVer4Range=0
 44=0,0,0,0,633
 47=0,0,0,0,15
 35=0,0,0,0,0
-37=0,0,0,0,41510
+37=0,0,0,0,81324
 40=0,0,0,0,484
 29=0,0,0,0,0
 34=0,0,0,0,2014
@@ -264,7 +264,7 @@ ProductVer4Range=0
 51=0,0,0,0,11857
 52=0,0,0,0,5057
 53=0,0,0,0,0
-54=0,0,1300,620,927
+54=0,0,1300,620,1774
 
 [BookMark]
 0=
@@ -283,16 +283,16 @@ ProductVer4Range=0
 0=724,30,
 
 [Find]
-1="DbgMdiChildTxt_WordBreak_Callback"
-2="DbgMdiChildTxt_WordBreak"
-3="ebx"
-4="RE_"
-5="WndProc"
-6="^I"
-7="pDefWordBreakProc"
-8="RE_WordBreakLookupTable"
-9="3.2"
-10="3,2"
+1="ZoomIn"
+2="WM_MOUSEWHEEL"
+3="wheel"
+4="ES_EX_ZOOMABLE"
+5=".Erase"
+6="DbgMdiChild.Erase"
+7="DbgMdiChildTxt.Erase"
+8="Erase"
+9="IDM_EDIT_ERASE"
+10="LogFnt.lfFaceName"
 "
 [Collapse]
 7=,,
@@ -349,9 +349,9 @@ ProductVer4Range=0
 53=
 54=
 [AutoLoad]
-AutoLoad=1,5,2
+AutoLoad=1,5
 [PTimer]
-PTimer=1949437498
+PTimer=1957167561
 [RADebugBP]
 5=
 2=

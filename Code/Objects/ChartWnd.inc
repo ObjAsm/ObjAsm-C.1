@@ -20,11 +20,69 @@
 ;             Arg2: -> Output rect.
 ; Return:     Nothing.
 
+CalcInternalsYScale macro Scale
+  .ifBitSet Scale.dFlags, CHT_SCALE_AUTO_MIN
+    s2s Scale.fScaleMin, Scale.fDataMin, xcx, xdx
+  .else
+    s2s Scale.fScaleMin, Scale.fSetupMin, xcx, xdx
+  .endif
+
+  .ifBitSet Scale.dFlags, CHT_SCALE_AUTO_MAX
+    s2s Scale.fScaleMax, Scale.fDataMax, xcx, xdx
+  .else
+    s2s Scale.fScaleMax, Scale.fSetupMax, xcx, xdx
+  .endif
+
+  fld Scale.fScaleMin
+  fcomp Scale.fScaleMax
+  fGetFlags
+  .if ZERO?                                             ;Min = Max
+    fld Scale.fScaleMax
+    fld1
+    faddp st(1), st(0)
+    fstp Scale.fScaleMax
+  .elseif !CARRY?                                       ;if Min > Max => swap
+    s2s TempScaleEnd, Scale.fScaleMin, xcx, xdx
+    s2s Scale.fScaleMin, Scale.fScaleMax, xcx, xdx
+    s2s Scale.fScaleMax, TempScaleEnd, xcx, xdx
+  .endif
+
+  OCall xsi.CalcScaleDivs, addr Scale
+endm
+
+SetScaleTitle macro Scale
+  m2z CHR ptr [xdi]                                     ;Set first CHR to zero
+  .if Scale.pDescription != NULL
+    .if $invoke(StrLength, Scale.pDescription)
+      invoke StrCCopy, xdi, Scale.pDescription, lengthof cBuffer
+    .endif
+  .endif
+  .if Scale.pUnit != NULL
+    .if $invoke(StrLength, Scale.pUnit)
+      .if Scale.pDescription != NULL
+        .if $invoke(StrLength, Scale.pDescription)
+          invoke StrCCatChar, xdi, " ", lengthof cBuffer
+        .endif
+      .endif
+      invoke StrCCatChar, xdi, "[", lengthof cBuffer
+      invoke StrCCat, xdi, Scale.pUnit, lengthof cBuffer
+      invoke StrCCatChar, xdi, "]", lengthof cBuffer
+    .endif
+  .endif
+
+  invoke StrDispose, Scale.pTitle
+  .if Scale.pDescription != NULL || Scale.pUnit != NULL  
+    mov Scale.pTitle, $invoke(StrNew, xdi)
+  .else
+    mov Scale.pTitle, NULL
+  .endif
+endm
+
 Method ChartWnd.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
   local TextSize1:POINT, TextSize2:POINT, hPrevFont:HFONT
-  local cBuffer[1024]:CHR, dValue:DWORD
+  local cBuffer[1024]:CHR, dValue:DWORD, TempScaleEnd:CHT_FLOAT
 
-  ;DbgText "ChartWnd.Calc"
+;  DbgText "ChartWnd.Calc"
   SetObject xsi
   mov hPrevFont, $invoke(SelectObject, hDC, [xsi].hFontHorz)
 
@@ -45,48 +103,9 @@ Method ChartWnd.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
 
   ;Set scale titles -------------------------------------------------
   lea xdi, cBuffer
-
-  m2z CHR ptr [xdi]                                     ;Set first CHR to zero
-  .if [xsi].ScaleX.pDescription != NULL
-    .if $invoke(StrLength, [xsi].ScaleX.pDescription)
-      invoke StrCCopy, xdi, [xsi].ScaleX.pDescription, lengthof cBuffer
-    .endif
-  .endif
-  .if [xsi].ScaleX.pUnit != NULL
-    .if $invoke(StrLength, [xsi].ScaleX.pUnit)
-      .if [xsi].ScaleX.pDescription != NULL
-        .if $invoke(StrLength, [xsi].ScaleX.pDescription)
-          invoke StrCCatChar, xdi, " ", lengthof cBuffer
-        .endif
-      .endif
-      invoke StrCCatChar, xdi, "[", lengthof cBuffer
-      invoke StrCCat, xdi, [xsi].ScaleX.pUnit, lengthof cBuffer
-      invoke StrCCatChar, xdi, "]", lengthof cBuffer
-    .endif
-  .endif
-  invoke StrDispose, [xsi].ScaleX.pTitle
-  mov [xsi].ScaleX.pTitle, $invoke(StrNew, xdi)
-
-  m2z CHR ptr [xdi]                                     ;Set first CHR to zero
-  .if [xsi].ScaleY1.pDescription != NULL
-    .if $invoke(StrLength, [xsi].ScaleY1.pDescription)
-      invoke StrCCopy, xdi, [xsi].ScaleY1.pDescription, lengthof cBuffer
-    .endif
-  .endif
-  .if [xsi].ScaleY1.pUnit != NULL
-    .if $invoke(StrLength, [xsi].ScaleY1.pUnit)
-      .if [xsi].ScaleY1.pDescription != NULL
-        .if $invoke(StrLength, [xsi].ScaleY1.pDescription)
-          invoke StrCCatChar, xdi, " ", lengthof cBuffer
-        .endif
-      .endif
-      invoke StrCCatChar, xdi, "[", lengthof cBuffer
-      invoke StrCCat, xdi, [xsi].ScaleY1.pUnit, lengthof cBuffer
-      invoke StrCCatChar, xdi, "]", lengthof cBuffer
-    .endif
-  .endif
-  invoke StrDispose, [xsi].ScaleY1.pTitle
-  mov [xsi].ScaleY1.pTitle, $invoke(StrNew, xdi)
+  SetScaleTitle [xsi].ScaleX
+  SetScaleTitle [xsi].ScaleY1
+  SetScaleTitle [xsi].ScaleY2
 
   ;Calculate X scale internal factors -------------------------------
   .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_AUTO_MIN
@@ -109,54 +128,35 @@ Method ChartWnd.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
     fld1
     faddp st(1), st(0)
     fstp [xsi].ScaleX.fScaleMax
-  .elseif !CARRY?                                       ;Min > Max -> swap
-    s2s [xsi].ScaleX.fScaleMin, [xsi].ScaleX.fScaleMin, xcx, xdx
-    s2s [xsi].ScaleX.fScaleMax, [xsi].ScaleX.fScaleMax, xcx, xdx
+  .elseif !CARRY?                                       ;if Min > Max => swap
+    s2s TempScaleEnd, [xsi].ScaleX.fScaleMin, xcx, xdx
+    s2s [xsi].ScaleX.fScaleMin, [xsi].ScaleX.fScaleMax, xcx, xdx
+    s2s [xsi].ScaleX.fScaleMax, TempScaleEnd, xcx, xdx
   .endif
 
   OCall xsi.CalcScaleDivs, addr [xsi].ScaleX
 
-  ;Calculate Y scale internal factors -------------------------------
-  .ifBitSet [xsi].ScaleY1.dFlags, CHT_SCALE_AUTO_MIN
-    s2s [xsi].ScaleY1.fScaleMin, [xsi].ScaleY1.fDataMin, xcx, xdx
-  .else
-    s2s [xsi].ScaleY1.fScaleMin, [xsi].ScaleY1.fSetupMin, xcx, xdx
-  .endif
-
-  .ifBitSet [xsi].ScaleY1.dFlags, CHT_SCALE_AUTO_MAX
-    s2s [xsi].ScaleY1.fScaleMax, [xsi].ScaleY1.fDataMax, xcx, xdx
-  .else
-    s2s [xsi].ScaleY1.fScaleMax, [xsi].ScaleY1.fSetupMax, xcx, xdx
-  .endif
-
-  fld [xsi].ScaleY1.fScaleMin
-  fcomp [xsi].ScaleY1.fScaleMax
-  fGetFlags
-  .if ZERO?                                             ;Min = Max
-    fld [xsi].ScaleY1.fScaleMax
-    fld1
-    faddp st(1), st(0)
-    fstp [xsi].ScaleY1.fScaleMax
-  .elseif !CARRY?                                       ;Min > Max -> swap
-    s2s [xsi].ScaleY1.fScaleMin, [xsi].ScaleY1.fScaleMin, xcx, xdx
-    s2s [xsi].ScaleY1.fScaleMax, [xsi].ScaleY1.fScaleMax, xcx, xdx
-  .endif
-
-  OCall xsi.CalcScaleDivs, addr [xsi].ScaleY1
+  ;Calculate Y scales internal factors ------------------------------
+  CalcInternalsYScale [xsi].ScaleY1
+  CalcInternalsYScale [xsi].ScaleY2
 
   ;Calculate some plot metrics based on the font metrics ------------
   mov eax, [xsi].TextMetricHorz.tmHeight                ;height = ascent + descent
   shr eax, 1
   mov [xsi].ScaleX.dDivMjrLen, eax
   mov [xsi].ScaleY1.dDivMjrLen, eax
+  mov [xsi].ScaleY2.dDivMjrLen, eax
   inc eax
   shr eax, 1
   mov [xsi].ScaleX.dDivMnrLen, eax
   mov [xsi].ScaleY1.dDivMnrLen, eax
-  mov [xsi].ScaleY1.dLabelSep, eax                       ;Gap between divisions and label on Y scale
+  mov [xsi].ScaleY2.dDivMnrLen, eax
+  mov [xsi].ScaleY1.dLabelSep, eax                      ;Gap between divisions and label on Y scale
+  mov [xsi].ScaleY2.dLabelSep, eax
   mov [xsi].ScaleX.dLabelSep, eax                       ;Gap between divisions and label on X scale
   mov [xsi].ScaleX.dTitleSep, eax                       ;Gap between title and label on X scale
-  mov [xsi].ScaleY1.dTitleSep, eax                       ;Gap between title and label on Y scale
+  mov [xsi].ScaleY1.dTitleSep, eax                      ;Gap between title and label on Y scale
+  mov [xsi].ScaleY2.dTitleSep, eax
 
   ;Determine the top plot border ------------------------------------
   mov eax, [xsi].TextMetricHorz.tmHeight                ;height = ascent + descent
@@ -166,94 +166,183 @@ Method ChartWnd.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
   mov [xsi].PlotRect.top, eax
 
   ;Determine the left plot border -----------------------------------
-  m2m [xsi].PlotRect.left, [xsi].DrawRect.left, eax
-
-  .ifBitSet [xsi].ScaleY1.dFlags, CHT_SCALE_SHOW_LABEL
-    lea xdi, cBuffer
-    fld [xsi].ScaleY1.fScaleMin
-    invoke St0ToStr, xdi, 0, [xsi].ScaleY1.dDecimals, f_NOR
-    fUnload
-    invoke StrLength, xdi
-    lea xbx, TextSize1
-    invoke GetTextExtentPoint32, hDC, xdi, eax, xbx     ;TextSize1 = extent of Y scale Min label
-
-    fld [xsi].ScaleY1.fScaleMax
-    invoke St0ToStr, xdi, 0, [xsi].ScaleY1.dDecimals, f_NOR
-    fUnload
-    invoke StrLength, xdi
-    lea xbx, TextSize2
-    invoke GetTextExtentPoint32, hDC, xdi, eax, xbx     ;TextSize2 = extent of Y scale Max label
-
-    uMax TextSize1.x, TextSize2.x                       ;eax = Widest Y scale label
-    add eax, [xsi].ScaleY1.dLabelSep                     ;add label separation
-    add [xsi].PlotRect.left, eax
-  .endif
-
-  .ifBitSet [xsi].ScaleY1.dFlags, CHT_SCALE_SHOW_TITLE
-    .if [xsi].ScaleY1.pTitle != NULL
-      mov eax, [xsi].TextMetricVert.tmHeight
-      add eax, [xsi].ScaleY1.dTitleSep
-      add [xsi].PlotRect.left, eax                      ;Y scale title height + separation
-    .endif
-  .endif
-
-  .ifBitSet [xsi].ScaleY1.dFlags, CHT_SCALE_SHOW_MJR_DIV
-    mov eax, [xsi].ScaleY1.dDivMjrLen                    ;Major division lenght
-    add [xsi].PlotRect.left, eax
-  .elseIfBitSet [xsi].ScaleY1.dFlags, CHT_SCALE_SHOW_MNR_DIV
-    mov eax, [xsi].ScaleY1.dDivMnrLen                    ;Minor division lenght
-    add [xsi].PlotRect.left, eax
-  .endif
-
-  ;Determine the right plot border ----------------------------------
-  .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_LABEL
-    .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_AS_DATE or CHT_SCALE_SHOW_AS_DATEDIFF or \
-                                     CHT_SCALE_SHOW_AS_TIME
-      m2z TextSize1.x
-      m2z TextSize2.x
-      .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_AS_DATE or CHT_SCALE_SHOW_AS_DATEDIFF
-        .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_AS_DATEDIFF
-          fld [xsi].ScaleX.fScaleMax
-          invoke St0ToStr, xdi, 0, 0, f_NOR
-          fUnload
-          invoke StrLength, xdi
-          lea xbx, TextSize1
-          invoke GetTextExtentPoint32, hDC, xdi, eax, xbx
-        .else
-          FillString CHR ptr [xdi], <DD.MM.YYYY>
-          lea xbx, TextSize1
-          invoke GetTextExtentPoint32, hDC, xdi, 10, xbx
-        .endif
-      .endif
-      .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_AS_TIME
-        FillString CHR ptr [xdi], <00:00:00>
-        lea xbx, TextSize2
-        invoke GetTextExtentPoint32, hDC, xdi, 8, xbx
-      .endif
-    .else
-      fld [xsi].ScaleX.fScaleMax
-      invoke St0ToStr, xdi, 0, [xsi].ScaleX.dDecimals, f_NOR
+  .ifBitSet [xsi].dFlags, CHT_WND_SHOW_Y1
+    m2m [xsi].PlotRect.left, [xsi].DrawRect.left, eax
+  
+    .ifBitSet [xsi].ScaleY1.dFlags, CHT_SCALE_SHOW_LABEL
+      lea xdi, cBuffer
+      fld [xsi].ScaleY1.fScaleMin
+      invoke St0ToStr, xdi, 0, [xsi].ScaleY1.dDecimals, f_NOR
       fUnload
       invoke StrLength, xdi
       lea xbx, TextSize1
-      invoke GetTextExtentPoint32, hDC, xdi, eax, xbx
+      invoke GetTextExtentPoint32, hDC, xdi, eax, xbx   ;TextSize1 = extent of Y scale Min label
+  
+      fld [xsi].ScaleY1.fScaleMax
+      invoke St0ToStr, xdi, 0, [xsi].ScaleY1.dDecimals, f_NOR
+      fUnload
+      invoke StrLength, xdi
+      lea xbx, TextSize2
+      invoke GetTextExtentPoint32, hDC, xdi, eax, xbx   ;TextSize2 = extent of Y scale Max label
+  
+      uMax TextSize1.x, TextSize2.x                     ;eax = Widest Y scale label
+      add eax, [xsi].ScaleY1.dLabelSep                  ;add label separation
+      add [xsi].PlotRect.left, eax
     .endif
-
-    mov ecx, TextSize1.x
-    .if ecx < TextSize2.x
-      mov ecx, TextSize2.x
+  
+    .ifBitSet [xsi].ScaleY1.dFlags, CHT_SCALE_SHOW_TITLE
+      .if [xsi].ScaleY1.pTitle != NULL
+        mov eax, [xsi].TextMetricVert.tmHeight
+        add eax, [xsi].ScaleY1.dTitleSep
+        add [xsi].PlotRect.left, eax                    ;Y scale title height + separation
+      .endif
     .endif
-    inc ecx
-    shr ecx, 1
-    mov eax, [xsi].DrawRect.right
-    sub eax, ecx
+  
+    .ifBitSet [xsi].ScaleY1.dFlags, CHT_SCALE_SHOW_MJR_DIV
+      mov eax, [xsi].ScaleY1.dDivMjrLen                 ;Major division lenght
+      add [xsi].PlotRect.left, eax
+    .elseIfBitSet [xsi].ScaleY1.dFlags, CHT_SCALE_SHOW_MNR_DIV
+      mov eax, [xsi].ScaleY1.dDivMnrLen                 ;Minor division lenght
+      add [xsi].PlotRect.left, eax
+    .endif
   .else
-    mov eax, [xsi].DrawRect.right
+    .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_LABEL
+      .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_AS_DATE or CHT_SCALE_SHOW_AS_DATEDIFF or \
+                                       CHT_SCALE_SHOW_AS_TIME
+        m2z TextSize1.x
+        m2z TextSize2.x
+        .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_AS_DATE or CHT_SCALE_SHOW_AS_DATEDIFF
+          .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_AS_DATEDIFF
+            fld [xsi].ScaleX.fScaleMin
+            invoke St0ToStr, xdi, 0, 0, f_NOR
+            fUnload
+            invoke StrLength, xdi
+            lea xbx, TextSize1
+            invoke GetTextExtentPoint32, hDC, xdi, eax, xbx
+          .else
+            FillString CHR ptr [xdi], <DD.MM.YYYY>
+            lea xbx, TextSize1
+            invoke GetTextExtentPoint32, hDC, xdi, 10, xbx
+          .endif
+        .endif
+        .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_AS_TIME
+          FillString CHR ptr [xdi], <00:00:00>
+          lea xbx, TextSize2
+          invoke GetTextExtentPoint32, hDC, xdi, 8, xbx
+        .endif
+      .else
+        fld [xsi].ScaleX.fScaleMin
+        invoke St0ToStr, xdi, 0, [xsi].ScaleX.dDecimals, f_NOR
+        fUnload
+        invoke StrLength, xdi
+        lea xbx, TextSize1
+        invoke GetTextExtentPoint32, hDC, xdi, eax, xbx
+      .endif
+  
+      mov ecx, TextSize1.x
+      .if ecx < TextSize2.x
+        mov ecx, TextSize2.x
+      .endif
+      inc ecx
+      shr ecx, 1
+      mov eax, [xsi].DrawRect.left
+      add eax, ecx
+    .else
+      mov eax, [xsi].DrawRect.left
+    .endif
+    mov [xsi].PlotRect.left, eax
   .endif
-  .if SDWORD ptr eax < [xsi].PlotRect.left
-    mov eax, [xsi].PlotRect.left
+
+  ;Determine the right plot border ----------------------------------
+  .ifBitClr [xsi].dFlags, CHT_WND_SHOW_Y2
+    .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_LABEL
+      .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_AS_DATE or CHT_SCALE_SHOW_AS_DATEDIFF or \
+                                       CHT_SCALE_SHOW_AS_TIME
+        m2z TextSize1.x
+        m2z TextSize2.x
+        .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_AS_DATE or CHT_SCALE_SHOW_AS_DATEDIFF
+          .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_AS_DATEDIFF
+            fld [xsi].ScaleX.fScaleMax
+            invoke St0ToStr, xdi, 0, 0, f_NOR
+            fUnload
+            invoke StrLength, xdi
+            lea xbx, TextSize1
+            invoke GetTextExtentPoint32, hDC, xdi, eax, xbx
+          .else
+            FillString CHR ptr [xdi], <DD.MM.YYYY>
+            lea xbx, TextSize1
+            invoke GetTextExtentPoint32, hDC, xdi, 10, xbx
+          .endif
+        .endif
+        .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_AS_TIME
+          FillString CHR ptr [xdi], <00:00:00>
+          lea xbx, TextSize2
+          invoke GetTextExtentPoint32, hDC, xdi, 8, xbx
+        .endif
+      .else
+        fld [xsi].ScaleX.fScaleMax
+        invoke St0ToStr, xdi, 0, [xsi].ScaleX.dDecimals, f_NOR
+        fUnload
+        invoke StrLength, xdi
+        lea xbx, TextSize1
+        invoke GetTextExtentPoint32, hDC, xdi, eax, xbx
+      .endif
+  
+      mov ecx, TextSize1.x
+      .if ecx < TextSize2.x
+        mov ecx, TextSize2.x
+      .endif
+      inc ecx
+      shr ecx, 1
+      mov eax, [xsi].DrawRect.right
+      sub eax, ecx
+    .else
+      mov eax, [xsi].DrawRect.right
+    .endif
+    .if SDWORD ptr eax < [xsi].PlotRect.left
+      mov eax, [xsi].PlotRect.left
+    .endif
+    mov [xsi].PlotRect.right, eax                       ;This edge is not included in the plot area
+  .else
+    m2m [xsi].PlotRect.right, [xsi].DrawRect.right, eax
+  
+    .ifBitSet [xsi].ScaleY2.dFlags, CHT_SCALE_SHOW_LABEL
+      lea xdi, cBuffer
+      fld [xsi].ScaleY2.fScaleMin
+      invoke St0ToStr, xdi, 0, [xsi].ScaleY2.dDecimals, f_NOR
+      fUnload
+      invoke StrLength, xdi
+      lea xbx, TextSize1
+      invoke GetTextExtentPoint32, hDC, xdi, eax, xbx   ;TextSize1 = extent of Y scale Min label
+  
+      fld [xsi].ScaleY2.fScaleMax
+      invoke St0ToStr, xdi, 0, [xsi].ScaleY2.dDecimals, f_NOR
+      fUnload
+      invoke StrLength, xdi
+      lea xbx, TextSize2
+      invoke GetTextExtentPoint32, hDC, xdi, eax, xbx   ;TextSize2 = extent of Y scale Max label
+  
+      uMax TextSize1.x, TextSize2.x                     ;eax = Widest Y scale label
+      add eax, [xsi].ScaleY2.dLabelSep                  ;add label separation
+      sub [xsi].PlotRect.right, eax
+    .endif
+  
+    .ifBitSet [xsi].ScaleY2.dFlags, CHT_SCALE_SHOW_TITLE
+      .if [xsi].ScaleY2.pTitle != NULL
+        mov eax, [xsi].TextMetricVert.tmHeight
+        add eax, [xsi].ScaleY2.dTitleSep
+        sub [xsi].PlotRect.right, eax                   ;Y scale title height + separation
+      .endif
+    .endif
+  
+    .ifBitSet [xsi].ScaleY2.dFlags, CHT_SCALE_SHOW_MJR_DIV
+      mov eax, [xsi].ScaleY2.dDivMjrLen                 ;Major division lenght
+      sub [xsi].PlotRect.right, eax
+    .elseIfBitSet [xsi].ScaleY2.dFlags, CHT_SCALE_SHOW_MNR_DIV
+      mov eax, [xsi].ScaleY2.dDivMnrLen                 ;Minor division lenght
+      sub [xsi].PlotRect.right, eax
+    .endif
   .endif
-  mov [xsi].PlotRect.right, eax                         ;This edge is not included in the plot area
 
   ;Determine the bottom plot border ---------------------------------
   xor ecx, ecx
@@ -291,9 +380,9 @@ Method ChartWnd.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
     add ecx, eax
     mov [xsi].DrawRect.bottom, ecx
   .endif
-  mov [xsi].PlotRect.bottom, eax                         ;This edge is not included in the plot area
+  mov [xsi].PlotRect.bottom, eax                        ;This edge is not included in the plot area
 
-  ;Calculate Scaling factors ----------------------------------------
+  ;Calculate scale factors ----------------------------------------
   mov eax, [xsi].PlotRect.right
   sub eax, [xsi].PlotRect.left
   mov dValue, eax
@@ -309,6 +398,11 @@ Method ChartWnd.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
   fsub [xsi].ScaleY1.fScaleMin
   fidivr dValue
   fstp [xsi].ScaleY1.fScaleFactor
+
+  fld [xsi].ScaleY2.fScaleMax
+  fsub [xsi].ScaleY2.fScaleMin
+  fidivr dValue
+  fstp [xsi].ScaleY2.fScaleFactor
 
   invoke SelectObject, hDC, hPrevFont
 MethodEnd
@@ -459,6 +553,10 @@ Method ChartWnd.Done, uses xsi
   invoke StrDispose, [xsi].ScaleY1.pDescription
   invoke StrDispose, [xsi].ScaleY1.pUnit
 
+  invoke StrDispose, [xsi].ScaleY2.pTitle
+  invoke StrDispose, [xsi].ScaleY2.pDescription
+  invoke StrDispose, [xsi].ScaleY2.pUnit
+
   OCall [xsi].Data::Collection.Done
   OCall [xsi].InfoAreas::DataCollection.Done
 
@@ -472,34 +570,23 @@ MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     ChartWnd.DrawFrame
-; Purpose:    Draw the plot frame.
+; Purpose:    Draw the chart frame.
 ; Arguments:  Arg1: Output device context.
 ; Return:     Nothing.
 
 CHT_LABEL_INFO struc
-  dPosition   DWORD       ?
+  sdPosition  SDWORD      ?
   fValue      CHT_FLOAT   ?
 CHT_LABEL_INFO ends
 PCHT_LABEL_INFO typedef ptr CHT_LABEL_INFO
 
-Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
-  local hPrevPen:HPEN, hPrevBrush:HBRUSH, dPrevColor:DWORD, hPrevFont:HFONT
-  local dPrevBkMode:DWORD, dPrevAlign:DWORD, dTempEDI:DWORD
-  local LastPoint:POINT, cBuffer[256]:CHR
-  local dDivMjrEnd:DWORD, dDivMnrEnd:DWORD
-  local dMjrCount:DWORD, dMnrCount:DWORD, sdPosition:SDWORD
-  local hDivPen:HPEN, hMjrGridPen:HPEN, hMnrGridPen:HPEN, PenBrush:LOGBRUSH
-  local dColor:DWORD
-  local r8TimeCurrent:REAL8, pTimeCurrent:POINTER
-  local FpuContext:FPU_CONTEXT
-  local LabelInfo[200]:CHT_LABEL_INFO, pCurLabelInfo:PCHT_LABEL_INFO
+Method ChartWnd.DrawFrame, uses xdi xsi, hDC:HDC
+  local hPrevPen:HPEN, hPrevBrush:HBRUSH
 
   SetObject xsi
 
-  mov dPrevBkMode, $32($invoke(SetBkMode, hDC, TRANSPARENT))
-
   ;Fill output area -------------------------------------------------
-  .ifBitSet [xsi].dFlags, CHT_FLAG_COLOR
+  .ifBitSet [xsi].dFlags, CHT_WND_COLOR
     mov eax, [xsi].Colors.Background
   .else
     mov eax, $RGB(255,255,255)
@@ -509,7 +596,7 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
   invoke DeleteObject, xdi
 
   ;Plot a line around the plot area and fill the interior  ----------
-  .ifBitSet [xsi].dFlags, CHT_FLAG_COLOR
+  .ifBitSet [xsi].dFlags, CHT_WND_COLOR
     mov eax, [xsi].Colors.PlotBorder
   .else
     mov eax, $RGB(000,000,000)
@@ -517,7 +604,7 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
   invoke CreatePen, PS_SOLID, 1, eax
   mov hPrevPen, $invoke(SelectObject, hDC, xax)
 
-  .ifBitSet [xsi].dFlags, CHT_FLAG_COLOR
+  .ifBitSet [xsi].dFlags, CHT_WND_COLOR
     mov eax, [xsi].Colors.PlotArea
   .else
     mov eax, $RGB(255,255,255)
@@ -532,24 +619,40 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
   invoke Rectangle, hDC, [xsi].PlotRect.left, [xsi].PlotRect.top, eax, edi
 
   invoke DeleteObject, $invoke(SelectObject, hDC, hPrevBrush)
+  invoke DeleteObject, $invoke(SelectObject, hDC, hPrevPen)
+MethodEnd
 
-  .ifBitSet [xsi].dFlags, CHT_FLAG_COLOR
-    mov eax, [xsi].Colors.Scales
-  .else
-    mov eax, $RGB(000,000,000)
-  .endif
-  mov dColor, eax
-  mov dPrevColor, $32($invoke(SetTextColor, hDC, eax))
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.DrawScaleX
+; Purpose:    Draw the chart X-Scale.
+; Arguments:  Arg1: Output device context.
+; Return:     Nothing.
 
-  mov hDivPen, $invoke(CreatePen, PS_SOLID, 1, dColor)
-  invoke DeleteObject, $invoke(SelectObject, hDC, xax)  ;Delete PlotBorder pen
+Method ChartWnd.DrawScaleX, uses xbx xdi xsi, hDC:HDC
+  local dPrevBkMode:DWORD, hPrevFont:HFONT, hPrevPen:HPEN, dPrevAlign:DWORD, dPrevColor:DWORD
+  local hDivPen:HPEN, hMjrGridPen:HPEN, hMnrGridPen:HPEN, PenBrush:LOGBRUSH, dTempEDI:DWORD
+  local LastPoint:POINT, cBuffer[256]:CHR
+  local dDivMjrEnd:DWORD, dDivMnrEnd:DWORD, dMjrCount:DWORD, dMnrCount:DWORD, sdPosition:SDWORD
+  local r8TimeCurrent:REAL8, pTimeCurrent:POINTER
+  local FpuContext:FPU_CONTEXT, LabelInfo[200]:CHT_LABEL_INFO, pCurLabelInfo:PCHT_LABEL_INFO
 
-  ;Plot X scale ---------------------------------------------------
+  SetObject xsi
   mov hPrevFont, $invoke(SelectObject, hDC, [xsi].hFontHorz)
-  mov dPrevAlign, $32($invoke(SetTextAlign, hDC, TA_CENTER or TA_TOP))
+  mov dPrevAlign, $32($invoke(GetTextAlign, hDC))
+  mov dPrevBkMode, $32($invoke(SetBkMode, hDC, TRANSPARENT))
+  mov hPrevPen, $invoke(GetCurrentObject, hDC, OBJ_PEN)
+
+  ;Create the divisions pen
+  .ifBitSet [xsi].dFlags, CHT_WND_COLOR
+    mov ebx, [xsi].Colors.Scales
+  .else
+    mov ebx, $RGB(000,000,000)
+  .endif
+  mov dPrevColor, $32($invoke(SetTextColor, hDC, ebx))
+  mov hDivPen, $invoke(CreatePen, PS_SOLID, 1, ebx)
 
   ;Create the grid pens
-  .ifBitSet [xsi].dFlags, CHT_FLAG_COLOR
+  .ifBitSet [xsi].dFlags, CHT_WND_COLOR
     mov eax, [xsi].Colors.MjrGrid
   .else
     mov eax, $RGB(000,000,000)
@@ -561,7 +664,7 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
   invoke ExtCreatePen, ecx, [xsi].ScaleX.dGridMjrLineSize, addr PenBrush, 0, NULL
   mov hMjrGridPen, xax
 
-  .ifBitSet [xsi].dFlags, CHT_FLAG_COLOR
+  .ifBitSet [xsi].dFlags, CHT_WND_COLOR
     mov eax, [xsi].Colors.MnrGrid
   .else
     mov eax, $RGB(000,000,000)
@@ -585,7 +688,7 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
     fld [xsi].ScaleX.fScaleFactor
     fld [xsi].ScaleX.fDivMjrStp
     fild [xsi].ScaleX.dDivMnrCount
-    fdivr st(0), st(1)                                    ;MnrStep = DivStep/MnrCount
+    fdivr st(0), st(1)                                  ;MnrStep = DivStep/MnrCount
     ;FPU Stack: MnrStep | MjrStep | ScaleFactor
     fld [xsi].ScaleX.fDivMjrFst
     fld [xsi].ScaleX.fScaleMin
@@ -607,13 +710,14 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
       fist sdPosition
       mov eax, [xsi].PlotRect.left
       add eax, sdPosition
-      mov [xcx].CHT_LABEL_INFO.dPosition, eax             ;Store position onto stack
+      mov [xcx].CHT_LABEL_INFO.sdPosition, eax          ;Store position onto stack
       add pCurLabelInfo, sizeof CHT_LABEL_INFO
       .break .if SDWORD ptr eax > [xsi].PlotRect.right
       mov sdPosition, eax
 
       ;Draw major division
       SaveFpuContext FpuContext
+      invoke SelectObject, hDC, hDivPen
       invoke MoveToEx, hDC, sdPosition, [xsi].PlotRect.bottom, addr LastPoint
       invoke LineTo, hDC, sdPosition, dDivMjrEnd
 
@@ -649,6 +753,7 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
         .break .if SDWORD ptr eax > [xsi].PlotRect.right
         mov sdPosition, eax
         SaveFpuContext FpuContext
+        invoke SelectObject, hDC, hDivPen
         invoke MoveToEx, hDC, sdPosition, [xsi].PlotRect.bottom, addr LastPoint
         invoke LineTo, hDC, sdPosition, dDivMnrEnd
         ;Draw minor grid lines
@@ -691,6 +796,7 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
       .break .if SDWORD ptr eax < [xsi].PlotRect.left
       mov sdPosition, eax
       SaveFpuContext FpuContext
+      invoke SelectObject, hDC, hDivPen
       invoke MoveToEx, hDC, sdPosition, [xsi].PlotRect.bottom, addr LastPoint
       invoke LineTo, hDC, sdPosition,dDivMnrEnd
       ;Draw remaining minor grid lines
@@ -714,6 +820,7 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
 
     ;Draw X labels
     .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_LABEL
+      invoke SetTextAlign, hDC, TA_TOP or TA_CENTER
       mov ebx, dDivMjrEnd
       sub ebx, [xsi].TextMetricHorz.tmInternalLeading
       add ebx, [xsi].ScaleX.dLabelSep
@@ -721,7 +828,7 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
         lea xax, LabelInfo
         .break .if pCurLabelInfo < xax
         mov xdi, pCurLabelInfo
-        m2m sdPosition, [xdi].CHT_LABEL_INFO.dPosition, edx
+        m2m sdPosition, [xdi].CHT_LABEL_INFO.sdPosition, edx
 
         SaveFpuContext FpuContext
         fld [xdi].CHT_LABEL_INFO.fValue
@@ -802,8 +909,11 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
       .endw
     .endif
   .endif
+  
+  ;Delete allocated resources 
   invoke DeleteObject, hMjrGridPen
   invoke DeleteObject, hMnrGridPen
+  invoke DeleteObject, hDivPen
 
   ;Draw X scale title
   .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_TITLE
@@ -821,10 +931,44 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
     LoadFpuContext FpuContext
   .endif
 
+  ;Restore previous DC resources
+  invoke SelectObject, hDC, hPrevPen
+  invoke SelectObject, hDC, hPrevFont
+  invoke SetTextAlign, hDC, dPrevAlign
+  invoke SetTextColor, hDC, dPrevColor
+  invoke SetBkMode, hDC, dPrevBkMode
+MethodEnd
 
-  ;Plot Y scale ---------------------------------------------------
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.DrawScaleY1
+; Purpose:    Draw the chart Y1-Axis.
+; Arguments:  Arg1: Output device context.
+; Return:     Nothing.
+
+Method ChartWnd.DrawScaleY1, uses xbx xdi xsi, hDC:HDC
+  local dPrevBkMode:DWORD, hPrevFont:HFONT, hPrevPen:HPEN, dPrevAlign:DWORD, dPrevColor:DWORD
+  local hDivPen:HPEN, hMjrGridPen:HPEN, hMnrGridPen:HPEN, PenBrush:LOGBRUSH, dTempEDI:DWORD
+  local dDivMjrEnd:DWORD, dDivMnrEnd:DWORD, dMjrCount:DWORD, dMnrCount:DWORD, sdPosition:SDWORD
+  local FpuContext:FPU_CONTEXT, LabelInfo[200]:CHT_LABEL_INFO, pCurLabelInfo:PCHT_LABEL_INFO
+  local LastPoint:POINT, cBuffer[256]:CHR
+
+  SetObject xsi
+  mov hPrevFont, $invoke(SelectObject, hDC, [xsi].hFontHorz)
+  mov dPrevAlign, $32($invoke(GetTextAlign, hDC))
+  mov dPrevBkMode, $32($invoke(SetBkMode, hDC, TRANSPARENT))
+  mov hPrevPen, $invoke(GetCurrentObject, hDC, OBJ_PEN)
+
+  ;Create the divisions pens
+  .ifBitSet [xsi].dFlags, CHT_WND_COLOR
+    mov ebx, [xsi].Colors.Scales
+  .else
+    mov ebx, $RGB(000,000,000)
+  .endif
+  mov dPrevColor, $32($invoke(SetTextColor, hDC, ebx))
+  mov hDivPen, $invoke(CreatePen, PS_SOLID, 1, ebx)
+
   ;Create the grid pens
-  .ifBitSet [xsi].dFlags, CHT_FLAG_COLOR
+  .ifBitSet [xsi].dFlags, CHT_WND_COLOR
     mov eax, [xsi].Colors.MjrGrid
   .else
     mov eax, $RGB(000,000,000)
@@ -836,7 +980,7 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
   invoke ExtCreatePen, ecx, [xsi].ScaleY1.dGridMjrLineSize, addr PenBrush, 0, NULL
   mov hMjrGridPen, xax
 
-  .ifBitSet [xsi].dFlags, CHT_FLAG_COLOR
+  .ifBitSet [xsi].dFlags, CHT_WND_COLOR
     mov eax, [xsi].Colors.MnrGrid
   .else
     mov eax, $RGB(000,000,000)
@@ -860,7 +1004,7 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
     fld [xsi].ScaleY1.fScaleFactor
     fld [xsi].ScaleY1.fDivMjrStp
     fild [xsi].ScaleY1.dDivMnrCount
-    fdivr st(0), st(1)                                    ;MnrStep = DivStep/MnrCount
+    fdivr st(0), st(1)                                  ;MnrStep = DivStep/MnrCount
     ;FPU Stack: MnrStep | MjrStep | ScaleFactor
     fld [xsi].ScaleY1.fDivMjrFst
     fld [xsi].ScaleY1.fScaleMin
@@ -882,13 +1026,14 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
       fist sdPosition
       mov eax, [xsi].PlotRect.bottom
       sub eax, sdPosition
-      mov [xcx].CHT_LABEL_INFO.dPosition, eax             ;Store position onto stack
+      mov [xcx].CHT_LABEL_INFO.sdPosition, eax          ;Store position onto stack
       add pCurLabelInfo, sizeof CHT_LABEL_INFO
       .break .if SDWORD ptr eax < [xsi].PlotRect.top
       mov sdPosition, eax
 
       ;Draw major division
       SaveFpuContext FpuContext
+      invoke SelectObject, hDC, hDivPen
       .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_MJR_DIV
         invoke MoveToEx, hDC, [xsi].PlotRect.left, sdPosition, addr LastPoint
         invoke LineTo, hDC, dDivMjrEnd, sdPosition
@@ -914,7 +1059,7 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
       LoadFpuContext FpuContext
 
       ;Draw minor divisions
-      .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_MNR_DIV
+      .ifBitSet [xsi].ScaleY1.dFlags, CHT_SCALE_SHOW_MNR_DIV
         mov dTempEDI, edi
         mov edi, 1
         .while edi < [xsi].ScaleY1.dDivMnrCount
@@ -932,6 +1077,7 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
           .break .if SDWORD ptr eax < [xsi].PlotRect.top
           mov sdPosition, eax
           SaveFpuContext FpuContext
+          invoke SelectObject, hDC, hDivPen
           invoke MoveToEx, hDC, [xsi].PlotRect.left, sdPosition, addr LastPoint
           invoke LineTo, hDC, dDivMnrEnd, sdPosition
           ;Draw minor grid lines
@@ -959,7 +1105,7 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
     fUnload 1                                           ;Unload FPU stack
 
     ;Draw remaining minor divisions at the beginning of the Y scale
-    .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_MNR_DIV
+    .ifBitSet [xsi].ScaleY1.dFlags, CHT_SCALE_SHOW_MNR_DIV
       mov edi, 1
       .while edi < [xsi].ScaleY1.dDivMnrCount
         mov dMnrCount, edi
@@ -976,6 +1122,7 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
         dec eax
         .break .if SDWORD ptr eax >= [xsi].PlotRect.bottom
         SaveFpuContext FpuContext
+        invoke SelectObject, hDC, hDivPen
         invoke MoveToEx, hDC, [xsi].PlotRect.left, sdPosition, addr LastPoint
         invoke LineTo, hDC, dDivMnrEnd, sdPosition
         ;Draw remaining minor grid lines
@@ -995,10 +1142,10 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
       .endw
     .endif
 
-    fUnload 5                                             ;Unload FPU stack
+    fUnload 5                                           ;Unload FPU stack
 
     ;Draw Y labels ----------------------------------------------------
-    .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_LABEL
+    .ifBitSet [xsi].ScaleY1.dFlags, CHT_SCALE_SHOW_LABEL
       invoke SetTextAlign, hDC, TA_TOP or TA_RIGHT
       mov eax, [xsi].ScaleY1.dLabelSep
       sub dDivMjrEnd, eax
@@ -1013,7 +1160,7 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
         mov ecx, [xsi].TextMetricHorz.tmAscent
         add ecx, [xsi].TextMetricHorz.tmInternalLeading
         shr ecx, 1
-        mov ebx, [xdi].CHT_LABEL_INFO.dPosition
+        mov ebx, [xdi].CHT_LABEL_INFO.sdPosition
         sub ebx, ecx
         invoke TextOut, hDC, dDivMjrEnd, ebx, addr cBuffer, eax
         sub pCurLabelInfo, sizeof CHT_LABEL_INFO
@@ -1021,8 +1168,13 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
     .endif
   .endif
 
+  ;Delete allocated resources 
+  invoke DeleteObject, hMjrGridPen
+  invoke DeleteObject, hMnrGridPen
+  invoke DeleteObject, hDivPen
+
   ;Draw Y scale title -----------------------------------------------
-  .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_TITLE
+  .ifBitSet [xsi].ScaleY1.dFlags, CHT_SCALE_SHOW_TITLE
     .if [xsi].ScaleY1.pTitle != NULL
       invoke StrLength, [xsi].ScaleY1.pTitle
       .if eax != 0
@@ -1037,32 +1189,293 @@ Method ChartWnd.DrawFrame, uses xbx xdi xsi, hDC:HDC
     .endif
   .endif
 
-  ;Release resources ------------------------------------------------
+  ;Restore previous DC resources
   invoke SelectObject, hDC, hPrevPen
-  invoke DeleteObject, hMjrGridPen
-  invoke DeleteObject, hMnrGridPen
-  invoke DeleteObject, hDivPen
-  invoke SetTextColor, hDC, dPrevColor
+  invoke SelectObject, hDC, hPrevFont
   invoke SetTextAlign, hDC, dPrevAlign
+  invoke SetTextColor, hDC, dPrevColor
   invoke SetBkMode, hDC, dPrevBkMode
-  invoke SelectObject, hDC, hPrevFont                   ;hFonts are deleted by the Done method
-
-  assume xbx:NOTHING
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartWnd.GetDataTipText
-; Purpose:    Return a string inforation about data.
-; Arguments:  Arg1: -> Destination buffer. Max 1024 chars.
-;             Arg2: -> Series.
-;             Arg2: Data index into ChartSeries.
+; Method:     ChartWnd.DrawScaleY2
+; Purpose:    Draw the chart Y2-Axis.
+; Arguments:  Arg1: Output device context.
 ; Return:     Nothing.
 
-Method ChartWnd.GetDataTipText,, pBuffer:PSTRING, pSeries:$ObjPtr(ChartSeries), dDataIndex:DWORD
-  mov xax, pSeries
-  invoke wsprintf, pBuffer, $OfsCStr("Name: %s", CRLF, "Description: %s"), \
-                   [xax].$Obj(ChartSeries).pName, \
-                   [xax].$Obj(ChartSeries).pDescription
+Method ChartWnd.DrawScaleY2, uses xbx xdi xsi, hDC:HDC
+  local dPrevBkMode:DWORD, hPrevFont:HFONT, hPrevPen:HPEN, dPrevAlign:DWORD, dPrevColor:DWORD
+  local hDivPen:HPEN, hMjrGridPen:HPEN, hMnrGridPen:HPEN, PenBrush:LOGBRUSH, dTempEDI:DWORD
+  local dDivMjrEnd:DWORD, dDivMnrEnd:DWORD, dMjrCount:DWORD, dMnrCount:DWORD, sdPosition:SDWORD
+  local FpuContext:FPU_CONTEXT, LabelInfo[200]:CHT_LABEL_INFO, pCurLabelInfo:PCHT_LABEL_INFO
+  local LastPoint:POINT, cBuffer[256]:CHR
+
+  SetObject xsi
+  mov hPrevFont, $invoke(SelectObject, hDC, [xsi].hFontHorz)
+  mov dPrevAlign, $32($invoke(GetTextAlign, hDC))
+  mov dPrevBkMode, $32($invoke(SetBkMode, hDC, TRANSPARENT))
+  mov hPrevPen, $invoke(GetCurrentObject, hDC, OBJ_PEN)
+
+  ;Create the divisions pens
+  .ifBitSet [xsi].dFlags, CHT_WND_COLOR
+    mov ebx, [xsi].Colors.Scales
+  .else
+    mov ebx, $RGB(000,000,000)
+  .endif
+  mov dPrevColor, $32($invoke(SetTextColor, hDC, ebx))
+  mov hDivPen, $invoke(CreatePen, PS_SOLID, 1, ebx)
+
+  ;Create the grid pens
+  .ifBitSet [xsi].dFlags, CHT_WND_COLOR
+    mov eax, [xsi].Colors.MjrGrid
+  .else
+    mov eax, $RGB(000,000,000)
+  .endif
+  mov PenBrush.lbStyle, BS_SOLID
+  mov PenBrush.lbColor, eax
+  mov ecx, [xsi].ScaleY2.dGridMjrLineStyle
+  or ecx, PS_ENDCAP_FLAT or PS_GEOMETRIC
+  invoke ExtCreatePen, ecx, [xsi].ScaleY2.dGridMjrLineSize, addr PenBrush, 0, NULL
+  mov hMjrGridPen, xax
+
+  .ifBitSet [xsi].dFlags, CHT_WND_COLOR
+    mov eax, [xsi].Colors.MnrGrid
+  .else
+    mov eax, $RGB(000,000,000)
+  .endif
+  mov PenBrush.lbStyle, BS_SOLID
+  mov PenBrush.lbColor, eax
+  mov ecx, [xsi].ScaleY2.dGridMnrLineStyle
+  or ecx, PS_ENDCAP_FLAT or PS_GEOMETRIC
+  invoke ExtCreatePen, ecx, [xsi].ScaleY2.dGridMnrLineSize, addr PenBrush, 0, NULL
+  mov hMnrGridPen, xax
+
+  mov edx, [xsi].PlotRect.top
+  .if SDWORD ptr edx < [xsi].PlotRect.bottom
+    mov eax, [xsi].PlotRect.right
+    mov ecx, eax
+    add eax, [xsi].ScaleY2.dDivMjrLen
+    add ecx, [xsi].ScaleY2.dDivMnrLen
+    mov dDivMjrEnd, eax
+    mov dDivMnrEnd, ecx
+
+    fld [xsi].ScaleY2.fScaleFactor
+    fld [xsi].ScaleY2.fDivMjrStp
+    fild [xsi].ScaleY2.dDivMnrCount
+    fdivr st(0), st(1)                                  ;MnrStep = DivStep/MnrCount
+    ;FPU Stack: MnrStep | MjrStep | ScaleFactor
+    fld [xsi].ScaleY2.fDivMjrFst
+    fld [xsi].ScaleY2.fScaleMin
+    ;FPU Stack: ScaleMin | DivFirst | MnrStep | MjrStep | ScaleFactor
+    lea xax, LabelInfo
+    mov pCurLabelInfo, xax
+    xor edi, edi
+    .repeat
+      mov dMjrCount, edi
+      fild dMjrCount
+      ;FPU Stack: dMjrCount | ScaleMin | DivFirst | MnrStep | MjrStep | ScaleFactor
+      fmul st(0), st(4)
+      fadd st(0), st(2)
+      mov xcx, pCurLabelInfo
+      fst [xcx].CHT_LABEL_INFO.fValue
+      fsub st(0), st(1)
+      fmul st(0), st(5)
+      ;FPU Stack: MjrDivPos | ScaleMin | DivFirst | MnrStep | MjrStep | ScaleFactor
+      fist sdPosition
+      mov eax, [xsi].PlotRect.bottom
+      sub eax, sdPosition
+      mov [xcx].CHT_LABEL_INFO.sdPosition, eax          ;Store position onto stack
+      add pCurLabelInfo, sizeof CHT_LABEL_INFO
+      .break .if SDWORD ptr eax < [xsi].PlotRect.top
+      mov sdPosition, eax
+
+      ;Draw major division
+      SaveFpuContext FpuContext
+      invoke SelectObject, hDC, hDivPen
+      .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_MJR_DIV
+        invoke MoveToEx, hDC, [xsi].PlotRect.right, sdPosition, addr LastPoint
+        invoke LineTo, hDC, dDivMjrEnd, sdPosition
+      .else
+        .ifBitSet [xsi].ScaleY2.dFlags, CHT_SCALE_SHOW_MNR_DIV
+          invoke MoveToEx, hDC, [xsi].PlotRect.left, sdPosition, addr LastPoint
+          invoke LineTo, hDC, dDivMnrEnd, sdPosition
+        .endif
+      .endif
+
+      ;Draw major grid lines
+      .ifBitSet [xsi].ScaleY2.dFlags, CHT_SCALE_SHOW_MJR_GRID
+        mov ecx, sdPosition
+        .if (SDWORD ptr ecx < [xsi].PlotRect.bottom) && (SDWORD ptr ecx > [xsi].PlotRect.top)
+          invoke SelectObject, hDC, hMjrGridPen
+          mov edx, [xsi].PlotRect.left
+          inc edx
+          invoke MoveToEx, hDC, edx, sdPosition, addr LastPoint
+          invoke LineTo, hDC, [xsi].PlotRect.right, sdPosition
+          invoke SelectObject, hDC, hDivPen
+        .endif
+      .endif
+      LoadFpuContext FpuContext
+
+      ;Draw minor divisions
+      .ifBitSet [xsi].ScaleY2.dFlags, CHT_SCALE_SHOW_MNR_DIV
+        mov dTempEDI, edi
+        mov edi, 1
+        .while edi < [xsi].ScaleY2.dDivMnrCount
+          mov dMnrCount, edi
+          fild dMnrCount
+          ;FPU Stack: dMnrCount | MjrDivPos | ScaleMin | DivFirst | MnrStep | MjrStep | ScaleFactor
+          fmul st(0), st(4)
+          fmul st(0), st(6)
+          fadd st(0), st(1)
+          ;FPU Stack: MnrDivPos | MjrDivPos | ScaleMin | DivFirst | MnrStep | MjrStep | ScaleFactor
+          fistp sdPosition
+          ;FPU Stack: MjrDivPos | ScaleMin | DivFirst | MnrStep | MjrStep | ScaleFactor
+          mov eax, [xsi].PlotRect.bottom
+          sub eax, sdPosition
+          .break .if SDWORD ptr eax < [xsi].PlotRect.top
+          mov sdPosition, eax
+          SaveFpuContext FpuContext
+          invoke SelectObject, hDC, hDivPen
+          invoke MoveToEx, hDC, [xsi].PlotRect.right, sdPosition, addr LastPoint
+          invoke LineTo, hDC, dDivMnrEnd, sdPosition
+          ;Draw minor grid lines
+          .ifBitSet [xsi].ScaleY2.dFlags, CHT_SCALE_SHOW_MNR_GRID
+            mov ecx, sdPosition
+            .if (SDWORD ptr ecx < [xsi].PlotRect.bottom) && (SDWORD ptr ecx > [xsi].PlotRect.top)
+              invoke SelectObject, hDC, hMnrGridPen
+              mov edx, [xsi].PlotRect.left
+              inc edx
+              invoke MoveToEx, hDC, edx, sdPosition, addr LastPoint
+              invoke LineTo, hDC, [xsi].PlotRect.right, sdPosition
+              invoke SelectObject, hDC, hDivPen
+            .endif
+          .endif
+          LoadFpuContext FpuContext
+          inc edi
+        .endw
+        mov edi, dTempEDI
+      .endif
+      fUnload 1                                         ;Unload FPU stack
+      ;FPU Stack: ScaleMin | DivFirst | MnrStep | MjrStep | ScaleFactor
+      inc edi
+    .until FALSE
+    sub pCurLabelInfo, 2*sizeof CHT_LABEL_INFO
+    fUnload 1                                           ;Unload FPU stack
+
+    ;Draw remaining minor divisions at the beginning of the Y scale
+    .ifBitSet [xsi].ScaleY2.dFlags, CHT_SCALE_SHOW_MNR_DIV
+      mov edi, 1
+      .while edi < [xsi].ScaleY2.dDivMnrCount
+        mov dMnrCount, edi
+        fild dMnrCount
+        ;FPU Stack: dMnrCount | ScaleMin | DivFirst | MnrStep | MjrStep | ScaleFactor
+        fmul st(0), st(3)
+        fsubr st(0), st(2)
+        fsub st(0), st(1)
+        fmul st(0), st(5)
+        fistp sdPosition
+        mov eax, [xsi].PlotRect.bottom
+        sub eax, sdPosition
+        mov sdPosition, eax
+        dec eax
+        .break .if SDWORD ptr eax >= [xsi].PlotRect.bottom
+        SaveFpuContext FpuContext
+        invoke SelectObject, hDC, hDivPen
+        invoke MoveToEx, hDC, [xsi].PlotRect.right, sdPosition, addr LastPoint
+        invoke LineTo, hDC, dDivMnrEnd, sdPosition
+        ;Draw remaining minor grid lines
+        .ifBitSet [xsi].ScaleY2.dFlags, CHT_SCALE_SHOW_MNR_GRID
+          mov ecx, sdPosition
+          .if (SDWORD ptr ecx < [xsi].PlotRect.bottom) && (SDWORD ptr ecx > [xsi].PlotRect.top)
+            invoke SelectObject, hDC, hMnrGridPen
+            mov edx, [xsi].PlotRect.left
+            inc edx
+            invoke MoveToEx, hDC, edx, sdPosition, addr LastPoint
+            invoke LineTo, hDC, [xsi].PlotRect.left, sdPosition
+            invoke SelectObject, hDC, hDivPen
+          .endif
+        .endif
+        LoadFpuContext FpuContext
+        inc edi
+      .endw
+    .endif
+
+    fUnload 5                                           ;Unload FPU stack
+
+    ;Draw Y labels ----------------------------------------------------
+    .ifBitSet [xsi].ScaleY2.dFlags, CHT_SCALE_SHOW_LABEL
+      invoke SetTextAlign, hDC, TA_TOP or TA_LEFT
+      mov eax, [xsi].ScaleY2.dLabelSep
+      add dDivMjrEnd, eax
+      .while TRUE
+        lea xax, LabelInfo
+        .break .if pCurLabelInfo < xax
+        mov xdi, pCurLabelInfo
+        fld [xdi].CHT_LABEL_INFO.fValue
+        invoke St0ToStr, addr cBuffer, 0, [xsi].ScaleY2.dDecimals, f_NOR; or f_TRIM
+        fUnload
+        invoke StrLength, addr cBuffer
+        mov ecx, [xsi].TextMetricHorz.tmAscent
+        add ecx, [xsi].TextMetricHorz.tmInternalLeading
+        shr ecx, 1
+        mov ebx, [xdi].CHT_LABEL_INFO.sdPosition
+        sub ebx, ecx
+        invoke TextOut, hDC, dDivMjrEnd, ebx, addr cBuffer, eax
+        sub pCurLabelInfo, sizeof CHT_LABEL_INFO
+      .endw
+    .endif
+  .endif
+
+  ;Delete allocated resources 
+  invoke DeleteObject, hMjrGridPen
+  invoke DeleteObject, hMnrGridPen
+  invoke DeleteObject, hDivPen
+
+  ;Draw Y scale title -----------------------------------------------
+  .ifBitSet [xsi].ScaleY2.dFlags, CHT_SCALE_SHOW_TITLE
+    .if [xsi].ScaleY2.pTitle != NULL
+      invoke StrLength, [xsi].ScaleY2.pTitle
+      .if eax != 0
+        mov edi, eax
+        invoke SelectObject, hDC, [xsi].hFontVert
+        invoke SetTextAlign, hDC, TA_CENTER or TA_BOTTOM
+        mov eax, [xsi].PlotRect.bottom
+        add eax, [xsi].PlotRect.top
+        shr eax, 1
+        invoke TextOut, hDC, [xsi].DrawRect.right, eax, [xsi].ScaleY2.pTitle, edi
+      .endif
+    .endif
+  .endif
+
+  ;Restore previous DC resources
+  invoke SelectObject, hDC, hPrevPen
+  invoke SelectObject, hDC, hPrevFont
+  invoke SetTextAlign, hDC, dPrevAlign
+  invoke SetTextColor, hDC, dPrevColor
+  invoke SetBkMode, hDC, dPrevBkMode
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.Init
+; Purpose:    Initialize the ChartWnd object.
+; Arguments:  Arg1: -> Owner object.
+;             Arg2: Parent Window handle.
+;             Arg3: -> Window initialization Data.
+; Return:     Nothing.
+
+Method ChartWnd.Init, uses xbx xsi, pOwner:POINTER, hParent:HWND, pDefStruc:PDEF_CHART
+  ;DbgText "ChartBarWnd.Init"
+  SetObject xsi
+  mov xbx, pDefStruc
+  assume xbx:PDEF_CHART
+  mov eax, [xbx].dStyle
+  or eax, WS_CHILD or WS_VISIBLE
+
+  invoke CreateWindowEx, [xbx].dExStyle, offset(szChart), NULL, \
+                         eax, [xbx].sdPosX, [xbx].sdPosY, [xbx].dWidth, [xbx].dHeight, \
+                         hParent, [xbx].xCtlID, hInstance, xsi
+  assume xbx:NOTHING
+  ACall xsi.Init, pOwner, xax
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -1077,6 +1490,7 @@ Method ChartWnd.Load, uses xsi, pStream:$ObjPtr(Stream), pDeserInfo:PDESER_INFO
   mov [xsi].dFlags, $32($OCall(pStream::Stream.BinRead32))
   OCall pStream::Stream.BinRead, addr [xsi].ScaleX,   sizeof(CHT_SCALE_DATA)
   OCall pStream::Stream.BinRead, addr [xsi].ScaleY1,  sizeof(CHT_SCALE_DATA)
+  OCall pStream::Stream.BinRead, addr [xsi].ScaleY2,  sizeof(CHT_SCALE_DATA)
   OCall pStream::Stream.BinRead, addr [xsi].Colors,   sizeof(CHT_COLOR_CONFIG)
   OCall pStream::Stream.BinRead, addr [xsi].ViewRect, sizeof(RECT)
   OCall pStream::Stream.BinRead, addr [xsi].Padding,  sizeof(RECT)
@@ -1084,11 +1498,155 @@ Method ChartWnd.Load, uses xsi, pStream:$ObjPtr(Stream), pDeserInfo:PDESER_INFO
   OCall pStream::Stream.BinRead, addr [xsi].PlotRect, sizeof(RECT)
   OCall pStream::Stream.BinRead, addr [xsi].TextMetricHorz,  sizeof(TEXTMETRIC)
   OCall pStream::Stream.BinRead, addr [xsi].TextMetricVert,  sizeof(TEXTMETRIC)
-  mov [xsi].sbMovingOn, $8($OCall(pStream::Stream.BinRead8))
+  mov [xsi].sbButtonDownOn, $8($OCall(pStream::Stream.BinRead8))
   OCall pStream::Stream.BinRead, addr [xsi].LastCursorPos,  sizeof(POINT)
   mov [xsi].dGestureZoomFirst, $32($OCall(pStream::Stream.BinRead32))
   mov [xsi].dGestureZoomLast, $32($OCall(pStream::Stream.BinRead32))
   OCall [xsi].Data::Collection.Load, pStream, pDeserInfo
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.OnButtonDblClk
+; Purpose:    Event procedure for WM_LBUTTONDBLCLK and WM_RBUTTONDBLCLK messages.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = Zero if handled.
+
+Method ChartWnd.OnButtonDblClk, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
+  local DblClkPnt:POINT, PopupPnt:POINT
+
+  SetObject xsi
+  PntS2Pnt DblClkPnt, lParam
+  mrm PopupPnt.x, DblClkPnt.x, ebx 
+  mrm PopupPnt.y, DblClkPnt.y, edi 
+  mov eax, -1
+
+  .ifBitSet [xsi].dFlags, CHT_WND_CTRL_DBLCLK
+    .ifBitSet wParam, MK_CONTROL
+      ;Check if X scale was double-clicked
+      .if [xsi].sbPrvButtonDownOn == CHT_ID_SCALEX
+        BitSet [xsi].ScaleX.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
+        OCall xsi.Refresh
+      ;Check if an Y scale was double-clicked
+      .elseif [xsi].sbPrvButtonDownOn == CHT_ID_SCALEY1
+        BitSet [xsi].ScaleY1.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
+        OCall xsi.Refresh
+      .elseif [xsi].sbPrvButtonDownOn == CHT_ID_SCALEY2
+        BitSet [xsi].ScaleY2.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
+        OCall xsi.Refresh
+      .endif
+      xor eax, eax
+      ExitMethod
+    .endif
+  .endif
+
+  ;Get doubleclick client coordinates
+  add PopupPnt.x, 10                                   ;Place the Dialog 10 px at the right
+  add PopupPnt.y, 20                                   ;Place the Dialog 20 px below
+
+  invoke ClientToScreen, [xsi].hWnd, addr PopupPnt     ;Transform to screen coordiantes
+  ;Check if X scale was double clicked
+  .if [xsi].sbPrvButtonDownOn == CHT_ID_SCALEX
+    .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_TAB
+      OCall xsi.ShowSetupDlg, PopupPnt.x, PopupPnt.y, CHT_ID_SCALEX
+    .endif
+  ;Check if Y1 scale was double clicked
+  .elseif [xsi].sbPrvButtonDownOn == CHT_ID_SCALEY1
+    .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_TAB
+      OCall xsi.ShowSetupDlg, PopupPnt.x, PopupPnt.y, CHT_ID_SCALEY1
+    .endif
+  ;Check if Y2 scale was double clicked
+  .elseif [xsi].sbPrvButtonDownOn == CHT_ID_SCALEY2
+    .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_TAB
+      OCall xsi.ShowSetupDlg, PopupPnt.x, PopupPnt.y, CHT_ID_SCALEY2
+    .endif
+  .else
+    ;Check if a series was clicked
+    xor ebx, ebx
+    .while ebx != [xsi].InfoAreas.dCount
+      mov xdi, $OCall([xsi].InfoAreas::DataCollection.ItemAt, ebx)
+      invoke PtInRect, addr [xdi].InfoArea.Rect, DblClkPnt
+      .if eax != FALSE
+        mov xdx, [xdi].InfoArea.pSeries
+        .ifBitSet [xdx].$Obj(ChartSeries).dFlags, CHT_SERIES_SHOW_TAB
+          OCall [xsi].Data::Collection.IndexOf, xdx
+          ;eax is the same index on ChartSetup.TabSeriesColl
+          OCall xsi.ShowSetupDlg, PopupPnt.x, PopupPnt.y, eax
+          .break
+        .endif
+      .endif
+      inc ebx
+    .endw
+    .if ebx == [xsi].InfoAreas.dCount
+      .ifBitSet [xsi].dFlags, CHT_WND_SHOW_GENERAL_TAB
+        ;Launch the general tab on the setup dialog
+        OCall xsi.ShowSetupDlg, PopupPnt.x, PopupPnt.y, CHT_ID_PLOT
+      .endif
+    .endif
+  .endif
+  xor eax, eax
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.OnButtonDown
+; Purpose:    Event procedure for WM_LBUTTONDOWN and WM_RBUTTONDOWN messages.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = Zero if handled.
+
+Method ChartWnd.OnButtonDown, uses xsi, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "ChartWnd.OnButtonDown"
+  SetObject xsi
+  PntS2Regs lParam
+  mov [xsi].LastCursorPos.x, eax
+  mov [xsi].LastCursorPos.y, ecx
+
+  ;Check if X scale was clicked
+  .if (SDWORD ptr eax >= [xsi].PlotRect.left) && (SDWORD ptr eax < [xsi].PlotRect.right) && \
+    (SDWORD ptr ecx >= [xsi].PlotRect.bottom) && (SDWORD ptr ecx < [xsi].ViewRect.bottom)
+    mov [xsi].sbButtonDownOn, CHT_ID_SCALEX
+    invoke SetCapture, [xsi].hWnd
+  ;Check if Y1 scale was clicked
+  .elseif (SDWORD ptr eax >= [xsi].ViewRect.left) && (SDWORD ptr eax < [xsi].PlotRect.left) && \
+    (SDWORD ptr ecx >= [xsi].ViewRect.top) && (SDWORD ptr ecx < [xsi].PlotRect.bottom)
+    mov [xsi].sbButtonDownOn, CHT_ID_SCALEY1
+    invoke SetCapture, [xsi].hWnd
+  ;Check if Y2 scale was clicked
+  .elseif (SDWORD ptr eax < [xsi].ViewRect.right) && (SDWORD ptr eax >= [xsi].PlotRect.right) && \
+    (SDWORD ptr ecx >= [xsi].ViewRect.top) && (SDWORD ptr ecx <= [xsi].PlotRect.bottom)
+    mov [xsi].sbButtonDownOn, CHT_ID_SCALEY2
+    invoke SetCapture, [xsi].hWnd
+  ;Check if plot area was clicked
+  .elseif (SDWORD ptr eax >= [xsi].PlotRect.left) && (SDWORD ptr eax < [xsi].PlotRect.right) && \
+    (SDWORD ptr ecx >= [xsi].PlotRect.top) && (SDWORD ptr ecx <= [xsi].PlotRect.bottom)
+    mov [xsi].sbButtonDownOn, CHT_ID_PLOT
+    invoke SetCapture, [xsi].hWnd
+  .else
+    ;It was clicked somewhere else
+    mov [xsi].sbButtonDownOn, CHT_ID_NONE
+  .endif
+  xor eax, eax
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.OnButtonUp
+; Purpose:    Event procedure for WM_LBUTTONUP and WM_RBUTTONUP messages.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = Zero if handled.
+
+Method ChartWnd.OnButtonUp,, wParam:WPARAM, lParam:LPARAM
+  ;DbgText "ChartWnd.OnLButtonUp"
+  SetObject xcx
+
+  .ifBitClr wParam, MK_LBUTTON
+    .ifBitClr wParam, MK_RBUTTON
+      m2m [xcx].sbPrvButtonDownOn, [xcx].sbButtonDownOn, eax
+      mov [xcx].sbButtonDownOn, CHT_ID_NONE
+      invoke ReleaseCapture
+    .endif
+  .endif
+  xor eax, eax
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -1106,12 +1664,12 @@ Method ChartWnd.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
 
   ;Create a ToolTip window to display popup information when hoovering over an InfoArea
   invoke CreateWindowEx, WS_EX_TOPMOST, $OfsCStr("tooltips_class32"), NULL, \
-                         WS_POPUP or TTS_NOPREFIX or TTS_ALWAYSTIP, \
+                         WS_POPUP or TTS_NOPREFIX or TTS_ALWAYSTIP or TTS_BALLOON, \
                          CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, \
                          [xsi].hWnd, 0, hInstance, NULL
   mov [xsi].hToolTip, xax
   invoke SendMessage, [xsi].hToolTip, TTM_ACTIVATE, FALSE, 0
-  BitClr [xsi].dFlags, CHT_FLAG_TOOLTIP_ACTIVE
+  BitClr [xsi].dFlags, CHT_WND_TOOLTIP_ACTIVE
   invoke SetWindowPos, [xsi].hToolTip, HWND_TOPMOST, 0, 0, 0, 0, \
                        SWP_NOMOVE or SWP_NOSIZE or SWP_NOACTIVATE
   invoke SendMessage, [xsi].hToolTip, TTM_SETMAXTIPWIDTH, 0, 500    ;Set max width to
@@ -1184,7 +1742,7 @@ Method ChartWnd.OnGesture, uses xsi, wParam:WPARAM, lParam:LPARAM
     ;Now interpret the gesture
     .if GestInfo.dwID == GID_ZOOM
 
-      .ifBitSet [xsi].dFlags, CHT_FLAG_ZOOMABLE
+      .ifBitSet [xsi].dFlags, CHT_WND_ZOOMABLE
         .ifBitSet GestInfo.dwFlags, GF_BEGIN
           mov eax, DWORD ptr GestInfo.ullArguments
           mov [xsi].dGestureZoomFirst, eax
@@ -1216,6 +1774,7 @@ Method ChartWnd.OnGesture, uses xsi, wParam:WPARAM, lParam:LPARAM
           .else
             .if ecx != [xsi].dGestureZoomLast             ;Take an action if the value has changed
               BitClr [xsi].ScaleY1.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
+              BitClr [xsi].ScaleY2.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
 
               mov [xsi].dGestureZoomLast, ecx             ;Remember the last value
               mov eax, ecx
@@ -1232,6 +1791,17 @@ Method ChartWnd.OnGesture, uses xsi, wParam:WPARAM, lParam:LPARAM
               fld [xsi].ScaleY1.fScaleMin
               fadd st(0), st(1)
               fstp [xsi].ScaleY1.fSetupMin
+              fUnload 1                                   ;Unload FPU stack
+
+              fld [xsi].ScaleY2.fScaleFactor
+              fidivr SDWORD ptr sdValue
+
+              fld [xsi].ScaleY2.fScaleMax
+              fsub st(0), st(1)
+              fstp [xsi].ScaleY2.fSetupMax
+              fld [xsi].ScaleY2.fScaleMin
+              fadd st(0), st(1)
+              fstp [xsi].ScaleY2.fSetupMin
               fUnload 1                                   ;Unload FPU stack
             .endif
           .endif
@@ -1331,143 +1901,6 @@ Method ChartWnd.OnGesture, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartWnd.OnLButtonDblClk
-; Purpose:    Event procedure for WM_LBUTTONDBLCLK message.
-; Arguments:  Arg1: First message parameter.
-;             Arg2: Second message parameter.
-; Return:     eax = Zero if handled.
-
-Method ChartWnd.OnLButtonDblClk, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
-  local DblClkPnt:POINT, PopupPnt:POINT
-
-  SetObject xsi
-  PntS2Pnt DblClkPnt, lParam
-  mrm PopupPnt.x, DblClkPnt.x, ebx 
-  mrm PopupPnt.y, DblClkPnt.y, edi 
-  mov eax, -1
-
-  .ifBitSet [xsi].dFlags, CHT_FLAG_CTRL_DBLCLK
-    .ifBitSet wParam, MK_CONTROL
-      ;Check if X scale was double clicked
-      .if (SDWORD ptr ebx >= [xsi].PlotRect.left) && (SDWORD ptr ebx <= [xsi].ViewRect.right) && \
-          (SDWORD ptr edi >= [xsi].PlotRect.bottom) && (SDWORD ptr edi <= [xsi].ViewRect.bottom)
-        BitSet [xsi].ScaleX.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
-        OCall xsi.Refresh
-      ;Check if Y scale was double clicked
-      .elseif (SDWORD ptr ebx >= [xsi].ViewRect.left) && (SDWORD ptr ebx <= [xsi].PlotRect.left) && \
-              (SDWORD ptr edi >= [xsi].ViewRect.top) && (SDWORD ptr edi <= [xsi].PlotRect.bottom)
-        BitSet [xsi].ScaleY1.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
-        OCall xsi.Refresh
-      .else
-        BitSet [xsi].ScaleX.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
-        BitSet [xsi].ScaleY1.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
-        OCall xsi.Refresh
-      .endif
-      xor eax, eax
-      ExitMethod
-    .endif
-  .endif
-
-  ;Get doubleclick client coordinates
-  add PopupPnt.x, 10                                   ;Place the Dialog 10 px at the right
-  add PopupPnt.y, 20                                   ;Place the Dialog 20 px below
-
-  invoke ClientToScreen, [xsi].hWnd, addr PopupPnt     ;Transform to screen coordiantes
-  ;Check if X scale was double clicked
-  .if (SDWORD ptr ebx >= [xsi].PlotRect.left) && (SDWORD ptr ebx <= [xsi].ViewRect.right) && \
-      (SDWORD ptr edi >= [xsi].PlotRect.bottom) && (SDWORD ptr edi <= [xsi].ViewRect.bottom)
-    .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_TAB
-      OCall xsi.ShowSetupDlg, PopupPnt.x, PopupPnt.y, CHT_ID_SCALEX
-    .endif
-  ;Check if Y1 scale was double clicked
-  .elseif (SDWORD ptr ebx >= [xsi].ViewRect.left) && (SDWORD ptr ebx <= [xsi].PlotRect.left) && \
-          (SDWORD ptr edi >= [xsi].ViewRect.top) && (SDWORD ptr edi <= [xsi].PlotRect.bottom)
-    .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_SHOW_TAB
-      OCall xsi.ShowSetupDlg, PopupPnt.x, PopupPnt.y, CHT_ID_SCALEY1
-    .endif
-  .else
-    ;Check if a series was clicked
-    xor ebx, ebx
-    .while ebx != [xsi].InfoAreas.dCount
-      mov xdi, $OCall([xsi].InfoAreas::DataCollection.ItemAt, ebx)
-      invoke PtInRect, addr [xdi].InfoArea.Area, DblClkPnt
-      .if eax != FALSE
-        mov xdx, [xdi].InfoArea.pSeries
-        .ifBitSet [xdx].$Obj(ChartSeries).dFlags, CHT_SERIES_SHOW_TAB
-          OCall [xsi].Data::Collection.IndexOf, xdx 
-          OCall xsi.ShowSetupDlg, PopupPnt.x, PopupPnt.y, eax
-          .break
-        .endif
-      .endif
-      inc ebx
-    .endw
-    .if ebx == [xsi].InfoAreas.dCount
-      .ifBitSet [xsi].dFlags, CHT_FLAG_SHOW_GENERAL_TAB
-        ;Launch the color setup dialog
-        OCall xsi.ShowSetupDlg, PopupPnt.x, PopupPnt.y, CHT_ID_PLOT
-      .endif
-    .endif
-  .endif
-  xor eax, eax
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartWnd.OnLButtonDown
-; Purpose:    Event procedure for WM_LBUTTONDOWN message.
-; Arguments:  Arg1: First message parameter.
-;             Arg2: Second message parameter.
-; Return:     eax = Zero if handled.
-
-Method ChartWnd.OnLButtonDown, uses xsi, wParam:WPARAM, lParam:LPARAM
-  ;DbgText "ChartWnd.OnLButtonDown"
-  SetObject xsi
-  PntS2Regs lParam
-  mov [xsi].LastCursorPos.x, eax
-  mov [xsi].LastCursorPos.y, ecx
-
-  ;Check if X scale was clicked
-  .if (SDWORD ptr eax >= [xsi].PlotRect.left) && (SDWORD ptr eax <= [xsi].ViewRect.right) && \
-    (SDWORD ptr ecx >= [xsi].PlotRect.bottom) && (SDWORD ptr ecx <= [xsi].ViewRect.bottom)
-    mov [xsi].sbMovingOn, CHT_ID_SCALEX
-    invoke SetCapture, [xsi].hWnd
-  ;Check if Y scale was clicked
-  .elseif (SDWORD ptr eax >= [xsi].ViewRect.left) && (SDWORD ptr eax <= [xsi].PlotRect.left) && \
-    (SDWORD ptr ecx >= [xsi].ViewRect.top) && (SDWORD ptr ecx <= [xsi].PlotRect.bottom)
-    mov [xsi].sbMovingOn, CHT_ID_SCALEY1
-    invoke SetCapture, [xsi].hWnd
-  ;Check if plot area was clicked
-  .elseif (SDWORD ptr eax >= [xsi].PlotRect.left) && (SDWORD ptr eax <= [xsi].PlotRect.right) && \
-    (SDWORD ptr ecx >= [xsi].PlotRect.top) && (SDWORD ptr ecx <= [xsi].PlotRect.bottom)
-    mov [xsi].sbMovingOn, CHT_ID_PLOT
-    invoke SetCapture, [xsi].hWnd
-  ;Check if lower left area was clicked => behave like plot area
-  .elseif (SDWORD ptr eax >= [xsi].ViewRect.left) && (SDWORD ptr eax <= [xsi].PlotRect.left) && \
-    (SDWORD ptr ecx >= [xsi].PlotRect.bottom) && (SDWORD ptr ecx <= [xsi].ViewRect.bottom)
-    mov [xsi].sbMovingOn, CHT_ID_PLOT
-    invoke SetCapture, [xsi].hWnd
-  .else
-    ;It was clicked somewhere else
-    mov [xsi].sbMovingOn, CHT_ID_NONE
-  .endif
-  xor eax, eax
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartWnd.OnLButtonUp
-; Purpose:    Event procedure for WM_LBUTTONUP message.
-; Arguments:  Arg1: First message parameter.
-;             Arg2: Second message parameter.
-; Return:     eax = Zero if handled.
-
-Method ChartWnd.OnLButtonUp,, wParam:WPARAM, lParam:LPARAM
-  ;DbgText "ChartWnd.OnLButtonUp"
-  SetObject xcx
-  mov [xcx].sbMovingOn, CHT_ID_NONE
-  invoke ReleaseCapture
-  xor eax, eax
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     ChartWnd.OnMouseMove
 ; Purpose:    Event procedure for WM_MOUSEMOVE message.
 ; Arguments:  Arg1: First message parameter.
@@ -1487,22 +1920,22 @@ Method ChartWnd.OnMouseMove, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   PntS2Pnt MouseClientPos, lParam
   mov eax, MouseClientPos.x
   mov ecx, MouseClientPos.y
-  ExitMethod .if eax == [xsi].LastCursorPos.x && ecx == [xsi].LastCursorPos.y  
+  ExitMethod .if eax == [xsi].LastCursorPos.x && ecx == [xsi].LastCursorPos.y
 
   mov dDoPan, FALSE
   mov dDoZoom, FALSE
   .ifBitClr wParam, MK_CONTROL
-    .ifBitSet [xsi].dFlags, CHT_FLAG_PANABLE
+    .ifBitSet [xsi].dFlags, CHT_WND_PANABLE
       mov dDoPan, TRUE
     .endif
   .else
-    .ifBitSet [xsi].dFlags, CHT_FLAG_ZOOMABLE
+    .ifBitSet [xsi].dFlags, CHT_WND_ZOOMABLE
       mov dDoZoom, TRUE
     .endif
   .endif
 
   .if dDoPan != FALSE || dDoZoom != FALSE
-    .if [xsi].sbMovingOn == CHT_ID_SCALEX
+    .if [xsi].sbButtonDownOn == CHT_ID_SCALEX
       BitClr [xsi].ScaleX.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
 
       mov xax, lParam
@@ -1527,7 +1960,7 @@ Method ChartWnd.OnMouseMove, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
       fUnload 1                                           ;Unload FPU stack
       OCall xsi.Refresh
 
-    .elseif [xsi].sbMovingOn == CHT_ID_SCALEY1
+    .elseif [xsi].sbButtonDownOn == CHT_ID_SCALEY1
       BitClr [xsi].ScaleY1.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
 
       mov xax, lParam
@@ -1553,9 +1986,34 @@ Method ChartWnd.OnMouseMove, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
       fUnload 1                                         ;Unload FPU stack
       OCall xsi.Refresh
 
-    .elseif [xsi].sbMovingOn == CHT_ID_PLOT
-      BitClr [xsi].ScaleX.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
+    .elseif [xsi].sbButtonDownOn == CHT_ID_SCALEY2
+      BitClr [xsi].ScaleY2.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
 
+      mov xax, lParam
+      shr eax, 16
+      cwde
+      mov ecx, [xsi].LastCursorPos.y
+      mov [xsi].LastCursorPos.y, eax
+      sub ecx, eax
+      mov sdValue, ecx
+
+      fld [xsi].ScaleY2.fScaleFactor
+      fidivr SDWORD ptr sdValue
+      fld [xsi].ScaleY2.fScaleMax
+      fsub st(0), st(1)
+      fstp [xsi].ScaleY2.fSetupMax
+      fld [xsi].ScaleY2.fScaleMin
+      .if dDoZoom != FALSE
+        fadd st(0), st(1)
+      .else
+        fsub st(0), st(1)
+      .endif
+      fstp [xsi].ScaleY2.fSetupMin
+      fUnload 1                                         ;Unload FPU stack
+      OCall xsi.Refresh
+
+    .elseif [xsi].sbButtonDownOn == CHT_ID_PLOT
+      BitClr [xsi].ScaleX.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
       mov xax, lParam
       cwde
       mov ecx, [xsi].LastCursorPos.x
@@ -1577,8 +2035,6 @@ Method ChartWnd.OnMouseMove, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
       fstp [xsi].ScaleX.fSetupMin
       fUnload 1                                         ;Unload FPU stack
 
-      BitClr [xsi].ScaleY1.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
-
       mov xax, lParam
       shr eax, 16
       cwde
@@ -1586,69 +2042,99 @@ Method ChartWnd.OnMouseMove, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
       mov [xsi].LastCursorPos.y, eax
       sub ecx, eax
       mov sdValue, ecx
-
-      fld [xsi].ScaleY1.fScaleFactor
-      fidivr SDWORD ptr sdValue
-      fld [xsi].ScaleY1.fScaleMax
-      fsub st(0), st(1)
-      fstp [xsi].ScaleY1.fSetupMax
-      fld [xsi].ScaleY1.fScaleMin
-      .if dDoZoom != FALSE
-        fadd st(0), st(1)
-      .else
+      .ifBitSet wParam, MK_LBUTTON
+        BitClr [xsi].ScaleY1.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
+        fld [xsi].ScaleY1.fScaleFactor
+        fidivr SDWORD ptr sdValue
+        fld [xsi].ScaleY1.fScaleMax
         fsub st(0), st(1)
+        fstp [xsi].ScaleY1.fSetupMax
+        fld [xsi].ScaleY1.fScaleMin
+        .if dDoZoom != FALSE
+          fadd st(0), st(1)
+        .else
+          fsub st(0), st(1)
+        .endif
+        fstp [xsi].ScaleY1.fSetupMin
+        fUnload 1                                       ;Unload FPU stack
       .endif
-      fstp [xsi].ScaleY1.fSetupMin
-      fUnload 1                                         ;Unload FPU stack
+
+      .ifBitSet wParam, MK_RBUTTON
+        BitClr [xsi].ScaleY2.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
+        fld [xsi].ScaleY2.fScaleFactor
+        fidivr SDWORD ptr sdValue
+        fld [xsi].ScaleY2.fScaleMax
+        fsub st(0), st(1)
+        fstp [xsi].ScaleY2.fSetupMax
+        fld [xsi].ScaleY2.fScaleMin
+        .if dDoZoom != FALSE
+          fadd st(0), st(1)
+        .else
+          fsub st(0), st(1)
+        .endif
+        fstp [xsi].ScaleY2.fSetupMin
+        fUnload 1                                       ;Unload FPU stack
+      .endif
+
       OCall xsi.Refresh
     .endif
   .endif
 
   mov xCursor, IDC_ARROW                                ;Set default cursor
-  .ifBitSet [xsi].dFlags, CHT_FLAG_DATA_TOOLTIPS_SHOW
-    .if [xsi].sbMovingOn == CHT_ID_NONE                 ;Nothing clicked on
+  mov ebx, -1
+  .ifBitSet [xsi].dFlags, CHT_WND_DATA_TOOLTIPS_SHOW
+    .if [xsi].sbButtonDownOn == CHT_ID_NONE             ;Nothing clicked on
       invoke PtInRect, addr [xsi].PlotRect, MouseClientPos
       .if eax != FALSE
-        xor ebx, ebx
-        .while ebx != [xsi].InfoAreas.dCount
+        mov ebx, [xsi].InfoAreas.dCount                 ;Search in reverse order than the series were drawn
+        dec ebx
+        .while !SIGN?
           mov xdi, $OCall([xsi].InfoAreas::DataCollection.ItemAt, ebx)
-          invoke PtInRect, addr [xdi].InfoArea.Area, MouseClientPos
-          .if eax != FALSE
-            OCall xsi.GetDataTipText, addr cBuffer, [xdi].InfoArea.pSeries, [xdi].InfoArea.dDataIndex
+          invoke PtInRect, addr [xdi].InfoArea.Rect, MouseClientPos
+          .break .if eax != FALSE
+          dec ebx
+        .endw
+
+        .ifBitClr [xsi].dFlags, CHT_WND_TOOLTIP_ACTIVE
+          .if ebx != -1
+            OCall [xdi].InfoArea.pSeries::ChartSeries.GetToolTipText, addr cBuffer, [xdi].InfoArea.dDataIndex
             .if CHR ptr cBuffer[0] != 0
-              .ifBitClr [xsi].dFlags, CHT_FLAG_TOOLTIP_ACTIVE
-                mov ToolInfo.cbSize, sizeof(ToolInfo)
-                lea xax, cBuffer
-                m2m ToolInfo.lpszText, xax
-                mrm ToolInfo.hwnd, [xsi].hWnd, xcx
-                mov ToolInfo.uId, xcx
-                invoke SendMessage, [xsi].hToolTip, TTM_UPDATETIPTEXT, 0, addr ToolInfo
-                invoke SendMessage, [xsi].hToolTip, TTM_ACTIVATE, TRUE, 0
-                BitSet [xsi].dFlags, CHT_FLAG_TOOLTIP_ACTIVE
-              .endif
-              .ifBitClr [xsi].dFlags, CHT_FLAG_TOOLTIP_SHOW
-                mov xCursor, IDC_HELP
-              .endif
+              m2m [xsi].pPrvInfoAreaSeries, [xdi].InfoArea.pSeries, xax
+              mov ToolInfo.cbSize, sizeof(ToolInfo)
+              lea xax, cBuffer
+              m2m ToolInfo.lpszText, xax
+              mrm ToolInfo.hwnd, [xsi].hWnd, xcx
+              mov ToolInfo.uId, xcx
+              invoke SendMessage, [xsi].hToolTip, TTM_ACTIVATE, TRUE, 0
+              invoke SendMessage, [xsi].hToolTip, TTM_UPDATETIPTEXT, 0, addr ToolInfo
+              BitSet [xsi].dFlags, CHT_WND_TOOLTIP_ACTIVE
             .endif
             jmp @F
           .endif
-          inc ebx
-        .endw
-
-        .if ebx == [xsi].InfoAreas.dCount               ;Nothing found
-          .ifBitSet [xsi].dFlags, CHT_FLAG_TOOLTIP_ACTIVE
+          invoke SendMessage, [xsi].hToolTip, TTM_ACTIVATE, FALSE, 0
+          BitClr [xsi].dFlags, CHT_WND_TOOLTIP_ACTIVE
+          m2z [xsi].pPrvInfoAreaSeries
+        .else
+          mov xax, [xsi].pPrvInfoAreaSeries
+          .if xax != [xdi].InfoArea.pSeries || ebx == -1
             invoke SendMessage, [xsi].hToolTip, TTM_ACTIVATE, FALSE, 0
-            BitClr [xsi].dFlags, CHT_FLAG_TOOLTIP_ACTIVE
+            BitClr [xsi].dFlags, CHT_WND_TOOLTIP_ACTIVE
+            m2z [xsi].pPrvInfoAreaSeries
           .endif
         .endif
       .endif
     .endif
   .endif
-  .if [xsi].sbMovingOn == CHT_ID_SCALEX
+
+  .if ebx != -1
+    .ifBitClr [xsi].dFlags, CHT_WND_TOOLTIP_SHOW
+      mov xCursor, IDC_HELP
+    .endif
+  .elseif [xsi].sbButtonDownOn == CHT_ID_SCALEX
     mov xCursor, IDC_SIZEWE                             ;Moving horz direction
-  .elseif [xsi].sbMovingOn == CHT_ID_SCALEY1 || [xsi].sbMovingOn == CHT_ID_SCALEY2
+  .elseif [xsi].sbButtonDownOn == CHT_ID_SCALEY1 || [xsi].sbButtonDownOn == CHT_ID_SCALEY2
     mov xCursor, IDC_SIZENS                             ;Moving vert direction
-  .elseif [xsi].sbMovingOn == CHT_ID_PLOT
+  .elseif [xsi].sbButtonDownOn == CHT_ID_PLOT
     mov xCursor, IDC_SIZEALL                            ;Moving all directions
   .endif
 @@:
@@ -1672,11 +2158,11 @@ Method ChartWnd.OnMouseWheel, uses xsi, wParam:WPARAM, lParam:LPARAM
   mov dDoPan, FALSE
   mov dDoZoom, FALSE
   .ifBitClr wParam, MK_CONTROL
-    .ifBitSet [xsi].dFlags, CHT_FLAG_PANABLE
+    .ifBitSet [xsi].dFlags, CHT_WND_PANABLE
       mov dDoPan, TRUE
     .endif
   .else
-    .ifBitSet [xsi].dFlags, CHT_FLAG_ZOOMABLE
+    .ifBitSet [xsi].dFlags, CHT_WND_ZOOMABLE
       mov dDoZoom, TRUE
     .endif
   .endif
@@ -1705,12 +2191,12 @@ Method ChartWnd.OnMouseWheel, uses xsi, wParam:WPARAM, lParam:LPARAM
       fUnload 1                                           ;Unload FPU stack
     .else
       BitClr [xsi].ScaleY1.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
+      BitClr [xsi].ScaleY2.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
       sar eax, 16 + 3
       mov sdValue, eax
 
       fld [xsi].ScaleY1.fScaleFactor
       fidivr SDWORD ptr sdValue
-
       fld [xsi].ScaleY1.fScaleMax
       fsub st(0), st(1)
       fstp [xsi].ScaleY1.fSetupMax
@@ -1721,6 +2207,20 @@ Method ChartWnd.OnMouseWheel, uses xsi, wParam:WPARAM, lParam:LPARAM
         fsub st(0), st(1)
       .endif
       fstp [xsi].ScaleY1.fSetupMin
+      fUnload 1                                           ;Unload FPU stack
+
+      fld [xsi].ScaleY2.fScaleFactor
+      fidivr SDWORD ptr sdValue
+      fld [xsi].ScaleY2.fScaleMax
+      fsub st(0), st(1)
+      fstp [xsi].ScaleY2.fSetupMax
+      fld [xsi].ScaleY2.fScaleMin
+      .if dDoZoom != FALSE
+        fadd st(0), st(1)
+      .else
+        fsub st(0), st(1)
+      .endif
+      fstp [xsi].ScaleY2.fSetupMin
       fUnload 1                                           ;Unload FPU stack
     .endif
     OCall xsi.Refresh
@@ -1735,20 +2235,20 @@ MethodEnd
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero.
 
-Method ChartWnd.OnNotify,, wParam:WPARAM, lParam:LPARAM
+Method ChartWnd.OnNotify, uses xsi, wParam:WPARAM, lParam:LPARAM
 ;  DbgText "ChartWnd.OnNotify"
-  SetObject xcx
+  SetObject xsi
   mov xax, lParam
-  mov xdx, [xcx].hToolTip
+  mov xdx, [xsi].hToolTip
   .if [xax].NMHDR.hwndFrom == xdx
     .if [xax].NMHDR.code == TTN_SHOW
-      BitSet [xcx].dFlags, CHT_FLAG_TOOLTIP_SHOW
+      BitSet [xsi].dFlags, CHT_WND_TOOLTIP_SHOW
     .elseif [xax].NMHDR.code == TTN_POP
-      BitClr [xcx].dFlags, CHT_FLAG_TOOLTIP_SHOW
+      BitClr [xsi].dFlags, CHT_WND_TOOLTIP_SHOW
     .endif
     xor eax, eax
   .else
-    invoke GetParent, [xcx].hWnd
+    invoke GetParent, [xsi].hWnd
     invoke SendMessage, xax, WM_NOTIFY, wParam, lParam  ;Forward the msg to the parent wnd
   .endif
 MethodEnd
@@ -1789,6 +2289,131 @@ Method ChartWnd.Refresh, uses xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      GetScaleMinMax
+; Purpose:    Helper for SetExtremsScaleXXX methods to get min and max scale values.
+; Arguments:  Index 0 for X, 1 for Y.
+; Return:     Nothing.
+
+GetScaleMinMax macro Index, MinIndex, MaxIndex
+  mov xcx, pSeries
+  mov eax, [xcx].$Obj(ChartSeries).&MaxIndex
+  .if eax != -1
+    inc edi                                           ;Set flag
+    OCall pSeries::ChartSeries.ItemAt, Index, eax
+    fld CHT_FLOAT ptr [xax]                           ;Xmax| Min | Max
+    fcomi st(0), st(2)                                ;Compare with maximum
+    .if !CARRY?                                       ;st(0) > st(1)
+      fst st(2)                                       ;Xmax| Min |Xmax
+    .endif
+    fUnload 1                                         ; Min | Max
+  .endif
+    
+  mov xcx, pSeries
+  mov eax, [xcx].$Obj(ChartSeries).&MinIndex
+  .if eax != -1
+    inc edi                                           ;Set flag
+    OCall pSeries::ChartSeries.ItemAt, Index, eax
+    fld CHT_FLOAT ptr [xax]                           ;Xmin| Min | Max
+    fcomi st(0), st(1)                                ;Compare with minimum
+    .if CARRY?                                        ;st(0) < st(1)
+      fst st(1)                                       ;Xmin|Xmin| Max
+    .endif
+    fUnload 1                                         ; Min | Max
+  .endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.SetExtremsScaleX
+; Purpose:    Set scale X min and max data values.
+; Arguments:  None.
+; Return:     Nothing.
+
+Method ChartWnd.SetExtremsScaleX, uses xbx xdi xsi
+  local pSeries:$ObjPtr(ChartSeries)
+
+  SetObject xsi
+  fld R8_MIN                                            ;~ -1.8 × 10^308       Min
+  fld R8_MAX                                            ;~ +1.8 × 10^308       Min | Max
+
+  xor ebx, ebx
+  xor edi, edi                                          ;Reset flag
+  .while ebx < [xsi].Data.dCount
+    mov pSeries, $OCall([xsi].Data::Collection.ItemAt, ebx)
+    GetScaleMinMax 0, dDataMinXIndex, dDataMaxXIndex
+    inc ebx
+  .endw
+  
+  .if edi != 0
+    fstp CHT_FLOAT ptr [xsi].ScaleX.fDataMin
+    fstp CHT_FLOAT ptr [xsi].ScaleX.fDataMax
+  .else
+    fUnload 2
+  .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.SetExtremsScaleY1
+; Purpose:    Set scale Y1 min and max data values.
+; Arguments:  None.
+; Return:     Nothing.
+
+Method ChartWnd.SetExtremsScaleY1, uses xbx xdi xsi
+  local pSeries:$ObjPtr(ChartSeries)
+
+  SetObject xsi
+  fld R8_MIN                                            ;~ -1.8 × 10^308       Min
+  fld R8_MAX                                            ;~ +1.8 × 10^308       Min | Max
+
+  xor ebx, ebx
+  xor edi, edi                                          ;Reset flag
+  .while ebx < [xsi].Data.dCount
+    mov pSeries, $OCall([xsi].Data::Collection.ItemAt, ebx)
+    .ifBitClr [xax].$Obj(ChartSeries).dFlags, CHT_SERIES_USE_Y2
+      GetScaleMinMax 1, dDataMinYIndex, dDataMaxYIndex
+    .endif
+    inc ebx
+  .endw
+  
+  .if edi != 0
+    fstp CHT_FLOAT ptr [xsi].ScaleY1.fDataMin
+    fstp CHT_FLOAT ptr [xsi].ScaleY1.fDataMax
+  .else
+    fUnload 2
+  .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.SetExtremsScaleY2
+; Purpose:    Set scale Y2 min and max data values.
+; Arguments:  None.
+; Return:     Nothing.
+
+Method ChartWnd.SetExtremsScaleY2, uses xbx xdi xsi
+  local pSeries:$ObjPtr(ChartSeries)
+
+  SetObject xsi
+  fld R8_MIN                                            ;~ -1.8 × 10^308       Min
+  fld R8_MAX                                            ;~ +1.8 × 10^308       Min | Max
+
+  xor ebx, ebx
+  xor edi, edi                                          ;Reset flag
+  .while ebx < [xsi].Data.dCount
+    mov pSeries, $OCall([xsi].Data::Collection.ItemAt, ebx)
+    .ifBitSet [xax].$Obj(ChartSeries).dFlags, CHT_SERIES_USE_Y2
+      GetScaleMinMax 1, dDataMinYIndex, dDataMaxYIndex
+    .endif
+    inc ebx
+  .endw
+  
+  .if edi != 0
+    fstp CHT_FLOAT ptr [xsi].ScaleY2.fDataMin
+    fstp CHT_FLOAT ptr [xsi].ScaleY2.fDataMax
+  .else
+    fUnload 2
+  .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     ChartWnd.Show
 ; Purpose:    Draw the ChartWnd object.
 ; Arguments:  Arg1: DC handle.
@@ -1798,17 +2423,60 @@ MethodEnd
 Method ChartWnd.Show, uses xbx xdi xsi, hDC:HDC, pRect:PRECT
   local hPrevBmp:HBITMAP
 
-  ;DbgText "ChartWnd.Show"
+;  DbgText "ChartWnd.Show"
   SetObject xsi
   ;Draw on a memory DC to avoid flicker
   mov xdi, $invoke(CreateCompatibleDC, hDC)             ;Create Mem DC
   mov xbx, pRect
   invoke CreateCompatibleBitmap, hDC, [xbx].RECT.right, [xbx].RECT.bottom
   mov hPrevBmp, $invoke(SelectObject, xdi, xax)
+  
+  ;Check if we need an Y1 scale
+  .ifBitSet [xsi].dFlags, CHT_WND_FORCE_Y1
+    BitSet [xsi].dFlags, CHT_WND_SHOW_Y1
+  .else
+    BitClr [xsi].dFlags, CHT_WND_SHOW_Y1
+    xor ebx, ebx
+    .while ebx < [xsi].Data.dCount
+      OCall [xsi].Data::Collection.ItemAt, ebx
+      .ifBitClr [xax].$Obj(ChartSeries).dFlags, CHT_SERIES_USE_Y2
+        BitSet [xsi].dFlags, CHT_WND_SHOW_Y1
+        .break
+      .endif
+      inc ebx
+    .endw
+  .endif
 
+  ;Check if we need an Y2 scale
+  .ifBitSet [xsi].dFlags, CHT_WND_FORCE_Y2
+    BitSet [xsi].dFlags, CHT_WND_SHOW_Y2
+  .else
+    BitClr [xsi].dFlags, CHT_WND_SHOW_Y2
+    xor ebx, ebx
+    .while ebx < [xsi].Data.dCount
+      OCall [xsi].Data::Collection.ItemAt, ebx
+      .ifBitSet [xax].$Obj(ChartSeries).dFlags, CHT_SERIES_USE_Y2
+        BitSet [xsi].dFlags, CHT_WND_SHOW_Y2
+        .break
+      .endif
+      inc ebx
+    .endw
+  .endif
+  
   ;Draw frame, scales, etc.
-  OCall xsi.Calc, xdi, xbx
+  OCall xsi.SetExtremsScaleX
+  OCall xsi.SetExtremsScaleY1
+  OCall xsi.SetExtremsScaleY2
+  OCall xsi.Calc, xdi, pRect
+
   OCall xsi.DrawFrame, xdi
+  OCall xsi.DrawScaleX, xdi
+  .ifBitSet [xsi].dFlags, CHT_WND_SHOW_Y1
+    OCall xsi.DrawScaleY1, xdi
+  .endif
+  .ifBitSet [xsi].dFlags, CHT_WND_SHOW_Y2
+    OCall xsi.DrawScaleY2, xdi
+  .endif
 
   ;Draw all series
   OCall [xsi].InfoAreas::DataCollection.DisposeAll      ;Dispose all previous InfoAreas
@@ -1818,7 +2486,7 @@ Method ChartWnd.Show, uses xbx xdi xsi, hDC:HDC, pRect:PRECT
     xor ebx, ebx
     .while ebx != [xsi].Data.dCount
       OCall [xsi].Data::Collection.ItemAt, ebx
-      OCall xsi.DrawSeries, xdi, xax
+      OCall xax::ChartSeries.Draw, xdi                  ;Polymorphic call
       inc ebx
     .endw
   .endif
@@ -1863,6 +2531,7 @@ Method ChartWnd.Store, uses xsi, pStream:$ObjPtr(Stream)
   OCall pStream::Stream.BinWrite32, [xsi].dFlags
   OCall pStream::Stream.BinWrite, addr [xsi].ScaleX,   sizeof(CHT_SCALE_DATA)
   OCall pStream::Stream.BinWrite, addr [xsi].ScaleY1,  sizeof(CHT_SCALE_DATA)
+  OCall pStream::Stream.BinWrite, addr [xsi].ScaleY2,  sizeof(CHT_SCALE_DATA)
   OCall pStream::Stream.BinWrite, addr [xsi].Colors,   sizeof(CHT_COLOR_CONFIG)
   OCall pStream::Stream.BinWrite, addr [xsi].ViewRect, sizeof(RECT)
   OCall pStream::Stream.BinWrite, addr [xsi].Padding,  sizeof(RECT)
@@ -1870,10 +2539,82 @@ Method ChartWnd.Store, uses xsi, pStream:$ObjPtr(Stream)
   OCall pStream::Stream.BinWrite, addr [xsi].PlotRect, sizeof(RECT)
   OCall pStream::Stream.BinWrite, addr [xsi].TextMetricHorz,  sizeof(TEXTMETRIC)
   OCall pStream::Stream.BinWrite, addr [xsi].TextMetricVert,  sizeof(TEXTMETRIC)
-  OCall pStream::Stream.BinWrite8, [xsi].sbMovingOn
+  OCall pStream::Stream.BinWrite8, [xsi].sbButtonDownOn
   OCall pStream::Stream.BinWrite, addr [xsi].LastCursorPos,   sizeof(POINT)
   OCall pStream::Stream.BinWrite32, addr [xsi].dGestureZoomFirst
   OCall pStream::Stream.BinWrite32, addr [xsi].dGestureZoomLast
   OCall [xsi].Data::Collection.Store, pStream
 MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.Startup
+; Purpose:    Register the object with the OS.
+; Arguments:  None.
+; Return:     Nothing.
+
+Method ChartWnd.Startup
+  local WC:WNDCLASSEX
+
+  mov WC.cbSize, sizeof WNDCLASSEX
+  mov WC.style, CS_DBLCLKS or CS_HREDRAW or CS_VREDRAW
+  m2m WC.lpfnWndProc, $MethodAddr(ChartWnd.WndProc), xdx
+  m2z WC.cbClsExtra
+  m2z WC.cbWndExtra
+  m2m WC.hInstance, hInstance, xdx
+  m2z WC.hbrBackground
+  m2z WC.lpszMenuName
+  c2m WC.lpszClassName, offset szChart, xdx
+  mov WC.hIcon, 0
+  mov WC.hCursor, 0
+  m2z WC.hIconSm
+
+  invoke RegisterClassEx, addr WC
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     ChartWnd.WindowProc
+; Purpose:    Dispatching of window messages.
+; Arguments:  Arg1: Message identifier.
+;             Arg2: First message parameter.
+;             Arg3: Second message parameter.
+; Return:     eax = This value is the result of the message processing and depends on the msg ID.
+;             Window HANDLE is passed in pSelf (hidden parameter).
+
+Method ChartWnd.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
+  ;DbgMessage uMsg,, "ChartWnd.WndProc"
+  .if uMsg == WM_NCCREATE
+    mov xax, lParam
+    .if [xax].CREATESTRUCT.lpCreateParams == NULL
+      ;If lpCreateParams is 0, then it is a resource call => Create new object instance
+      mov xsi, $New(ChartWnd)
+      invoke GetParent, pSelf
+      .if xax != 0
+        invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0 ;Get instance POINTER of the parent object
+      .endif
+      ACall xsi::ChartWnd.Init, xax, pSelf              ;Window.Init
+      BitSet [xsi].$Obj(ChartWnd).dFlags, CHT_WND_SELF_INST
+    .else
+      ;Code call
+      mov xsi, [xax].CREATESTRUCT.lpCreateParams
+      m2m [xsi].$Obj(ChartWnd).hWnd, pSelf, xax
+      BitClr [xsi].$Obj(ChartWnd).dFlags, CHT_WND_SELF_INST
+    .endif
+    invoke SetWindowLongPtr, pSelf, GWLP_USERDATA, xsi  ;Store the instance pointer
+    OCall xsi::ChartWnd.Dispatch, pSelf, uMsg, wParam, lParam
+  .else
+    invoke GetWindowLongPtr, pSelf, GWLP_USERDATA       ;if GWLP_USERDATA wasn't set,
+    .if xax == NULL                                     ;GetWindowLongPtr returns NULL
+      invoke DefWindowProc, pSelf, uMsg, wParam, lParam
+    .else
+      mov xsi, xax
+      OCall xsi::ChartWnd.Dispatch, pSelf, uMsg, wParam, lParam
+      .if uMsg == WM_NCDESTROY
+        .ifBitSet [xsi].$Obj(ChartWnd).dFlags, CHT_WND_SELF_INST
+          Destroy xsi
+        .endif
+      .endif
+    .endif
+  .endif
+MethodEnd
+
 

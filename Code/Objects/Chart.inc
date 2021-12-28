@@ -8,13 +8,15 @@
 ;                 The ChartWnd object has the ability to pan and zoom the plot area.
 ;                 It reacts in different ways according to the mouse position on different chart
 ;                 areas like the scales or plot.
-;                 The flags CHT_FLAG_ZOOMABLE and CHT_FLAG_PANABLE control these features.
+;                 The flags CHT_WND_ZOOMABLE and CHT_WND_PANABLE control these features.
 ;                 If activated, the following rules apply:
 ;                   - pressing the CTRL key, a zooming action is performed
 ;                   - pressing the SHIFT key, actions apply on the x axis, otherwise to the y axis
 ;                 Touchpad or touch display gestures are also supported.
 ;                 A double-click on the plot area shows up, if activated, the color setting dialog.
 ;                 A double-click on a scale shows up, if activated, the scale setup dialog.
+;                 The mouse left button acts on the Y1 scale, while the right buttom acts on the
+;                 Y2 scale.
 ;                 Holding down the CTRL key and double-clicking a scale will reset it to the
 ;                 auto max & min values.
 ; ==================================================================================================
@@ -42,6 +44,7 @@ PDEF_CHART typedef ptr DEF_CHART
 CHT_SERIES_SHOW_DEPICTION   equ   BIT00                 ;Bar, Line, etc.
 CHT_SERIES_SHOW_MARKER      equ   BIT01
 CHT_SERIES_SHOW_TAB         equ   BIT02                 ;Show series tab on the setup dialog
+CHT_SERIES_USE_Y2           equ   BIT03
 
 CHT_SERIES_DEFAULT_FLAGS equ CHT_SERIES_SHOW_DEPICTION or CHT_SERIES_SHOW_MARKER or CHT_SERIES_SHOW_TAB
 
@@ -60,26 +63,32 @@ CHT_SCALE_SHOW_AS_DATEDIFF  equ   BIT11
 CHT_SCALE_SHOW_AS_TIME      equ   BIT12                 ;Frac(VARINAT time)
 CHT_SCALE_SHOW_TAB          equ   BIT13                 ;Show scale tab on the setup dialog
 
-CHT_DEFAULT_SCALE_FLAGS = CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX or \
+CHT_SCALE_DEFAULT_FLAGS = CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX or \
                           CHT_SCALE_AUTO_MJR_DIV or CHT_SCALE_AUTO_MNR_DIV or \
                           CHT_SCALE_SHOW_MJR_GRID or CHT_SCALE_SHOW_MNR_GRID or \
                           CHT_SCALE_SHOW_MJR_DIV or CHT_SCALE_SHOW_MNR_DIV or \
                           CHT_SCALE_SHOW_LABEL or CHT_SCALE_SHOW_TITLE or \
                           CHT_SCALE_SHOW_TAB
 
-CHT_FLAG_SELF_INST          equ   BIT00                 ;Object was instanced by CreateWindowEx
-CHT_FLAG_PANABLE            equ   BIT01                 ;Plot is panable
-CHT_FLAG_ZOOMABLE           equ   BIT02                 ;Plot is zoomable
-CHT_FLAG_COLOR              equ   BIT03                 ;Color or B&W output
-CHT_FLAG_SHOW_GENERAL_TAB   equ   BIT04                 ;Show the general tab on the setup dialog
-CHT_FLAG_CTRL_DBLCLK        equ   BIT05                 ;Enable CTRL double click to center scale
-CHT_FLAG_DATA_TOOLTIPS_SHOW equ   BIT06                 ;Enable ToolTips showing data information
-CHT_FLAG_TOOLTIP_ACTIVE     equ   BIT07                 ;Helper, TooTip activation
-CHT_FLAG_TOOLTIP_SHOW       equ   BIT08                 ;Helper, ToolTip visibility
+;Note: CHT_WND_PANABLE & CHT_WND_ZOOMABLE may be splitted into X, Y1 & Y2 for finer control
+CHT_WND_PANABLE             equ   BIT00                 ;Plot is panable
+CHT_WND_ZOOMABLE            equ   BIT01                 ;Plot is zoomable
+CHT_WND_COLOR               equ   BIT02                 ;Color or B&W output
+CHT_WND_SHOW_GENERAL_TAB    equ   BIT03                 ;Show the general tab on the setup dialog
+CHT_WND_CTRL_DBLCLK         equ   BIT04                 ;Enable CTRL double click to center scale
+CHT_WND_DATA_TOOLTIPS_SHOW  equ   BIT05                 ;Enable ToolTips showing data information
+CHT_WND_FORCE_Y1            equ   BIT06                 ;Force display of Y1 scale
+CHT_WND_FORCE_Y2            equ   BIT07                 ;Force display of Y2 scale
+CHT_WND_SHOW_Y1             equ   BIT27                 ;Helper, if set it shows the Y1 scale
+CHT_WND_SHOW_Y2             equ   BIT28                 ;Helper, if set it shows the Y2 scale
+CHT_WND_TOOLTIP_ACTIVE      equ   BIT29                 ;Helper, TooTip activation
+CHT_WND_TOOLTIP_SHOW        equ   BIT30                 ;Helper, ToolTip visibility
+CHT_WND_SELF_INST           equ   BIT31                 ;Helper, object was instanced by CreateWindowEx
 
-CHT_DEFAULT_FLAGS = CHT_FLAG_PANABLE or CHT_FLAG_ZOOMABLE or CHT_FLAG_COLOR or \
-                    CHT_FLAG_SHOW_GENERAL_TAB or CHT_FLAG_CTRL_DBLCLK or \
-                    CHT_FLAG_DATA_TOOLTIPS_SHOW
+
+CHT_WND_DEFAULT_FLAGS = CHT_WND_PANABLE or CHT_WND_ZOOMABLE or CHT_WND_COLOR or \
+                        CHT_WND_SHOW_GENERAL_TAB or CHT_WND_CTRL_DBLCLK or \
+                        CHT_WND_DATA_TOOLTIPS_SHOW
 
 CHT_SCALE_STRINGS struc
   pDescription      PSTRING     NULL                    ;-> Description string
@@ -87,7 +96,7 @@ CHT_SCALE_STRINGS struc
 CHT_SCALE_STRINGS ends
 
 CHT_SCALE_BASIC_DATA struc
-  dFlags            DWORD       CHT_DEFAULT_SCALE_FLAGS ;Scale options
+  dFlags            DWORD       CHT_SCALE_DEFAULT_FLAGS ;Scale options
   fSetupMax         CHT_FLOAT   1.0                     ;Setup max value
   fSetupMin         CHT_FLOAT   0.0                     ;Setup min value
   fDataMax          CHT_FLOAT   1.0                     ;Data max value
@@ -116,7 +125,7 @@ CHT_SCALE_INTERNAL_DATA struc                           ;Do not use directly, in
   dDivMnrCount      DWORD       0                       ;Number of minor divs between major divs
   dTitleSep         DWORD       0                       ;Separation between title and labels
   dLabelSep         DWORD       0                       ;Separation between labels and divisions
-  pTitle            PSTRING     NULL                    ;Title string (local allocated)
+  pTitle            PSTRING     NULL                    ;Composed title string (local allocated)
   fScaleFactor      CHT_FLOAT   1.0                     ;Scale drawing factor
 CHT_SCALE_INTERNAL_DATA ends
 PCHT_SCALE_INTERNAL_DATA typedef ptr CHT_SCALE_INTERNAL_DATA
@@ -156,13 +165,21 @@ externdef $ObjTmpl(Application):$Obj(WinApp)
 
 Object ChartSeries, ChartSeriesID, Array
   RedefineMethod    Done                                            ;Release allocated resources
+  DynamicAbstract   Draw,               HDC
+  DynamicMethod     GetToolTipText,     PSTRING, DWORD
+  DynamicAbstract   GetSetupDialogTab,  HWND, $ObjPtr(MaskedImageList)
   RedefineMethod    Init,               POINTER, DWORD              ;-> Owner, Capacity
   RedefineMethod    Load,               $ObjPtr(Stream)             ;-> Stream
-  DynamicAbstract   Scan,               DWORD, DWORD                ;Scan the buffer from, count
+  DynamicMethod     Scan,               DWORD, DWORD                ;Scan the buffer from, count
   RedefineMethod    Store,              $ObjPtr(Stream)             ;-> Stream
 
   DefineVariable    dDataFrom,          DWORD,      0               ;First Data index
   DefineVariable    dDataCount,         DWORD,      0               ;Number of (x,y) points
+
+  DefineVariable    dDataMaxXIndex,     DWORD,      -1              ;Biggest data element index
+  DefineVariable    dDataMinXIndex,     DWORD,      -1              ;Smallest data element index
+  DefineVariable    dDataMaxYIndex,     DWORD,      -1              ;Biggest data element index
+  DefineVariable    dDataMinYIndex,     DWORD,      -1              ;Smallest data element index
 
   DefineVariable    dFlags,             DWORD,      CHT_SERIES_DEFAULT_FLAGS
   DefineVariable    pName,              PSTRING,    NULL            ;-> Series name
@@ -185,28 +202,36 @@ Object ChartWnd, ChartWndID, Window
   VirtualMethod     CalcScaleDivs,      PCHT_SCALE_DATA
   VirtualMethod     Dispatch,           HWND, DWORD, WPARAM, LPARAM
   RedefineMethod    Done
-  VirtualMethod     DrawFrame,          HDC                           ;hDC
-  VirtualAbstract   DrawSeries,         HDC, $ObjPtr(ChartSeries)     ;hDC, -> ChartSeries
-  DynamicMethod     GetDataTipText,     PSTRING, $ObjPtr(ChartSeries), DWORD
+  VirtualMethod     DrawFrame,          HDC
+  VirtualMethod     DrawScaleX,         HDC
+  VirtualMethod     DrawScaleY1,        HDC
+  VirtualMethod     DrawScaleY2,        HDC
+  RedefineMethod    Init,               POINTER, HWND, PDEF_CHART
   RedefineMethod    Load,               $ObjPtr(Stream), PDESER_INFO  ;-> Stream
   VirtualMethod     Refresh
+  VirtualMethod     SetExtremsScaleX
+  VirtualMethod     SetExtremsScaleY1
+  VirtualMethod     SetExtremsScaleY2
   VirtualMethod     Show,               HDC, PRECT
   VirtualMethod     ShowSetupDlg,       SDWORD, SDWORD, DWORD
   RedefineMethod    Store,              $ObjPtr(Stream)               ;-> Stream
+  StaticMethod      Startup
+  RedefineMethod    WndProc,            DWORD, WPARAM, LPARAM
 
+  VirtualEvent      OnButtonDblClk,     WM_LBUTTONDBLCLK, WM_RBUTTONDBLCLK
+  VirtualEvent      OnButtonDown,       WM_LBUTTONDOWN, WM_RBUTTONDOWN
+  VirtualEvent      OnButtonUp,         WM_LBUTTONUP, WM_RBUTTONUP
   VirtualEvent      OnCreate,           WM_CREATE
   VirtualEvent      OnGesture,          WM_GESTURE
   VirtualEvent      OnMouseMove,        WM_MOUSEMOVE
   VirtualEvent      OnMouseWheel,       WM_MOUSEWHEEL
-  VirtualEvent      OnLButtonDblClk,    WM_LBUTTONDBLCLK
-  VirtualEvent      OnLButtonDown,      WM_LBUTTONDOWN
-  VirtualEvent      OnLButtonUp,        WM_LBUTTONUP
   VirtualEvent      OnNotify,           WM_NOTIFY
   VirtualEvent      OnPaint,            WM_PAINT
 
-  DefineVariable    dFlags,             DWORD,            CHT_DEFAULT_FLAGS
+  DefineVariable    dFlags,             DWORD,            CHT_WND_DEFAULT_FLAGS
   DefineVariable    ScaleX,             CHT_SCALE_DATA,   {{},{CHT_ID_SCALEX}}
   DefineVariable    ScaleY1,            CHT_SCALE_DATA,   {{},{CHT_ID_SCALEY1}}
+  DefineVariable    ScaleY2,            CHT_SCALE_DATA,   {{},{CHT_ID_SCALEY2}}
   DefineVariable    Colors,             CHT_COLOR_CONFIG, {}
 
   DefineVariable    ViewRect,           RECT,             {}
@@ -217,11 +242,13 @@ Object ChartWnd, ChartWndID, Window
   DefineVariable    hFontVert,          HFONT,            0           ;Vertical font
   DefineVariable    TextMetricHorz,     TEXTMETRIC,       {}
   DefineVariable    TextMetricVert,     TEXTMETRIC,       {}
-  DefineVariable    sbMovingOn,         SBYTE,            CHT_ID_NONE ;Selected element
+  DefineVariable    sbButtonDownOn,     SBYTE,            CHT_ID_NONE ;Selected element
+  DefineVariable    sbPrvButtonDownOn,  SBYTE,            CHT_ID_NONE ;Selected element
   DefineVariable    LastCursorPos,      POINT,            {}
   DefineVariable    dGestureZoomFirst,  DWORD,            0
   DefineVariable    dGestureZoomLast,   DWORD,            0
   DefineVariable    hToolTip,           HWND,             0
+  DefineVariable    pPrvInfoAreaSeries, $ObjPtr(ChartSeries), NULL
 
   Embed   Data,       Collection                                      ;Collection of ChartSeries
   Embed   InfoAreas,  DataCollection                                  ;Datacollection of InfoAreaXX
@@ -268,6 +295,21 @@ Object ChartTabScale, , DialogModeless
 ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Object:     ChartTabSeries
+; Purpose:    Series Tab of ChartSetup.
+
+Object ChartTabSeries, , DialogModeless
+  RedefineMethod    Done
+  RedefineMethod    Init,               POINTER
+  VirtualEvent      OnCtlColorDlg,      WM_CTLCOLORDLG, WM_CTLCOLORSTATIC
+  VirtualMethod     Restore
+
+  DefineVariable    dIconIndex,         DWORD,      0
+  DefineVariable    pLocalName,         PSTRING,    NULL            ;-> Series name
+  DefineVariable    pLocalDescription,  PSTRING,    NULL            ;-> Series description
+ObjectEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Object:     ChartSetup
 ; Purpose:    Custom Setup dialog.
 
@@ -276,22 +318,24 @@ Object ChartSetup, , DialogModal
   RedefineMethod    CtlsSet
   RedefineMethod    Done
   RedefineMethod    Init,               POINTER, HWND, DWORD
-  VirtualAbstract   InitMoreTabs
   RedefineMethod    OnCommand,          WPARAM, LPARAM
   RedefineMethod    OnDestroy,          WPARAM, LPARAM
   RedefineMethod    OnInitDialog,       WPARAM, LPARAM
   VirtualMethod     Restore
 
-  DefineVariable    dTabID,             DWORD,  CHT_ID_NONE
+  DefineVariable    dSelectedTabID,     DWORD,  CHT_ID_NONE
   DefineVariable    dTabCount,          DWORD,  0
   DefineVariable    dSelTabIndex,       DWORD,  0
   DefineVariable    hSelTabWnd,         HWND,   0
 
+  Embed     IconImageList,    MaskedImageList
   Embed     TabControl,       TabCtrl
+
   Embed     TabGeneral,       ChartTabGeneral
   Embed     TabScaleX,        ChartTabScale
   Embed     TabScaleY1,       ChartTabScale
-  Embed     IconImageList,    MaskedImageList
+  Embed     TabScaleY2,       ChartTabScale
+  Embed     TabSeriesColl,    Collection
 ObjectEnd
 
 
@@ -300,16 +344,23 @@ ObjectEnd
 
 if IMPLEMENT
 
+.const
+String szChart, "OA_Chart"
+R8_MAX QWORD 07FEFFFFFFFFFFFFFh                         ;~ +1.8 × 10^308
+R8_MIN QWORD 0FFEFFFFFFFFFFFFFh                         ;~ -1.8 × 10^308
+
 InfoArea struct
-  Area        RECT    {}
-  dDataIndex  DWORD   ?
+  Rect        RECT    {}
   pSeries     $ObjPtr(ChartSeries) ?
+  dDataIndex  DWORD   ?
 InfoArea ends
 
+.code
 % include &ObjPath&ChartSeries.inc
 % include &ObjPath&ChartWnd.inc
 % include &ObjPath&ChartTabGeneral.inc
 % include &ObjPath&ChartTabScale.inc
+% include &ObjPath&ChartTabSeries.inc
 % include &ObjPath&ChartSetup.inc
 
 endif

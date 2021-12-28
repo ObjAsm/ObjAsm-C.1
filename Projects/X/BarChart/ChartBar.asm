@@ -41,7 +41,7 @@ MakeObjects Button, IconButton, ColorButton, Hyperlink
 MakeObjects MsgInterceptor, DialogModalIndirect, XMenu
 MakeObjects WinControl, Toolbar, Rebar, Statusbar, TabCtrl, TextView
 MakeObjects WinApp, MdiApp
-MakeObjects Array, Chart, ChartBar
+MakeObjects Array, Chart, ChartBar, ChartXY
 
 include ChartBar_Globals.inc
 include ChartBar_Main.inc

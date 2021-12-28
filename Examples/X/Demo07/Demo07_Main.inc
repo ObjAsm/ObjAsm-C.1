@@ -54,7 +54,7 @@ Object ChildWnd, , MdiChildWnd                          ;MDI child window.
   VirtualEvent      OnCreate,           WM_CREATE
   VirtualEvent      OnMouseWheel,       WM_MOUSEWHEEL
 
-  Embed     Chart,    ChartXYWnd
+  Embed     Chart,    ChartWnd
 ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -551,7 +551,7 @@ Method ChildWnd.Done, uses xbx xdi xsi
     invoke DrawMenuBar, [xbx].$Obj(Application).hWnd    ;Redraw the new menu bar
   .endif
 
-  OCall [xsi].Chart::ChartXYWnd.Done
+  OCall [xsi].Chart::ChartWnd.Done
   ACall xsi.Done
 MethodEnd
 
@@ -615,7 +615,9 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   mov ChartDef.dExStyle, 0
   invoke GetClientRect, [xsi].hWnd, addr ChartDef.rect
 
-  OCall [xsi].Chart::ChartXYWnd.Init, xsi, [xsi].hWnd, addr ChartDef
+  OCall [xsi].Chart::ChartWnd.Init, xsi, [xsi].hWnd, addr ChartDef
+  
+;  BitSet [xsi].Chart.dFlags, CHT_WND_SHOW_Y2
 
 ;  mov [xsi].Chart.Colors.PlotArea,    $RGB(255,255,255)
 ;  mov [xsi].Chart.Colors.PlotBorder,  $RGB(000,000,000)
@@ -642,9 +644,9 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   mov [xsi].Chart.ScaleX.pDescription, $invoke(StrNew, $OfsCStr("Time"))
   mov [xsi].Chart.ScaleX.pUnit, $invoke(StrNew, $OfsCStr("sec."))
 
-  ;Scale Y axis
-  s2s [xsi].Chart.ScaleY1.fSetupMax, $CFloat(5.0), xax, xcx
-  s2s [xsi].Chart.ScaleY1.fSetupMin, $CFloat(-5.0), xax, xcx
+  ;Scale Y1 axis
+  s2s [xsi].Chart.ScaleY1.fSetupMax, $CFloat(1.5), xax, xcx
+  s2s [xsi].Chart.ScaleY1.fSetupMin, $CFloat(-1.5), xax, xcx
   s2s [xsi].Chart.ScaleY1.fDataMax,  $CFloat(2.0), xax, xcx
   s2s [xsi].Chart.ScaleY1.fDataMin,  $CFloat(-2.0), xax, xcx
 
@@ -656,6 +658,23 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   mov [xsi].Chart.ScaleY1.pDescription, $invoke(StrNew, $OfsCStr("Signal"))
   mov [xsi].Chart.ScaleY1.pUnit, $invoke(StrNew, $OfsCStr("Volt"))
 
+  BitClr [xsi].Chart.ScaleY1.dFlags, CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX
+
+  ;Scale Y2 axis
+  s2s [xsi].Chart.ScaleY2.fSetupMax, $CFloat(6.0), xax, xcx
+  s2s [xsi].Chart.ScaleY2.fSetupMin, $CFloat(-6.0), xax, xcx
+  s2s [xsi].Chart.ScaleY2.fDataMax,  $CFloat(3.0), xax, xcx
+  s2s [xsi].Chart.ScaleY2.fDataMin,  $CFloat(-3.0), xax, xcx
+
+  mov [xsi].Chart.ScaleY2.dSetupMjrDiv, 2
+  mov [xsi].Chart.ScaleY2.dSetupMnrDiv, 1
+  mov [xsi].Chart.ScaleY2.dDataMjrDiv, 2
+  mov [xsi].Chart.ScaleY2.dDataMnrDiv, 1
+
+  mov [xsi].Chart.ScaleY2.pDescription, $invoke(StrNew, $OfsCStr("Signal 2"))
+  mov [xsi].Chart.ScaleY2.pUnit, $invoke(StrNew, $OfsCStr("Volt 2"))
+
+  BitClr [xsi].Chart.ScaleY2.dFlags, CHT_SCALE_SHOW_MJR_GRID or CHT_SCALE_SHOW_MNR_GRID
   ;Create Chart data
   mov xdi, $New(ChartXYSeries)
   OCall xdi::ChartXYSeries.Init, addr [xsi].Chart.Data, DATAPOINTS
@@ -698,7 +717,6 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   fUnload 3
 
   OCall xdi::ChartXYSeries.Scan, 0, DATAPOINTS
-  OCall [xsi].Chart.Data::Collection.Insert, xdi
 
   ;Create Chart data
   mov xdi, $New(ChartXYSeries)
@@ -712,7 +730,7 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   mov [xdi].$Obj(ChartXYSeries).Setup.MarkerFillColor, $RGB(255,000,000)
   mov [xdi].$Obj(ChartXYSeries).Setup.dMarkerSize, 9
   mov [xdi].$Obj(ChartXYSeries).Setup.dMarkerShape, CHTXY_MARKER_CIRCLE
-  mov [xdi].$Obj(ChartXYSeries).dFlags, CHT_SERIES_SHOW_DEPICTION or CHT_SERIES_SHOW_MARKER or CHT_SERIES_SHOW_TAB
+  mov [xdi].$Obj(ChartXYSeries).dFlags, CHT_SERIES_SHOW_DEPICTION or CHT_SERIES_SHOW_MARKER or CHT_SERIES_SHOW_TAB or CHT_SERIES_USE_Y2
 
   xor ebx, ebx
   .while ebx < DATAPOINTS/32
@@ -744,7 +762,6 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   fUnload 3
 
   OCall xdi::ChartXYSeries.Scan, 0, DATAPOINTS/32
-  OCall [xsi].Chart.Data::Collection.Insert, xdi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

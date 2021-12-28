@@ -907,7 +907,7 @@ MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     DbgMdiChildBmp.ZoomIn
-; Purpose:    Increse the output size.
+; Purpose:    Increase the output size.
 ; Arguments:  None.
 ; Return:     Nothing.
 
@@ -959,7 +959,7 @@ MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     DbgMdiChildBmp.ZoomOut
-; Purpose:    Decrese the output size.
+; Purpose:    Decrease the output size.
 ; Arguments:  None.
 ; Return:     Nothing.
 

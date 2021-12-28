@@ -2,14 +2,14 @@
 ; Title:      ChartBar.rc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:    ObjAsm resource file for demonstration program 7.
+; Purpose:    ObjAsm resource file for chart demonstration program.
 ; Notes:      Version C.1.0, August 2021
 ;               - First release.
 ; ==================================================================================================
 
 
 #include "Resource.h"               //Windows resource definitions
-#include "ChartBar_Shared.rc"         //Application shared definitions
+#include "ChartBar_Shared.rc"       //Application shared definitions
 #include "VER\Version.rc"           //Application version definition
 #include "MFT\Manifest_Invoker.rc"  //Application manifest definition
 
@@ -46,13 +46,11 @@ ICON_MAIL             ICON DISCARDABLE "ICO\Mail_16x16_04.ico"
 
 // Chart icons
 ICON_SETUP            ICON DISCARDABLE "ICO\Setup_16x16_04.ico"
-ICON_SCALEX           ICON DISCARDABLE "Res\ScaleX_16x16_04.ico"
-ICON_SCALEY           ICON DISCARDABLE "Res\ScaleY_16x16_04.ico"
-ICON_SERIESBAR        ICON DISCARDABLE "Res\SeriesBar_16x16_04.ico"
-
-// Cursors -----------------------------------------------------------------------------------------
-
-CURSOR_HAND           CURSOR DISCARDABLE "CUR\Hand.cur"
+ICON_SCALEX           ICON DISCARDABLE "ICO\ScaleX_16x16_04.ico"
+ICON_SCALEY1          ICON DISCARDABLE "ICO\ScaleY1_16x16_04.ico"
+ICON_SCALEY2          ICON DISCARDABLE "ICO\ScaleY2_16x16_04.ico"
+ICON_SERIESXY         ICON DISCARDABLE "ICO\SeriesXY_16x16_04.ico"
+ICON_SERIESBAR        ICON DISCARDABLE "ICO\SeriesBar_16x16_04.ico"
 
 
 // Bitmaps -----------------------------------------------------------------------------------------
@@ -68,12 +66,8 @@ BMP_BACKGROUND        BITMAP "BMP\WndBkgnd.bmp"
 #include "Res\ChartSetupDlg.rc"
 #include "Res\ChartTabGeneralDlg.rc"
 #include "Res\ChartTabScaleDlg.rc"
+#include "Res\ChartTabSeriesXYDlg.rc"
 #include "Res\ChartTabSeriesBarDlg.rc"
-
-
-// Gifs --------------------------------------------------------------------------------------------
-
-KEY GIF DISCARDABLE "GIF\Key.gif"
 
 
 // Menus -------------------------------------------------------------------------------------------

@@ -112,7 +112,7 @@ MethodEnd
 ;             Arg4: Index into associated ImageList.
 ; Return:     eax = Inserted Position index.
 
-Method TabCtrl.Insert,, dIndex:DWORD, hWnd:HWND, pText:POINTER, dImage:DWORD
+Method TabCtrl.Insert,, dIndex:DWORD, hWnd:HWND, pText:POINTER, dImageIndex:DWORD
   local TCI:TC_ITEM
 
   SetObject xcx
@@ -120,7 +120,7 @@ Method TabCtrl.Insert,, dIndex:DWORD, hWnd:HWND, pText:POINTER, dImage:DWORD
 ;  m2z TCI.lpReserved1
 ;  m2z TCI.lpReserved2
   m2m TCI.pszText, pText, xax
-  m2m TCI.iImage, dImage, edx
+  m2m TCI.iImage, dImageIndex, edx
   m2m TCI.lParam, hWnd, xax
   invoke SendMessage, [xcx].hWnd, TCM_INSERTITEM, dIndex, addr TCI
 MethodEnd

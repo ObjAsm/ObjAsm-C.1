@@ -2,21 +2,17 @@
 ; Title:      ChartBar_Main.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:    ObjAsm demonstration program 7.
+; Purpose:    ObjAsm chart demonstration program.
 ; Notes:      Version C.1.0, August 2021
 ;               - First release.
 ; ==================================================================================================
 
 
-APP_CLS_STYLE     equ   CS_DBLCLKS
-
-CHILD_CLS_STYLE   equ   CS_DBLCLKS
 
 TB_STYLE    equ   WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or TBSTYLE_TOOLTIPS or \
                   CCS_NORESIZE or CCS_NODIVIDER or CCS_ADJUSTABLE or TBSTYLE_FLAT or TBSTYLE_LIST
 
 SB_STYLE    equ   WS_CHILD or WS_VISIBLE or SBARS_TOOLTIPS or SBARS_SIZEGRIP
-
 
 .const
 ToolbarFile DEF_TOOLBAR {IDC_TOOLBARFILE, TB_STYLE, TBSTYLE_EX_MIXEDBUTTONS, $OfsTStr("File operations"), {<0,0,0,0>}, 2}
@@ -54,7 +50,7 @@ Object ChildWnd, , MdiChildWnd                          ;MDI child window.
   VirtualEvent      OnCreate,           WM_CREATE
   VirtualEvent      OnMouseWheel,       WM_MOUSEWHEEL
 
-  Embed     Chart,    ChartBarWnd
+  Embed     Chart,    ChartWnd
 ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -455,7 +451,7 @@ Method Application.Startup
   local WC:WNDCLASSEX
 
   mov WC.cbSize, sizeof WNDCLASSEX
-  mov WC.style, APP_CLS_STYLE
+  mov WC.style, 0
   m2m WC.lpfnWndProc, $MethodAddr(Application.WndProc), xdx
   m2z WC.cbClsExtra
   m2z WC.cbWndExtra
@@ -551,7 +547,7 @@ Method ChildWnd.Done, uses xbx xdi xsi
     invoke DrawMenuBar, [xbx].$Obj(Application).hWnd    ;Redraw the new menu bar
   .endif
 
-  OCall [xsi].Chart::ChartBarWnd.Done
+  OCall [xsi].Chart::ChartWnd.Done
   ACall xsi.Done
 MethodEnd
 
@@ -615,7 +611,7 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   mov ChartDef.dExStyle, 0
   invoke GetClientRect, [xsi].hWnd, addr ChartDef.rect
 
-  OCall [xsi].Chart::ChartBarWnd.Init, xsi, [xsi].hWnd, addr ChartDef
+  OCall [xsi].Chart::ChartWnd.Init, xsi, [xsi].hWnd, addr ChartDef
 
 ;  mov [xsi].Chart.Colors.PlotArea,    $RGB(255,255,255)
 ;  mov [xsi].Chart.Colors.PlotBorder,  $RGB(000,000,000)
@@ -634,15 +630,18 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   s2s [xsi].Chart.ScaleX.fDataMax,  $CFloat(3.0), xax, xcx
   s2s [xsi].Chart.ScaleX.fDataMin,  $CFloat(0.0), xax, xcx
 
-  mov [xsi].Chart.ScaleX.dSetupMjrDiv, 16
-  mov [xsi].Chart.ScaleX.dSetupMnrDiv, 8
-  mov [xsi].Chart.ScaleX.dDataMjrDiv, 16
-  mov [xsi].Chart.ScaleX.dDataMnrDiv, 8
+  mov [xsi].Chart.ScaleX.dSetupMjrDiv, 3
+  mov [xsi].Chart.ScaleX.dSetupMnrDiv, 0
+  mov [xsi].Chart.ScaleX.dDataMjrDiv, 3
+  mov [xsi].Chart.ScaleX.dDataMnrDiv, 0
 
   mov [xsi].Chart.ScaleX.pDescription, $invoke(StrNew, $OfsCStr("Time"))
-  mov [xsi].Chart.ScaleX.pUnit, NULL
+  mov [xsi].Chart.ScaleX.pUnit, $invoke(StrNew, $OfsCStr("Months"))
+;  BitSet [xsi].Chart.ScaleX.dFlags, CHT_SCALE_SHOW_AS_DATEDIFF
+;  BitClr [xsi].Chart.ScaleX.dFlags, CHT_SCALE_AUTO_MJR_DIV
+;  BitClr [xsi].Chart.ScaleX.dFlags, CHT_SCALE_AUTO_MNR_DIV
 
-  ;Scale Y axis
+  ;Scale Y1 axis
   s2s [xsi].Chart.ScaleY1.fSetupMax, $CFloat(6.0), xax, xcx
   s2s [xsi].Chart.ScaleY1.fSetupMin, $CFloat(0.0), xax, xcx
   s2s [xsi].Chart.ScaleY1.fDataMax,  $CFloat(6.0), xax, xcx
@@ -654,7 +653,25 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   mov [xsi].Chart.ScaleY1.dDataMnrDiv, 1
 
   mov [xsi].Chart.ScaleY1.pDescription, $invoke(StrNew, $OfsCStr("Sales"))
-  mov [xsi].Chart.ScaleY1.pUnit, $invoke(StrNew, $OfsCStr("Million USD"))
+  mov [xsi].Chart.ScaleY1.pUnit, $invoke(StrNew, $OfsCStr("M$"))
+
+  BitClr [xsi].Chart.ScaleY1.dFlags, CHT_SCALE_AUTO_MIN
+
+  ;Scale Y2 axis
+  s2s [xsi].Chart.ScaleY2.fSetupMax, $CFloat(10.0), xax, xcx
+  s2s [xsi].Chart.ScaleY2.fSetupMin, $CFloat(0.0), xax, xcx
+  s2s [xsi].Chart.ScaleY2.fDataMax,  $CFloat(10.0), xax, xcx
+  s2s [xsi].Chart.ScaleY2.fDataMin,  $CFloat(0.0), xax, xcx
+
+  mov [xsi].Chart.ScaleY2.dSetupMjrDiv, 2
+  mov [xsi].Chart.ScaleY2.dSetupMnrDiv, 1
+  mov [xsi].Chart.ScaleY2.dDataMjrDiv, 2
+  mov [xsi].Chart.ScaleY2.dDataMnrDiv, 1
+
+  BitClr [xsi].Chart.ScaleY2.dFlags, CHT_SCALE_SHOW_MJR_GRID or CHT_SCALE_SHOW_MNR_GRID
+
+  mov [xsi].Chart.ScaleY2.pDescription, $invoke(StrNew, $OfsCStr("Sales Rate"))
+  mov [xsi].Chart.ScaleY2.pUnit, $invoke(StrNew, $OfsCStr("M$/Quarter"))
 
   ;Create chart series 1
   mov xdi, $New(ChartBarSeries)
@@ -670,7 +687,7 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   mov [xdi].$Obj(ChartBarSeries).Setup.FillColorFore, $RGB(255,000,000)
   mov [xdi].$Obj(ChartBarSeries).Setup.dFillStyle, 5
   mov [xdi].$Obj(ChartBarSeries).dFlags, CHT_SERIES_SHOW_DEPICTION or CHT_SERIES_SHOW_TAB
-  mov [xdi].$Obj(ChartBarSeries).Setup.dBarOffset, 0
+  mov [xdi].$Obj(ChartBarSeries).Setup.sdBarOffset, -12
 
   OCall xdi::ChartSeries.ItemAt, 0, 0                   ;Return a pointer to a CHT_FLOAT
   s2s CHT_FLOAT ptr [xax], $CFloat(1.0), xcx, xdx
@@ -682,25 +699,23 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   OCall xdi::ChartSeries.ItemAt, 1, 1                   ;Return a pointer to a CHT_FLOAT
   s2s CHT_FLOAT ptr [xax], $CFloat(5.0), xcx, xdx
 
-
   OCall xdi::ChartSeries.Scan, 0, DATAPOINTS
-  OCall [xsi].Chart.Data::Collection.Insert, xdi
 
   ;Create chart series 2
   mov xdi, $New(ChartBarSeries)
   OCall xdi::ChartBarSeries.Init, addr [xsi].Chart.Data, DATAPOINTS
   mov [xdi].$Obj(ChartBarSeries).dDataFrom, 0
   mov [xdi].$Obj(ChartBarSeries).dDataCount, DATAPOINTS
-  mov [xdi].$Obj(ChartBarSeries).pName, $invoke(StrNew, $OfsCStr("Sales Europa"))
-  mov [xdi].$Obj(ChartBarSeries).pDescription, $invoke(StrNew, $OfsCStr("Sales in Europa"))
-  mov [xdi].$Obj(ChartBarSeries).Setup.dBarWidth, 15
+  mov [xdi].$Obj(ChartBarSeries).pName, $invoke(StrNew, $OfsCStr("Sales Europe"))
+  mov [xdi].$Obj(ChartBarSeries).pDescription, $invoke(StrNew, $OfsCStr("Sales in Europe"))
+  mov [xdi].$Obj(ChartBarSeries).Setup.dBarWidth, 20
   mov [xdi].$Obj(ChartBarSeries).Setup.dBorderWidth, 2
   mov [xdi].$Obj(ChartBarSeries).Setup.BorderColor,   $RGB(000,255,000)
   mov [xdi].$Obj(ChartBarSeries).Setup.FillColorBack, $RGB(000,127,000)
   mov [xdi].$Obj(ChartBarSeries).Setup.FillColorFore, $RGB(000,255,000)
   mov [xdi].$Obj(ChartBarSeries).Setup.dFillStyle, 2
   mov [xdi].$Obj(ChartBarSeries).dFlags, CHT_SERIES_SHOW_DEPICTION or CHT_SERIES_SHOW_TAB
-  mov [xdi].$Obj(ChartBarSeries).Setup.dBarOffset, 22
+  mov [xdi].$Obj(ChartBarSeries).Setup.sdBarOffset, +12
 
   OCall xdi::ChartSeries.ItemAt, 0, 0                   ;Return a pointer to a CHT_FLOAT
   s2s CHT_FLOAT ptr [xax], $CFloat(1.0), xcx, xdx
@@ -713,36 +728,43 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   s2s CHT_FLOAT ptr [xax], $CFloat(4.0), xcx, xdx
 
   OCall xdi::ChartBarSeries.Scan, 0, DATAPOINTS
-  OCall [xsi].Chart.Data::Collection.Insert, xdi
 
   ;Create chart series 3
-  mov xdi, $New(ChartBarSeries)
-  OCall xdi::ChartBarSeries.Init, addr [xsi].Chart.Data, DATAPOINTS
-  mov [xdi].$Obj(ChartBarSeries).dDataFrom, 0
-  mov [xdi].$Obj(ChartBarSeries).dDataCount, DATAPOINTS
-  mov [xdi].$Obj(ChartBarSeries).pName, $invoke(StrNew, $OfsCStr("Sales Asia"))
-  mov [xdi].$Obj(ChartBarSeries).pDescription, $invoke(StrNew, $OfsCStr("Sales in Asia"))
-  mov [xdi].$Obj(ChartBarSeries).Setup.dBarWidth, 10
-  mov [xdi].$Obj(ChartBarSeries).Setup.dBorderWidth, 2
-  mov [xdi].$Obj(ChartBarSeries).Setup.BorderColor,   $RGB(000,000,255)
-  mov [xdi].$Obj(ChartBarSeries).Setup.FillColorBack, $RGB(000,000,127)
-  mov [xdi].$Obj(ChartBarSeries).Setup.FillColorFore, $RGB(127,127,255)
-  mov [xdi].$Obj(ChartBarSeries).Setup.dFillStyle, 3
-  mov [xdi].$Obj(ChartBarSeries).dFlags, CHT_SERIES_SHOW_DEPICTION or CHT_SERIES_SHOW_TAB
-  mov [xdi].$Obj(ChartBarSeries).Setup.dBarOffset, 40
+  mov xdi, $New(ChartXYSeries)
+  OCall xdi::ChartXYSeries.Init, addr [xsi].Chart.Data, 4
+  mov [xdi].$Obj(ChartXYSeries).dDataFrom, 0
+  mov [xdi].$Obj(ChartXYSeries).dDataCount, 4
+  mov [xdi].$Obj(ChartXYSeries).pName, $invoke(StrNew, $OfsCStr("Sales Rate"))
+  mov [xdi].$Obj(ChartXYSeries).pDescription, $invoke(StrNew, $OfsCStr("Global Sales Rate"))
+  mov [xdi].$Obj(ChartXYSeries).Setup.LineColor, $RGB(000,000,192)
+  mov [xdi].$Obj(ChartXYSeries).Setup.dLineWidth, 2
+  mov [xdi].$Obj(ChartXYSeries).Setup.MarkerFillColor, $RGB(127,255,127)
+  mov [xdi].$Obj(ChartXYSeries).Setup.MarkerBorderColor, $RGB(000,000,192)
+  mov [xdi].$Obj(ChartXYSeries).Setup.dMarkerSize, 9
+  mov [xdi].$Obj(ChartXYSeries).Setup.dMarkerBorderWidth, 2
+  mov [xdi].$Obj(ChartXYSeries).Setup.dMarkerShape, CHTXY_MARKER_SQUARE
+  mov [xdi].$Obj(ChartXYSeries).dFlags, CHT_SERIES_SHOW_DEPICTION or CHT_SERIES_SHOW_MARKER or CHT_SERIES_SHOW_TAB or CHT_SERIES_USE_Y2
 
   OCall xdi::ChartSeries.ItemAt, 0, 0                   ;Return a pointer to a CHT_FLOAT
-  s2s CHT_FLOAT ptr [xax], $CFloat(1.0), xcx, xdx
+  s2s CHT_FLOAT ptr [xax], $CFloat(0.0), xcx, xdx
   OCall xdi::ChartSeries.ItemAt, 1, 0                   ;Return a pointer to a CHT_FLOAT
   s2s CHT_FLOAT ptr [xax], $CFloat(2.0), xcx, xdx
 
   OCall xdi::ChartSeries.ItemAt, 0, 1                   ;Return a pointer to a CHT_FLOAT
-  s2s CHT_FLOAT ptr [xax], $CFloat(2.0), xcx, xdx
+  s2s CHT_FLOAT ptr [xax], $CFloat(1.0), xcx, xdx
   OCall xdi::ChartSeries.ItemAt, 1, 1                   ;Return a pointer to a CHT_FLOAT
   s2s CHT_FLOAT ptr [xax], $CFloat(3.0), xcx, xdx
 
-  OCall xdi::ChartBarSeries.Scan, 0, DATAPOINTS
-  OCall [xsi].Chart.Data::Collection.Insert, xdi
+  OCall xdi::ChartSeries.ItemAt, 0, 2                   ;Return a pointer to a CHT_FLOAT
+  s2s CHT_FLOAT ptr [xax], $CFloat(2.0), xcx, xdx
+  OCall xdi::ChartSeries.ItemAt, 1, 2                   ;Return a pointer to a CHT_FLOAT
+  s2s CHT_FLOAT ptr [xax], $CFloat(4.5), xcx, xdx
+
+  OCall xdi::ChartSeries.ItemAt, 0, 3                   ;Return a pointer to a CHT_FLOAT
+  s2s CHT_FLOAT ptr [xax], $CFloat(3.0), xcx, xdx
+  OCall xdi::ChartSeries.ItemAt, 1, 3                   ;Return a pointer to a CHT_FLOAT
+  s2s CHT_FLOAT ptr [xax], $CFloat(3.0), xcx, xdx
+  OCall xdi::ChartBarSeries.Scan, 0, 4
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -804,7 +826,7 @@ Method ChildWnd.Startup
   local WC:WNDCLASSEX
 
   mov WC.cbSize, sizeof WNDCLASSEX
-  mov WC.style, CHILD_CLS_STYLE
+  mov WC.style, CS_DBLCLKS
   mrm WC.lpfnWndProc, $MethodAddr(ChildWnd.WndProc), xdx
   m2z WC.cbClsExtra
   m2z WC.cbWndExtra

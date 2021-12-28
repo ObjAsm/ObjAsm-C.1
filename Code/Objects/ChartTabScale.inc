@@ -42,10 +42,10 @@ IDC_CHT_SCL_DESC_EDT            equ   5231
 IDC_CHT_SCL_UNIT_STC            equ   5232
 IDC_CHT_SCL_UNIT_EDT            equ   5233
 
-SCL_MJRDIV_MIN    equ   0
-SCL_MJRDIV_MAX    equ   20
-SCL_MNRDIV_MIN    equ   0
-SCL_MNRDIV_MAX    equ   10
+SCL_MJRDIV_MIN                  equ   1                 ;At least 1 division is necessary
+SCL_MJRDIV_MAX                  equ   20
+SCL_MNRDIV_MIN                  equ   0
+SCL_MNRDIV_MAX                  equ   10
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     ChartTabScale.CtlsGet
@@ -177,7 +177,7 @@ Method ChartTabScale.CtlsSet, uses xbx xdi xsi
 
   SetObject xsi
   lea xbx, cBuffer
-  mov xdi, [xsi].pScaleData
+  mov xdi, [xsi].pScaleData 
   assume xdi:PCHT_SCALE_DATA
 
   .ifBitSet [xdi].dFlags, CHT_SCALE_AUTO_MIN
@@ -236,7 +236,7 @@ Method ChartTabScale.CtlsSet, uses xbx xdi xsi
     invoke EnableWindow, $invoke(GetDlgItem, [xsi].hWnd, IDC_CHT_SCL_MNRDIV_EDT), TRUE
     invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SCL_MNRDIV_CHK, BST_UNCHECKED
   .endif
-  invoke SetDlgItemInt, [xsi].hWnd, IDC_CHT_SCL_MNRDIV_EDT, [xdi].dSetupMjrDiv, FALSE
+  invoke SetDlgItemInt, [xsi].hWnd, IDC_CHT_SCL_MNRDIV_EDT, [xdi].dSetupMnrDiv, FALSE
 
   .ifBitSet [xdi].dFlags, CHT_SCALE_SHOW_MJR_GRID
     invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SCL_MJRGRD_SHOW_CHK, BST_CHECKED

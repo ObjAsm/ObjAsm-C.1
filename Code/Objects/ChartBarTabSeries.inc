@@ -20,13 +20,14 @@ IDC_CHT_SER_BAR_NAME_STC        equ 5401
 IDC_CHT_SER_BAR_NAME_EDT        equ 5402
 IDC_CHT_SER_BAR_DESC_STC        equ 5403
 IDC_CHT_SER_BAR_DESC_EDT        equ 5404
-IDC_CHT_SER_BAR_WIDTH_STC				equ 5405
-IDC_CHT_SER_BAR_WIDTH_EDT				equ 5406
-IDC_CHT_SER_BAR_WIDTH_UDN				equ 5407
-IDC_CHT_SER_BAR_OFFSET_STC			equ 5408
-IDC_CHT_SER_BAR_OFFSET_EDT			equ 5409
-IDC_CHT_SER_BAR_OFFSET_UDN			equ 5410
+IDC_CHT_SER_BAR_WIDTH_STC       equ 5405
+IDC_CHT_SER_BAR_WIDTH_EDT       equ 5406
+IDC_CHT_SER_BAR_WIDTH_UDN       equ 5407
+IDC_CHT_SER_BAR_OFFSET_STC      equ 5408
+IDC_CHT_SER_BAR_OFFSET_EDT      equ 5409
+IDC_CHT_SER_BAR_OFFSET_UDN      equ 5410
 IDC_CHT_SER_BAR_SHOW_CHK        equ 5411
+IDC_CHT_SER_BAR_Y2_CHK          equ 5412
 
 IDC_CHT_SER_BAR_LINE_GRP        equ 5420
 IDC_CHT_SER_BAR_LINE_COLOR_BTN  equ 5421
@@ -44,14 +45,14 @@ IDC_CHT_SER_BAR_FILL_STYLE_STC  equ 5433
 IDC_CHT_SER_BAR_FILL_STYLE_CBO  equ 5434
 
 
-LINE_WIDTH_MIN    equ   1
-LINE_WIDTH_MAX    equ   10
+BAR_LINE_WIDTH_MIN    equ   1
+BAR_LINE_WIDTH_MAX    equ   10
 
-BAR_WIDTH_MIN     equ   1
-BAR_WIDTH_MAX     equ   200
+BAR_WIDTH_MIN         equ   1
+BAR_WIDTH_MAX         equ   200
 
-BAR_OFFSET_MIN    equ   -1000
-BAR_OFFSET_MAX    equ   1000
+BAR_OFFSET_MIN        equ   -1000
+BAR_OFFSET_MAX        equ   1000
 
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -65,7 +66,7 @@ Method ChartBarTabSeries.CtlsGet, uses xbx xdi xsi
 
   SetObject xsi
   lea xbx, cBuffer
-  mov xdi, [xsi].pChartSeries
+  mov xdi, [xsi].pOwner
   assume xdi:$ObjPtr(ChartBarSeries)
 
   invoke StrDispose, [xdi].pName
@@ -86,6 +87,13 @@ Method ChartBarTabSeries.CtlsGet, uses xbx xdi xsi
   .endif
   mov [xdi].pDescription, xax
 
+  invoke IsDlgButtonChecked, [xsi].hWnd, IDC_CHT_SER_BAR_Y2_CHK
+  .if eax == BST_CHECKED
+    BitSet [xdi].dFlags, CHT_SERIES_USE_Y2
+  .else
+    BitClr [xdi].dFlags, CHT_SERIES_USE_Y2
+  .endif
+
   invoke GetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_BAR_WIDTH_EDT, addr dTranslated, FALSE
   .if dTranslated != FALSE
     .if (SDWORD ptr eax >= BAR_WIDTH_MIN) && (SDWORD ptr eax <= BAR_WIDTH_MAX)
@@ -93,10 +101,10 @@ Method ChartBarTabSeries.CtlsGet, uses xbx xdi xsi
     .endif
   .endif
 
-  invoke GetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_BAR_OFFSET_EDT, addr dTranslated, FALSE
+  invoke GetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_BAR_OFFSET_EDT, addr dTranslated, TRUE
   .if dTranslated != FALSE
     .if (SDWORD ptr eax >= BAR_OFFSET_MIN) && (SDWORD ptr eax <= BAR_OFFSET_MAX)
-      mov [xdi].Setup.dBarOffset, eax
+      mov [xdi].Setup.sdBarOffset, eax
     .endif
   .endif
 
@@ -112,7 +120,7 @@ Method ChartBarTabSeries.CtlsGet, uses xbx xdi xsi
 
   invoke GetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_BAR_LINE_WIDTH_EDT, addr dTranslated, FALSE
   .if dTranslated != FALSE
-    .if (SDWORD ptr eax >= LINE_WIDTH_MIN) && (SDWORD ptr eax <= LINE_WIDTH_MAX)
+    .if (SDWORD ptr eax >= BAR_LINE_WIDTH_MIN) && (SDWORD ptr eax <= BAR_LINE_WIDTH_MAX)
       mov [xdi].Setup.dBorderWidth, eax
     .endif
   .endif
@@ -140,15 +148,21 @@ MethodEnd
 
 Method ChartBarTabSeries.CtlsSet, uses xbx xdi xsi
   SetObject xsi
-  mov xdi, [xsi].pChartSeries
+  mov xdi, [xsi].pOwner
   assume xdi:$ObjPtr(ChartBarSeries)
 
   invoke SetDlgItemText, [xsi].hWnd, IDC_CHT_SER_BAR_NAME_EDT, [xdi].pName
   invoke SetDlgItemText, [xsi].hWnd, IDC_CHT_SER_BAR_DESC_EDT, [xdi].pDescription
 
+  .ifBitSet [xdi].dFlags, CHT_SERIES_USE_Y2
+    invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_BAR_Y2_CHK, BST_CHECKED
+  .else
+    invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_BAR_Y2_CHK, BST_UNCHECKED
+  .endif
+
   invoke SetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_BAR_WIDTH_EDT, [xdi].Setup.dBarWidth, FALSE
 
-  invoke SetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_BAR_OFFSET_EDT, [xdi].Setup.dBarOffset, FALSE
+  invoke SetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_BAR_OFFSET_EDT, [xdi].Setup.sdBarOffset, TRUE
 
   .ifBitSet [xdi].dFlags, CHT_SERIES_SHOW_DEPICTION
     invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_BAR_SHOW_CHK, BST_CHECKED
@@ -193,38 +207,25 @@ Method ChartBarTabSeries.CtlsSet, uses xbx xdi xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartBarTabSeries.Done
-; Purpose:    Finalize the ChartTabSeries object.
-; Arguments:  None.
-; Return:     Nothing.
-
-Method ChartBarTabSeries.Done, uses xsi
-  SetObject xsi
-  invoke StrDispose, [xsi].pLocalName
-  invoke StrDispose, [xsi].pLocalDescription
-  ACall xsi.Done
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     ChartBarTabSeries.Init
 ; Purpose:    Initialize the ChartBarTabSeries object.
 ; Arguments:  Arg1: -> Owner object.
-;             Arg2: -> ChartFlatSeries.
+;             Arg2: Parent window HANDLE.
+;             Arg3: -> MaskedImageList. 
 ; Return:     Nothing.
 
-Method ChartBarTabSeries.Init, uses xbx xsi, pOwner:POINTER, pChartSeries:$ObjPtr(ChartBarSeries)
+Method ChartBarTabSeries.Init, uses xsi, pOwner:POINTER, hParent:HWND, pImageList:$ObjPtr(MaskedImageList)
   SetObject xsi
-  mov xbx, pOwner
-  TCall xsi::DialogModeless.Init, xbx, [xbx].$Obj(TabCtrl).hWnd, IDD_CHT_SER_BAR_TAB, \
+  TCall xsi::DialogModeless.Init, pOwner, hParent, IDD_CHT_SER_BAR_TAB, \
                                   offset $ObjTmpl(Application).hActiveMlsDlg
-  mrm [xsi].pChartSeries, pChartSeries, xbx
+
+  OCall pImageList::MaskedImageList.IconLoadResource, $OfsCStr("ICON_SERIESBAR")
+  mov [xsi].dIconIndex, eax
 
   ;Create local copies
-  assume xbx:$ObjPtr(ChartBarSeries)
-  mov [xsi].pLocalName, $invoke(StrNew, [xbx].pName)
-  mov [xsi].pLocalDescription, $invoke(StrNew, [xbx].pDescription)
-  s2s [xsi].LocalSetup, [xbx].Setup, xax, xcx, xdx, xmm0, xmm1, xmm2
-  assume xbx:NOTHING
+  ACall xsi.Init, pOwner
+  mov xcx, pOwner
+  s2s [xsi].LocalSetup, [xcx].$Obj(ChartBarSeries).Setup, xax, xdx, xmm0, xmm1, xmm2
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -241,7 +242,7 @@ Method ChartBarTabSeries.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPAR
   .if (WORD ptr wParam == IDC_CHT_SER_BAR_LINE_COLOR_BTN) || \
       (WORD ptr wParam == IDC_CHT_SER_BAR_FILL_FORE_BTN) || \
       (WORD ptr wParam == IDC_CHT_SER_BAR_FILL_BACK_BTN)
-    mov xbx, [xsi].pChartSeries
+    mov xbx, [xsi].pOwner
 
     ;Launch ChooseColor system dialog
     mov ChooseClr.lStructSize, sizeof ChooseClr
@@ -307,7 +308,7 @@ MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  Edit Window Proc
-; Purpose:    Alter the default processing to only allow chars and minus sign.
+; Purpose:    Alter the default processing to only allow digits 0-9 and minus sign.
 ; Arguments:  Arg1: Window HANDLE
 ;             Arg2: Message
 ;             Arg3: First message parameter.
@@ -315,18 +316,27 @@ MethodEnd
 ;             Arg5: Subclass ID.
 ;             Arg6: Additional parameter.
 ; Return:     Message result.
+; Note:       WM_PASTE is used to paste text from clipboard.
 
 SignedIntegerSubclassProc proc hWnd:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM, \
                                uIdSubclass:UINT_PTR, dwRefData:DWORD_PTR
+  local dFirstPos:DWORD, EBT:EDITBALLOONTIP
+
+  ;DbgMessage uMsg
   .if uMsg == WM_NCDESTROY
     invoke RemoveWindowSubclass, hWnd, addr SignedIntegerSubclassProc, uIdSubclass
   .elseif uMsg == WM_CHAR
+    invoke DefSubclassProc, hWnd, EM_GETSEL, addr dFirstPos, NULL
     mov xcx, wParam
-    .if cx < ' '                      ;let control character through
-    .elseif cx == '-'                 ;let hyphen-minus through
-    .else
-      .if !(cx >= '0' && cx <= '9')   ;let digit through
-        invoke MessageBeep, 0         ;otherwise invalid
+    .if cx >= ' '                                       ;Let control character through
+      .if !(dFirstPos == 0 && cx == '-') && \           ;Let minus through if it is the 1st char
+          !(cx >= '0' && cx <= '9')                     ;Let digits pass through
+        mov EBT.cbStruct, sizeof(EBT)                   ;Otherwise invalid
+        m2m EBT.pszTitle, $OfsCStr("Error"), xax
+        m2m EBT.pszText, $OfsCStr("Invalid character"), xax
+        mov EBT.ttiIcon, TTI_ERROR
+        invoke SendMessage, hWnd, EM_SHOWBALLOONTIP, 0, addr EBT 
+        invoke MessageBeep, 0         
         xor eax, eax
         ret
       .endif
@@ -348,7 +358,7 @@ Method ChartBarTabSeries.OnInitDialog, uses xsi, wParam:WPARAM, lParam:LPARAM
 
   ;Set UDN-Controls
   invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_BAR_LINE_WIDTH_UDN
-  invoke SendMessage, xax, UDM_SETRANGE32, LINE_WIDTH_MIN, LINE_WIDTH_MAX
+  invoke SendMessage, xax, UDM_SETRANGE32, BAR_LINE_WIDTH_MIN, BAR_LINE_WIDTH_MAX
 
   invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_BAR_WIDTH_UDN
   invoke SendMessage, xax, UDM_SETRANGE32, BAR_WIDTH_MIN, BAR_WIDTH_MAX
@@ -369,16 +379,11 @@ MethodEnd
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ChartBarTabSeries.Restore, uses xbx xsi
+Method ChartBarTabSeries.Restore, uses xsi
   SetObject xsi
-  mov xbx, [xsi].pChartSeries
-  assume xbx:$ObjPtr(ChartBarSeries)
 
   ;Restore from local copies
-  invoke StrDispose, [xbx].pName
-  mov [xbx].pName, $invoke(StrNew, [xsi].pLocalName)
-  invoke StrDispose, [xbx].pDescription
-  mov [xbx].pDescription, $invoke(StrNew, [xsi].pLocalDescription)
-  s2s [xbx].Setup, [xsi].LocalSetup, xax, xcx, xdx, xmm0, xmm1, xmm2
-  assume xbx:NOTHING
+  ACall xsi.Restore
+  mov xcx, [xsi].pOwner
+  s2s [xcx].$Obj(ChartBarSeries).Setup, [xsi].LocalSetup, xax, xdx, xmm0, xmm1, xmm2
 MethodEnd

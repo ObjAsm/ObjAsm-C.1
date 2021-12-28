@@ -421,7 +421,7 @@ Method GifPlayer.BreakoutFrames, uses xbx xdi xsi, pData:POINTER, dDataSize:DWOR
       MemFree pBuffer
 
       OCall [xsi].FrameColl::Collection.Insert, xbx
-      xor xbx, xbx
+      xor ebx, ebx
 
     .elseif bDescriptor == GIF_EXTENSIONINTRODUCER
       GifBinRead bExtensionType, 1

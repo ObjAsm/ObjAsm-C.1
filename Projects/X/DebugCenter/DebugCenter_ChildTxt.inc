@@ -77,9 +77,16 @@ ObjectEnd
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method DbgMdiChildTxt.ClpBrdClear
-  SetObject xcx
-  invoke SendMessage, [xcx].hEdit, WM_CLEAR, 0, 0
+Method DbgMdiChildTxt.ClpBrdClear, uses xsi
+  local dNumerator:DWORD, dDenominator:DWORD
+
+  SetObject xsi
+  ;Remember the current RichEdit zoom factor
+  invoke SendMessage, [xsi].hEdit, EM_GETZOOM, addr dNumerator, addr dDenominator
+  .if eax != FALSE
+    mov [xsi].dZoomFactor, $32($invoke(MulDiv, dNumerator, ZOOM_BASE, dDenominator))
+  .endif
+  invoke SendMessage, [xsi].hEdit, WM_CLEAR, 0, 0
   ACall ClpBrdClear
 MethodEnd
 
@@ -202,6 +209,7 @@ Method DbgMdiChildTxt.Erase, uses xsi
   SetObject xsi
   invoke SendMessage, [xsi].hEdit, EM_SETSEL, 0, -1
   OCall xsi.ClpBrdClear
+  DbgHex [xsi].dZoomFactor
   invoke SendMessage, [xsi].hEdit, EM_SETZOOM, [xsi].dZoomFactor, TXT_ZOOM_BASE
 MethodEnd
 
@@ -374,9 +382,11 @@ MethodEnd
 ;             Arg2: Second message parameter.
 ; Return:     eax = Zero.
 
+ES_EX_ZOOMABLE equ 0010h
+
 Method DbgMdiChildTxt.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
-  invoke CreateWindowEx, WS_EX_LEFT or WS_EX_CLIENTEDGE or WS_EX_ACCEPTFILES, \
+  invoke CreateWindowEx, WS_EX_LEFT or WS_EX_CLIENTEDGE or WS_EX_ACCEPTFILES or ES_EX_ZOOMABLE, \
                          offset szRichEdit20, NULL, EDTSTYLE, \
                          0, 0, 10, 10, [xsi].hWnd, RICHEDITID, hInstance, NULL
   mov [xsi].hEdit, xax
@@ -575,7 +585,7 @@ Method DbgMdiChildTxt.Print, uses xbx xdi xsi
       invoke DeleteObject, xbx
 
       ;Set DC font
-      FillString LogFnt.lfFaceName, <Courier New>
+      FillString LogFnt.lfFaceName, <DBG_FONT_TEXT>
       invoke GetDeviceCaps, PrtDlg.hDC, LOGPIXELSY
       invoke MulDiv, 10, eax, -72
       mov LogFnt.lfHeight, eax
@@ -721,7 +731,7 @@ MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     DbgMdiChildTxt.ZoomIn
-; Purpose:    Increse the output size.
+; Purpose:    Increase the output size.
 ; Arguments:  None.
 ; Return:     Nothing.
 
@@ -746,7 +756,7 @@ MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     DbgMdiChildTxt.ZoomOut
-; Purpose:    Decrese the output size.
+; Purpose:    Decrease the output size.
 ; Arguments:  None.
 ; Return:     Nothing.
 
@@ -784,7 +794,7 @@ MethodEnd
 ; Return:     eax = Result of the message processing and depends on the message.
 
 Method REdtIptor.WndProc,, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-  DbgMessage uMsg
+  ;DbgMessage uMsg
   invoke GetProp, pSelf, offset szPropREdtIptor
   OCall xax::REdtIptor.Dispatch, pSelf, uMsg, wParam, lParam
 MethodEnd

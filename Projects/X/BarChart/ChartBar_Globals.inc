@@ -2,7 +2,7 @@
 ; Title:      ChartBar_Globals.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:    ObjAsm globals for demonstration program 7.
+; Purpose:    ObjAsm globals for chart demonstration program.
 ; Notes:      Version C.1.0, August 2021
 ;               - First release.
 ; ==================================================================================================

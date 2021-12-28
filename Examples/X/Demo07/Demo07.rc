@@ -46,9 +46,10 @@ ICON_MAIL             ICON DISCARDABLE "ICO\Mail_16x16_04.ico"
 
 // Chart icons
 ICON_SETUP            ICON DISCARDABLE "ICO\Setup_16x16_04.ico"
-ICON_SCALEX           ICON DISCARDABLE "Res\ScaleX_16x16_04.ico"
-ICON_SCALEY           ICON DISCARDABLE "Res\ScaleY_16x16_04.ico"
-ICON_SERIESXY         ICON DISCARDABLE "Res\SeriesXY_16x16_04.ico"
+ICON_SCALEX           ICON DISCARDABLE "ICO\ScaleX_16x16_04.ico"
+ICON_SCALEY1          ICON DISCARDABLE "ICO\ScaleY1_16x16_04.ico"
+ICON_SCALEY2          ICON DISCARDABLE "ICO\ScaleY2_16x16_04.ico"
+ICON_SERIESXY         ICON DISCARDABLE "ICO\SeriesXY_16x16_04.ico"
 
 // Cursors -----------------------------------------------------------------------------------------
 

@@ -13,22 +13,20 @@
 ;    ChartXYTabSeries implementation
 ; ==================================================================================================
 
-
-IDD_CHT_SER_TAB                   equ   5300
-IDC_CHT_SER_NAME_STC              equ   5301
-IDC_CHT_SER_NAME_EDT              equ   5302
-IDC_CHT_SER_DESC_STC              equ   5303
-IDC_CHT_SER_DESC_EDT              equ   5304
-
-IDC_CHT_SER_LINE_GRP              equ   5310
-IDC_CHT_SER_LINE_SHOW_CHK         equ   5311
-IDC_CHT_SER_LINE_COLOR_BTN        equ   5312
-IDC_CHT_SER_LINE_WIDTH_STC        equ   5314
-IDC_CHT_SER_LINE_WIDTH_EDT        equ   5315
-IDC_CHT_SER_LINE_WIDTH_UDN        equ   5316
-IDC_CHT_SER_LINE_STYLE_STC        equ   5317
-IDC_CHT_SER_LINE_STYLE_CBO        equ   5318
-
+IDD_CHT_SER_XY_TAB                equ   5300
+IDC_CHT_SER_XY_NAME_STC           equ   5301
+IDC_CHT_SER_XY_NAME_EDT           equ   5302
+IDC_CHT_SER_XY_DESC_STC           equ   5303
+IDC_CHT_SER_XY_DESC_EDT           equ   5304
+IDC_CHT_SER_XY_Y2_CHK             equ   5305
+IDC_CHT_SER_XY_LINE_GRP           equ   5310
+IDC_CHT_SER_XY_LINE_SHOW_CHK      equ   5311
+IDC_CHT_SER_XY_LINE_COLOR_BTN     equ   5312
+IDC_CHT_SER_XY_LINE_WIDTH_STC     equ   5313
+IDC_CHT_SER_XY_LINE_WIDTH_EDT     equ   5314
+IDC_CHT_SER_XY_LINE_WIDTH_UDN     equ   5315
+IDC_CHT_SER_XY_LINE_STYLE_STC     equ   5316
+IDC_CHT_SER_XY_LINE_STYLE_CBO     equ   5317
 IDC_CHT_SER_XY_MARK_GRP           equ   5320
 IDC_CHT_SER_XY_MARK_SHOW_CHK      equ   5321
 IDC_CHT_SER_XY_MARK_COLOR_B_BTN   equ   5322
@@ -36,17 +34,17 @@ IDC_CHT_SER_XY_MARK_COLOR_F_BTN   equ   5323
 IDC_CHT_SER_XY_MARK_SIZE_STC      equ   5324
 IDC_CHT_SER_XY_MARK_SIZE_EDT      equ   5325
 IDC_CHT_SER_XY_MARK_SIZE_UDN      equ   5326
-IDC_CHT_SER_XY_MARK_TYPE_STC      equ   5327
-IDC_CHT_SER_XY_MARK_TYPE_CBO      equ   5328
-IDC_CHT_SER_XY_MARK_WIDTH_STC     equ   5329
-IDC_CHT_SER_XY_MARK_WIDTH_EDT     equ   5330
-IDC_CHT_SER_XY_MARK_WIDTH_UDN     equ   5331
+IDC_CHT_SER_XY_MARK_WIDTH_STC     equ   5327
+IDC_CHT_SER_XY_MARK_WIDTH_EDT     equ   5328
+IDC_CHT_SER_XY_MARK_WIDTH_UDN     equ   5329
+IDC_CHT_SER_XY_MARK_TYPE_STC      equ   5330
+IDC_CHT_SER_XY_MARK_TYPE_CBO      equ   5331
 
-LINE_WIDTH_MIN    equ   1
-LINE_WIDTH_MAX    equ   10
+XY_LINE_WIDTH_MIN    equ   1
+XY_LINE_WIDTH_MAX    equ   10
 
-MARKER_SIZE_MIN   equ   1
-MARKER_SIZE_MAX   equ   50
+XY_MARKER_SIZE_MIN   equ   1
+XY_MARKER_SIZE_MAX   equ   50
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     ChartXYTabSeries.CtlsGet
@@ -59,11 +57,11 @@ Method ChartXYTabSeries.CtlsGet, uses xbx xdi xsi
 
   SetObject xsi
   lea xbx, cBuffer
-  mov xdi, [xsi].pChartSeries
+  mov xdi, [xsi].pOwner
   assume xdi:$ObjPtr(ChartXYSeries)
 
   invoke StrDispose, [xdi].pName
-  invoke GetDlgItemText, [xsi].hWnd, IDC_CHT_SER_NAME_EDT, xbx, lengthof cBuffer
+  invoke GetDlgItemText, [xsi].hWnd, IDC_CHT_SER_XY_NAME_EDT, xbx, lengthof cBuffer
   .if eax == 0
     xor eax, eax
   .else
@@ -72,7 +70,7 @@ Method ChartXYTabSeries.CtlsGet, uses xbx xdi xsi
   mov [xdi].pName, xax
 
   invoke StrDispose, [xdi].pDescription
-  invoke GetDlgItemText, [xsi].hWnd, IDC_CHT_SER_DESC_EDT, xbx, lengthof cBuffer
+  invoke GetDlgItemText, [xsi].hWnd, IDC_CHT_SER_XY_DESC_EDT, xbx, lengthof cBuffer
   .if eax == 0
     xor eax, eax
   .else
@@ -80,24 +78,31 @@ Method ChartXYTabSeries.CtlsGet, uses xbx xdi xsi
   .endif
   mov [xdi].pDescription, xax
 
-  invoke IsDlgButtonChecked, [xsi].hWnd, IDC_CHT_SER_LINE_SHOW_CHK
+  invoke IsDlgButtonChecked, [xsi].hWnd, IDC_CHT_SER_XY_Y2_CHK
+  .if eax == BST_CHECKED
+    BitSet [xdi].dFlags, CHT_SERIES_USE_Y2
+  .else
+    BitClr [xdi].dFlags, CHT_SERIES_USE_Y2
+  .endif
+
+  invoke IsDlgButtonChecked, [xsi].hWnd, IDC_CHT_SER_XY_LINE_SHOW_CHK
   .if eax == BST_CHECKED
     BitSet [xdi].dFlags, CHT_SERIES_SHOW_DEPICTION
   .else
     BitClr [xdi].dFlags, CHT_SERIES_SHOW_DEPICTION
   .endif
 
-  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_LINE_COLOR_BTN
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_LINE_COLOR_BTN
   mov [xdi].Setup.LineColor, $32($invoke(SendMessage, xax, BM_GETCOLOR, 0, 0))
 
-  invoke GetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_LINE_WIDTH_EDT, addr dTranslated, FALSE
+  invoke GetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_XY_LINE_WIDTH_EDT, addr dTranslated, FALSE
   .if dTranslated != FALSE
-    .if (SDWORD ptr eax >= LINE_WIDTH_MIN) && (SDWORD ptr eax <= LINE_WIDTH_MAX)
+    .if (SDWORD ptr eax >= XY_LINE_WIDTH_MIN) && (SDWORD ptr eax <= XY_LINE_WIDTH_MAX)
       mov [xdi].Setup.dLineWidth, eax
     .endif
   .endif
 
-  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_LINE_STYLE_CBO
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_LINE_STYLE_CBO
   mov [xdi].Setup.dLineStyle, $32($invoke(SendMessage, xax, CB_GETCURSEL, 0, 0))
 
   invoke IsDlgButtonChecked, [xsi].hWnd, IDC_CHT_SER_XY_MARK_SHOW_CHK
@@ -115,7 +120,7 @@ Method ChartXYTabSeries.CtlsGet, uses xbx xdi xsi
 
   invoke GetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_XY_MARK_SIZE_EDT, addr dTranslated, FALSE
   .if dTranslated != FALSE
-    .if (SDWORD ptr eax >= MARKER_SIZE_MIN) && (SDWORD ptr eax <= MARKER_SIZE_MAX)
+    .if (SDWORD ptr eax >= XY_MARKER_SIZE_MIN) && (SDWORD ptr eax <= XY_MARKER_SIZE_MAX)
       mov [xdi].Setup.dMarkerSize, eax
     .endif
   .endif
@@ -125,7 +130,7 @@ Method ChartXYTabSeries.CtlsGet, uses xbx xdi xsi
 
   invoke GetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_XY_MARK_WIDTH_EDT, addr dTranslated, FALSE
   .if dTranslated != FALSE
-    .if (eax >= LINE_WIDTH_MIN) && (eax <= LINE_WIDTH_MAX)
+    .if (eax >= XY_LINE_WIDTH_MIN) && (eax <= XY_LINE_WIDTH_MAX)
       mov [xdi].Setup.dMarkerBorderWidth, eax
     .endif
   .endif
@@ -141,24 +146,29 @@ MethodEnd
 
 Method ChartXYTabSeries.CtlsSet, uses xbx xdi xsi
   SetObject xsi
-  mov xdi, [xsi].pChartSeries
+  mov xdi, [xsi].pOwner
   assume xdi:$ObjPtr(ChartXYSeries)
 
-  invoke SetDlgItemText, [xsi].hWnd, IDC_CHT_SER_NAME_EDT, [xdi].pName
-  invoke SetDlgItemText, [xsi].hWnd, IDC_CHT_SER_DESC_EDT, [xdi].pDescription
+  invoke SetDlgItemText, [xsi].hWnd, IDC_CHT_SER_XY_NAME_EDT, [xdi].pName
+  invoke SetDlgItemText, [xsi].hWnd, IDC_CHT_SER_XY_DESC_EDT, [xdi].pDescription
 
-  .ifBitSet [xdi].dFlags, CHT_SERIES_SHOW_DEPICTION
-    invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_LINE_SHOW_CHK, BST_CHECKED
+  .ifBitSet [xdi].dFlags, CHT_SERIES_USE_Y2
+    invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_XY_Y2_CHK, BST_CHECKED
   .else
-    invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_LINE_SHOW_CHK, BST_UNCHECKED
+    invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_XY_Y2_CHK, BST_UNCHECKED
   .endif
 
-  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_LINE_COLOR_BTN
+  .ifBitSet [xdi].dFlags, CHT_SERIES_SHOW_DEPICTION
+    invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_XY_LINE_SHOW_CHK, BST_CHECKED
+  .else
+    invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_XY_LINE_SHOW_CHK, BST_UNCHECKED
+  .endif
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_LINE_COLOR_BTN
   invoke SendMessage, xax, BM_SETCOLOR, 0, [xdi].Setup.LineColor
 
-  invoke SetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_LINE_WIDTH_EDT, [xdi].Setup.dLineWidth, FALSE
+  invoke SetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_XY_LINE_WIDTH_EDT, [xdi].Setup.dLineWidth, FALSE
 
-  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_LINE_STYLE_CBO
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_LINE_STYLE_CBO
   mov xbx, xax
   invoke SendMessage, xbx, CB_RESETCONTENT, 0, 0
   invoke SendMessage, xbx, CB_ADDSTRING, 0, $OfsCStr("Solid")
@@ -205,38 +215,25 @@ Method ChartXYTabSeries.CtlsSet, uses xbx xdi xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartXYTabSeries.Done
-; Purpose:    Finalize the ChartTabSeries object.
-; Arguments:  None.
-; Return:     Nothing.
-
-Method ChartXYTabSeries.Done, uses xsi
-  SetObject xsi
-  invoke StrDispose, [xsi].pLocalName
-  invoke StrDispose, [xsi].pLocalDescription
-  ACall xsi.Done
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     ChartXYTabSeries.Init
 ; Purpose:    Initialize the ChartXYTabSeries object.
 ; Arguments:  Arg1: -> Owner object.
-;             Arg2: -> ChartFlatSeries.
+;             Arg2: Parent window HANDLE.
+;             Arg3: -> MaskedImageList. 
 ; Return:     Nothing.
 
-Method ChartXYTabSeries.Init, uses xbx xsi, pOwner:POINTER, pChartSeries:$ObjPtr(ChartXYSeries)
+Method ChartXYTabSeries.Init, uses xsi, pOwner:POINTER, hParent:HWND, pImageList:$ObjPtr(MaskedImageList)
   SetObject xsi
-  mov xbx, pOwner
-  TCall xsi::DialogModeless.Init, xbx, [xbx].$Obj(TabCtrl).hWnd, IDD_CHT_SER_TAB, \
+  TCall xsi::DialogModeless.Init, pOwner, hParent, IDD_CHT_SER_XY_TAB, \
                                   offset $ObjTmpl(Application).hActiveMlsDlg
-  mrm [xsi].pChartSeries, pChartSeries, xbx
+
+  OCall pImageList::MaskedImageList.IconLoadResource, $OfsCStr("ICON_SERIESXY")
+  mov [xsi].dIconIndex, eax
 
   ;Create local copies
-  assume xbx:$ObjPtr(ChartXYSeries)
-  mov [xsi].pLocalName, $invoke(StrNew, [xbx].pName)
-  mov [xsi].pLocalDescription, $invoke(StrNew, [xbx].pDescription)
-  s2s [xsi].LocalSetup, [xbx].Setup, xax, xcx, xdx, xmm0, xmm1, xmm2
-  assume xbx:NOTHING
+  ACall xsi.Init, pOwner
+  mov xcx, pOwner
+  s2s [xsi].LocalSetup, [xcx].$Obj(ChartXYSeries).Setup, xax, xdx, xmm0, xmm1, xmm2
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -250,10 +247,10 @@ Method ChartXYTabSeries.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARA
   local ChooseClr:CHOOSECOLOR, ColorRef[16]:DWORD
 
   SetObject xsi
-  .if (WORD ptr wParam == IDC_CHT_SER_LINE_COLOR_BTN) || \
+  .if (WORD ptr wParam == IDC_CHT_SER_XY_LINE_COLOR_BTN) || \
       (WORD ptr wParam == IDC_CHT_SER_XY_MARK_COLOR_B_BTN) || \
       (WORD ptr wParam == IDC_CHT_SER_XY_MARK_COLOR_F_BTN)
-    mov xbx, [xsi].pChartSeries
+    mov xbx, [xsi].pOwner
 
     ;Launch ChooseColor system dialog
     mov ChooseClr.lStructSize, sizeof ChooseClr
@@ -287,7 +284,7 @@ Method ChartXYTabSeries.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARA
     mov ColorRef[14*sizeof(COLORREF)], $RGB(239,239,239)
     mov ColorRef[15*sizeof(COLORREF)], $RGB(255,255,255)
 
-    .if DWORD ptr wParam == IDC_CHT_SER_LINE_COLOR_BTN
+    .if DWORD ptr wParam == IDC_CHT_SER_XY_LINE_COLOR_BTN
       lea xbx, [xbx].$Obj(ChartXYSeries).Setup.LineColor
     .elseif DWORD ptr wParam ==  IDC_CHT_SER_XY_MARK_COLOR_B_BTN
       lea xbx, [xbx].$Obj(ChartXYSeries).Setup.MarkerBorderColor
@@ -328,14 +325,14 @@ Method ChartXYTabSeries.OnInitDialog, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
 
   ;Set UDN-Controls
-  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_LINE_WIDTH_UDN
-  invoke SendMessage, xax, UDM_SETRANGE32, LINE_WIDTH_MIN, LINE_WIDTH_MAX
+  invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_LINE_WIDTH_UDN
+  invoke SendMessage, xax, UDM_SETRANGE32, XY_LINE_WIDTH_MIN, XY_LINE_WIDTH_MAX
 
   invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_MARK_SIZE_UDN
-  invoke SendMessage, xax, UDM_SETRANGE32, MARKER_SIZE_MIN, MARKER_SIZE_MAX
+  invoke SendMessage, xax, UDM_SETRANGE32, XY_MARKER_SIZE_MIN, XY_MARKER_SIZE_MAX
 
   invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_MARK_WIDTH_UDN
-  invoke SendMessage, xax, UDM_SETRANGE32, LINE_WIDTH_MIN, LINE_WIDTH_MAX
+  invoke SendMessage, xax, UDM_SETRANGE32, XY_LINE_WIDTH_MIN, XY_LINE_WIDTH_MAX
 
   ACall xsi.OnInitDialog, wParam, lParam
 MethodEnd
@@ -346,16 +343,11 @@ MethodEnd
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ChartXYTabSeries.Restore, uses xbx xsi
+Method ChartXYTabSeries.Restore, uses xsi
   SetObject xsi
-  mov xbx, [xsi].pChartSeries
-  assume xbx:$ObjPtr(ChartXYSeries)
 
   ;Restore from local copies
-  invoke StrDispose, [xbx].pName
-  mov [xbx].pName, $invoke(StrNew, [xsi].pLocalName)
-  invoke StrDispose, [xbx].pDescription
-  mov [xbx].pDescription, $invoke(StrNew, [xsi].pLocalDescription)
-  s2s [xbx].Setup, [xsi].LocalSetup, xax, xcx, xdx, xmm0, xmm1, xmm2
-  assume xbx:NOTHING
+  ACall xsi.Restore
+  mov xcx, [xsi].pOwner
+  s2s [xcx].$Obj(ChartXYSeries).Setup, [xsi].LocalSetup, xax, xdx, xmm0, xmm1, xmm2
 MethodEnd
