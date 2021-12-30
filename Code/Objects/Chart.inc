@@ -25,7 +25,20 @@
 
 
 
-CHT_FLOAT textequ <REAL4>
+CHT_FLOAT textequ <REAL8>
+
+.const
+if type(CHT_FLOAT) eq REAL4
+  FLOAT_MAX equ R4_MAX
+  FLOAT_MIN equ R4_MIN
+  cFloatMax DWORD FLOAT_MAX                             
+  cFloatMin DWORD FLOAT_MIN                             
+else
+  FLOAT_MAX equ R8_MAX
+  FLOAT_MIN equ R8_MIN
+  cFloatMax QWORD FLOAT_MAX
+  cFloatMin QWORD FLOAT_MIN
+endif
 
 DEF_CHART struc
   xCtlID        XWORD     ?                             ;Contol ID
@@ -100,10 +113,10 @@ CHT_SCALE_STRINGS ends
 
 CHT_SCALE_BASIC_DATA struc
   dFlags            DWORD       CHT_SCALE_DEFAULT_FLAGS ;Scale options
-  fSetupMax         CHT_FLOAT   1.0                     ;Setup max value
-  fSetupMin         CHT_FLOAT   0.0                     ;Setup min value
-  fDataMax          CHT_FLOAT   1.0                     ;Data max value
-  fDataMin          CHT_FLOAT   0.0                     ;Data min value
+  fSetupMax         CHT_FLOAT   FLOAT_MAX               ;Setup max value
+  fSetupMin         CHT_FLOAT   FLOAT_MIN               ;Setup min value
+  fDataMax          CHT_FLOAT   FLOAT_MAX               ;Data max value
+  fDataMin          CHT_FLOAT   FLOAT_MIN               ;Data min value
   dSetupMjrDiv      DWORD       2                       ;Setup major divisions
   dSetupMnrDiv      DWORD       2                       ;Setup minor divisions
   dDataMjrDiv       DWORD       2                       ;Data major divisions
@@ -119,10 +132,10 @@ PCHT_SCALE_BASIC_DATA typedef ptr CHT_SCALE_BASIC_DATA
 CHT_SCALE_INTERNAL_DATA struc                           ;Do not use directly, internal data
   dID               DWORD       0                       ;E.g.: CHT_ID_SCALEX
   dDecimals         DWORD       1                       ;Nr of decimal digits used to draw labels
-  fScaleMax         CHT_FLOAT   1.0                     ;Max used for drawing scale
-  fScaleMin         CHT_FLOAT   0.0                     ;Min used for drawing scale
-  fInitMax          CHT_FLOAT   1.0
-  fInitMin          CHT_FLOAT   0.0
+  fScaleMax         CHT_FLOAT   FLOAT_MAX               ;Max used for drawing scale
+  fScaleMin         CHT_FLOAT   FLOAT_MIN               ;Min used for drawing scale
+  fInitMax          CHT_FLOAT   FLOAT_MAX
+  fInitMin          CHT_FLOAT   FLOAT_MIN
   fDivMjrFst        CHT_FLOAT   0.0                     ;Value of first major division in plot range
   fDivMjrStp        CHT_FLOAT   0.0                     ;Value major division step
   dDivMjrLen        DWORD       0                       ;Size of major division
@@ -214,9 +227,6 @@ Object ChartWnd, ChartWndID, Window
   RedefineMethod    Init,               POINTER, HWND, PDEF_CHART
   RedefineMethod    Load,               $ObjPtr(Stream), PDESER_INFO  ;-> Stream
   VirtualMethod     Refresh
-  VirtualMethod     SetExtremsScaleX
-  VirtualMethod     SetExtremsScaleY1
-  VirtualMethod     SetExtremsScaleY2
   VirtualMethod     Show,               HDC, PRECT
   VirtualMethod     ShowSetupDlg,       SDWORD, SDWORD, DWORD
   RedefineMethod    Store,              $ObjPtr(Stream)               ;-> Stream
@@ -349,20 +359,7 @@ ObjectEnd
 
 if IMPLEMENT
 
-.const
-String szChart, "OA_Chart"
-
-if type(CHT_FLOAT) eq REAL4
-  FLOAT_MAX equ R4_MAX                                  ;~ +3.402823466 x 10^38
-  FLOAT_MIN equ R4_MIN                                  ;~ -3.402823466 x 10^38
-  cFloatMax DWORD FLOAT_MAX                             
-  cFloatMin DWORD FLOAT_MIN                             
-else
-  FLOAT_MAX equ R8_MAX                                  ;~ +1.7976931348623158 × 10^308
-  FLOAT_MIN equ R8_MIN                                  ;~ -1.7976931348623158 × 10^308
-  cFloatMax QWORD FLOAT_MAX
-  cFloatMin QWORD FLOAT_MIN
-endif
+CStr szChart, "OA_Chart"
 
 InfoArea struct
   Rect        RECT    {}

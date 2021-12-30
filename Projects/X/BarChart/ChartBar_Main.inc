@@ -627,8 +627,6 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   ;Scale X axis
   s2s [xsi].Chart.ScaleX.fSetupMax, $CFloat(3.0), xax, xcx
   s2s [xsi].Chart.ScaleX.fSetupMin, $CFloat(0.0), xax, xcx
-  s2s [xsi].Chart.ScaleX.fDataMax,  $CFloat(3.0), xax, xcx
-  s2s [xsi].Chart.ScaleX.fDataMin,  $CFloat(0.0), xax, xcx
 
   mov [xsi].Chart.ScaleX.dSetupMjrDiv, 3
   mov [xsi].Chart.ScaleX.dSetupMnrDiv, 0

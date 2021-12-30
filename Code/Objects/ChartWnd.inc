@@ -71,7 +71,7 @@ SetScaleTitle macro Scale
   .endif
 
   invoke StrDispose, Scale.pTitle
-  .if Scale.pDescription != NULL || Scale.pUnit != NULL  
+  .if Scale.pDescription != NULL || Scale.pUnit != NULL
     mov Scale.pTitle, $invoke(StrNew, xdi)
   .else
     mov Scale.pTitle, NULL
@@ -140,7 +140,7 @@ Method ChartWnd.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
   ;Determine the left plot border -----------------------------------
   .ifBitSet [xsi].dFlags, CHT_WND_SHOW_Y1
     m2m [xsi].PlotRect.left, [xsi].DrawRect.left, eax
-  
+
     .ifBitSet [xsi].ScaleY1.dFlags, CHT_SCALE_SHOW_LABEL
       lea xdi, cBuffer
       fld [xsi].ScaleY1.fScaleMin
@@ -149,19 +149,19 @@ Method ChartWnd.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
       invoke StrLength, xdi
       lea xbx, TextSize1
       invoke GetTextExtentPoint32, hDC, xdi, eax, xbx   ;TextSize1 = extent of Y scale Min label
-  
+
       fld [xsi].ScaleY1.fScaleMax
       invoke St0ToStr, xdi, 0, [xsi].ScaleY1.dDecimals, f_NOR
       fUnload
       invoke StrLength, xdi
       lea xbx, TextSize2
       invoke GetTextExtentPoint32, hDC, xdi, eax, xbx   ;TextSize2 = extent of Y scale Max label
-  
+
       uMax TextSize1.x, TextSize2.x                     ;eax = Widest Y scale label
       add eax, [xsi].ScaleY1.dLabelSep                  ;add label separation
       add [xsi].PlotRect.left, eax
     .endif
-  
+
     .ifBitSet [xsi].ScaleY1.dFlags, CHT_SCALE_SHOW_TITLE
       .if [xsi].ScaleY1.pTitle != NULL
         mov eax, [xsi].TextMetricVert.tmHeight
@@ -169,7 +169,7 @@ Method ChartWnd.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
         add [xsi].PlotRect.left, eax                    ;Y scale title height + separation
       .endif
     .endif
-  
+
     .ifBitSet [xsi].ScaleY1.dFlags, CHT_SCALE_SHOW_MJR_DIV
       mov eax, [xsi].ScaleY1.dDivMjrLen                 ;Major division lenght
       add [xsi].PlotRect.left, eax
@@ -210,7 +210,7 @@ Method ChartWnd.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
         lea xbx, TextSize1
         invoke GetTextExtentPoint32, hDC, xdi, eax, xbx
       .endif
-  
+
       mov ecx, TextSize1.x
       .if ecx < TextSize2.x
         mov ecx, TextSize2.x
@@ -259,7 +259,7 @@ Method ChartWnd.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
         lea xbx, TextSize1
         invoke GetTextExtentPoint32, hDC, xdi, eax, xbx
       .endif
-  
+
       mov ecx, TextSize1.x
       .if ecx < TextSize2.x
         mov ecx, TextSize2.x
@@ -277,7 +277,7 @@ Method ChartWnd.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
     mov [xsi].PlotRect.right, eax                       ;This edge is not included in the plot area
   .else
     m2m [xsi].PlotRect.right, [xsi].DrawRect.right, eax
-  
+
     .ifBitSet [xsi].ScaleY2.dFlags, CHT_SCALE_SHOW_LABEL
       lea xdi, cBuffer
       fld [xsi].ScaleY2.fScaleMin
@@ -286,19 +286,19 @@ Method ChartWnd.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
       invoke StrLength, xdi
       lea xbx, TextSize1
       invoke GetTextExtentPoint32, hDC, xdi, eax, xbx   ;TextSize1 = extent of Y scale Min label
-  
+
       fld [xsi].ScaleY2.fScaleMax
       invoke St0ToStr, xdi, 0, [xsi].ScaleY2.dDecimals, f_NOR
       fUnload
       invoke StrLength, xdi
       lea xbx, TextSize2
       invoke GetTextExtentPoint32, hDC, xdi, eax, xbx   ;TextSize2 = extent of Y scale Max label
-  
+
       uMax TextSize1.x, TextSize2.x                     ;eax = Widest Y scale label
       add eax, [xsi].ScaleY2.dLabelSep                  ;add label separation
       sub [xsi].PlotRect.right, eax
     .endif
-  
+
     .ifBitSet [xsi].ScaleY2.dFlags, CHT_SCALE_SHOW_TITLE
       .if [xsi].ScaleY2.pTitle != NULL
         mov eax, [xsi].TextMetricVert.tmHeight
@@ -306,7 +306,7 @@ Method ChartWnd.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
         sub [xsi].PlotRect.right, eax                   ;Y scale title height + separation
       .endif
     .endif
-  
+
     .ifBitSet [xsi].ScaleY2.dFlags, CHT_SCALE_SHOW_MJR_DIV
       mov eax, [xsi].ScaleY2.dDivMjrLen                 ;Major division lenght
       sub [xsi].PlotRect.right, eax
@@ -881,8 +881,8 @@ Method ChartWnd.DrawScaleX, uses xbx xdi xsi, hDC:HDC
       .endw
     .endif
   .endif
-  
-  ;Delete allocated resources 
+
+  ;Delete allocated resources
   invoke DeleteObject, hMjrGridPen
   invoke DeleteObject, hMnrGridPen
   invoke DeleteObject, hDivPen
@@ -1140,7 +1140,7 @@ Method ChartWnd.DrawScaleY1, uses xbx xdi xsi, hDC:HDC
     .endif
   .endif
 
-  ;Delete allocated resources 
+  ;Delete allocated resources
   invoke DeleteObject, hMjrGridPen
   invoke DeleteObject, hMnrGridPen
   invoke DeleteObject, hDivPen
@@ -1398,7 +1398,7 @@ Method ChartWnd.DrawScaleY2, uses xbx xdi xsi, hDC:HDC
     .endif
   .endif
 
-  ;Delete allocated resources 
+  ;Delete allocated resources
   invoke DeleteObject, hMjrGridPen
   invoke DeleteObject, hMnrGridPen
   invoke DeleteObject, hDivPen
@@ -1438,6 +1438,8 @@ MethodEnd
 Method ChartWnd.Init, uses xbx xsi, pOwner:POINTER, hParent:HWND, pDefStruc:PDEF_CHART
   ;DbgText "ChartBarWnd.Init"
   SetObject xsi
+  OCall [xsi].Data::Collection.Init, xsi, 10, 10, COL_MAX_CAPACITY
+  OCall [xsi].InfoAreas::DataCollection.Init, xsi, 100, 100, COL_MAX_CAPACITY
   mov xbx, pDefStruc
   assume xbx:PDEF_CHART
   mov eax, [xbx].dStyle
@@ -1489,8 +1491,8 @@ Method ChartWnd.OnButtonDblClk, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
 
   SetObject xsi
   PntS2Pnt DblClkPnt, lParam
-  mrm PopupPnt.x, DblClkPnt.x, ebx 
-  mrm PopupPnt.y, DblClkPnt.y, edi 
+  mrm PopupPnt.x, DblClkPnt.x, ebx
+  mrm PopupPnt.y, DblClkPnt.y, edi
   mov eax, -1
 
   .ifBitSet [xsi].dFlags, CHT_WND_CTRL_DBLCLK
@@ -1676,9 +1678,6 @@ Method ChartWnd.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
   mov ToolInfo.lpszText, NULL
   mov ToolInfo.lParam, 0
   invoke SendMessage, [xsi].hToolTip, TTM_ADDTOOL, 0, addr ToolInfo ;Associate the tooltip
-
-  OCall [xsi].Data::Collection.Init, xsi, 1, 1, COL_MAX_CAPACITY    ;Make Space for 1 series
-  OCall [xsi].InfoAreas::DataCollection.Init, xsi, 100, 100, COL_MAX_CAPACITY
 
   FillString LogFnt.lfFaceName, <Segoe UI>
   mov hDC, $invoke(GetDC, [xsi].hWnd)
@@ -2283,15 +2282,31 @@ Method ChartWnd.Refresh, uses xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Macro:      GetScaleMinMax
-; Purpose:    Helper for SetExtremsScaleXXX methods to get min and max scale values.
-; Arguments:  Index 0 for X, 1 for Y.
+; Method:     ChartWnd.Show
+; Purpose:    Draw the ChartWnd object.
+; Arguments:  Arg1: DC handle.
+;             Arg2: -> RECT structure that indicates where to draw.
 ; Return:     Nothing.
-; Note:       edi acts as a change flag.
+
+CheckScaleSetupValues macro Scale
+  fld Scale.fSetupMin
+  fcomp cFloatMin
+  fGetFlags
+  .if ZERO?                                             ;fSetupMin = cFloatMin
+    s2s Scale.fSetupMin, Scale.fDataMin, xax, xcx
+  .endif
+
+  fld Scale.fSetupMax
+  fcomp cFloatMax
+  fGetFlags
+  .if ZERO?                                             ;fSetupMax = cFloatMax
+    s2s Scale.fSetupMax, Scale.fDataMax, xax, xcx
+  .endif
+endm
 
 GetScaleMinMax macro Index, MinIndex, MaxIndex
-  mov xcx, pSeries
-  mov eax, [xcx].$Obj(ChartSeries).&MaxIndex
+  mov pSeries, xax
+  mov eax, [xax].$Obj(ChartSeries).&MaxIndex
   .if eax != -1
     inc edi                                             ;Set flag
     OCall pSeries::ChartSeries.ItemAt, Index, eax
@@ -2302,7 +2317,7 @@ GetScaleMinMax macro Index, MinIndex, MaxIndex
     .endif
     fUnload 1                                           ; Min | Max
   .endif
-    
+
   mov xcx, pSeries
   mov eax, [xcx].$Obj(ChartSeries).&MinIndex
   .if eax != -1
@@ -2317,125 +2332,92 @@ GetScaleMinMax macro Index, MinIndex, MaxIndex
   .endif
 endm
 
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartWnd.SetExtremsScaleX
-; Purpose:    Set scale X min and max data values.
-; Arguments:  None.
-; Return:     Nothing.
-
-Method ChartWnd.SetExtremsScaleX, uses xbx xdi xsi
-  local pSeries:$ObjPtr(ChartSeries)
-
-  SetObject xsi
-  fld cFloatMin                                         ;Min
-  fld cFloatMax                                         ;Min | Max
-
-  xor ebx, ebx
-  xor edi, edi                                          ;Reset flag
-  .while ebx < [xsi].Data.dCount
-    mov pSeries, $OCall([xsi].Data::Collection.ItemAt, ebx)
-    GetScaleMinMax 0, dDataMinXIndex, dDataMaxXIndex
-    inc ebx
-  .endw
-  
-  .if edi != 0                                          ;Check if something has changed
-    fstp CHT_FLOAT ptr [xsi].ScaleX.fDataMin
-    fstp CHT_FLOAT ptr [xsi].ScaleX.fDataMax
-  .else
-    fUnload 2
-  .endif
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartWnd.SetExtremsScaleY1
-; Purpose:    Set scale Y1 min and max data values.
-; Arguments:  None.
-; Return:     Nothing.
-
-Method ChartWnd.SetExtremsScaleY1, uses xbx xdi xsi
-  local pSeries:$ObjPtr(ChartSeries)
-
-  SetObject xsi
-  fld cFloatMin                                         ;Min
-  fld cFloatMax                                         ;Min | Max
-
-  xor ebx, ebx
-  xor edi, edi                                          ;Reset flag
-  .while ebx < [xsi].Data.dCount
-    mov pSeries, $OCall([xsi].Data::Collection.ItemAt, ebx)
-    .ifBitClr [xax].$Obj(ChartSeries).dFlags, CHT_SERIES_USE_Y2
-      GetScaleMinMax 1, dDataMinYIndex, dDataMaxYIndex
-    .endif
-    inc ebx
-  .endw
-  
-  .if edi != 0                                          ;Check if something has changed
-    fstp CHT_FLOAT ptr [xsi].ScaleY1.fDataMin
-    fstp CHT_FLOAT ptr [xsi].ScaleY1.fDataMax
-  .else
-    fUnload 2
-  .endif
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartWnd.SetExtremsScaleY2
-; Purpose:    Set scale Y2 min and max data values.
-; Arguments:  None.
-; Return:     Nothing.
-
-Method ChartWnd.SetExtremsScaleY2, uses xbx xdi xsi
-  local pSeries:$ObjPtr(ChartSeries)
-
-  SetObject xsi
-  fld cFloatMin                                         ;Min
-  fld cFloatMax                                         ;Min | Max
-
-  xor ebx, ebx
-  xor edi, edi                                          ;Reset flag
-  .while ebx < [xsi].Data.dCount
-    mov pSeries, $OCall([xsi].Data::Collection.ItemAt, ebx)
-    .ifBitSet [xax].$Obj(ChartSeries).dFlags, CHT_SERIES_USE_Y2
-      GetScaleMinMax 1, dDataMinYIndex, dDataMaxYIndex
-    .endif
-    inc ebx
-  .endw
-  
-  .if edi != 0                                          ;Check if something has changed
-    fstp CHT_FLOAT ptr [xsi].ScaleY2.fDataMin
-    fstp CHT_FLOAT ptr [xsi].ScaleY2.fDataMax
-  .else
-    fUnload 2
-  .endif
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ChartWnd.Show
-; Purpose:    Draw the ChartWnd object.
-; Arguments:  Arg1: DC handle.
-;             Arg2: -> RECT structure that indicates where to draw.
-; Return:     Nothing.
-
 Method ChartWnd.Show, uses xbx xdi xsi, hDC:HDC, pRect:PRECT
-  local hPrevBmp:HBITMAP
+  local hPrevBmp:HBITMAP, pSeries:$ObjPtr(ChartSeries)
 
 ;  DbgText "ChartWnd.Show"
   SetObject xsi
 
   ;Do some initialization if the chart is shown for the first time
   .ifBitClr [xsi].dFlags, CHT_WND_SHOWN_FIRST_TIME
+
+    ;Scan all series
     xor ebx, ebx
     .while ebx < [xsi].Data.dCount
       OCall [xsi].Data::Collection.ItemAt, ebx
       OCall xax::ChartSeries.Scan, [xax].$Obj(ChartSeries).dDataFrom, \
-                                   [xax].$Obj(ChartSeries).dDataCount 
+                                   [xax].$Obj(ChartSeries).dDataCount
       inc ebx
     .endw
+
+    ;Set fDataMin and fDataMax values for the ScaleX
+    fld cFloatMin                                         ;Min
+    xor ebx, ebx
+    fld cFloatMax                                         ;Min | Max
+    xor edi, edi                                          ;Reset flag
+    .while ebx < [xsi].Data.dCount
+      OCall [xsi].Data::Collection.ItemAt, ebx
+      GetScaleMinMax 0, dDataMinXIndex, dDataMaxXIndex    ;Modifies edi
+      inc ebx
+    .endw
+    .if edi != 0                                          ;Check if something has changed
+      fstp CHT_FLOAT ptr [xsi].ScaleX.fDataMin
+      fstp CHT_FLOAT ptr [xsi].ScaleX.fDataMax
+    .else
+      fUnload 2
+    .endif
+
+    ;Set fDataMin and fDataMax values for the ScaleY1
+    fld cFloatMin                                         ;Min
+    xor ebx, ebx
+    fld cFloatMax                                         ;Min | Max
+    xor edi, edi                                          ;Reset flag
+    .while ebx < [xsi].Data.dCount
+      OCall [xsi].Data::Collection.ItemAt, ebx
+      .ifBitClr [xax].$Obj(ChartSeries).dFlags, CHT_SERIES_USE_Y2
+        GetScaleMinMax 1, dDataMinYIndex, dDataMaxYIndex  ;Modifies edi
+      .endif
+      inc ebx
+    .endw
+    .if edi != 0                                          ;Check if something has changed
+      fstp CHT_FLOAT ptr [xsi].ScaleY1.fDataMin
+      fstp CHT_FLOAT ptr [xsi].ScaleY1.fDataMax
+    .else
+      fUnload 2
+    .endif
+
+    ;Set fDataMin and fDataMax values for the ScaleY2
+    fld cFloatMin                                         ;Min
+    xor ebx, ebx
+    fld cFloatMax                                         ;Min | Max
+    xor edi, edi                                          ;Reset flag
+    .while ebx < [xsi].Data.dCount
+      OCall [xsi].Data::Collection.ItemAt, ebx
+      .ifBitSet [xax].$Obj(ChartSeries).dFlags, CHT_SERIES_USE_Y2
+        GetScaleMinMax 1, dDataMinYIndex, dDataMaxYIndex  ;Modifies edi
+      .endif
+      inc ebx
+    .endw
+    .if edi != 0                                          ;Check if something has changed
+      fstp CHT_FLOAT ptr [xsi].ScaleY2.fDataMin
+      fstp CHT_FLOAT ptr [xsi].ScaleY2.fDataMax
+    .else
+      fUnload 2
+    .endif
+
+    ;Sanity check fSetupMin and fSetupMax values
+    CheckScaleSetupValues [xsi].ScaleX
+    CheckScaleSetupValues [xsi].ScaleY1
+    CheckScaleSetupValues [xsi].ScaleY2
+
+    ;Store fInit values
     s2s [xsi].ScaleX.fInitMin, [xsi].ScaleX.fSetupMin, xax, xcx
     s2s [xsi].ScaleX.fInitMax, [xsi].ScaleX.fSetupMax, xax, xcx
     s2s [xsi].ScaleY1.fInitMin, [xsi].ScaleY1.fSetupMin, xax, xcx
     s2s [xsi].ScaleY1.fInitMax, [xsi].ScaleY1.fSetupMax, xax, xcx
     s2s [xsi].ScaleY2.fInitMin, [xsi].ScaleY2.fSetupMin, xax, xcx
     s2s [xsi].ScaleY2.fInitMax, [xsi].ScaleY2.fSetupMax, xax, xcx
+
     BitSet [xsi].dFlags, CHT_WND_SHOWN_FIRST_TIME
   .endif
 
@@ -2444,7 +2426,7 @@ Method ChartWnd.Show, uses xbx xdi xsi, hDC:HDC, pRect:PRECT
   mov xbx, pRect
   invoke CreateCompatibleBitmap, hDC, [xbx].RECT.right, [xbx].RECT.bottom
   mov hPrevBmp, $invoke(SelectObject, xdi, xax)
-  
+
   ;Check if we need an Y1 scale
   .ifBitSet [xsi].dFlags, CHT_WND_FORCE_Y1
     BitSet [xsi].dFlags, CHT_WND_SHOW_Y1
@@ -2476,11 +2458,8 @@ Method ChartWnd.Show, uses xbx xdi xsi, hDC:HDC, pRect:PRECT
       inc ebx
     .endw
   .endif
-  
+
   ;Draw frame, scales, etc.
-  OCall xsi.SetExtremsScaleX
-  OCall xsi.SetExtremsScaleY1
-  OCall xsi.SetExtremsScaleY2
   OCall xsi.Calc, xdi, pRect
 
   OCall xsi.DrawFrame, xdi
@@ -2519,10 +2498,10 @@ MethodEnd
 ; Purpose:    Displays the chart setup dialog.
 ; Arguments:  Arg1: Dialog popup X position on screen.
 ;             Arg2: Dialog popup Y position on screen.
-;             Arg3: Selected tab on the dialog. 
+;             Arg3: Selected tab on the dialog.
 ; Return:     Nothing.
 
-Method ChartWnd.ShowSetupDlg, uses xsi, sdPosX:SDWORD, sdPosY:SDWORD, dTabIndex:DWORD 
+Method ChartWnd.ShowSetupDlg, uses xsi, sdPosX:SDWORD, sdPosY:SDWORD, dTabIndex:DWORD
   local SetupDlg:$Obj(ChartSetup)
 
   ;DbgText "ChartWnd.ShowSetupDlg"
