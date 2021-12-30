@@ -51,10 +51,6 @@ ICON_SCALEY1          ICON DISCARDABLE "ICO\ScaleY1_16x16_04.ico"
 ICON_SCALEY2          ICON DISCARDABLE "ICO\ScaleY2_16x16_04.ico"
 ICON_SERIESXY         ICON DISCARDABLE "ICO\SeriesXY_16x16_04.ico"
 
-// Cursors -----------------------------------------------------------------------------------------
-
-CURSOR_HAND           CURSOR DISCARDABLE "CUR\Hand.cur"
-
 
 // Bitmaps -----------------------------------------------------------------------------------------
 
@@ -70,11 +66,6 @@ BMP_BACKGROUND        BITMAP "BMP\WndBkgnd.bmp"
 #include "Res\ChartTabGeneralDlg.rc"
 #include "Res\ChartTabScaleDlg.rc"
 #include "Res\ChartTabSeriesXYDlg.rc"
-
-
-// Gifs --------------------------------------------------------------------------------------------
-
-KEY GIF DISCARDABLE "GIF\Key.gif"
 
 
 // Menus -------------------------------------------------------------------------------------------

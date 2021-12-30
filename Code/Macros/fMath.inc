@@ -127,6 +127,14 @@ HALF_PI equ <+1.5707963267948966192313216916398e+0000>
 PI      equ <+3.1415926535897932384626433832795e+0000>
 TWO_PI  equ <+6.2831853071795864769252867665590e+0000>
 
+R4_MAX  equ 07F7FFFFFh                                  ;~ +3.402823466 x 10^38
+R4_MIN  equ 0FF7FFFFFh                                  ;~ -3.402823466 x 10^38
+R8_MAX  equ 07FEFFFFFFFFFFFFFh                          ;~ +1.7976931348623158 × 10^308
+R8_MIN  equ 0FFEFFFFFFFFFFFFFh                          ;~ -1.7976931348623158 × 10^308
+R10_MAX equ 07FFEFFFFFFFFFFFFFFFFh                      ;~ +1.1897314953572317 × 10^4932
+R10_MIN equ 0FFFEFFFFFFFFFFFFFFFFh                      ;~ -1.1897314953572317 × 10^4932
+
+
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      fildReg
 ; Purpose:    Load a CPU register containing an integer onto the FPU stack.

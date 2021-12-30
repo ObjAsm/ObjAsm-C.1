@@ -19,6 +19,8 @@
 ;                 Y2 scale.
 ;                 Holding down the CTRL key and double-clicking a scale will reset it to the
 ;                 auto max & min values.
+;                 Holding down the CTRL and SHIFT keys and double-clicking a scale will reset it
+;                 to the initial max & min values.
 ; ==================================================================================================
 
 
@@ -79,11 +81,12 @@ CHT_WND_CTRL_DBLCLK         equ   BIT04                 ;Enable CTRL double clic
 CHT_WND_DATA_TOOLTIPS_SHOW  equ   BIT05                 ;Enable ToolTips showing data information
 CHT_WND_FORCE_Y1            equ   BIT06                 ;Force display of Y1 scale
 CHT_WND_FORCE_Y2            equ   BIT07                 ;Force display of Y2 scale
+CHT_WND_SHOWN_FIRST_TIME    equ   BIT26                 ;Helper, 1 if chart has already been shown 
 CHT_WND_SHOW_Y1             equ   BIT27                 ;Helper, if set it shows the Y1 scale
 CHT_WND_SHOW_Y2             equ   BIT28                 ;Helper, if set it shows the Y2 scale
 CHT_WND_TOOLTIP_ACTIVE      equ   BIT29                 ;Helper, TooTip activation
 CHT_WND_TOOLTIP_SHOW        equ   BIT30                 ;Helper, ToolTip visibility
-CHT_WND_SELF_INST           equ   BIT31                 ;Helper, object was instanced by CreateWindowEx
+CHT_WND_SELF_INST           equ   BIT31                 ;Helper, if was instanced by CreateWindowEx
 
 
 CHT_WND_DEFAULT_FLAGS = CHT_WND_PANABLE or CHT_WND_ZOOMABLE or CHT_WND_COLOR or \
@@ -118,6 +121,8 @@ CHT_SCALE_INTERNAL_DATA struc                           ;Do not use directly, in
   dDecimals         DWORD       1                       ;Nr of decimal digits used to draw labels
   fScaleMax         CHT_FLOAT   1.0                     ;Max used for drawing scale
   fScaleMin         CHT_FLOAT   0.0                     ;Min used for drawing scale
+  fInitMax          CHT_FLOAT   1.0
+  fInitMin          CHT_FLOAT   0.0
   fDivMjrFst        CHT_FLOAT   0.0                     ;Value of first major division in plot range
   fDivMjrStp        CHT_FLOAT   0.0                     ;Value major division step
   dDivMjrLen        DWORD       0                       ;Size of major division
@@ -346,8 +351,18 @@ if IMPLEMENT
 
 .const
 String szChart, "OA_Chart"
-R8_MAX QWORD 07FEFFFFFFFFFFFFFh                         ;~ +1.8 × 10^308
-R8_MIN QWORD 0FFEFFFFFFFFFFFFFh                         ;~ -1.8 × 10^308
+
+if type(CHT_FLOAT) eq REAL4
+  FLOAT_MAX equ R4_MAX                                  ;~ +3.402823466 x 10^38
+  FLOAT_MIN equ R4_MIN                                  ;~ -3.402823466 x 10^38
+  cFloatMax DWORD FLOAT_MAX                             
+  cFloatMin DWORD FLOAT_MIN                             
+else
+  FLOAT_MAX equ R8_MAX                                  ;~ +1.7976931348623158 × 10^308
+  FLOAT_MIN equ R8_MIN                                  ;~ -1.7976931348623158 × 10^308
+  cFloatMax QWORD FLOAT_MAX
+  cFloatMin QWORD FLOAT_MIN
+endif
 
 InfoArea struct
   Rect        RECT    {}

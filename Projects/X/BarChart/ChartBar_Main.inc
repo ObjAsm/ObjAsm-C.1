@@ -644,8 +644,6 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   ;Scale Y1 axis
   s2s [xsi].Chart.ScaleY1.fSetupMax, $CFloat(6.0), xax, xcx
   s2s [xsi].Chart.ScaleY1.fSetupMin, $CFloat(0.0), xax, xcx
-  s2s [xsi].Chart.ScaleY1.fDataMax,  $CFloat(6.0), xax, xcx
-  s2s [xsi].Chart.ScaleY1.fDataMin,  $CFloat(0.0), xax, xcx
 
   mov [xsi].Chart.ScaleY1.dSetupMjrDiv, 2
   mov [xsi].Chart.ScaleY1.dSetupMnrDiv, 1
@@ -660,8 +658,6 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   ;Scale Y2 axis
   s2s [xsi].Chart.ScaleY2.fSetupMax, $CFloat(10.0), xax, xcx
   s2s [xsi].Chart.ScaleY2.fSetupMin, $CFloat(0.0), xax, xcx
-  s2s [xsi].Chart.ScaleY2.fDataMax,  $CFloat(10.0), xax, xcx
-  s2s [xsi].Chart.ScaleY2.fDataMin,  $CFloat(0.0), xax, xcx
 
   mov [xsi].Chart.ScaleY2.dSetupMjrDiv, 2
   mov [xsi].Chart.ScaleY2.dSetupMnrDiv, 1
@@ -699,8 +695,6 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   OCall xdi::ChartSeries.ItemAt, 1, 1                   ;Return a pointer to a CHT_FLOAT
   s2s CHT_FLOAT ptr [xax], $CFloat(5.0), xcx, xdx
 
-  OCall xdi::ChartSeries.Scan, 0, DATAPOINTS
-
   ;Create chart series 2
   mov xdi, $New(ChartBarSeries)
   OCall xdi::ChartBarSeries.Init, addr [xsi].Chart.Data, DATAPOINTS
@@ -726,8 +720,6 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   s2s CHT_FLOAT ptr [xax], $CFloat(2.0), xcx, xdx
   OCall xdi::ChartSeries.ItemAt, 1, 1                   ;Return a pointer to a CHT_FLOAT
   s2s CHT_FLOAT ptr [xax], $CFloat(4.0), xcx, xdx
-
-  OCall xdi::ChartBarSeries.Scan, 0, DATAPOINTS
 
   ;Create chart series 3
   mov xdi, $New(ChartXYSeries)
@@ -764,7 +756,7 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   s2s CHT_FLOAT ptr [xax], $CFloat(3.0), xcx, xdx
   OCall xdi::ChartSeries.ItemAt, 1, 3                   ;Return a pointer to a CHT_FLOAT
   s2s CHT_FLOAT ptr [xax], $CFloat(3.0), xcx, xdx
-  OCall xdi::ChartBarSeries.Scan, 0, 4
+
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

@@ -15,12 +15,12 @@
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     ChartWnd.Calc
-; Purpose:    Compute internal values of the plot.
+; Purpose:    Compute internal values of a scale.
 ; Arguments:  Arg1: Output device context.
 ;             Arg2: -> Output rect.
 ; Return:     Nothing.
 
-CalcInternalsYScale macro Scale
+CalcScaleInternalValues macro Scale
   .ifBitSet Scale.dFlags, CHT_SCALE_AUTO_MIN
     s2s Scale.fScaleMin, Scale.fDataMin, xcx, xdx
   .else
@@ -107,38 +107,10 @@ Method ChartWnd.Calc, uses xbx xdi xsi, hDC:HWND, pOutRect:PRECT
   SetScaleTitle [xsi].ScaleY1
   SetScaleTitle [xsi].ScaleY2
 
-  ;Calculate X scale internal factors -------------------------------
-  .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_AUTO_MIN
-    s2s [xsi].ScaleX.fScaleMin, [xsi].ScaleX.fDataMin, xcx, xdx
-  .else
-    s2s [xsi].ScaleX.fScaleMin, [xsi].ScaleX.fSetupMin, xcx, xdx
-  .endif
-
-  .ifBitSet [xsi].ScaleX.dFlags, CHT_SCALE_AUTO_MAX
-    s2s [xsi].ScaleX.fScaleMax, [xsi].ScaleX.fDataMax, xcx, xdx
-  .else
-    s2s [xsi].ScaleX.fScaleMax, [xsi].ScaleX.fSetupMax, xcx, xdx
-  .endif
-
-  fld [xsi].ScaleX.fScaleMin
-  fcomp [xsi].ScaleX.fScaleMax
-  fGetFlags
-  .if ZERO?                                             ;Min = Max
-    fld [xsi].ScaleX.fScaleMax
-    fld1
-    faddp st(1), st(0)
-    fstp [xsi].ScaleX.fScaleMax
-  .elseif !CARRY?                                       ;if Min > Max => swap
-    s2s TempScaleEnd, [xsi].ScaleX.fScaleMin, xcx, xdx
-    s2s [xsi].ScaleX.fScaleMin, [xsi].ScaleX.fScaleMax, xcx, xdx
-    s2s [xsi].ScaleX.fScaleMax, TempScaleEnd, xcx, xdx
-  .endif
-
-  OCall xsi.CalcScaleDivs, addr [xsi].ScaleX
-
-  ;Calculate Y scales internal factors ------------------------------
-  CalcInternalsYScale [xsi].ScaleY1
-  CalcInternalsYScale [xsi].ScaleY2
+  ;Calculate scale internal factors ---------------------------------
+  CalcScaleInternalValues [xsi].ScaleX
+  CalcScaleInternalValues [xsi].ScaleY1
+  CalcScaleInternalValues [xsi].ScaleY2
 
   ;Calculate some plot metrics based on the font metrics ------------
   mov eax, [xsi].TextMetricHorz.tmHeight                ;height = ascent + descent
@@ -1523,6 +1495,28 @@ Method ChartWnd.OnButtonDblClk, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
 
   .ifBitSet [xsi].dFlags, CHT_WND_CTRL_DBLCLK
     .ifBitSet wParam, MK_CONTROL
+      .ifBitSet wParam, MK_SHIFT
+        ;Check if X scale was double-clicked
+        .if [xsi].sbPrvButtonDownOn == CHT_ID_SCALEX
+          BitClr [xsi].ScaleX.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
+          s2s [xsi].ScaleX.fSetupMin, [xsi].ScaleX.fInitMin, xax, xcx
+          s2s [xsi].ScaleX.fSetupMax, [xsi].ScaleX.fInitMax, xax, xcx
+          OCall xsi.Refresh
+        ;Check if an Y scale was double-clicked
+        .elseif [xsi].sbPrvButtonDownOn == CHT_ID_SCALEY1
+          BitClr [xsi].ScaleY1.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
+          s2s [xsi].ScaleY1.fSetupMin, [xsi].ScaleY1.fInitMin, xax, xcx
+          s2s [xsi].ScaleY1.fSetupMax, [xsi].ScaleY1.fInitMax, xax, xcx
+          OCall xsi.Refresh
+        .elseif [xsi].sbPrvButtonDownOn == CHT_ID_SCALEY2
+          BitClr [xsi].ScaleY2.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
+          s2s [xsi].ScaleY2.fSetupMin, [xsi].ScaleY2.fInitMin, xax, xcx
+          s2s [xsi].ScaleY2.fSetupMax, [xsi].ScaleY2.fInitMax, xax, xcx
+          OCall xsi.Refresh
+        .endif
+        xor eax, eax
+        ExitMethod
+      .endif
       ;Check if X scale was double-clicked
       .if [xsi].sbPrvButtonDownOn == CHT_ID_SCALEX
         BitSet [xsi].ScaleX.dFlags, (CHT_SCALE_AUTO_MIN or CHT_SCALE_AUTO_MAX)
@@ -1659,7 +1653,7 @@ MethodEnd
 Method ChartWnd.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
   local LogFnt:LOGFONT, hDC:HDC, hPrevFont:HFONT, ToolInfo:TOOLINFO
 
-;  DbgText "ChartWnd.OnCreate"
+  ;DbgText "ChartWnd.OnCreate"
   SetObject xsi
 
   ;Create a ToolTip window to display popup information when hoovering over an InfoArea
@@ -2293,32 +2287,33 @@ MethodEnd
 ; Purpose:    Helper for SetExtremsScaleXXX methods to get min and max scale values.
 ; Arguments:  Index 0 for X, 1 for Y.
 ; Return:     Nothing.
+; Note:       edi acts as a change flag.
 
 GetScaleMinMax macro Index, MinIndex, MaxIndex
   mov xcx, pSeries
   mov eax, [xcx].$Obj(ChartSeries).&MaxIndex
   .if eax != -1
-    inc edi                                           ;Set flag
+    inc edi                                             ;Set flag
     OCall pSeries::ChartSeries.ItemAt, Index, eax
-    fld CHT_FLOAT ptr [xax]                           ;Xmax| Min | Max
-    fcomi st(0), st(2)                                ;Compare with maximum
-    .if !CARRY?                                       ;st(0) > st(1)
-      fst st(2)                                       ;Xmax| Min |Xmax
+    fld CHT_FLOAT ptr [xax]                             ;Xmax| Min | Max
+    fcomi st(0), st(2)                                  ;Compare with maximum
+    .if !CARRY?                                         ;st(0) > st(1)
+      fst st(2)                                         ;Xmax| Min |Xmax
     .endif
-    fUnload 1                                         ; Min | Max
+    fUnload 1                                           ; Min | Max
   .endif
     
   mov xcx, pSeries
   mov eax, [xcx].$Obj(ChartSeries).&MinIndex
   .if eax != -1
-    inc edi                                           ;Set flag
+    inc edi                                             ;Set flag
     OCall pSeries::ChartSeries.ItemAt, Index, eax
-    fld CHT_FLOAT ptr [xax]                           ;Xmin| Min | Max
-    fcomi st(0), st(1)                                ;Compare with minimum
-    .if CARRY?                                        ;st(0) < st(1)
-      fst st(1)                                       ;Xmin|Xmin| Max
+    fld CHT_FLOAT ptr [xax]                             ;Xmin| Min | Max
+    fcomi st(0), st(1)                                  ;Compare with minimum
+    .if CARRY?                                          ;st(0) < st(1)
+      fst st(1)                                         ;Xmin|Xmin| Max
     .endif
-    fUnload 1                                         ; Min | Max
+    fUnload 1                                           ; Min | Max
   .endif
 endm
 
@@ -2332,8 +2327,8 @@ Method ChartWnd.SetExtremsScaleX, uses xbx xdi xsi
   local pSeries:$ObjPtr(ChartSeries)
 
   SetObject xsi
-  fld R8_MIN                                            ;~ -1.8 × 10^308       Min
-  fld R8_MAX                                            ;~ +1.8 × 10^308       Min | Max
+  fld cFloatMin                                         ;Min
+  fld cFloatMax                                         ;Min | Max
 
   xor ebx, ebx
   xor edi, edi                                          ;Reset flag
@@ -2343,7 +2338,7 @@ Method ChartWnd.SetExtremsScaleX, uses xbx xdi xsi
     inc ebx
   .endw
   
-  .if edi != 0
+  .if edi != 0                                          ;Check if something has changed
     fstp CHT_FLOAT ptr [xsi].ScaleX.fDataMin
     fstp CHT_FLOAT ptr [xsi].ScaleX.fDataMax
   .else
@@ -2361,8 +2356,8 @@ Method ChartWnd.SetExtremsScaleY1, uses xbx xdi xsi
   local pSeries:$ObjPtr(ChartSeries)
 
   SetObject xsi
-  fld R8_MIN                                            ;~ -1.8 × 10^308       Min
-  fld R8_MAX                                            ;~ +1.8 × 10^308       Min | Max
+  fld cFloatMin                                         ;Min
+  fld cFloatMax                                         ;Min | Max
 
   xor ebx, ebx
   xor edi, edi                                          ;Reset flag
@@ -2374,7 +2369,7 @@ Method ChartWnd.SetExtremsScaleY1, uses xbx xdi xsi
     inc ebx
   .endw
   
-  .if edi != 0
+  .if edi != 0                                          ;Check if something has changed
     fstp CHT_FLOAT ptr [xsi].ScaleY1.fDataMin
     fstp CHT_FLOAT ptr [xsi].ScaleY1.fDataMax
   .else
@@ -2392,8 +2387,8 @@ Method ChartWnd.SetExtremsScaleY2, uses xbx xdi xsi
   local pSeries:$ObjPtr(ChartSeries)
 
   SetObject xsi
-  fld R8_MIN                                            ;~ -1.8 × 10^308       Min
-  fld R8_MAX                                            ;~ +1.8 × 10^308       Min | Max
+  fld cFloatMin                                         ;Min
+  fld cFloatMax                                         ;Min | Max
 
   xor ebx, ebx
   xor edi, edi                                          ;Reset flag
@@ -2405,7 +2400,7 @@ Method ChartWnd.SetExtremsScaleY2, uses xbx xdi xsi
     inc ebx
   .endw
   
-  .if edi != 0
+  .if edi != 0                                          ;Check if something has changed
     fstp CHT_FLOAT ptr [xsi].ScaleY2.fDataMin
     fstp CHT_FLOAT ptr [xsi].ScaleY2.fDataMax
   .else
@@ -2425,6 +2420,25 @@ Method ChartWnd.Show, uses xbx xdi xsi, hDC:HDC, pRect:PRECT
 
 ;  DbgText "ChartWnd.Show"
   SetObject xsi
+
+  ;Do some initialization if the chart is shown for the first time
+  .ifBitClr [xsi].dFlags, CHT_WND_SHOWN_FIRST_TIME
+    xor ebx, ebx
+    .while ebx < [xsi].Data.dCount
+      OCall [xsi].Data::Collection.ItemAt, ebx
+      OCall xax::ChartSeries.Scan, [xax].$Obj(ChartSeries).dDataFrom, \
+                                   [xax].$Obj(ChartSeries).dDataCount 
+      inc ebx
+    .endw
+    s2s [xsi].ScaleX.fInitMin, [xsi].ScaleX.fSetupMin, xax, xcx
+    s2s [xsi].ScaleX.fInitMax, [xsi].ScaleX.fSetupMax, xax, xcx
+    s2s [xsi].ScaleY1.fInitMin, [xsi].ScaleY1.fSetupMin, xax, xcx
+    s2s [xsi].ScaleY1.fInitMax, [xsi].ScaleY1.fSetupMax, xax, xcx
+    s2s [xsi].ScaleY2.fInitMin, [xsi].ScaleY2.fSetupMin, xax, xcx
+    s2s [xsi].ScaleY2.fInitMax, [xsi].ScaleY2.fSetupMax, xax, xcx
+    BitSet [xsi].dFlags, CHT_WND_SHOWN_FIRST_TIME
+  .endif
+
   ;Draw on a memory DC to avoid flicker
   mov xdi, $invoke(CreateCompatibleDC, hDC)             ;Create Mem DC
   mov xbx, pRect

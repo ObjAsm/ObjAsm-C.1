@@ -675,7 +675,8 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   mov [xsi].Chart.ScaleY2.pUnit, $invoke(StrNew, $OfsCStr("Volt 2"))
 
   BitClr [xsi].Chart.ScaleY2.dFlags, CHT_SCALE_SHOW_MJR_GRID or CHT_SCALE_SHOW_MNR_GRID
-  ;Create Chart data
+
+  ;Create first chart series 
   mov xdi, $New(ChartXYSeries)
   OCall xdi::ChartXYSeries.Init, addr [xsi].Chart.Data, DATAPOINTS
   mov [xdi].$Obj(ChartXYSeries).dDataFrom, 0 + 200
@@ -716,9 +717,8 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   .endw
   fUnload 3
 
-  OCall xdi::ChartXYSeries.Scan, 0, DATAPOINTS
 
-  ;Create Chart data
+  ;Create second chart series 
   mov xdi, $New(ChartXYSeries)
   OCall xdi::ChartXYSeries.Init, addr [xsi].Chart.Data, DATAPOINTS/32
   mov [xdi].$Obj(ChartXYSeries).dDataFrom, 0
@@ -761,7 +761,6 @@ Method ChildWnd.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   .endw
   fUnload 3
 
-  OCall xdi::ChartXYSeries.Scan, 0, DATAPOINTS/32
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
