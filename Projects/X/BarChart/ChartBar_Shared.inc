@@ -18,9 +18,9 @@ VER_PRODUCTVERSION            equ       2,0,0,0
 VER_PRODUCTVERSION_STR        equ       <2.0>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       230
-BUILD_DATE_STR                textequ   <2021-12-30>
-BUILD_BITNESS                 equ       32
+BUILD_NUMBER                  equ       239
+BUILD_DATE_STR                textequ   <2022-01-06>
+BUILD_BITNESS                 equ       64
 BUILD_MODE                    equ       RLS
 
 ;Menu IDs

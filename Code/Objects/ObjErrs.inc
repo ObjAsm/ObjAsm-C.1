@@ -399,10 +399,10 @@ AddErrMsg SMR_BUFFER_TOO_SMALL,       "External buffer too small"
 
 ;HashTable
 ERROR_BASE = BIT29 + 750
-AddErrMsg HTB_OUT_OF_MEMORY,          "No more memory available"
-AddErrMsg HTB_INVALID_ARGUMENT,       "Invalid argument"
-AddErrMsg HTB_TABLE_FULL,             "Table is full"
-AddErrMsg HTB_NO_ITEM_FOUND,          "No item found"
+AddErrMsg HTL_OUT_OF_MEMORY,          "No more memory available"
+AddErrMsg HTL_INVALID_ARGUMENT,       "Invalid argument"
+AddErrMsg HTL_TABLE_FULL,             "Table is full"
+AddErrMsg HTL_NO_ITEM_FOUND,          "No item found"
 
 ;CE_KeywordCollection
 ERROR_BASE = BIT29 + 760

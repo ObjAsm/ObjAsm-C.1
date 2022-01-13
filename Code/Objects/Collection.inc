@@ -59,9 +59,9 @@ Object Collection, CollectionID, Streamable
   VirtualMethod     SetLimit,       DWORD               ;Set new limit (private method)
 
   DefineVariable    pItems,         POINTER,      NULL
-  DefineVariable    dCount,         DWORD,        0
-  DefineVariable    dLimit,         DWORD,        0
-  DefineVariable    dDelta,         DWORD,        0
+  DefineVariable    dCount,         DWORD,        0     ;Current used capacity
+  DefineVariable    dLimit,         DWORD,        0     ;Current capacity
+  DefineVariable    dDelta,         DWORD,        0     ;Capacity increment (used by SetLimit)
   DefineVariable    dMaxCapacity,   DWORD,        0
   DefineVariable    ObjLock,        OBJECT_LOCK,  {}    ;Locking structure for multithreaded access
 ObjectEnd

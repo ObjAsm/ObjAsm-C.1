@@ -177,7 +177,7 @@ Method ChartTabScale.CtlsSet, uses xbx xdi xsi
 
   SetObject xsi
   lea xbx, cBuffer
-  mov xdi, [xsi].pScaleData 
+  mov xdi, [xsi].pScaleData
   assume xdi:PCHT_SCALE_DATA
 
   .ifBitSet [xdi].dFlags, CHT_SCALE_AUTO_MIN
@@ -189,6 +189,7 @@ Method ChartTabScale.CtlsSet, uses xbx xdi xsi
   .endif
   fld [xdi].fSetupMin
   invoke St0ToStr, xbx, 0, -1, f_NOR or f_TRIM
+  invoke StrLTrim, xbx, xbx                             ;Delete leading space when the number is positive
   fUnload
   invoke SetDlgItemText, [xsi].hWnd, IDC_CHT_SCL_MINVAL_EDT, xbx
 
@@ -201,6 +202,7 @@ Method ChartTabScale.CtlsSet, uses xbx xdi xsi
   .endif
   fld [xdi].fSetupMax
   invoke St0ToStr, xbx, 0, -1, f_NOR or f_TRIM
+  invoke StrLTrim, xbx, xbx                             ;Delete leading space when the number is positive
   fUnload
   invoke SetDlgItemText, [xsi].hWnd, IDC_CHT_SCL_MAXVAL_EDT, xbx
 

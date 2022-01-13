@@ -368,7 +368,7 @@ Method ChartBarTabSeries.OnInitDialog, uses xsi, wParam:WPARAM, lParam:LPARAM
 
   invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_BAR_OFFSET_EDT
   lea xdx, SignedIntegerSubclassProc
-  invoke SetWindowSubclass, xax, xdx, 0, 0
+  invoke SetWindowSubclass, xax, xdx, 0, 0              ;Allow negative integers
 
   ACall xsi.OnInitDialog, wParam, lParam
 MethodEnd

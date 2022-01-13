@@ -44,7 +44,7 @@ MethodEnd
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     DataCollection.DestroyItem
 ; Purpose:    Auxiliar function to dispose a item from the collection. Don't call directly!
-; Arguments:  -> Item. This argument should never be NULL.
+; Arguments:  -> Item.
 ; Return:     Nothing.
 
 Method DataCollection.DestroyItem,, pItem:POINTER

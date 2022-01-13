@@ -159,7 +159,7 @@ if DEBUGGING
         invoke MemClone, xcx, xdx, eax
         DbgStr cBuffer
         add xbx, sizeof(PCRE_OUTDATA)                   ;Move to next PCRE_OUTDATA
-        dec edi                                         ;Increment edi counter
+        dec edi                                         ;Decrement edi counter
       .endw
     .endif
     DbgLoadContext

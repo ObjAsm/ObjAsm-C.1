@@ -16,7 +16,7 @@
 STSTYLE   equ   WS_CHILD or WS_VISIBLE or WS_TABSTOP or TCS_TABS or TCS_HOTTRACK
 
 .const
-SetupTabCtrl DEF_TABCONTROL {100, STSTYLE, WS_EX_CONTROLPARENT, NULL, {<4,3,268,200>}}
+ChartSetupTabCtrl DEF_TABCONTROL {100, STSTYLE, WS_EX_CONTROLPARENT, NULL, {<4,3,268,200>}}
 
 IDD_CHT_SETUP               equ   5000
 IDC_CHT_SETUP_BTN_PREVIEW   equ   5001
@@ -165,7 +165,7 @@ Method ChartSetup.OnInitDialog, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   mov [xsi].dSelTabIndex, 0
   mov [xsi].hSelTabWnd, 0
   mov [xsi].dTabCount, 0
-  invoke MemClone, addr CtrlSetup, offset SetupTabCtrl, sizeof DEF_TABCONTROL
+  invoke MemClone, addr CtrlSetup, offset ChartSetupTabCtrl, sizeof DEF_TABCONTROL
   invoke MapDialogRect, [xsi].hWnd, addr CtrlSetup.sdPosX
   OCall xbx::TabCtrl.Init, xsi, [xsi].hWnd, addr [xsi].IconImageList, addr CtrlSetup
 

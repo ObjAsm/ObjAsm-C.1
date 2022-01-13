@@ -60,7 +60,7 @@ Debug=1
 Menu=0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 1=4,O,$B\RA_RC.cmd,1
 2=3,O,$B\RA_ASM.cmd,2
-3=5,O,"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe" @$A\Build\Options\OPT_LNK_DBG_32.txt /OUT:"$5" "$3"
+3=5,O,$B\RA_LINK.cmd,3
 4=0,0,,5
 7=0,O,$B\RA_DEBUG.cmd,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
@@ -68,7 +68,7 @@ Menu=0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 
 11=4,O,$B\RA_RC.cmd,1
 12=3,O,$B\RA_ASM.cmd,2
-13=5,O,"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe" @$A\Build\Options\OPT_LNK_DBG_64.txt /OUT:"$5" "$3"
+13=5,O,$B\RA_LINK.cmd,3
 14=0,0,,5
 17=0,O,$B\RA_DEBUG.cmd,5
 15=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
@@ -122,7 +122,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Macros,Dialogs,Objects
 [Size]
 3=
 2=0,0,0,0,10570
-1=0,0,806,424,473
+1=0,0,806,424,2735
 4=0,0,0,0,8922
 5=0,0,0,0,81980
 7=0,0,0,0,7809
@@ -160,7 +160,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=14
+MilestoneOnDateDate=6
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=30
@@ -239,7 +239,7 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1
 [PTimer]
-PTimer=1347271081
+PTimer=1347507753
 [RADebugBP]
 2=
 4=

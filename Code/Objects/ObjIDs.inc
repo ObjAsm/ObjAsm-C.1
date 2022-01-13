@@ -449,3 +449,5 @@ ByteVectorID                      equ     0000012571
 WordVectorID                      equ     0000012572
 DWordVectorID                     equ     0000012573
 QWordVectorID                     equ     0000012574
+
+DictionaryID                      equ     0000012580
