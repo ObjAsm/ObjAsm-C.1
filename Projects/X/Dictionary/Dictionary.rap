@@ -22,10 +22,10 @@ Debug=0
 11=..\..\..\Code\Objects\HashTable.inc
 12=..\..\..\Code\Objects\StopWatch.inc
 13=WordList.inc
-14=
+14=..\..\..\Code\Objects\SortedStrCollectionW.inc
 15=..\..\..\Code\Objects\Collection.inc
 16=..\..\..\Code\Objects\Dictionary.inc
-17=StrucPtr.inc
+17=..\..\..\Code\Objects\SortedCollection.inc
 
 [MakeFiles]
 0=Dictionary.rap
@@ -76,10 +76,10 @@ Group=Added files,Assembly,Resources,Misc,Modules,Objects,Macros
 11=6
 12=6
 13=1
-14=
+14=6
 15=6
 16=7
-17=7
+17=6
 
 [VerInf]
 FV=1.0.0.0
@@ -110,7 +110,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=13
+MilestoneOnDateDate=16
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -146,22 +146,22 @@ ProductVer4Range=0
 
 [Size]
 2=0,0,1783,588,251
-3=0,0,0,0,5291
-1=0,0,0,0,1248
+3=0,0,0,0,63877
+1=0,0,0,0,900
 4=0,0,562,490,13453
-5=0,0,694,587,1568
+5=0,0,694,587,125600
 6=0,0,0,0,17768
 8=0,0,0,0,19183
 7=0,0,0,0,1563
-9=0,0,0,0,27441
+9=0,0,0,0,70359
 10=0,0,0,0,125
-11=0,0,0,0,0
+11=0,0,0,0,2270
 12=
-16=0,0,0,0,2313
+16=0,0,0,0,432
 15=0,0,0,0,2524
-14=
-13=0,0,0,0,18589
-17=0,0,0,0,1219
+14=0,0,0,0,542
+13=0,0,0,0,885
+17=0,0,0,0,2536
 
 [BookMark]
 0=
@@ -180,16 +180,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="<0"
-2="")"
-3="POINTER"
-4="GetTimeStrA"
-5="MyDict"
-6="GetItem"
-7=""^M"
-8=""^M""
-9="^M""
-10="Dispose"
+1="dBucketCount"
+2="NLPo2"
+3="xHash"
+4="popcnt"
+5="popcou"
+6="popco"
+7="popc"
+8="PHTL_ITEM"
+9="HTL_ITEM"
+10="SortedStrCollection"
 [Collapse]
 1=
 4=
@@ -209,9 +209,9 @@ ProductVer4Range=0
 8=
 17=
 [AutoLoad]
-AutoLoad=1,11,16,13
+AutoLoad=1,11,16
 [PTimer]
-PTimer=853709996
+PTimer=971793934
 [GroupExpand]
 GroupExpand=1,1,1,0,0,1,1,0
 [RADebugBP]

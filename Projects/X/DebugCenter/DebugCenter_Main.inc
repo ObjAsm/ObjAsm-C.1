@@ -118,8 +118,8 @@ Object DebugCenter, DebugCenterID, MdiApp                       ;MDI application
   DefineVariable    NotifyIconData,     NOTIFYICONDATA, {}
 
   DefineVariable    hFont,              HFONT,      0
-  DefineVariable    dTxtZoomFactor,           DWORD,      TXT_ZOOM_DEFAULT
-  DefineVariable    dBmpZoomFactor,           DWORD,      BMP_ZOOM_DEFAULT
+  DefineVariable    dTxtZoomFactor,     DWORD,      TXT_ZOOM_DEFAULT
+  DefineVariable    dBmpZoomFactor,     DWORD,      BMP_ZOOM_DEFAULT
 
   DefineVariable    PrintMargin,        RECT,       {2500, 1000, 1000, 1000}
   DefineVariable    hDevMode,           HANDLE,     0
@@ -1163,8 +1163,8 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
           mov CFD.cbSize, sizeof(CFD)
           mov CFD.dwMask, CFM_COLOR or CFM_BOLD or CFM_ITALIC or CFM_STRIKEOUT or CFM_UNDERLINE
 
-      ;m2z CFD.crTextColor
-        mov CFD.crTextColor, DBG_COLOR_LINE
+          ;m2z CFD.crTextColor
+          mov CFD.crTextColor, DBG_COLOR_LINE
 
           m2z CFD.dwEffects
           invoke SendMessage, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_SETCHARFORMAT, SCF_SELECTION, addr CFD
@@ -1211,12 +1211,13 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
             invoke SendMessageA, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_REPLACESEL, FALSE, offset bCRLF
           .endif
         .endif
-        invoke SendMessage, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_SCROLL, SB_LINEDOWN, 0    ;Scroll down
-        invoke SendMessage, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_SCROLLCARET, 0, 0         ;Make caret visible
         xor eax, eax
         mov CFD.crTextColor, eax
         mov CFD.dwEffects, eax
         invoke SendMessage, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_SETCHARFORMAT, SCF_SELECTION, addr CFD
+        invoke SendMessage, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_SCROLL, SB_LINEDOWN, 0 ;Scroll down
+        invoke SendMessage, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_SETSEL, -1, -1         ;Move caret to last position
+        invoke SendMessage, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_SCROLLCARET, 0, 0      ;Make caret visible
 
       .elseif BYTE ptr [xcx] == DBG_MSG_BMP             ;Bitmap
         mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)

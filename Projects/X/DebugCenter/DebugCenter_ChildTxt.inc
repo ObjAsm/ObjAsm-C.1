@@ -8,7 +8,7 @@
 
 EDTSTYLE    equ     WS_CHILD or WS_VISIBLE or WS_TABSTOP or \
                     WS_VSCROLL or WS_HSCROLL or ES_AUTOVSCROLL or ES_AUTOHSCROLL or \
-                    ES_MULTILINE or ES_WANTRETURN
+                    ES_MULTILINE or ES_WANTRETURN or ES_NOHIDESEL
 
 RICHEDITID  equ     250
 

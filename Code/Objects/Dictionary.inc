@@ -11,7 +11,6 @@
 DIC_PERTURB_SHIFT     equ 5
 
 DIC_ITEM struc
-  HTL_ITEM            {}
   pKey      PSTRING   ?           ;Key, usually a POINTER to data/String
   dValue    DWORD     ?           ;Payload
 DIC_ITEM ends
@@ -44,18 +43,14 @@ if IMPLEMENT
 ; Return:     xax -> Item or NULL if the item is not in the Dictionary.
 
 Method Dictionary.Delete, uses xbx xdi xsi, pKey:PSTRING
-  local dDelIndex:DWORD, dLastIndex:DWORD, xHash:XWORD
-
-;  DbgText "Dictionary.Delete"
+  ;DbgText "Dictionary.Delete"
   SetObject xsi
   OCall xsi.Hash, pKey
-;  DbgHex xax
-  mov xHash, xax
   mov xdi, xax                                            ;Remember the hash
   mov ebx, [xsi].dMask
   and xbx, xax                                            ;ebx is used as index into a pointer array
 
-  ;Search for the correct item where the hash and the Key match
+  ;Search for the correct item where the hash and the key match
   .while TRUE
     mov xdx, [xsi].pBuckets
     mov xax, POINTER ptr [xdx + sizeof(POINTER)*xbx]
@@ -63,48 +58,20 @@ Method Dictionary.Delete, uses xbx xdi xsi, pKey:PSTRING
       DbgText "Not found"
       ExitMethod
     .endif
-    invoke StrComp, pKey, [xax].DIC_ITEM.pKey
-    .break .if eax == 0                                   ;Found => exit loop
+    .if xax != HTL_BUCKET_TOMBSTONE
+      invoke StrComp, pKey, [xax].DIC_ITEM.pKey
+      .break .if eax == 0                                 ;Found => exit loop
+    .endif
     shr xdi, DIC_PERTURB_SHIFT                            ;edi = Perturbation
     lea ebx, [4*ebx + ebx + 1]
     add ebx, edi
     and ebx, [xsi].dMask
   .endw
-;  DbgDec ebx
-  mov dDelIndex, ebx
 
-  ;Search the last alternate bucket
-  .while TRUE
-    mov dLastIndex, ebx                                   ;Save last index where we have a hash match
-    @@:
-    shr xdi, DIC_PERTURB_SHIFT                            ;edi = Perturbation
-    lea ebx, [4*ebx + ebx + 1]
-    add ebx, edi
-    and ebx, [xsi].dMask
-    cmp ebx, dDelIndex
-    jz @B                                                 ;Skip if the alt. index = DelIndex
-    mov xdx, [xsi].pBuckets
-    mov xax, POINTER ptr [xdx + sizeof(POINTER)*xbx]
-    .break .if  xax == HTL_BUCKET_EMPTY
-    mov xdx, xHash
-    sub xdx, [xax].DIC_ITEM.xHash
-    jnz @B
-  .endw
-;  DbgDec dLastIndex
-
-  mov ecx, dDelIndex
-  mov eax, dLastIndex
   mov xdx, [xsi].pBuckets
   dec [xsi].dBucketsUsed
-  ReleaseObject
-  .if eax == ecx                                          ;The actual index is the last one
-    mov POINTER ptr [xdx + sizeof(POINTER)*xcx], HTL_BUCKET_EMPTY
-  .else
-    lea xbx, [xdx + sizeof(POINTER)*xax]
-    mov xsi, POINTER ptr [xbx]
-    mov POINTER ptr [xbx], HTL_BUCKET_EMPTY
-    mov POINTER ptr [xdx + sizeof(POINTER)*xcx], xsi
-  .endif
+  inc [xsi].dTombstones
+  mov POINTER ptr [xdx + sizeof(POINTER)*xbx], HTL_BUCKET_TOMBSTONE
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -141,8 +108,8 @@ Method Dictionary.Hash, uses xbx xdi, pKey:PSTRING
     mov eax, 0811C9DC5h                                   ;Offset Basis 32
     mov edi, 001000193h                                   ;FNV-1a Prime 32 (224 + 28 + 0x93)
   else
-    mov rax, 000000100000001b3h                           ;Offset Basis 64
-    mov rdi, 0cbf29ce484222325h                           ;FNV-1a Prime 64 (240 + 28 + 0xb3)
+    mov rax, 000000100000001B3h                           ;Offset Basis 64
+    mov rdi, 0CBF29CE484222325h                           ;FNV-1a Prime 64 (240 + 28 + 0xb3)
   endif
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
     .while TRUE
@@ -177,25 +144,22 @@ MethodEnd
 ; Arguments:  Arg1: Hash value.
 ; Return:     eax = new alternate insertion index.
 
-Method Dictionary.OnCollision, uses xbx xsi, xHash:XWORD
+Method Dictionary.OnCollision, uses xsi, xHash:XWORD
 ;  DbgText "Dictionary.OnCollision"
-;  DbgHex xHash
   SetObject xsi
   mov xcx, xHash
-  mov ebx, [xsi].dBucketCount
-  dec ebx                                                 ;ebx = Mask
-  mov xax, xcx
-  and xax, xbx                                            ;eax = index
-  mov xdx, [xsi].pBuckets
-  ReleaseObject
+  mov eax, ecx
+  and eax, [xsi].dMask                                    ;eax = index
 
+  ;Search an empty bucket
+  mov xdx, [xsi].pBuckets
   .repeat
-    shr xcx, DIC_PERTURB_SHIFT                            ;eax = Perturbation
+    shr xcx, DIC_PERTURB_SHIFT                            ;ecx = Perturbation
     lea eax, [4*eax + eax + 1]
     add eax, ecx
-    and eax, ebx
-;    DbgDec eax, "test alternate index"
-  .until POINTER ptr [xdx + sizeof(POINTER)*xax] == HTL_BUCKET_EMPTY
+    and eax, [xsi].dMask
+  .until POINTER ptr [xdx + sizeof(POINTER)*xax] == HTL_BUCKET_EMPTY || \
+         POINTER ptr [xdx + sizeof(POINTER)*xax] == HTL_BUCKET_TOMBSTONE
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -220,8 +184,10 @@ Method Dictionary.Search, uses xbx xdi xsi, pKey:PSTRING
       DbgText "Not found"
       ExitMethod
     .endif
-    invoke StrComp, pKey, [xax].DIC_ITEM.pKey
-    .break .if eax == 0                                   ;Found => exit loop
+    .if xax != HTL_BUCKET_TOMBSTONE
+      invoke StrComp, pKey, [xax].DIC_ITEM.pKey
+      .break .if eax == 0                                 ;Found => exit loop
+    .endif
     shr xdi, DIC_PERTURB_SHIFT                            ;edi = Perturbation
     lea ebx, [4*ebx + ebx + 1]
     add ebx, edi

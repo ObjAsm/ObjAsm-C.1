@@ -59,7 +59,7 @@ if IMPLEMENT
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     SortedCollection.Insert
 ; Purpose:    If the target item is not found in the sorted collection, it is inserted at the
-;             correct index position. Calls Search to determine if the item exists, and if not,
+;             correct index position. It calls Search to determine if the item exists, and if not,
 ;             where to insert it.
 ; Arguments:  Arg1: -> Item.
 ; Return:     xax -> Inserted item or NULL if the item was not inserted.

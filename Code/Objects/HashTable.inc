@@ -10,63 +10,59 @@
 ; ==================================================================================================
 
 
-HTL_BUCKET_EMPTY    equ   NULL
-
-HTL_ITEM struc
-  xHash   XWORD     ?           ;Hash value, always the first member!
-HTL_ITEM ends
-PHTL_ITEM typedef ptr HTL_ITEM
+HTL_BUCKET_EMPTY      equ   0
+HTL_BUCKET_TOMBSTONE  equ   -1
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Object:     HashTable
 ; Purpose:    Base object for HashTable descendants.
 ;             This object implements an Unordered Associative Container.
-; Note;       The first member of the Item structure must be an XWORD to thold the Hash.
-;             The items are only accessed via the key values.
+; Note:       Items can only be accessed using the key values.
+;             The Hash calculation and the collision handling is done in an descendant object.
 ;
 ;
-;                            Buckets                                Items
-;                           (POINTER)
-;                           —————————                —————————————————————————————————————
-;             pBuckets --> |         | -----------> | xHash | Key | Value1 | Value2 | ... |
-;                          |—————————|              |———————|—————|————————|————————|—————|
-;                          |  EMPTY  |    --------> | xHash | Key | Value1 | Value2 | ... |
-;                          |—————————|   |          |———————|—————|————————|————————|—————|
-;                          |  EMPTY  |   |   -----> | xHash | Key | Value1 | Value2 | ... |
-;                          |—————————|   |  |       |———————|—————|————————|————————|—————|
-;                          |         | --   |   --> | xHash | Key | Value1 | Value2 | ... |
-;                          |—————————|      |  |     —————————————————————————————————————
-;                          |  EMPTY  |      |  |
-;                          |—————————|      |  |
-;                          |         | -----   |
-;                          |—————————|         |
-;                          |         | --------
-;                          |—————————|
-;                          |  EMPTY  |
-;                           —————————
+;                              Buckets                               Items
+;                             (POINTER)
+;                           ——————————————                —————————————————————————————
+;             pBuckets --> |  POINTER 1   | -----------> | Key | Value1 | Value2 | ... |
+;                          |——————————————|              |—————|————————|————————|—————|
+;                          |    EMPTY     |       -----> | Key | Value1 | Value2 | ... |
+;                          |——————————————|      |       |—————|————————|————————|—————|
+;                          |    EMPTY     |    --------> | Key | Value1 | Value2 | ... |
+;                          |——————————————|   |  |       |—————|————————|————————|—————|
+;             Hash         |  POINTER 3   | --   |   --> | Key | Value1 | Value2 | ... |
+;              AND ---     |——————————————|      |  |     —————————————————————————————
+;             Mask    |    |  TOMBSTONE   |      |  |
+;            (index)  |    |——————————————|      |  |
+;                      --> |  POINTER 2   | -----   |
+;                          |——————————————|         |
+;                          |  POINTER 4   | --------
+;                          |——————————————|
+;                          |    EMPTY     |
+;                           ——————————————
 ;
 
 Object HashTable, HashTableID, Streamable
   VirtualAbstract   Delete,           POINTER
   VirtualMethod     DeleteAll
-  DynamicMethod     DestroyItem,      PHTL_ITEM
+  DynamicMethod     DestroyItem,      POINTER
   VirtualMethod     Dispose,          POINTER
   VirtualMethod     DisposeAll
   RedefineMethod    Done
-  VirtualAbstract   GetItemKey,       PHTL_ITEM
+  VirtualAbstract   GetItemKey,       POINTER
   VirtualAbstract   Hash,             POINTER
   RedefineMethod    Init,             POINTER, DWORD
-  VirtualMethod     Insert,           PHTL_ITEM
+  VirtualMethod     Insert,           POINTER
   VirtualAbstract   OnCollision,      XWORD
   VirtualMethod     Resize,           DWORD                 ;Resize to new limit
   VirtualAbstract   Search,           POINTER
 
-  DefineVariable    dBucketMaxCount,  DWORD,        0FFFFFFFFh/sizeof(POINTER)
+  DefineVariable    dBucketMaxCount,  DWORD,        0FFFFFFFFh
   DefineVariable    dBucketCount,     DWORD,        0
   DefineVariable    dBucketsUsed,     DWORD,        0
+  DefineVariable    dTombstones,      DWORD,        0
   DefineVariable    dMask,            DWORD,        0
   DefineVariable    pBuckets,         POINTER,      NULL
-
   DefineVariable    dCollisionCount,  DWORD,        0       ;Hash performance indicator
   DefineVariable    ObjLock,          OBJECT_LOCK,  {}      ;Locking struc for multithreaded access
 
@@ -94,6 +90,9 @@ Method HashTable.DeleteAll
     add xdx, sizeof(POINTER)
     dec eax
   .endw
+  m2z [xcx].dBucketsUsed
+  m2z [xcx].dTombstones
+  m2z [xcx].dCollisionCount
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -102,7 +101,7 @@ MethodEnd
 ; Arguments: Arg1: -> Item.
 ; Return:    Nothing.
 
-Method HashTable.DestroyItem,, pItem:PHTL_ITEM
+Method HashTable.DestroyItem,, pItem:POINTER
   .if pItem != NULL
     MemFree pItem                                       ;Frees the Item from process heap
   .endif
@@ -144,6 +143,9 @@ Method HashTable.DisposeAll, uses xbx xdi xsi
     add xdi, sizeof(POINTER)
     dec ebx
   .endw
+  m2z [xsi].dBucketsUsed
+  m2z [xsi].dTombstones
+  m2z [xsi].dCollisionCount
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -165,20 +167,21 @@ MethodEnd
 ; Method:     HashTable.Init
 ; Purpose:    Initialize the HashTable object.
 ; Arguments:  Arg1: -> Owner object.
-;             Arg2: Initial Bucket count.
+;             Arg2: Initial Bucket count. Must be a power of 2.
 ; Return:     eax = Error code.
-
 Method HashTable.Init, uses xsi, pOwner:POINTER, dBucketCount:DWORD
   SetObject xsi
   ACall xsi.Init, pOwner
   mov eax, dBucketCount
   .if eax != 0
+    dec eax
+    NLPo2 eax                                             ;Calc next largest power of 2
     mov [xsi].dBucketCount, eax
     shl eax, $Log2(sizeof(POINTER))                       ;eax = Entries * sizeof(POINTER)
     MemAlloc eax, MEM_INIT_ZERO
     .if xax != NULL
       mov [xsi].pBuckets, xax
-      mov ecx, [xsi].dBucketCount
+      mov ecx, dBucketCount
       dec ecx
       mov [xsi].dMask, ecx
       xor eax, eax
@@ -196,34 +199,30 @@ MethodEnd
 ; Arguments:  Arg1: -> Item.
 ; Return:     xax = Hash or 0 if failed.
 
-Method HashTable.Insert, uses xsi, pItem:PHTL_ITEM
-  local xHash:XWORD
-
-;  DbgText "Dictionary.Insert"
+Method HashTable.Insert, uses xsi, pItem:POINTER
+  ;DbgText "HashTable.Insert"
   SetObject xsi
   OCall xsi.GetItemKey, pItem
   OCall xsi.Hash, xax
-  mov xHash, xax
   mov ecx, [xsi].dMask
   and xcx, xax                                          ;ecx is used as index into the bucket array
-;  DbgDec ecx, "Index"
 
   mov xdx, [xsi].pBuckets
   lea xdx, [xdx + sizeof(POINTER)*xcx]
-  .if POINTER ptr [xdx] == NULL
+  mov xcx, POINTER ptr [xdx]
+  .if xcx == HTL_BUCKET_EMPTY || xcx == HTL_BUCKET_TOMBSTONE
     m2m POINTER ptr [xdx], pItem, xcx
-    mov XWORD ptr [xcx], xax                            ;Save hash value
+    inc [xsi].dBucketsUsed
   .else
     inc [xsi].dCollisionCount
-    OCall xsi.OnCollision, xHash                        ;eax = new index
+    OCall xsi.OnCollision, xax                          ;On return eax = new index
     .if eax == -1
       OCall xsi.ErrorReport, NULL, HTL_TABLE_FULL
       xor eax, eax
     .else
-;      DbgDec eax, "Inserted at"
       mov xdx, [xsi].pBuckets
-      mrm POINTER ptr [xdx + sizeof(POINTER)*xax], pItem, xcx     ;Insert
-      m2m XWORD ptr [xcx], xHash, xax
+      mov xcx, pItem
+      mov POINTER ptr [xdx + sizeof(POINTER)*xax], xcx  ;Insert
       inc [xsi].dBucketsUsed
     .endif
   .endif
@@ -232,7 +231,7 @@ MethodEnd
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     HashTable.Resize
 ; Purpose:    Resize the HashTable, allocating the necessary memory on the heap to hold
-;             the Buckets table.
+;             the Buckets table and rehash all items
 ; Arguments:  Arg1: New size (Bucket Count). It must be a power of 2.
 ; Return:     eax = Error code.
 
@@ -241,8 +240,12 @@ Method HashTable.Resize, uses xbx xdi xsi, dNewSize:DWORD
 
   SetObject xsi
   mov ebx, $ArgReg(dNewSize)
+  dec ebx
+  NLPo2 ebx                                             ;Calc next largest power of 2
+
   mov eax, [xsi].dBucketCount
   cmp eax, ebx                                          ;dNewSize
+
   ja @@1                                                ;NewSize can not be less than dBucketCount!
   mov eax, [xsi].dBucketMaxCount
   cmp eax, ebx                                          ;NewSize can not be > than dBucketMaxCount!
@@ -252,7 +255,7 @@ Method HashTable.Resize, uses xbx xdi xsi, dNewSize:DWORD
 @@2:
   mov ecx, [xsi].dBucketCount
   cmp ecx, ebx
-  jne @@3
+  jne @@3                                               ;No change!
   xor eax, eax                                          ;eax = OBJ_OK
   ret
 
@@ -264,33 +267,42 @@ Method HashTable.Resize, uses xbx xdi xsi, dNewSize:DWORD
   mov [xsi].pBuckets, xax                               ;NULL
   mov [xsi].dBucketCount, eax                           ;0
   mov [xsi].dMask, eax
+  mov [xsi].dTombstones, eax
+  mov [xsi].dBucketsUsed, eax
+  mov [xsi].dCollisionCount, eax
   ret
 
 @@4:
-  mov edi, ebx
-  shl edi, $Log2(sizeof(POINTER))                       ;xdx*sizeof(POINTER)
-  mov xax, [xsi].pBuckets
-  test xax, xax
-  jne @@5
-  MemAlloc edi
+  mov xdi, [xsi].pBuckets                               ;xdi -> old POINTER table
+  mov eax, ebx                                          ;ebx = new bucket count
+  shl eax, $Log2(sizeof(POINTER))                       ;xdx*sizeof(POINTER)
+  MemAlloc eax, MEM_INIT_ZERO
   test xax, xax                                         ;Function failed?
   jz @@Error
   mov [xsi].pBuckets, xax
-  mov [xsi].dBucketCount, ebx                           ;dNewSize
+  mov [xsi].dBucketCount, ebx
   dec ebx
   mov [xsi].dMask, ebx
-  xor eax, eax                                          ;eax = OBJ_OK (return value)
-  ret
+  m2z [xsi].dTombstones
+  m2z [xsi].dCollisionCount
+  mov ebx, [xsi].dBucketsUsed
+  m2z [xsi].dBucketsUsed
 
-@@5:
-  MemReAlloc xax, edi
-  test xax, xax                                         ;Function failed?
-  jz @@Error
-  mov [xsi].pBuckets, xax
-  mov [xsi].dBucketCount, ebx                           ;dNewSize
-  dec ebx
-  mov [xsi].dMask, ebx
-  xor eax, eax                                          ;eax = OBJ_OK (return value)
+  ReleaseObject
+  mov xsi, xdi
+  test ebx, ebx
+  .while !ZERO?
+    mov xdx, POINTER ptr [xdi]                          ;Load POINTER from old table
+    .if xdx != HTL_BUCKET_EMPTY && xdx != HTL_BUCKET_TOMBSTONE
+      OCall pSelf.Insert, xdx                           ;Insert it in the new table
+      add xdi, sizeof(POINTER)                          ;Move to next bucket
+      dec xbx
+    .else
+      add xdi, sizeof(POINTER)                          ;ZERO is never set
+    .endif
+  .endw
+  MemFree xsi
+  xor eax, eax
   ret
 
 @@Error:
