@@ -70,7 +70,7 @@ ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-Object Application, , MdiApp                                ;MDI application.
+Object Application, , MdiApp                              ;MDI application.
   VirtualMethod     ChangeLanguage,     DWORD             ;IDLANG_XXX
   RedefineMethod    Done
   VirtualMethod     EnableActions,      DWORD             ;TRUE/FALSE
@@ -438,7 +438,7 @@ Method Application.OnKeyUp, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   mov xbx, [xsi].pClientWnd
   .if wParam == VK_F6
     DbgText "Application.OnKeyUp F6"
-    invoke SendMessage, [xbx].$Obj(MyClientWnd).hWnd ,WM_MDINEXT, NULL, 0
+    invoke SendMessage, [xbx].$Obj(MyClientWnd).hWnd, WM_MDINEXT, NULL, 0
   .endif
   invoke DefFrameProc, [xsi].hWnd, [xbx].$Obj(MyClientWnd).hWnd, WM_KEYUP, wParam, lParam
 MethodEnd

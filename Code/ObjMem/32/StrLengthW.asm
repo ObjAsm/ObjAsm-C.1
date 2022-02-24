@@ -28,14 +28,14 @@ StrLengthW proc pStringW:POINTER
   and eax, 0FFFFFFFCh                                   ;Remove the last 2 bits to align the addr
   sub edx, eax                                          ;edx = 0..3
   mov ecx, DWORD ptr [eax]
-  jmp @@JmpTableW[4*edx]                                ;Jump forward to skip non string bytes
+  jmp @@JmpTableW[sizeof(POINTER)*edx]                  ;Jump forward to skip non string bytes
 
   align ALIGN_CODE
 @@JmpTableW:
-  dd offset @@0
-  dd offset @@1
-  dd offset @@2
-  dd offset @@3
+  POINTER offset @@0
+  POINTER offset @@1
+  POINTER offset @@2
+  POINTER offset @@3
 
   align ALIGN_CODE
 @@0:

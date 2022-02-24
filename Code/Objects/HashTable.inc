@@ -169,6 +169,7 @@ MethodEnd
 ; Arguments:  Arg1: -> Owner object.
 ;             Arg2: Initial Bucket count. Must be a power of 2.
 ; Return:     eax = Error code.
+
 Method HashTable.Init, uses xsi, pOwner:POINTER, dBucketCount:DWORD
   SetObject xsi
   ACall xsi.Init, pOwner
