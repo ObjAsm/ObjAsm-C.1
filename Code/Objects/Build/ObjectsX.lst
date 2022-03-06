@@ -36,6 +36,8 @@ Splash
 StopWatch
 TickCounter
 WindowBackground
+HashMap
+Dictionary
 
 COM_Primers
 ClassFactory
@@ -92,9 +94,9 @@ DlgApp
 MdiApp
 SdiApp
 
-ChartSeries
-ChartFlat
+Chart
 ChartXY
+ChartBar
 
 D3Engine
 

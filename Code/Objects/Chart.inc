@@ -354,18 +354,17 @@ Object ChartSetup, , DialogModal
 ObjectEnd
 
 
+InfoArea struct
+  Rect        RECT    {}
+  pSeries     $ObjPtr(ChartSeries) ?
+  dDataIndex  DWORD   ?
+InfoArea ends
 
 ; ==================================================================================================
 
 if IMPLEMENT
 
 CStr szChart, "OA_Chart"
-
-InfoArea struct
-  Rect        RECT    {}
-  pSeries     $ObjPtr(ChartSeries) ?
-  dDataIndex  DWORD   ?
-InfoArea ends
 
 .code
 % include &ObjPath&ChartSeries.inc

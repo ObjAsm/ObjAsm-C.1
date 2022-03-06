@@ -1,8 +1,8 @@
 ; ==================================================================================================
-; Title:      ChartFlat.asm
+; Title:      Chart.asm
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:    ObjAsm compilation file for ChartFlat object.
+; Purpose:    ObjAsm compilation file for Chart object.
 ; Notes:      Version C.1.0, August 2021
 ;             - First release.
 ; ==================================================================================================
@@ -37,9 +37,8 @@ LoadObjects WinControl
 LoadObjects MsgInterceptor
 LoadObjects TabCtrl
 LoadObjects TextView
-LoadObjects ChartSeries
 
 ;Add here the file that defines the object(s) to be included in the library
-MakeObjects ChartFlat
+MakeObjects Chart
 
 end

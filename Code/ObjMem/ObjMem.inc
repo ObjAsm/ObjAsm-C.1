@@ -1053,6 +1053,10 @@ else
   echo Warning: incompatible TARGET_STR_TYPE
 endif
 
+; CRC32 procedures
+aCRC32C                   proto :POINTER, :DWORD 
+uCRC32C                   proto :POINTER, :DWORD 
+
 PdfViewW                  proto :HANDLE, :POINTER, :POINTER
 PdfViewA                  proto :HANDLE, :POINTER, :POINTER
 if TARGET_STR_TYPE eq STR_TYPE_ANSI

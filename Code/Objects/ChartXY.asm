@@ -1,9 +1,9 @@
 ; ==================================================================================================
 ; Title:      ChartXY.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Purpose:    ObjAsm compilation file for ChartXY object.
-; Notes:      Version C.1.0, August 2021
+; Notes:      Version C.1.1, August 2021
 ;             - First release.
 ; ==================================================================================================
 
@@ -11,6 +11,7 @@
 % include Objects.cop
 
 % include &MacPath&fMath.inc
+% include &IncPath&Windows\CommCtrl.inc
 
 ;Add here all files that build the inheritance path and referenced objects
 LoadObjects Primer
@@ -36,8 +37,7 @@ LoadObjects WinControl
 LoadObjects MsgInterceptor
 LoadObjects TabCtrl
 LoadObjects TextView
-LoadObjects ChartSeries
-LoadObjects ChartFlat
+LoadObjects Chart
 
 ;Add here the file that defines the object(s) to be included in the library
 MakeObjects ChartXY

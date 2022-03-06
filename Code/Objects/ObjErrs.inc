@@ -397,12 +397,12 @@ AddErrMsg SMR_INVALID_PREFIX,         "Prefix circular reference"
 AddErrMsg SMR_INVALID_SUFFIX,         "Suffix circular reference"
 AddErrMsg SMR_BUFFER_TOO_SMALL,       "External buffer too small"
 
-;HashTable
+;HashMap
 ERROR_BASE = BIT29 + 750
-AddErrMsg HTL_OUT_OF_MEMORY,          "No more memory available"
-AddErrMsg HTL_INVALID_ARGUMENT,       "Invalid argument"
-AddErrMsg HTL_TABLE_FULL,             "Table is full"
-AddErrMsg HTL_NO_ITEM_FOUND,          "No item found"
+AddErrMsg HMP_OUT_OF_MEMORY,          "No more memory available"
+AddErrMsg HMP_INVALID_ARGUMENT,       "Invalid argument"
+AddErrMsg HMP_MAP_FULL,               "Map is full"
+AddErrMsg HMP_NO_ITEM_FOUND,          "No item found"
 
 ;CE_KeywordCollection
 ERROR_BASE = BIT29 + 760

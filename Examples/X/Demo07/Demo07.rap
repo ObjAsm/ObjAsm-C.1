@@ -178,7 +178,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=7
+MilestoneOnDateDate=6
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -215,7 +215,7 @@ ProductVer4Range=0
 [Size]
 2=0,0,0,0,29482
 3=0,0,0,0,0
-1=0,0,1840,631,2257
+1=0,0,1840,631,1858
 4=0,0,0,0,2908
 1001=0,0,0,0,460
 5=0,0,0,0,0
@@ -248,7 +248,7 @@ ProductVer4Range=0
 20=0,0,0,0,6234
 33=0,0,0,0,5546
 35=0,0,1840,631,3173
-34=0,0,1840,631,2835
+34=0,0,1840,631,18047
 36=0,0,0,0,4125
 37=
 39=0,0,1834,423,750
@@ -283,16 +283,16 @@ ProductVer4Range=0
 0=724,30,
 
 [Find]
-1="St0ToStr"
-2="DrawScaleX"
-3="ChartBarTabSeries"
-4="CHT_WND_SHOW_Y2"
-5="CHT_SERIES_USE_Y1"
-6="CHT_SERIES_USE_Y2"
-7="CHT_WND_SHOW_Y1"
-8="CHT_DEFAULT_FLAGS"
-9="CHT_WND_FLAG_"
-10="CHT_FLAG_"
+1="InfoArea"
+2="St0ToStr"
+3="DrawScaleX"
+4="ChartBarTabSeries"
+5="CHT_WND_SHOW_Y2"
+6="CHT_SERIES_USE_Y1"
+7="CHT_SERIES_USE_Y2"
+8="CHT_WND_SHOW_Y1"
+9="CHT_DEFAULT_FLAGS"
+10="CHT_WND_FLAG_"
 [Collapse]
 1=
 8=
@@ -383,6 +383,6 @@ AutoLoad=1,2,34,49,35
 27=
 50=
 [PTimer]
-PTimer=1613330408
+PTimer=1614825394
 [GroupExpand]
 GroupExpand=0,1,1,1,0,1,1,0

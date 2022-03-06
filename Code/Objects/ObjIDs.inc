@@ -236,8 +236,8 @@ RegExWID                          equ     0000000711
 ;Autobuffer object
 AutobufferID                      equ     0000000720
 
-;HashTable object
-HashTableID                       equ     0000000730
+;HashMap object
+HashMapID                         equ     0000000730
 
 
 ;COM specific objects

@@ -311,6 +311,9 @@ bin2xword, pString
 xword2bin, xword
 sxword2dec, sxword
 
+aCRC32C, pAlignedBuffer, dByteCount
+uCRC32C, pUnalignedBuffer, dByteCount
+
 xword2hexA, xword
 hex2xwordA, pStringA
 bin2xwordA, pStringA

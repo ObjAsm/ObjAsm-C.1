@@ -1,8 +1,8 @@
 ; ==================================================================================================
-; Title:      HashTable.inc
+; Title:      HashMap.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:    ObjAsm support of HashTable objects.
+; Purpose:    ObjAsm support of HashMap objects.
 ; Notes:      Version C.1.0, January 2022
 ;             - First release.
 ; Links:      - http://libhashish.sourceforge.net/
@@ -10,15 +10,15 @@
 ; ==================================================================================================
 
 
-HTL_BUCKET_EMPTY      equ   0
-HTL_BUCKET_TOMBSTONE  equ   -1
+HMP_BUCKET_EMPTY      equ   0
+HMP_BUCKET_TOMBSTONE  equ   -1
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Object:     HashTable
-; Purpose:    Base object for HashTable descendants.
+; Object:     HashMap
+; Purpose:    Base object for HashMap descendants.
 ;             This object implements an Unordered Associative Container.
 ; Note:       Items can only be accessed using the key values.
-;             The Hash calculation and the collision handling is done in an descendant object.
+;             The Hash calculation and the collision handling is done in a descendant object.
 ;
 ;
 ;                              Buckets                               Items
@@ -42,7 +42,7 @@ HTL_BUCKET_TOMBSTONE  equ   -1
 ;                           ——————————————
 ;
 
-Object HashTable, HashTableID, Streamable
+Object HashMap, HashMapID, Streamable
   VirtualAbstract   Delete,           POINTER
   VirtualMethod     DeleteAll
   DynamicMethod     DestroyItem,      POINTER
@@ -74,19 +74,19 @@ ObjectEnd
 if IMPLEMENT
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     HashTable.DeleteAll
-; Purpose:    Remove all item POINTERs, setting all Buckets to HTL_BUCKET_EMPTY.
+; Method:     HashMap.DeleteAll
+; Purpose:    Remove all item POINTERs, setting all Buckets to HMP_BUCKET_EMPTY.
 ;             No memory is freed!
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method HashTable.DeleteAll
+Method HashMap.DeleteAll
   SetObject xcx
   mov eax, [xcx].dBucketCount
   mov xdx, [xcx].pBuckets
   test eax, eax
   .while !ZERO?
-    mov POINTER ptr [xdx], HTL_BUCKET_EMPTY
+    mov POINTER ptr [xdx], HMP_BUCKET_EMPTY
     add xdx, sizeof(POINTER)
     dec eax
   .endw
@@ -96,24 +96,24 @@ Method HashTable.DeleteAll
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:    HashTable.DestroyItem
+; Method:    HashMap.DestroyItem
 ; Purpose:   Auxiliary procedure to dispose a item in the collection. Don't call directly!
 ; Arguments: Arg1: -> Item.
 ; Return:    Nothing.
 
-Method HashTable.DestroyItem,, pItem:POINTER
+Method HashMap.DestroyItem,, pItem:POINTER
   .if pItem != NULL
     MemFree pItem                                       ;Frees the Item from process heap
   .endif
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     HashTable.Dispose
+; Method:     HashMap.Dispose
 ; Purpose:    Dispose an item.
 ; Arguments:  Arg1: -> Key. This argument should never be NULL.
 ; Return:     Nothing.
 
-Method HashTable.Dispose, uses xsi, pKey:POINTER
+Method HashMap.Dispose, uses xsi, pKey:POINTER
   ArgReg pKey:rdx
 
   SetObject xsi
@@ -124,12 +124,12 @@ Method HashTable.Dispose, uses xsi, pKey:POINTER
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     HashTable.DisposeAll
+; Method:     HashMap.DisposeAll
 ; Purpose:    Dispose of all items in the collection.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method HashTable.DisposeAll, uses xbx xdi xsi
+Method HashMap.DisposeAll, uses xbx xdi xsi
   SetObject xsi
   mov ebx, [xsi].dBucketCount
   mov xdi, [xsi].pBuckets
@@ -138,7 +138,7 @@ Method HashTable.DisposeAll, uses xbx xdi xsi
     mov xdx, POINTER ptr [xdi]
     .if xdx != NULL
       OCall xsi.DestroyItem, xdx
-      mov POINTER ptr [xdi], HTL_BUCKET_EMPTY
+      mov POINTER ptr [xdi], HMP_BUCKET_EMPTY
     .endif
     add xdi, sizeof(POINTER)
     dec ebx
@@ -149,12 +149,12 @@ Method HashTable.DisposeAll, uses xbx xdi xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     HashTable.Done
+; Method:     HashMap.Done
 ; Purpose:    Destructor method.
 ; Arguments:  Nothing.
 ; Return:     None.
 
-Method HashTable.Done, uses xsi
+Method HashMap.Done, uses xsi
   SetObject xsi
   mov xax, [xsi].pBuckets
   .if xax != NULL
@@ -164,13 +164,13 @@ Method HashTable.Done, uses xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     HashTable.Init
-; Purpose:    Initialize the HashTable object.
+; Method:     HashMap.Init
+; Purpose:    Initialize the HashMap object.
 ; Arguments:  Arg1: -> Owner object.
-;             Arg2: Initial Bucket count. Must be a power of 2.
+;             Arg2: Initial Bucket count. Internally it is enlarged to a power of 2.
 ; Return:     eax = Error code.
 
-Method HashTable.Init, uses xsi, pOwner:POINTER, dBucketCount:DWORD
+Method HashMap.Init, uses xsi, pOwner:POINTER, dBucketCount:DWORD
   SetObject xsi
   ACall xsi.Init, pOwner
   mov eax, dBucketCount
@@ -182,43 +182,44 @@ Method HashTable.Init, uses xsi, pOwner:POINTER, dBucketCount:DWORD
     MemAlloc eax, MEM_INIT_ZERO
     .if xax != NULL
       mov [xsi].pBuckets, xax
-      mov ecx, dBucketCount
+      mov ecx, [xsi].dBucketCount
       dec ecx
       mov [xsi].dMask, ecx
       xor eax, eax
     .else
-      OCall xsi.ErrorReport, NULL, HTL_OUT_OF_MEMORY
+      OCall xsi.ErrorReport, NULL, HMP_OUT_OF_MEMORY
     .endif
   .else
-    OCall xsi.ErrorReport, NULL, HTL_INVALID_ARGUMENT
+    OCall xsi.ErrorReport, NULL, HMP_INVALID_ARGUMENT
   .endif
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     HashTable.Insert
+; Method:     HashMap.Insert
 ; Purpose:    Insert a new Item.
 ; Arguments:  Arg1: -> Item.
 ; Return:     xax = Hash or 0 if failed.
 
-Method HashTable.Insert, uses xsi, pItem:POINTER
-  ;DbgText "HashTable.Insert"
+Method HashMap.Insert, uses xsi, pItem:POINTER
+  ;DbgText "HashMap.Insert"
   SetObject xsi
   OCall xsi.GetItemKey, pItem
   OCall xsi.Hash, xax
+
   mov ecx, [xsi].dMask
   and xcx, xax                                          ;ecx is used as index into the bucket array
 
   mov xdx, [xsi].pBuckets
   lea xdx, [xdx + sizeof(POINTER)*xcx]
   mov xcx, POINTER ptr [xdx]
-  .if xcx == HTL_BUCKET_EMPTY || xcx == HTL_BUCKET_TOMBSTONE
+  .if xcx == HMP_BUCKET_EMPTY || xcx == HMP_BUCKET_TOMBSTONE
     m2m POINTER ptr [xdx], pItem, xcx
     inc [xsi].dBucketsUsed
   .else
     inc [xsi].dCollisionCount
     OCall xsi.OnCollision, xax                          ;On return eax = new index
     .if eax == -1
-      OCall xsi.ErrorReport, NULL, HTL_TABLE_FULL
+      OCall xsi.ErrorReport, NULL, HMP_MAP_FULL
       xor eax, eax
     .else
       mov xdx, [xsi].pBuckets
@@ -230,15 +231,16 @@ Method HashTable.Insert, uses xsi, pItem:POINTER
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     HashTable.Resize
-; Purpose:    Resize the HashTable, allocating the necessary memory on the heap to hold
+; Method:     HashMap.Resize
+; Purpose:    Resize the HashMap, allocating the necessary memory on the heap to hold
 ;             the Buckets table and rehash all items
 ; Arguments:  Arg1: New size (Bucket Count). It must be a power of 2.
 ; Return:     eax = Error code.
 
-Method HashTable.Resize, uses xbx xdi xsi, dNewSize:DWORD
+Method HashMap.Resize, uses xbx xdi xsi, dNewSize:DWORD
   ArgReg dNewSize:edx
 
+  DbgText "HashMap.Resize"
   SetObject xsi
   mov ebx, $ArgReg(dNewSize)
   dec ebx
@@ -294,7 +296,7 @@ Method HashTable.Resize, uses xbx xdi xsi, dNewSize:DWORD
   test ebx, ebx
   .while !ZERO?
     mov xdx, POINTER ptr [xdi]                          ;Load POINTER from old table
-    .if xdx != HTL_BUCKET_EMPTY && xdx != HTL_BUCKET_TOMBSTONE
+    .if xdx != HMP_BUCKET_EMPTY && xdx != HMP_BUCKET_TOMBSTONE
       OCall pSelf.Insert, xdx                           ;Insert it in the new table
       add xdi, sizeof(POINTER)                          ;Move to next bucket
       dec xbx
