@@ -28,8 +28,8 @@
 ;                  segment returning a reference to it if the "$" prefix was used.
 ; $Ofs(C/D/J)WStr: Same as ($C/$D/$J)WStr, but returns the string offset.
 
-; Note: The LengthOf and SizeOf directives return the number of characters in the string, 
-;       NOT including the ZTC!
+; Note: Use ??StrSize (byte count including the ZTC) or  
+;           ??StrLength (character count without the ZTC).
 ; ==================================================================================================
 
 
@@ -54,105 +54,109 @@ StringW macro StrName, QuotedText:vararg
   ;;backslash charater to mimic the behaviour of the StringA macro.
   ;;JWASM 2.07B don't need this workaround.
   ifdef __JWASM__
-    ??Text textequ <QuotedText>
+    $$Text textequ <QuotedText>
     goto Continue
   elseifdef __UASM__
-    ??Text textequ <QuotedText>
+    $$Text textequ <QuotedText>
     goto Continue
   endif
 
   ;ML specific code
-  ??Text textequ <>
-  ??TextSize SizeStr <QuotedText>
-  ??StartPos = 1
+  $$Text textequ <>
+  $$TextSize SizeStr <QuotedText>
+  $$StartPos = 1
 :SearchBackslasch
-  ??FindPos InStr ??StartPos, <QuotedText>, <\>
-  if ??FindPos ne 0
-    ??AddText SubStr <QuotedText>, ??StartPos, ??FindPos - ??StartPos + 1
-    ??Text CatStr ??Text, ??AddText, <\>
-    if ??FindPos lt ??TextSize
-      ??StartPos = ??FindPos + 1
+  $$FindPos InStr $$StartPos, <QuotedText>, <\>
+  if $$FindPos ne 0
+    $$AddText SubStr <QuotedText>, $$StartPos, $$FindPos - $$StartPos + 1
+    $$Text CatStr $$Text, $$AddText, <\>
+    if $$FindPos lt $$TextSize
+      $$StartPos = $$FindPos + 1
       goto SearchBackslasch
     endif
   else
-    if ??StartPos le ??TextSize
-      ??AddText SubStr <QuotedText>, ??StartPos, ??TextSize - ??StartPos + 1
-      ??Text CatStr ??Text, ??AddText
+    if $$StartPos le $$TextSize
+      $$AddText SubStr <QuotedText>, $$StartPos, $$TextSize - $$StartPos + 1
+      $$Text CatStr $$Text, $$AddText
     endif
   endif
 
 :Continue
   ;;Continue regular processing
-  ??CharCount = 0
-% for ??SubText, <??Text>
-    ??NumFlag textequ <0>
-    ??QuotationMark SubStr <??SubText>, 1, 1
-%   ifdif <??QuotationMark>, <">
-%     ifdif <??QuotationMark>, <'>
-        ??NumFlag textequ <1>
+  $$StrStart = $
+
+  $$CharCount = 0
+% for $$SubText, <$$Text>
+    $$NumFlag textequ <0>
+    $$QuotationMark SubStr <$$SubText>, 1, 1
+%   ifdif <$$QuotationMark>, <">
+%     ifdif <$$QuotationMark>, <'>
+        $$NumFlag textequ <1>
       endif
     endif
 
-%   ifidn <??NumFlag>, <0>
-      ??SubTextSize = @SizeStr(<??SubText>)
-      if ??SubTextSize ne 2
-        ??CharCount = ??CharCount + ??SubTextSize - 2
+%   ifidn <$$NumFlag>, <0>
+      $$SubTextSize = @SizeStr(<$$SubText>)
+      if $$SubTextSize ne 2
+        $$CharCount = $$CharCount + $$SubTextSize - 2
       endif
     else
-      ??CharCount = ??CharCount + 1
+      $$CharCount = $$CharCount + 1
     endif
   endm
 
-  StrName WORD ??CharCount dup(?)
-  org $ - ??CharCount*2
+  StrName WORD $$CharCount dup(?)
+  org $ - $$CharCount*2
 
   ;;Continue regular processing
-  ??SrcLine textequ < dw >
-% for ??SubText, <??Text>
-    ??NumFlag textequ <0>
-    ??QuotationMark SubStr <??SubText>, 1, 1
-%   ifdif <??QuotationMark>, <">
-%     ifdif <??QuotationMark>, <'>
-        ??NumFlag textequ <1>
-        if ??SubText gt 0FFFFh        ;;Maximum 2 bytes
+  $$SrcLine textequ < dw >
+% for $$SubText, <$$Text>
+    $$NumFlag textequ <0>
+    $$QuotationMark SubStr <$$SubText>, 1, 1
+%   ifdif <$$QuotationMark>, <">
+%     ifdif <$$QuotationMark>, <'>
+        $$NumFlag textequ <1>
+        if $$SubText gt 0FFFFh        ;;Maximum 2 bytes
           .err <WIDE string numeric input out of range>
         endif
-        ??Sentence textequ @CatStr(%??SrcLine, <??SubText>, <,>)
-        ??SrcLine textequ ??Sentence
+        $$Sentence textequ @CatStr(%$$SrcLine, <$$SubText>, <,>)
+        $$SrcLine textequ $$Sentence
       endif
     endif
 
-%   ifidn <??NumFlag>, <0>
-      if @SizeStr(<??SubText>) ne 2
-        ??Count = 0
-%       forc ??Char, <??SubText>
+%   ifidn <$$NumFlag>, <0>
+      if @SizeStr(<$$SubText>) ne 2
+        $$Count = 0
+%       forc $$Char, <$$SubText>
           ;;Strip quotation marks
-%         if (??Count ne 0) and (??Count ne (@SizeStr(<??SubText>) - 1))
-            if @SizeStr(%??SrcLine) gt 95
-              ;;Output ??Sentence
-%             ??Sentence
-              ;;Initiate new ??SubText
-              ??SrcLine textequ <dw >
-              ??Sentence textequ <>
+%         if ($$Count ne 0) and ($$Count ne (@SizeStr(<$$SubText>) - 1))
+            if @SizeStr(%$$SrcLine) gt 95
+              ;;Output $$Sentence
+%             $$Sentence
+              ;;Initiate new $$SubText
+              $$SrcLine textequ <dw >
+              $$Sentence textequ <>
             endif
-            ??QChar CatStr ??QuotationMark, <??Char>, ??QuotationMark
-            ??Sentence textequ @CatStr(%??SrcLine, <??QChar>, <,>)
-            ??SrcLine textequ ??Sentence
+            $$QChar CatStr $$QuotationMark, <$$Char>, $$QuotationMark
+            $$Sentence textequ @CatStr(%$$SrcLine, <$$QChar>, <,>)
+            $$SrcLine textequ $$Sentence
           endif
-          ??Count = ??Count + 1
+          $$Count = $$Count + 1
         endm
       else
         .err <Wrong WIDE string definition>
       endif
     endif
 
-    ;;Output ??Sentence
-%   ??Sentence
-    ;;Initiate new ??SubText
-    ??SrcLine textequ <dw >
+    ;;Output $$Sentence
+%   $$Sentence
+    ;;Initiate new $$SubText
+    $$SrcLine textequ <dw >
   endm
   ;;Set ZTC
   CHRW 0
+  ??StrSize = $ - $$StrStart                            ;;??StrSize includes the ZTC 
+  ??StrLength = ??StrSize/2 - 1                         ;;??StrLength = character count without ZTC
 endm
 
 CStrW macro TextReference:req, QuotedText:vararg

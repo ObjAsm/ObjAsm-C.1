@@ -13,8 +13,8 @@
 ;             (X = J) code segment returning a reference to it if the "$" prefix was used.
 ; $Ofs(X)Str: Same as ($C/$T/$D/$J)Str, but returns the string offset.
 ;
-; Note: The LengthOf and SizeOf directives return the number of characters in the string, 
-;       NOT including the ZTC!
+; Note: Use ??StrSize (byte count including the ZTC) or  
+;           ??StrLength (character count without the ZTC).
 ; ==================================================================================================
 
 
@@ -26,12 +26,15 @@
 ; Returns:    Nothing / Reference to the string.
 
 StringA macro StrName, QuotedText:vararg
-  ??StrLabel textequ <StrName>
-  for ??StrSubText:=<>, <QuotedText>
-    ??StrLabel db ??StrSubText
-    ??StrLabel textequ <>                               ;;Set to blank for the next loop
+  $$StrStart = $
+  $$StrLabel textequ <StrName>
+  for $$StrSubText:=<>, <QuotedText>
+    $$StrLabel db $$StrSubText
+    $$StrLabel textequ <>                               ;;Set to blank for the next loop
   endm
   CHRA 0                                                ;;Set ZTC
+  ??StrSize = $ - $$StrStart                            ;;??StrSize includes the ZTC 
+  ??StrLength = ??StrSize - 1                           ;;??StrLength = character count without ZTC
 endm
 
 CStrA macro TextReference:req, QuotedText:vararg

@@ -24,6 +24,10 @@
 ;                            (J) code segment, returning a reference to it,
 ;                            if the "$" prefix was used.
 ; $Ofs(C/T/D/J)BStr:         Same as ($C/$T/$D/$J)BStr, but returns the symbolic string offset.
+;
+; Note: Use ??StrSize (byte count including the ZTC) or  
+;           ??StrLength (character count without the ZTC).
+;           Both values do not include the byte length header (DWORD).
 ; ==================================================================================================
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -41,26 +45,26 @@
 ;             Resulting BStr:   Note: "Director's cut" + CRLF
 
 BString macro StrName, QuotedText:vararg
-  ??Count = 0
-  for ??SubText, <QuotedText>
-    ??NumFlag textequ <0>
-    ??QuotationMark SubStr <??SubText>, 1, 1
-%   ifdif <??QuotationMark>, <">
-%     ifdif <??QuotationMark>, <'>
-        ??NumFlag textequ <1>
-        if ??SubText le 0FFFFh        ;;Maximum 2 bytes
-          ??Count = ??Count + 2
+  $$Count = 0
+  for $$SubText, <QuotedText>
+    $$NumFlag textequ <0>
+    $$QuotationMark SubStr <$$SubText>, 1, 1
+%   ifdif <$$QuotationMark>, <">
+%     ifdif <$$QuotationMark>, <'>
+        $$NumFlag textequ <1>
+        if $$SubText le 0FFFFh        ;;Maximum 2 bytes
+          $$Count = $$Count + 2
         else
           .err <BSTR numeric input out of range>
         endif
       endif
     endif
 
-%   ifidn <??NumFlag>, <0>
-%     ifdif <@SizeStr(<??SubText>)>, <02>
+%   ifidn <$$NumFlag>, <0>
+%     ifdif <@SizeStr(<$$SubText>)>, <02>
         ;;Strip quotation marks and loop
-%       forc ??Char, <@SubStr(<??SubText>, 2, @SizeStr(<??SubText>) - 2)>
-          ??Count = ??Count + 2
+%       forc $$Char, <@SubStr(<$$SubText>, 2, @SizeStr(<$$SubText>) - 2)>
+          $$Count = $$Count + 2
         endm
       else
         .err <Wrong BSTR definition>
@@ -68,45 +72,48 @@ BString macro StrName, QuotedText:vararg
     endif
   endm
 
-% dd ??Count        ;;Set byte Count before the UNICODE string is placed
+% dd $$Count        ;;Set byte Count before the UNICODE string is placed
 
-  ??SrcLine textequ @CatStr(StrName, < dw >)
-  for ??SubText, <QuotedText>
-    ??NumFlag textequ <0>
-    ??QuotationMark SubStr <??SubText>, 1, 1
-%   ifdif <??QuotationMark>, <">
-%     ifdif <??QuotationMark>, <'>
-        ??NumFlag textequ <1>
-        ??Sentence textequ @CatStr(%??SrcLine, <??SubText>, <,>)
-        ??SrcLine textequ ??Sentence
+  $$StrStart = $
+  $$SrcLine textequ @CatStr(StrName, < dw >)
+  for $$SubText, <QuotedText>
+    $$NumFlag textequ <0>
+    $$QuotationMark SubStr <$$SubText>, 1, 1
+%   ifdif <$$QuotationMark>, <">
+%     ifdif <$$QuotationMark>, <'>
+        $$NumFlag textequ <1>
+        $$Sentence textequ @CatStr(%$$SrcLine, <$$SubText>, <,>)
+        $$SrcLine textequ $$Sentence
       endif
     endif
 
-%   ifidn <??NumFlag>, <0>
-%     ifdif <@SizeStr(<??SubText>)>, <02>
+%   ifidn <$$NumFlag>, <0>
+%     ifdif <@SizeStr(<$$SubText>)>, <02>
         ;;Strip quotation marks and loop
-%       forc ??Char, <@SubStr(<??SubText>, 2, @SizeStr(<??SubText>) - 2)>
-          if @SizeStr(%??SrcLine) gt 95
-            ;;Output ??Sentence
-%           ??Sentence
-            ;;Initiate new ??SubText
-            ??SrcLine textequ <dw >
-            ??Sentence textequ <>
+%       forc $$Char, <@SubStr(<$$SubText>, 2, @SizeStr(<$$SubText>) - 2)>
+          if @SizeStr(%$$SrcLine) gt 95
+            ;;Output $$Sentence
+%           $$Sentence
+            ;;Initiate new $$SubText
+            $$SrcLine textequ <dw >
+            $$Sentence textequ <>
           endif
-          ??QChar CatStr ??QuotationMark, <??Char>, ??QuotationMark
-          ??Sentence textequ @CatStr(%??SrcLine, <??QChar>, <,>)
-          ??SrcLine textequ ??Sentence
+          $$QChar CatStr $$QuotationMark, <$$Char>, $$QuotationMark
+          $$Sentence textequ @CatStr(%$$SrcLine, <$$QChar>, <,>)
+          $$SrcLine textequ $$Sentence
         endm
       endif
     endif
 
-    ;;Output ??Sentence
-%   ??Sentence
-    ;;Initiate new ??SubText
-    ??SrcLine textequ <dw >
+    ;;Output $$Sentence
+%   $$Sentence
+    ;;Initiate new $$SubText
+    $$SrcLine textequ <dw >
   endm
   ;;Set zero termination mark
   dw 0
+  ??StrSize = $ - $$StrStart                            ;;??StrSize includes the ZTC 
+  ??StrLength = ??StrSize/2 - 1                         ;;??StrLength = character count without ZTC
 endm
 
 CBStr macro TextReference:req, QuotedText:vararg
