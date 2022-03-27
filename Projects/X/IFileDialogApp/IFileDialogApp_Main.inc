@@ -85,26 +85,26 @@ Method Application.OnCommand, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
     invoke CoCreateInstance, offset CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, \
                              offset IID_IFileOpenDialog, addr pIFODlg
     .if SUCCEEDED(eax)
-      c2m MFS.FS0.pszName, $OfsCStr("All"), xax
-      c2m MFS.FS0.pszSpec, $OfsCStr("*.*"), xcx
-      c2m MFS.FS1.pszName, $OfsCStr("Assembly"), xax
-      c2m MFS.FS1.pszSpec, $OfsCStr("*.asm"), xcx
-      c2m MFS.FS2.pszName, $OfsCStr("Include"), xax
-      c2m MFS.FS2.pszSpec, $OfsCStr("*.inc"), xcx
-      c2m MFS.FS3.pszName, $OfsCStr("Text"), xax
-      c2m MFS.FS3.pszSpec, $OfsCStr("*.txt"), xcx
+      c2m MFS.FS0.pszName, $OfsCStrW("All"), xax
+      c2m MFS.FS0.pszSpec, $OfsCStrW("*.*"), xcx
+      c2m MFS.FS1.pszName, $OfsCStrW("Assembly"), xax
+      c2m MFS.FS1.pszSpec, $OfsCStrW("*.asm"), xcx
+      c2m MFS.FS2.pszName, $OfsCStrW("Include"), xax
+      c2m MFS.FS2.pszSpec, $OfsCStrW("*.inc"), xcx
+      c2m MFS.FS3.pszName, $OfsCStrW("Text"), xax
+      c2m MFS.FS3.pszSpec, $OfsCStrW("*.txt"), xcx
 
       ICall pIFODlg::IFileOpenDialog.SetFileTypes, sizeof(MultiFileSpec)/sizeof(COMDLG_FILTERSPEC), \
                                                    addr MFS
       ICall pIFODlg::IFileOpenDialog.SetFileTypeIndex, 2
       ICall pIFODlg::IFileOpenDialog.SetOptions, FOS_ALLOWMULTISELECT
-      ICall pIFODlg::IFileOpenDialog.SetTitle, $OfsCStr("Select a file...")
-      ICall pIFODlg::IFileOpenDialog.SetOkButtonLabel, $OfsCStr("&Select")
-      ICall pIFODlg::IFileOpenDialog.SetFileNameLabel, $OfsCStr("Selected file name: ")
+      ICall pIFODlg::IFileOpenDialog.SetTitle, $OfsCStrW("Select a file...")
+      ICall pIFODlg::IFileOpenDialog.SetOkButtonLabel, $OfsCStrW("&Select")
+      ICall pIFODlg::IFileOpenDialog.SetFileNameLabel, $OfsCStrW("Selected file name: ")
 
       ICall pIFODlg::IFileOpenDialog.QueryInterface, offset IID_IFileDialog2, addr pIFileDialog2
       .if SUCCEEDED(eax)
-        ICall pIFileDialog2::IFileDialog2.SetCancelButtonLabel, $OfsCStr("&Cancel")
+        ICall pIFileDialog2::IFileDialog2.SetCancelButtonLabel, $OfsCStrW("&Cancel")
         ICall pIFileDialog2::IFileDialog2.Release
       .endif
 

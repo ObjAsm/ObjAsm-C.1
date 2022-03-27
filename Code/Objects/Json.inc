@@ -944,6 +944,7 @@ Method Json.Read, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
   local pMemBlockUTF8:POINTER, pMemBlockWide:POINTER
 
   SetObject xdi
+  mov xax, pStream
   mov xbx, $OCall(pStream::Stream.GetSize)
   .if eax != -1
     MemAlloc ebx
@@ -952,7 +953,7 @@ Method Json.Read, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
       OCall pStream::Stream.BinRead, pMemBlockUTF8, ebx
       .if eax != 0
         shl ebx, 1                                      ;Conservative guess
-        MemAlloc ebx
+        MemAlloc ebx, MEM_INIT_ZERO
         .if xax != NULL
           mov pMemBlockWide, xax
           invoke UTF8ToWide, pMemBlockWide, pMemBlockUTF8, ebx
@@ -965,7 +966,9 @@ Method Json.Read, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
           mov [xdi].RootProperty.JSON_PROPERTY.Children.pFirstMember, NULL
           mov [xdi].RootProperty.JSON_PROPERTY.Children.pLastMember, NULL
 
+          ;Read in all values contained in the wide memory block
           invoke JsonGetValue, NULL, NULL               ;Pass xbx, xdi & xsi implicitly
+
           MemFree pMemBlockWide
         .endif
       .endif
@@ -1026,11 +1029,11 @@ Method Json.WriteProperty, uses xbx xdi xsi, pStream:$ObjPtr(Stream), pProperty:
       dec eax                                           ;Discard ZTC
       OCall pStream::Stream.BinWrite, [xbx].JSON_PROPERTY.pName, eax
     endif
-    OCall pStream::Stream.BinWrite, $OfsCStrA('":'), 2
+    OCall pStream::Stream.BinWrite, $OfsCStrA('":'), ??StrLength
   .endif
 
   .if [xbx].JSON_PROPERTY.dType == JSON_TYPE_OBJECT
-    OCall pStream::Stream.BinWrite, $OfsCStrA("{", 13, 10), 3
+    OCall pStream::Stream.BinWrite, $OfsCStrA("{", 13, 10), ??StrLength
     ;Write all children recursively
     mov xsi, [xbx].JSON_PROPERTY.Children.pFirstMember
     add DWORD ptr [xdi], INDENTATION_STEP               ;Increment indentation
@@ -1039,16 +1042,16 @@ Method Json.WriteProperty, uses xbx xdi xsi, pStream:$ObjPtr(Stream), pProperty:
       OCall pSelf::Json.WriteProperty, pStream, xax, xdi
       mov xsi, [xsi].LDLL_MEMBER.pLinkFwrd
       .if xsi != 0
-        OCall pStream::Stream.BinWrite, $OfsCStrA(",", 13, 10), 3
+        OCall pStream::Stream.BinWrite, $OfsCStrA(",", 13, 10), ??StrLength
       .endif
     .endw
     sub DWORD ptr [xdi], INDENTATION_STEP               ;Decrement indentation
-    OCall pStream::Stream.BinWrite, $OfsCStrA(13, 10), 2
+    OCall pStream::Stream.BinWrite, $OfsCStrA(13, 10), ??StrLength
     IndentNow
     OCall pStream::Stream.BinWrite8, "}"
 
   .elseif [xbx].JSON_PROPERTY.dType == JSON_TYPE_ARRAY
-    OCall pStream::Stream.BinWrite, $OfsCStrA("[", 13, 10), 3
+    OCall pStream::Stream.BinWrite, $OfsCStrA("[", 13, 10), ??StrLength
     mov xsi, [xbx].JSON_PROPERTY.Children.pFirstMember
     add DWORD ptr [xdi], INDENTATION_STEP               ;Increment indentation
     .while xsi != NULL
@@ -1056,11 +1059,11 @@ Method Json.WriteProperty, uses xbx xdi xsi, pStream:$ObjPtr(Stream), pProperty:
       OCall pSelf::Json.WriteProperty, pStream, xax, xdi
       mov xsi, [xsi].LDLL_MEMBER.pLinkFwrd
       .if xsi != 0
-        OCall pStream::Stream.BinWrite, $OfsCStrA(",", 13, 10), 3
+        OCall pStream::Stream.BinWrite, $OfsCStrA(",", 13, 10), ??StrLength
       .endif
     .endw
     sub DWORD ptr [xdi], INDENTATION_STEP               ;Decrement indentation
-    OCall pStream::Stream.BinWrite, $OfsCStrA(13, 10), 2
+    OCall pStream::Stream.BinWrite, $OfsCStrA(13, 10), ??StrLength
     IndentNow
     OCall pStream::Stream.BinWrite8, "]"
 

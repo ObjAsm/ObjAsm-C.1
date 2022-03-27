@@ -1,6 +1,7 @@
 Primer
 Stream
 DiskStream
+MemoryStream
 CRC_16
 CRC_32
 Array

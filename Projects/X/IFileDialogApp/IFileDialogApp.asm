@@ -10,7 +10,7 @@
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc
-SysSetup OOP, WIN64, WIDE_STRING;, DEBUG(WND)
+SysSetup OOP, WIN64, ANSI_STRING;, DEBUG(WND)
 
 % include &COMPath&COM.inc
 % include &IncPath&Windows\sGUID.inc

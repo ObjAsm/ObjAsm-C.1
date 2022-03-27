@@ -5,7 +5,7 @@
 ; Purpose:    ObjAsm support of ChartBarTabSeries objects.
 ; Notes:      Version 1.0.0, August 2021
 ;               - First release.
-;               - https://devblogs.microsoft.com/oldnewthing/20190221-00/?p=101062 
+;               - https://devblogs.microsoft.com/oldnewthing/20190221-00/?p=101062
 ; ==================================================================================================
 
 
@@ -154,10 +154,15 @@ Method ChartBarTabSeries.CtlsSet, uses xbx xdi xsi
   invoke SetDlgItemText, [xsi].hWnd, IDC_CHT_SER_BAR_NAME_EDT, [xdi].pName
   invoke SetDlgItemText, [xsi].hWnd, IDC_CHT_SER_BAR_DESC_EDT, [xdi].pDescription
 
-  .ifBitSet [xdi].dFlags, CHT_SERIES_USE_Y2
-    invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_BAR_Y2_CHK, BST_CHECKED
+  .ifBitSet [xdi].dFlags, CHT_SERIES_SHOW_Y2_CHK
+    .ifBitSet [xdi].dFlags, CHT_SERIES_USE_Y2
+      invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_BAR_Y2_CHK, BST_CHECKED
+    .else
+      invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_BAR_Y2_CHK, BST_UNCHECKED
+    .endif
   .else
-    invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_BAR_Y2_CHK, BST_UNCHECKED
+    invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_Y2_CHK
+    invoke ShowWindow, xax, SW_HIDE
   .endif
 
   invoke SetDlgItemInt, [xsi].hWnd, IDC_CHT_SER_BAR_WIDTH_EDT, [xdi].Setup.dBarWidth, FALSE
@@ -211,7 +216,7 @@ MethodEnd
 ; Purpose:    Initialize the ChartBarTabSeries object.
 ; Arguments:  Arg1: -> Owner object.
 ;             Arg2: Parent window HANDLE.
-;             Arg3: -> MaskedImageList. 
+;             Arg3: -> MaskedImageList.
 ; Return:     Nothing.
 
 Method ChartBarTabSeries.Init, uses xsi, pOwner:POINTER, hParent:HWND, pImageList:$ObjPtr(MaskedImageList)
@@ -335,8 +340,8 @@ SignedIntegerSubclassProc proc hWnd:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARA
         m2m EBT.pszTitle, $OfsCStr("Error"), xax
         m2m EBT.pszText, $OfsCStr("Invalid character"), xax
         mov EBT.ttiIcon, TTI_ERROR
-        invoke SendMessage, hWnd, EM_SHOWBALLOONTIP, 0, addr EBT 
-        invoke MessageBeep, 0         
+        invoke SendMessage, hWnd, EM_SHOWBALLOONTIP, 0, addr EBT
+        invoke MessageBeep, 0
         xor eax, eax
         ret
       .endif
@@ -345,7 +350,7 @@ SignedIntegerSubclassProc proc hWnd:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARA
   invoke DefSubclassProc, hWnd, uMsg, wParam, lParam
   ret
 SignedIntegerSubclassProc endp
-    
+
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     ChartBarTabSeries.OnInitDialog
 ; Purpose:    Event procedure for WM_INITDIALOG message.

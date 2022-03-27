@@ -152,10 +152,15 @@ Method ChartXYTabSeries.CtlsSet, uses xbx xdi xsi
   invoke SetDlgItemText, [xsi].hWnd, IDC_CHT_SER_XY_NAME_EDT, [xdi].pName
   invoke SetDlgItemText, [xsi].hWnd, IDC_CHT_SER_XY_DESC_EDT, [xdi].pDescription
 
-  .ifBitSet [xdi].dFlags, CHT_SERIES_USE_Y2
-    invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_XY_Y2_CHK, BST_CHECKED
+  .ifBitSet [xdi].dFlags, CHT_SERIES_SHOW_Y2_CHK
+    .ifBitSet [xdi].dFlags, CHT_SERIES_USE_Y2
+      invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_XY_Y2_CHK, BST_CHECKED
+    .else
+      invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_XY_Y2_CHK, BST_UNCHECKED
+    .endif
   .else
-    invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_XY_Y2_CHK, BST_UNCHECKED
+    invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_Y2_CHK
+    invoke ShowWindow, xax, SW_HIDE
   .endif
 
   .ifBitSet [xdi].dFlags, CHT_SERIES_SHOW_DEPICTION
@@ -219,7 +224,7 @@ MethodEnd
 ; Purpose:    Initialize the ChartXYTabSeries object.
 ; Arguments:  Arg1: -> Owner object.
 ;             Arg2: Parent window HANDLE.
-;             Arg3: -> MaskedImageList. 
+;             Arg3: -> MaskedImageList.
 ; Return:     Nothing.
 
 Method ChartXYTabSeries.Init, uses xsi, pOwner:POINTER, hParent:HWND, pImageList:$ObjPtr(MaskedImageList)

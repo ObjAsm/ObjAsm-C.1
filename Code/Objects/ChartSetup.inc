@@ -257,7 +257,7 @@ Method ChartSetup.OnInitDialog, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
       inc [xsi].dTabCount
     .endif
     inc ebx
-  .endw 
+  .endw
 
   .if [xsi].dTabCount != 0
     invoke SendMessage, [xsi].TabControl.hWnd, TCM_SETCURSEL, [xsi].dSelTabIndex, 0

@@ -274,7 +274,7 @@ Method WindowBackground.Update, uses xsi
   SetObject xsi
   OCall xsi.DisposeAll
 
-  ;Get the new client to screen offset, used be the ExcludeChild method
+  ;Get the new client to screen offset, used by the ExcludeChild method
   m2z [xsi].WndOffset.x
   m2z [xsi].WndOffset.y
   invoke ClientToScreen, [xsi].$Obj(WindowBackground).hWnd, addr [xsi].WndOffset

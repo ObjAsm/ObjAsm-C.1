@@ -25,14 +25,14 @@
 
 
 
-CHT_FLOAT textequ <REAL8>
+CHT_FLOAT textequ <REAL4>
 
 .const
 if type(CHT_FLOAT) eq REAL4
   FLOAT_MAX equ R4_MAX
   FLOAT_MIN equ R4_MIN
-  cFloatMax DWORD FLOAT_MAX                             
-  cFloatMin DWORD FLOAT_MIN                             
+  cFloatMax DWORD FLOAT_MAX
+  cFloatMin DWORD FLOAT_MIN
 else
   FLOAT_MAX equ R8_MAX
   FLOAT_MIN equ R8_MIN
@@ -59,9 +59,11 @@ PDEF_CHART typedef ptr DEF_CHART
 CHT_SERIES_SHOW_DEPICTION   equ   BIT00                 ;Bar, Line, etc.
 CHT_SERIES_SHOW_MARKER      equ   BIT01
 CHT_SERIES_SHOW_TAB         equ   BIT02                 ;Show series tab on the setup dialog
-CHT_SERIES_USE_Y2           equ   BIT03
+CHT_SERIES_SHOW_Y2_CHK      equ   BIT03
+CHT_SERIES_USE_Y2           equ   BIT04
 
-CHT_SERIES_DEFAULT_FLAGS equ CHT_SERIES_SHOW_DEPICTION or CHT_SERIES_SHOW_MARKER or CHT_SERIES_SHOW_TAB
+CHT_SERIES_DEFAULT_FLAGS equ CHT_SERIES_SHOW_DEPICTION or CHT_SERIES_SHOW_MARKER or \
+                             CHT_SERIES_SHOW_TAB or CHT_SERIES_USE_Y2
 
 CHT_SCALE_AUTO_MIN          equ   BIT00
 CHT_SCALE_AUTO_MAX          equ   BIT01
@@ -94,7 +96,7 @@ CHT_WND_CTRL_DBLCLK         equ   BIT04                 ;Enable CTRL double clic
 CHT_WND_DATA_TOOLTIPS_SHOW  equ   BIT05                 ;Enable ToolTips showing data information
 CHT_WND_FORCE_Y1            equ   BIT06                 ;Force display of Y1 scale
 CHT_WND_FORCE_Y2            equ   BIT07                 ;Force display of Y2 scale
-CHT_WND_SHOWN_FIRST_TIME    equ   BIT26                 ;Helper, 1 if chart has already been shown 
+CHT_WND_SHOWN_FIRST_TIME    equ   BIT26                 ;Helper, 1 if chart has already been shown
 CHT_WND_SHOW_Y1             equ   BIT27                 ;Helper, if set it shows the Y1 scale
 CHT_WND_SHOW_Y2             equ   BIT28                 ;Helper, if set it shows the Y2 scale
 CHT_WND_TOOLTIP_ACTIVE      equ   BIT29                 ;Helper, TooTip activation
