@@ -320,10 +320,10 @@ bin2xwordA, pStringA
 xword2binA, xword
 sxword2decA, sxword
 
-xword2hexW, xword  
+xword2hexW, xword
 hex2xwordW, pStringW
 bin2xwordW, pStringW
-xword2binW, xword  
+xword2binW, xword
 sxword2decW, sxword
 
 ActivatePrevInstance, pStringID, pClassName
@@ -388,6 +388,8 @@ GetFileLinesA, hFile
 SetPrivilegeToken, hProcess, pPrivilegeName, dEnable
 SetPrivilegeTokenA, hProcess, pPrivilegeNameA, dEnable
 SetPrivilegeTokenW, hProcess, pPrivilegeNameW, dEnable
+
+IsProcessElevated, hProcess
 
 ErrorMessageBox, hWnd, pUserMessage, dLangID, dErrorCode
 ErrorMessageBoxA, hWnd, pUserMessageA, dLangID, dErrorCode

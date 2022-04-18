@@ -1,5 +1,5 @@
 ; ==================================================================================================
-; Title:      aCRC32C.asm
+; Title:      uCRC32C.asm
 ; Author:     G. Friedrich
 ; Version:    C.1.1
 ; Notes:      Version C.1.1, March 2022
@@ -9,6 +9,6 @@
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
 
-% include &ObjMemPath&X\aCRC32c.asm
+% include &ObjMemPath&X\uCRC32c.asm
 
 end

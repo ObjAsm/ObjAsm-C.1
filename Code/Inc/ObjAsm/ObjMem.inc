@@ -836,6 +836,7 @@ IsGUIDEqual               proto :POINTER, :POINTER
 SysShutdown               proto :DWORD, :DWORD
 SysStandby                proto
 WaitForProcess            proto :DWORD, :DWORD
+IsProcessElevated         proto :HANDLE
 IsWinNT                   proto
 IsAdmin                   proto
 GetLogProcCount           proto :POINTER
@@ -1054,8 +1055,8 @@ else
 endif
 
 ; CRC32 procedures
-aCRC32C                   proto :POINTER, :DWORD 
-uCRC32C                   proto :POINTER, :DWORD 
+aCRC32C                   proto :POINTER, :DWORD
+uCRC32C                   proto :POINTER, :DWORD
 
 PdfViewW                  proto :HANDLE, :POINTER, :POINTER
 PdfViewA                  proto :HANDLE, :POINTER, :POINTER
