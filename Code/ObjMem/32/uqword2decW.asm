@@ -1,5 +1,5 @@
 ; ==================================================================================================
-; Title:      qword2decW.asm
+; Title:      uqword2decW.asm
 ; Author:     G. Friedrich
 ; Version:    C.1.0
 ; Notes:      Version C.1.0, October 2017
@@ -13,11 +13,11 @@
 .code
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  qword2decW
-; Purpose:    Converts a QWORD to its decimal WIDE string representation.
-; Arguments:  Arg1: -> Destination buffer.
+; Procedure:  uqword2decW
+; Purpose:    Converts an unsigned QWORD to its decimal WIDE string representation.
+; Arguments:  Arg1: -> Destination WIDE string buffer.
 ;             Arg2: QWORD value.
-; Return:     Nothing.
+; Return:     eax = Number of bytes copied to the destination buffer, including the ZTC.
 ; Note:       The destination buffer must be at least 42 bytes large to allocate the output string
 ;             (20 WIDE characters + ZTC = 42 bytes).
 
@@ -31,6 +31,7 @@ qword2decW proc pBuffer:POINTER, qValue:QWORD
   push $OfsCStrW("%I64u")
   push POINTER ptr [esp + 16]
   call wsprintfW
+  lea eax, [2*eax + 2]
   add esp, 16
   ret 12
 qword2decW endp

@@ -21,6 +21,7 @@
 ;             Arg2: -> WIDE character.
 ; Return:     rax -> ZTC.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 BStrECatChar proc pDstBStr:POINTER, wChar:CHRW          ;rcx -> DstBStr, dx = wChar
   mov rax, [rcx - 4]                                    ;Get the length of DstBStr
@@ -30,5 +31,6 @@ BStrECatChar proc pDstBStr:POINTER, wChar:CHRW          ;rcx -> DstBStr, dx = wC
   add rax, 2                                            ;rax -> ZTC
   ret
 BStrECatChar endp
+OPTION PROC:DEFAULT
 
 end

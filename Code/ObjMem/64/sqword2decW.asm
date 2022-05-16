@@ -1,30 +1,31 @@
 ; ==================================================================================================
 ; Title:      sqword2decW.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Notes:      Version C.1.0, October 2017
+; Version:    C.1.1
+; Notes:      Version C.1.1, May 2022
 ;               - First release.
 ; ==================================================================================================
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
 
-.code
+TARGET_STR_TYPE = STR_TYPE_WIDE
+TARGET_STR_AFFIX textequ <W>
+
+externdef TwoDecDigitTableW:WORD
+ProcName textequ <sqw2decW>
+
+% include &ObjMemPath&ObjMem.cop
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  sqword2decW
-; Purpose:    Converts a signed QWORD to its decimal WIDE string representation.
-; Arguments:  Arg1: -> Destination buffer.
-;             Arg2: sqword value.
-; Return:     Nothing.
+; Purpose:    Converts a signed SQWORD to its decimal WIDE string representation.
+; Arguments:  Arg1: -> Destination WIDE string buffer.
+;             Arg2: SQWORD value.
+; Return:     eax = Number of bytes copied to the destination buffer, including the ZTC.
 ; Note:       The destination buffer must be at least 42 bytes large to allocate the output string
 ;             (Sign + 19 WIDE characters + ZTC = 42 bytes).
 
-align ALIGN_CODE
-sqword2decW proc pBuffer:POINTER, sqValue:SQWORD
-  invoke wsprintfW, rcx, $OfsCStrW("%I64i"), sqValue  
-  ret
-sqword2decW endp
+% include &ObjMemPath&X\sqword2decT.asm
 
 end

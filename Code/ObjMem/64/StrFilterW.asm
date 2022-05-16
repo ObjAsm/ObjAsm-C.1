@@ -19,8 +19,10 @@
 ;             Arg2: -> Filter WIDE string.
 ; Return:     eax = TRUE if strings match, otherwise FALSE.
 
+OPTION PROC:NONE
 align ALIGN_CODE
-StrFilterW proc uses rbx pStringW:POINTER, pFilterW:POINTER
+StrFilterW proc pStringW:POINTER, pFilterW:POINTER
+  push rbx
   ;rcx -> StringA, rdx -> FilterA
   .while TRUE
     mov bx, [rdx]
@@ -69,7 +71,9 @@ StrFilterW proc uses rbx pStringW:POINTER, pFilterW:POINTER
     inc eax
   .endif
 
+  pop rbx
   ret
 StrFilterW endp
+OPTION PROC:DEFAULT
 
 end

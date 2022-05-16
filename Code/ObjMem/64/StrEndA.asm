@@ -18,6 +18,7 @@
 ; Arguments:  Arg1: -> Source ANSI string.
 ; Return:     rax -> ZTC.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 StrEndA proc pStringA:POINTER
   mov rax, rcx
@@ -71,5 +72,6 @@ StrEndA proc pStringA:POINTER
   add rax, 3
   ret
 StrEndA endp
+OPTION PROC:DEFAULT
 
 end

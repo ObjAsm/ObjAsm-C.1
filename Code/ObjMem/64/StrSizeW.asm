@@ -18,6 +18,7 @@
 ; Arguments:  Arg1: -> WIDE string.
 ; Return:     rax = size of the string in bytes.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 StrSizeW proc pStringW:POINTER
   mov rax, rcx
@@ -114,5 +115,6 @@ align @WordSize
   add rax, 8
   ret
 StrSizeW endp
+OPTION PROC:DEFAULT
 
 end

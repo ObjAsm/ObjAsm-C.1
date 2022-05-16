@@ -23,8 +23,11 @@
 ;             Arg3: Number of bytes to be copied.
 ; Return:     eax = copied bytes.
 
+OPTION PROC:NONE
 align ALIGN_CODE
-MemClone proc uses rdi rsi pDstMem:POINTER, pSrcMem:POINTER, dCount:DWORD
+MemClone proc pDstMem:POINTER, pSrcMem:POINTER, dCount:DWORD
+  push rdi
+  push rsi
   mov rdi, rcx                                          ;rdi -> DstMem
   mov rsi, rdx                                          ;rsi -> SrcMem
   mov eax, r8d                                          ;eax = dCount
@@ -42,7 +45,10 @@ MemClone proc uses rdi rsi pDstMem:POINTER, pSrcMem:POINTER, dCount:DWORD
   mov rcx, rax
   and rcx, 1
   rep movsb
+  pop rsi
+  pop rdi
   ret
 MemClone endp
+OPTION PROC:DEFAULT
 
 end

@@ -410,7 +410,7 @@ icDivMod64 macro imm32:req
 endm
 
 ;-------------------------------------------------------------;
-; determinate the multiplier,shift-count and type of          ;
+; determinate the multiplier, shift-count and type of         ;
 ; algorithm needed for replacing an division (unsigned,32bit) ;
 ; by multiplication with an constant value                    ;
 ;                                                             ;

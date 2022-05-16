@@ -19,6 +19,7 @@
 ; Arguments:  Arg1: Exception code.
 ; Return:     rax -> WIDE string.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 GetExceptionStrW proc dExceptionCode:DWORD
   cmp ecx, 0C0000005h                                   ;EXCEPTION_ACCESS_VIOLATION
@@ -104,5 +105,6 @@ GetExceptionStrW proc dExceptionCode:DWORD
   mov rax, $OfsCStrW("UNKNOWN_EXCEPTION")
   ret
 GetExceptionStrW endp
+OPTION PROC:DEFAULT
 
 end

@@ -22,6 +22,7 @@ externdef HexCharTableW:CHRW
 ;             Arg3: Byte count.
 ; Return:     Nothing.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 Mem2HexW proc pBuffer:POINTER, pMem:POINTER, dCount:DWORD
   ;rcx -> Buffer, rdx -> Mem, r8d = dCount
@@ -37,5 +38,6 @@ Mem2HexW proc pBuffer:POINTER, pMem:POINTER, dCount:DWORD
   m2z CHRW ptr [rcx]                                    ;Set ZTC
   ret
 Mem2HexW endp
+OPTION PROC:DEFAULT
 
 end

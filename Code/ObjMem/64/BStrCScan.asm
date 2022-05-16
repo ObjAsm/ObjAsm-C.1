@@ -20,8 +20,10 @@
 ;             Arg3: WIDE character to search for.
 ; Return:     rax -> Character address or NULL if not found.
 
+OPTION PROC:NONE
 align ALIGN_CODE
-BStrCScan proc uses rdi pBStr:POINTER, dMaxChars:DWORD, wChar:WORD 
+BStrCScan proc pBStr:POINTER, dMaxChars:DWORD, wChar:WORD
+  push rdi 
   ;rcx -> BStr, edx = dMaxChars, r8w = wChar  
   mov eax, [rcx - 4]                                    ;eax = BStr byte size
   test eax, eax                                         ;Size = 0 ?
@@ -41,7 +43,9 @@ BStrCScan proc uses rdi pBStr:POINTER, dMaxChars:DWORD, wChar:WORD
   jne @F
   lea rax, [rcx - 2]
 @@:
+  pop rdi
   ret
 BStrCScan endp
+OPTION PROC:DEFAULT
 
 end

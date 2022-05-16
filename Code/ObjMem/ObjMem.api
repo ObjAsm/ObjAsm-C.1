@@ -261,6 +261,14 @@ dword2dec, pDecString, dword
 dword2decA, pDecStringA, dword
 dword2decW, pDecStringW, dword
 
+udword2dec, pDecString, dword
+udword2decA, pDecStringA, dword
+udword2decW, pDecStringW, dword
+
+sdword2dec, pDecString, sdword
+sdword2decA, pDecStringA, sdword
+sdword2decW, pDecStringW, sdword
+
 dword2hex, pHexString, dword
 dword2hexA, pHexStringA, dword
 dword2hexW, pHexStringW, dword
@@ -285,6 +293,10 @@ qword2dec, pDecString, qword
 qword2decA, pDecStringA, qword
 qword2decW, pDecStringW, qword
 
+uqword2dec, pDecString, qword
+uqword2decA, pDecStringA, qword
+uqword2decW, pDecStringW, qword
+
 sqword2dec, pHexString, sqword
 sqword2decA, pDecStringA, sqword
 sqword2decW, pDecStringW, sqword
@@ -305,26 +317,29 @@ hex2qword, pHexString
 hex2qwordA, pHexStringA
 hex2qwordW, pHexStringW
 
-xword2hex, xword
+xword2hex, pString, xword
 hex2xword, pString
 bin2xword, pString
-xword2bin, xword
-sxword2dec, sxword
+xword2bin, pString, xword
+sxword2dec, pString, sxword
+uxword2dec, pString, xword
 
 aCRC32C, pAlignedBuffer, dByteCount
 uCRC32C, pUnalignedBuffer, dByteCount
 
-xword2hexA, xword
+xword2hexA, pStringA, xword
 hex2xwordA, pStringA
 bin2xwordA, pStringA
-xword2binA, xword
-sxword2decA, sxword
+xword2binA, pStringA, xword
+sxword2decA, pStringA, sxword
+uxword2decA, pStringA, xword
 
-xword2hexW, xword
+xword2hexW, pStringW, xword
 hex2xwordW, pStringW
 bin2xwordW, pStringW
-xword2binW, xword
-sxword2decW, sxword
+xword2binW, pStringW, xword
+sxword2decW, pStringW, sxword
+uxword2decW, pStringW, uxword
 
 ActivatePrevInstance, pStringID, pClassName
 ActivatePrevInstanceA, pStringIDA, pClassNameA

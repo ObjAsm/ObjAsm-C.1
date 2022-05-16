@@ -21,6 +21,7 @@
 ;             If string 1 = string 2, then eax = 0.
 ;             If string 1 > string 2, then eax > 0.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 StrCICompW proc pStr1W:POINTER, pStr2W:POINTER, dMaxLen:DWORD
   ;rcx -> Str1W, rdx -> Str2W, r8d = dMaxLen
@@ -69,5 +70,6 @@ StrCICompW proc pStr1W:POINTER, pStr2W:POINTER, dMaxLen:DWORD
   sub eax, ecx                                          ;Subtract to see which is smaller
   ret
 StrCICompW endp
+OPTION PROC:DEFAULT
 
 end

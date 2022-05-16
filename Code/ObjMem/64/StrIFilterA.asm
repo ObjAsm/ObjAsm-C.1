@@ -19,6 +19,7 @@
 ;             Arg2: -> Filter ANSI string.
 ; Return:     eax = TRUE if strings match, otherwise FALSE.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 StrIFilterA proc pStringA:POINTER, pFilterA:POINTER
   ;rcx -> StringA, rdx -> pFilterA
@@ -88,5 +89,6 @@ StrIFilterA proc pStringA:POINTER, pFilterA:POINTER
 
   ret
 StrIFilterA endp
+OPTION PROC:DEFAULT
 
 end

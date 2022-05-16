@@ -39,6 +39,8 @@ endm
 ; Notes:      The destination buffer must be at least 65 bytes large to allocate the output string
 ;             (64 character bytes + ZTC = 65 bytes).
 
+OPTION PROC:NONE
+align ALIGN_CODE
 qword2binA proc pBuffer:POINTER, qValue:QWORD
   ;rcx -> Buffer, rdx = qValue
   SetQword 0
@@ -52,5 +54,6 @@ qword2binA proc pBuffer:POINTER, qValue:QWORD
   m2z CHRA ptr [rcx + 8*sizeof(QWORD)]                  ;Set ZTC
   ret
 qword2binA endp
+OPTION PROC:DEFAULT
 
 end

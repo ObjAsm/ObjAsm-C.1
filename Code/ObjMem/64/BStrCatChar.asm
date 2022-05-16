@@ -19,6 +19,7 @@
 ;             Arg2: WIDE character.
 ; Return:     Nothing.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 BStrCatChar proc pDstBStr:POINTER, wChar:CHRW           ;rcx -> DstBStr, r8w = wChar
   mov eax, [rcx - 4]                                    ;Get the length of DstBStr
@@ -27,5 +28,6 @@ BStrCatChar proc pDstBStr:POINTER, wChar:CHRW           ;rcx -> DstBStr, r8w = w
   mov DWORD ptr [rax], edx                              ;Write character and ZTC
   ret
 BStrCatChar endp
+OPTION PROC:DEFAULT
 
 end

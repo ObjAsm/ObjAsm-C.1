@@ -23,6 +23,7 @@ externdef HexCharTableW:CHRW
 ; Notes:      The destination buffer must be at least 18 bytes large to allocate the output string
 ;             (8 character words + ZTC = 18 bytes).
 
+OPTION PROC:NONE
 align ALIGN_CODE
 dword2hexW proc pBuffer:POINTER, dValue:DWORD
   ;rcx -> Buffer, edx = dValue
@@ -49,5 +50,6 @@ dword2hexW proc pBuffer:POINTER, dValue:DWORD
   m2z CHRW ptr [rcx + 8*sizeof(CHRW)]                   ;Set ZTC
   ret
 dword2hexW endp
+OPTION PROC:DEFAULT
 
 end

@@ -21,6 +21,7 @@ externdef h2dw_Tbl2:BYTE
 ; Arguments:  Arg1: -> ANSI hexadecimal string with 8 characters.
 ; Return:     eax = DWORD.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 hex2dwordA proc pHexA:POINTER
   movzx edx, CHRA ptr [rcx]
@@ -50,5 +51,6 @@ hex2dwordA proc pHexA:POINTER
 
   ret
 hex2dwordA endp
+OPTION PROC:DEFAULT
 
 end

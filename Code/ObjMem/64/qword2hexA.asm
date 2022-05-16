@@ -23,6 +23,7 @@ externdef HexCharTableA:CHRA
 ; Note:       The destination buffer must be at least 17 bytes large to allocate the output string
 ;             (16 character bytes + ZTC = 17 bytes).
 
+OPTION PROC:NONE
 align ALIGN_CODE
 qword2hexA proc pBuffer:POINTER, qValue:QWORD
   ;rcx -> Buffer, rdx = qValue
@@ -63,5 +64,6 @@ qword2hexA proc pBuffer:POINTER, qValue:QWORD
   m2z CHRA ptr [rcx + 16*sizeof(CHRA)]                              ;Set ZTC
   ret
 qword2hexA endp
+OPTION PROC:DEFAULT
 
 end

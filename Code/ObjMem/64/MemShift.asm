@@ -23,8 +23,11 @@
 ;             Arg3: Number of bytes to be copied.
 ; Return:     Nothing.
 
+
 align ALIGN_CODE
-MemShift proc uses rdi rsi pDstMem:POINTER, pSrcMem:POINTER, dByteCount:DWORD
+MemShift proc pDstMem:POINTER, pSrcMem:POINTER, dByteCount:DWORD
+  push rdi
+  push rsi
   mov rdi, rcx                                          ;rdi -> DstMem
   mov rsi, rdx                                          ;rsi -> SrcMem
   mov ecx, r8d                                          ;ecx = dByteCount
@@ -57,6 +60,8 @@ MemShift proc uses rdi rsi pDstMem:POINTER, pSrcMem:POINTER, dByteCount:DWORD
 @@:
   cld
 @@0:
+  pop rsi
+  pop rdi
   ret
 
 @@1:
@@ -74,7 +79,10 @@ MemShift proc uses rdi rsi pDstMem:POINTER, pSrcMem:POINTER, dByteCount:DWORD
   jz @F
   movsb
 @@:
+  pop rsi
+  pop rdi
   ret
 MemShift endp
+OPTION PROC:DEFAULT
 
 end

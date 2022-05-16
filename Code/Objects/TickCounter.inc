@@ -84,9 +84,9 @@ Method TickCounter.Init, uses xbx xsi, pOwner:POINTER
     mov DWORD ptr [esi].qTicksLag, eax
     m2z DWORD ptr [esi + sizeof DWORD].qTicksLag
   else
-    mov xax, [rsi].qTicksAcc
-    shr xax, $Log2(TCR_LAG_REPS)
-    mov [rsi].qTicksLag, xax
+    mov rax, [rsi].qTicksAcc
+    shr rax, $Log2(TCR_LAG_REPS)
+    mov [rsi].qTicksLag, rax
   endif
   OCall xsi.Reset
 MethodEnd
@@ -123,7 +123,7 @@ Method TickCounter.Start, uses xbx xsi
   .if [xsi].dStatus == TCR_STOPPED
     mov [xsi].dStatus, TCR_RUNNING
     sub eax, eax                                      ;eax = 0
-    cpuid                                             ;Serialize
+    cpuid                                             ;Serialize, writes xbx
     rdtsc                                             ;Read time stamp counter into edx:eax
     if TARGET_BITNESS eq 32
       mov DWORD ptr [esi].qTicksStart, eax
@@ -151,7 +151,7 @@ Method TickCounter.Stop, uses xbx xsi
   SetObject xsi
   .if [xsi].dStatus == TCR_RUNNING
     sub eax, eax                                      ;eax = 0
-    cpuid                                             ;Serialize
+    cpuid                                             ;Serialize, writes xbx
     rdtsc                                             ;Read time stamp counter into edx:eax
     if TARGET_BITNESS eq 32
       sub eax, DWORD ptr [esi].qTicksStart
@@ -165,7 +165,7 @@ Method TickCounter.Stop, uses xbx xsi
       or rax, rdx                                     ;Combine into 64 bit register
       sub rax, [rsi].qTicksStart
       sub rax, [rsi].qTicksLag
-      mov [rsi].qTicksAcc, rax
+      add [rsi].qTicksAcc, rax
     endif
     mov [xsi].dStatus, TCR_STOPPED
   .endif

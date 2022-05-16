@@ -21,6 +21,7 @@
 ;             If string 1 = string 2, then eax = 0.
 ;             If string 1 > string 2, then eax > 0.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 StrCompW proc pStr1W:POINTER, pStr2W:POINTER
   xor r8, r8
@@ -38,5 +39,6 @@ StrCompW proc pStr1W:POINTER, pStr2W:POINTER
   sub eax, ecx
   ret
 StrCompW endp
+OPTION PROC:DEFAULT
 
 end

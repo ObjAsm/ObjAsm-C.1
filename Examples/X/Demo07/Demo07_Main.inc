@@ -54,7 +54,7 @@ Object ChildWnd, , MdiChildWnd                          ;MDI child window.
   VirtualEvent      OnCreate,           WM_CREATE
   VirtualEvent      OnMouseWheel,       WM_MOUSEWHEEL
 
-  Embed     Chart,    ChartWnd
+  Embed   Chart,    ChartWnd
 ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

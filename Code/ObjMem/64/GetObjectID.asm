@@ -18,6 +18,7 @@
 ; Arguments:  Arg1: -> Object instance.
 ; Return:     eax = Object class ID.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 GetObjectID proc pObjectInstance:POINTER
   or rcx, rcx
@@ -30,5 +31,6 @@ GetObjectID proc pObjectInstance:POINTER
   xor eax, eax
   ret
 GetObjectID endp
+OPTION PROC:DEFAULT
 
 end

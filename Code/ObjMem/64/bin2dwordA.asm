@@ -27,6 +27,7 @@ endm
 ; Arguments:  Arg1: -> ANSI binary string.
 ; Return:     eax = DWORD.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 bin2dwordA proc pBuffer:POINTER
   xor eax, eax                                          ;rcx -> Buffer
@@ -38,5 +39,6 @@ bin2dwordA proc pBuffer:POINTER
   not rax
   ret
 bin2dwordA endp
+OPTION PROC:DEFAULT
 
 end

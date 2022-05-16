@@ -18,6 +18,7 @@
 ; Arguments:  Arg1: -> ANSI string.
 ; Return:     eax = size of the string in bytes.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 StrSizeA proc pStringA:POINTER
   mov rax, rcx
@@ -77,5 +78,6 @@ StrSizeA proc pStringA:POINTER
   add rax, 4
   ret
 StrSizeA endp
+OPTION PROC:DEFAULT
 
 end

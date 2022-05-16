@@ -19,8 +19,11 @@
 ;             Arg2: -> Source BStr.
 ; Return:     Nothing.
 
+OPTION PROC:NONE
 align ALIGN_CODE
-BStrLTrim proc uses rdi rsi pDstBStr:POINTER, pSrcBStr:POINTER
+BStrLTrim proc pDstBStr:POINTER, pSrcBStr:POINTER
+  push rdi
+  push rsi
   mov rsi, rdx                                          ;rsi -> SrcBStr
   mov r8, rcx                                           ;r8 -> DstBStr
 @@:
@@ -43,7 +46,10 @@ BStrLTrim proc uses rdi rsi pDstBStr:POINTER, pSrcBStr:POINTER
   dec r9d
   dec r9d                                               ;Don't count ZTC
   mov DWORD ptr [r8 - 4], r9d
+  pop rsi
+  pop rdi
   ret
 BStrLTrim endp
+OPTION PROC:DEFAULT
 
 end

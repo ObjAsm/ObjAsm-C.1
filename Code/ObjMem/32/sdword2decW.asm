@@ -11,7 +11,7 @@
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
 % include &ObjMemPath&ObjMem.cop
 
-externdef TwoDecDigitTableW:BYTE
+externdef TwoDecDigitTableW:WORD
 
 .code
 
@@ -20,7 +20,7 @@ externdef TwoDecDigitTableW:BYTE
 ; Purpose:    Converts a signed DWORD to its decimal WIDE string representation.
 ; Arguments:  Arg1: -> Destination WIDE string buffer.
 ;             Arg2: SDWORD value.
-; Return:     Nothing.
+; Return:     eax = Number of bytes copied to the destination buffer, including the ZTC.
 ; Note:       The destination buffer must be at least 24 bytes large to allocate the output string
 ;             (Sign + 10 WIDE characters + ZTC = 24 bytes).
 
@@ -33,6 +33,7 @@ sdword2decW proc pBuffer:POINTER, sdValue:SDWORD
   mov edx, 0D1B71759h                   ;= 2^45\10000    13 bit extra shift
   mov ecx, [esp + 4]                    ;ecx -> pBuffer
   test eax, eax
+  push ecx
   jge @F
   mov BYTE ptr [ecx], '-'
   add ecx, 1
@@ -55,38 +56,33 @@ sdword2decW proc pBuffer:POINTER, sdValue:SDWORD
   mov edx, DWORD ptr TwoDecDigitTableW[4*edx]
   mov [ecx], edx
   add ecx, 16
-
 @@00:
   mul esi
-
 @@01:
   mov edx, DWORD ptr TwoDecDigitTableW[4*edx]
   mov [ecx - 12], edx
-
 @@02:
   mul esi
-
 @@03:
   mov edx, DWORD ptr TwoDecDigitTableW[4*edx]
   mov [ecx - 8], edx
-
 @@04:
   mov eax, 28F5C29h
   mul edi
-
 @@05:
   mov edx, DWORD ptr TwoDecDigitTableW[4*edx]
   mov [ecx - 4], edx
-
 @@06:
   mul esi
-
 @@07:
   mov eax, DWORD ptr TwoDecDigitTableW[4*edx]
   mov [ecx], eax
   m2z WORD ptr [ecx + 4]
   pop esi
   pop edi
+  pop edx
+  sub ecx, edx
+  lea eax, [ecx + 4]
   ret 8
 
 @@08:
@@ -94,7 +90,6 @@ sdword2decW proc pBuffer:POINTER, sdValue:SDWORD
   mov [ecx], edx
   add ecx, 14
   jnz @@00
-
 @@09:
   mul esi
   jnb @F
@@ -105,7 +100,6 @@ sdword2decW proc pBuffer:POINTER, sdValue:SDWORD
   sub ecx, 2
   mov [ecx - 10], edx
   jnz @@02
-
 @@:
   mul esi
   jnb @@10
@@ -116,7 +110,6 @@ sdword2decW proc pBuffer:POINTER, sdValue:SDWORD
   sub ecx, 2
   mov [ecx - 6], edx
   jnz @@04
-
 @@10:
   mov eax, 28F5C29h
   mul edi
@@ -129,7 +122,6 @@ sdword2decW proc pBuffer:POINTER, sdValue:SDWORD
   sub ecx, 2
   mov [ecx - 2], dx
   jnz @@06
-
 @@:
   mul esi
   cmp edx, 9
@@ -139,6 +131,9 @@ sdword2decW proc pBuffer:POINTER, sdValue:SDWORD
   m2z WORD ptr [ecx + 4]
   pop esi
   pop edi
+  pop edx
+  sub ecx, edx
+  lea eax, [ecx + 4]
   ret 8
 sdword2decW endp
 

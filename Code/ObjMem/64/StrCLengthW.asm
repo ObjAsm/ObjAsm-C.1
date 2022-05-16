@@ -19,8 +19,10 @@
 ;             Arg3: Maximal character count.
 ; Return:     eax = limited character count.
 
+OPTION PROC:NONE
 align ALIGN_CODE
-StrCLengthW proc uses rdi pStringW:POINTER, dMaxChars:DWORD
+StrCLengthW proc pStringW:POINTER, dMaxChars:DWORD
+  push rdi
   ;rcx = pStringW, edx = dMaxChars
   inc edx
   mov rdi, rcx                                          ;rdi -> StringW
@@ -29,7 +31,9 @@ StrCLengthW proc uses rdi pStringW:POINTER, dMaxChars:DWORD
   repne scasw
   not rcx
   lea eax, [ecx + edx]
+  pop rdi
   ret
 StrCLengthW endp
+OPTION PROC:DEFAULT
 
 end

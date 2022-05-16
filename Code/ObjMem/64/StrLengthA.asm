@@ -18,8 +18,10 @@
 ; Arguments:  Arg1: -> Source ANSI string.
 ; Return:     eax = Length of the string in characters.
 
+OPTION PROC:NONE
 align ALIGN_CODE
-StrLengthA proc uses rdi pString:POINTER
+StrLengthA proc pString:POINTER
+  push rdi
   mov rdi, rcx
   mov rcx, -1
   xor al, al
@@ -27,7 +29,9 @@ StrLengthA proc uses rdi pString:POINTER
   not rcx
   mov eax, ecx
   dec eax
+  pop rdi
   ret
 StrLengthA endp
+OPTION PROC:DEFAULT
 
 end

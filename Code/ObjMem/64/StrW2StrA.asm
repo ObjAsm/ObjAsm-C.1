@@ -20,11 +20,13 @@
 ;             Arg2: -> Source WIDE string.
 ; Return:     rax = number of characters.
 
+OPTION PROC:NONE
 align ALIGN_CODE
-StrW2StrA proc uses rdi rsi pBuffer:POINTER, pSrcStringW:POINTER
+StrW2StrA proc pBuffer:POINTER, pSrcStringW:POINTER
+  push rdi
+  push rsi
   mov rdi, rcx                                          ;rdi -> Buffer
   mov rsi, rdx                                          ;rsi -> SrcStringW
-
 @@1:
   lodsw
   or ah, ah                                             ;check high order byte if it is zero
@@ -38,7 +40,10 @@ StrW2StrA proc uses rdi rsi pBuffer:POINTER, pSrcStringW:POINTER
   sub rdi, rcx                                          ;pBuffer
   mov rax, rdi                                          ;Return number of chars
 @@Exit:
+  pop rsi
+  pop rdi
   ret
 StrW2StrA endp
+OPTION PROC:DEFAULT
 
 end

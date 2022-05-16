@@ -34,6 +34,7 @@ endm
 ; Notes:      The destination buffer must be at least 66 bytes large to allocate the output string
 ;             (32 character words + ZTC = 66 bytes).
 
+OPTION PROC:NONE
 align ALIGN_CODE
 dword2binW proc pBuffer:POINTER, dValue:DWORD
   ;rcx -> Buffer, edx = dValue
@@ -56,5 +57,6 @@ dword2binW proc pBuffer:POINTER, dValue:DWORD
   m2z WORD ptr [rcx + 64]                               ;Set ZTC
   ret
 dword2binW endp
+OPTION PROC:DEFAULT
 
 end

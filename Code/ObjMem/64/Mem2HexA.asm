@@ -22,6 +22,7 @@ externdef HexCharTableA:CHRA
 ;             Arg3: Byte count.
 ; Return:     Nothing.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 Mem2HexA proc pBuffer:POINTER, pMem:POINTER, dCount:DWORD
   ;rcx -> Buffer, rdx -> Mem, r8d = dCount
@@ -36,5 +37,6 @@ Mem2HexA proc pBuffer:POINTER, pMem:POINTER, dCount:DWORD
   m2z CHRA ptr [rcx]                                    ;Set ZTC
   ret
 Mem2HexA endp
+OPTION PROC:DEFAULT
 
 end

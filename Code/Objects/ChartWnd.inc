@@ -2609,5 +2609,3 @@ Method ChartWnd.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
     .endif
   .endif
 MethodEnd
-
-

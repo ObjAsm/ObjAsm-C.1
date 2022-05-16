@@ -18,11 +18,13 @@
 ; Arguments:  Arg1: -> Source BStr.
 ; Return:     rax = String size including the length field and ZTC in bytes.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 BStrSize proc pBStr:POINTER
   mov eax, DWORD ptr [rcx - 4]                          ;Get the byte length DWORD
   add rax, sizeof(DWORD) + sizeof(CHRW)                 ;Add leading DWORD and ZTC
   ret
 BStrSize endp
+OPTION PROC:DEFAULT
 
 end

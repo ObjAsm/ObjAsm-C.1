@@ -18,6 +18,7 @@
 ; Arguments:  None.
 ; Return:     Nothing.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 DisableCPUSerialNumber proc
   mov ecx, 119h
@@ -26,5 +27,6 @@ DisableCPUSerialNumber proc
   wrmsr
   ret
 DisableCPUSerialNumber endp
+OPTION PROC:DEFAULT
 
 end

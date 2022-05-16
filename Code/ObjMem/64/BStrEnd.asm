@@ -18,11 +18,13 @@
 ; Arguments:  Arg1: -> Source BStr.
 ; Return:     rax -> ZTC.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 BStrEnd proc pBStr:POINTER
   mov eax, DWORD ptr [rcx - 4]                          ;Length of BStr
   add rax, rcx
   ret
 BStrEnd endp
+OPTION PROC:DEFAULT
 
 end

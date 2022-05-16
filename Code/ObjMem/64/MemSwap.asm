@@ -23,6 +23,7 @@
 ;             Arg3: Number of bytes to be exchanged.
 ; Return:     Nothing.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 MemSwap proc pMem1:POINTER, pMem2:POINTER, dCount:DWORD
   mov r10, rdx
@@ -66,5 +67,6 @@ MemSwap proc pMem1:POINTER, pMem2:POINTER, dCount:DWORD
 @@:
   ret
 MemSwap endp
+OPTION PROC:DEFAULT
 
 end

@@ -18,6 +18,7 @@
 ; Arguments:  Arg1: -> Source WIDE string.
 ; Return:     rax -> ZTC.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 StrEndW proc pStringW:POINTER
   mov rax, rcx                                          ;rax -> pStringW
@@ -64,5 +65,6 @@ align @WordSize
   add rax, 1
   ret
 StrEndW endp
+OPTION PROC:DEFAULT
 
 end

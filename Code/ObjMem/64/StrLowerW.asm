@@ -18,6 +18,7 @@
 ; Arguments:  Arg1: -> Source WIDE string.
 ; Return:     rax -> String.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 StrLowerW proc pStringW:POINTER
   push rcx                                              ;rcx -> StringW
@@ -38,5 +39,6 @@ StrLowerW proc pStringW:POINTER
   pop rax                                               ;Return string address
   ret
 StrLowerW endp
+OPTION PROC:DEFAULT
 
 end

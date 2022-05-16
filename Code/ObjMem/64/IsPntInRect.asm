@@ -19,6 +19,7 @@
 ;             Arg2: -> RECT
 ; Return:     rax = TRUE or FALSE.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 IsPntInRect proc pPoint:POINTER, pRect:POINTER
   mov eax, [rcx].POINT.x
@@ -38,5 +39,6 @@ IsPntInRect proc pPoint:POINTER, pRect:POINTER
   inc rax
   ret
 IsPntInRect endp
+OPTION PROC:DEFAULT
 
 end

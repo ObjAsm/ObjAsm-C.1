@@ -21,8 +21,10 @@
 ; Return:     rax = Converted DWORD.
 ;             rcx = Conversion result. Zero if succeeded, otherwise failed.
 
+OPTION PROC:NONE
 align ALIGN_CODE
-dec2dwordW proc uses rsi pStringW:POINTER
+dec2dwordW proc pStringW:POINTER
+  push rsi
   xor eax, eax
   mov rsi, rcx                                          ;rsi -> StringW
   xor ecx, ecx
@@ -54,7 +56,9 @@ dec2dwordW proc uses rsi pStringW:POINTER
   lea rax, [rdx + rcx]                                  ;Sign correction
   xor ecx, ecx                                          ;Success flag
   xor rax, rdx
+  pop rsi
   ret
 dec2dwordW endp
+OPTION PROC:DEFAULT
 
 end

@@ -19,6 +19,7 @@
 ;             Arg2: -> GUID2.
 ; Return:     rax = TRUE if they are equal, otherwise FALSE.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 IsGUIDEqual proc pGUID1:POINTER, pGUID2:POINTER
   mov rax, QWORD ptr [rdx]
@@ -33,5 +34,6 @@ IsGUIDEqual proc pGUID1:POINTER, pGUID2:POINTER
   xor eax, eax
   ret
 IsGUIDEqual endp
+OPTION PROC:DEFAULT
 
 end

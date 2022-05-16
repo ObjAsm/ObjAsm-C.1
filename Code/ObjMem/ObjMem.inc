@@ -519,9 +519,8 @@ else
   echo Warning: incompatible TARGET_STR_TYPE
 endif
 
-
-StrA2StrW proto :POINTER, :POINTER
 StrW2StrA proto :POINTER, :POINTER
+StrA2StrW proto :POINTER, :POINTER
 
 BStr2StrA textequ <StrW2StrA>
 BStr2StrW textequ <StrCopyW>
@@ -544,8 +543,8 @@ else
 endif
 
 St0ToBStr proto :POINTER, :DWORD, :DWORD, :DWORD
-St0ToStrW proto :POINTER, :DWORD, :DWORD, :DWORD
 St0ToStrA proto :POINTER, :DWORD, :DWORD, :DWORD
+St0ToStrW proto :POINTER, :DWORD, :DWORD, :DWORD
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   St0ToStr textequ <St0ToStrA>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
@@ -556,8 +555,8 @@ endif
 ST0TOSTR_MAX_CHARS equ 35
 
 BStrToSt0 proto :POINTER
-StrToSt0W proto :POINTER
 StrToSt0A proto :POINTER
+StrToSt0W proto :POINTER
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   StrToSt0 textequ <StrToSt0A>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
@@ -567,8 +566,8 @@ else
 endif
 
 GUID2BStr proto :POINTER, :POINTER
-GUID2StrW proto :POINTER, :POINTER
 GUID2StrA proto :POINTER, :POINTER
+GUID2StrW proto :POINTER, :POINTER
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   GUID2Str textequ <GUID2StrA>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
@@ -578,93 +577,32 @@ else
 endif
 GUID2STR_MAX_CHARS equ 37
 
-dword2binW proto :POINTER, :DWORD
-dword2binA proto :POINTER, :DWORD
+sdword2decA proto :POINTER, :SDWORD
+sdword2decW proto :POINTER, :SDWORD
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  dword2bin textequ <dword2binA>
+  sdword2dec textequ <sdword2decA>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  dword2bin textequ <dword2binW>
+  sdword2dec textequ <sdword2decW>
 else
   echo Warning: incompatible TARGET_STR_TYPE
 endif
-DWORD2BIN_MAX_CHARS equ 33
+SDWORD2DEC_MAX_CHARS equ 12
 
-dword2decW proto :POINTER, :DWORD
-dword2decA proto :POINTER, :DWORD
+udword2decA proto :POINTER, :DWORD
+udword2decW proto :POINTER, :DWORD
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  dword2dec textequ <dword2decA>
+  udword2dec textequ <udword2decA>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  dword2dec textequ <dword2decW>
+  udword2dec textequ <udword2decW>
 else
   echo Warning: incompatible TARGET_STR_TYPE
 endif
+dword2decA textequ <udword2decA>                        ;Compatibility
+dword2decW textequ <udword2decW>                        ;Compatibility
 DWORD2DEC_MAX_CHARS equ 11
 
-dword2hexW proto :POINTER, :DWORD
-dword2hexA proto :POINTER, :DWORD
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  dword2hex textequ <dword2hexA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  dword2hex textequ <dword2hexW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-DWORD2HEX_MAX_CHARS equ 9
-
-dec2dwordW proto :POINTER
-dec2dwordA proto :POINTER
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  dec2dword textequ <dec2dwordA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  dec2dword textequ <dec2dwordW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-bin2dwordW proto :POINTER
-bin2dwordA proto :POINTER
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  bin2dword textequ <bin2dwordA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  bin2dword textequ <bin2dwordW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-bin2qwordW proto :POINTER
-bin2qwordA proto :POINTER
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  bin2qword textequ <bin2qwordA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  bin2qword textequ <bin2qwordW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-qword2binW proto :POINTER, :QWORD
-qword2binA proto :POINTER, :QWORD
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  qword2bin textequ <qword2binA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  qword2bin textequ <qword2binW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-QWORD2BIN_MAX_CHARS equ 65
-
-qword2decW proto :POINTER, :QWORD
-qword2decA proto :POINTER, :QWORD
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  qword2dec textequ <qword2decA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  qword2dec textequ <qword2decW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-QWORD2DEC_MAX_CHARS equ 21
-
-sqword2decW proto :POINTER, :SQWORD
 sqword2decA proto :POINTER, :SQWORD
+sqword2decW proto :POINTER, :SQWORD
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   sqword2dec textequ <sqword2decA>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
@@ -674,8 +612,84 @@ else
 endif
 SQWORD2DEC_MAX_CHARS equ 21
 
-qword2hexW proto :POINTER, :QWORD
+uqword2decA proto :POINTER, :QWORD
+uqword2decW proto :POINTER, :QWORD
+if TARGET_STR_TYPE eq STR_TYPE_ANSI
+  uqword2dec textequ <uqword2decA>
+elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+  uqword2dec textequ <uqword2decW>
+else
+  echo Warning: incompatible TARGET_STR_TYPE
+endif
+qword2decA textequ <uqword2decA>                        ;Compatibility
+qword2decW textequ <uqword2decW>                        ;Compatibility
+QWORD2DEC_MAX_CHARS equ 21
+
+dword2binA proto :POINTER, :DWORD
+dword2binW proto :POINTER, :DWORD
+if TARGET_STR_TYPE eq STR_TYPE_ANSI
+  dword2bin textequ <dword2binA>
+elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+  dword2bin textequ <dword2binW>
+else
+  echo Warning: incompatible TARGET_STR_TYPE
+endif
+DWORD2BIN_MAX_CHARS equ 33
+
+dword2hexA proto :POINTER, :DWORD
+dword2hexW proto :POINTER, :DWORD
+if TARGET_STR_TYPE eq STR_TYPE_ANSI
+  dword2hex textequ <dword2hexA>
+elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+  dword2hex textequ <dword2hexW>
+else
+  echo Warning: incompatible TARGET_STR_TYPE
+endif
+DWORD2HEX_MAX_CHARS equ 9
+
+dec2dwordA proto :POINTER
+dec2dwordW proto :POINTER
+if TARGET_STR_TYPE eq STR_TYPE_ANSI
+  dec2dword textequ <dec2dwordA>
+elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+  dec2dword textequ <dec2dwordW>
+else
+  echo Warning: incompatible TARGET_STR_TYPE
+endif
+
+bin2dwordA proto :POINTER
+bin2dwordW proto :POINTER
+if TARGET_STR_TYPE eq STR_TYPE_ANSI
+  bin2dword textequ <bin2dwordA>
+elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+  bin2dword textequ <bin2dwordW>
+else
+  echo Warning: incompatible TARGET_STR_TYPE
+endif
+
+bin2qwordA proto :POINTER
+bin2qwordW proto :POINTER
+if TARGET_STR_TYPE eq STR_TYPE_ANSI
+  bin2qword textequ <bin2qwordA>
+elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+  bin2qword textequ <bin2qwordW>
+else
+  echo Warning: incompatible TARGET_STR_TYPE
+endif
+
+qword2binA proto :POINTER, :QWORD
+qword2binW proto :POINTER, :QWORD
+if TARGET_STR_TYPE eq STR_TYPE_ANSI
+  qword2bin textequ <qword2binA>
+elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+  qword2bin textequ <qword2binW>
+else
+  echo Warning: incompatible TARGET_STR_TYPE
+endif
+QWORD2BIN_MAX_CHARS equ 65
+
 qword2hexA proto :POINTER, :QWORD
+qword2hexW proto :POINTER, :QWORD
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   qword2hex textequ <qword2hexA>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
@@ -684,17 +698,6 @@ else
   echo Warning: incompatible TARGET_STR_TYPE
 endif
 QWORD2HEX_MAX_CHARS equ 17
-
-sdword2decW proto :POINTER, :SDWORD
-sdword2decA proto :POINTER, :SDWORD
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  sdword2dec textequ <sdword2decA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  sdword2dec textequ <sdword2decW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-SDWORD2DEC_MAX_CHARS equ 12
 
 Mem2HexA proto :POINTER, :POINTER, :DWORD
 Mem2HexW proto :POINTER, :POINTER, :DWORD
@@ -732,36 +735,42 @@ if TARGET_BITNESS eq 32
   bin2xword   textequ <bin2dword>
   xword2bin   textequ <dword2bin>
   sxword2dec  textequ <sdword2dec>
+  uxword2dec  textequ <udword2dec>
 
   xword2hexA  textequ <dword2hexA>
   hex2xwordA  textequ <hex2dwordA>
   bin2xwordA  textequ <bin2dwordA>
   xword2binA  textequ <dword2binA>
   sxword2decA textequ <sdword2decA>
+  uxword2decA textequ <udword2decA>
 
   xword2hexW  textequ <dword2hexW>
   hex2xwordW  textequ <hex2dwordW>
   bin2xwordW  textequ <bin2dwordW>
   xword2binW  textequ <dword2binW>
   sxword2decW textequ <sdword2decW>
+  uxword2decW textequ <udword2decW>
 elseif TARGET_BITNESS eq 64
   xword2hex   textequ <qword2hex>
   hex2xword   textequ <hex2qword>
   bin2xword   textequ <bin2qword>
   xword2bin   textequ <qword2bin>
   sxword2dec  textequ <sqword2dec>
+  uxword2dec  textequ <uqword2dec>
 
   xword2hexA  textequ <qword2hexA>
   hex2xwordA  textequ <hex2qwordA>
   bin2xwordA  textequ <bin2qwordA>
   xword2binA  textequ <qword2binA>
   sxword2decA textequ <sqword2decA>
+  uxword2decA textequ <uqword2decA>
 
   xword2hexW  textequ <qword2hexW>
   hex2xwordW  textequ <hex2qwordW>
   bin2xwordW  textequ <bin2qwordW>
   xword2binW  textequ <qword2binW>
   sxword2decW textequ <sqword2decW>
+  uxword2decW textequ <uqword2decW>
 else
   %echo Warning: incompatible Bitness: $ToStr(%TARGET_BITNESS)
 endif

@@ -162,6 +162,9 @@ HyperlinkID                       equ     0000000364
 SkinID                            equ     0000000367
 ElasticSkinID                     equ     0000000368
 
+;Spinner
+SpinnerID                         equ     0000000370
+
 ;3D Engine
 D3VectronCollectionID             equ     0000000400
 D3TriangleID                      equ     0000000401

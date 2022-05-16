@@ -28,6 +28,7 @@ endm
 ; Arguments:  Arg1: -> ANSI binary string.
 ; Return:     rax = QWORD.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 bin2qwordA proc pBuffer:POINTER
   xor eax, eax                                          ;rcx -> Buffer
@@ -39,5 +40,6 @@ bin2qwordA proc pBuffer:POINTER
   not eax
   ret
 bin2qwordA endp
+OPTION PROC:DEFAULT
 
 end

@@ -19,6 +19,7 @@
 ;             Arg2: -> Filter WIDE string.
 ; Return:     eax = TRUE if strings match, otherwise FALSE.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 StrIFilterW proc pStringW:POINTER, pFilterW:POINTER
   ;rcx -> StringW, rdx -> FilterW
@@ -88,5 +89,6 @@ StrIFilterW proc pStringW:POINTER, pFilterW:POINTER
 
   ret
 StrIFilterW endp
+OPTION PROC:DEFAULT
 
 end

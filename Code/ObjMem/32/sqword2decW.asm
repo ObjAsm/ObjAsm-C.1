@@ -15,9 +15,9 @@
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  sqword2decW
 ; Purpose:    Converts a signed QWORD to its decimal WIDE string representation.
-; Arguments:  Arg1: -> Destination buffer.
+; Arguments:  Arg1: -> Destination WIDE string buffer.
 ;             Arg2: sqword value.
-; Return:     Nothing.
+; Return:     eax = Number of bytes copied to the destination buffer, including the ZTC.
 ; Note:       The destination buffer must be at least 42 bytes large to allocate the output string
 ;             (Sign + 19 WIDE characters + ZTC = 42 bytes).
 
@@ -31,6 +31,7 @@ sqword2decW proc pBuffer:POINTER, sqValue:SQWORD
   push $OfsCStrW("%I64i")
   push POINTER ptr [esp + 16]
   call wsprintfW
+  lea eax, [2*eax + 2]
   add esp, 16
   ret 12
 sqword2decW endp

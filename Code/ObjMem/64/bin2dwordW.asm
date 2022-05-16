@@ -27,6 +27,7 @@ endm
 ; Arguments:  Arg1: -> WIDE binary string.
 ; Return:     eax = DWORD.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 bin2dwordW proc pBuffer:POINTER
   xor eax, eax                                          ;rcx -> Buffer
@@ -38,5 +39,6 @@ bin2dwordW proc pBuffer:POINTER
   not rax
   ret
 bin2dwordW endp
+OPTION PROC:DEFAULT
 
 end

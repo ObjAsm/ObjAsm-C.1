@@ -15,9 +15,9 @@
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  sqword2decA
 ; Purpose:    Converts a signed QWORD to its decimal ANSI string representation.
-; Arguments:  Arg1: -> Destination buffer.
+; Arguments:  Arg1: -> Destination ANSI string buffer.
 ;             Arg2: sqword value.
-; Return:     Nothing.
+; Return:     eax = Number of bytes copied to the destination buffer, including the ZTC.
 ; Notes:      The destination buffer must be at least 21 bytes large to allocate the output string
 ;             (Sign + 19 ANSI characters + ZTC = 21 bytes).
 
@@ -31,6 +31,7 @@ sqword2decA proc pBuffer:POINTER, sqValue:SQWORD
   push $OfsCStrA("%I64i")
   push POINTER ptr [esp + 16]
   call wsprintfA
+  inc eax
   add esp, 16
   ret 12
 sqword2decA endp

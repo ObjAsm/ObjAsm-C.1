@@ -21,6 +21,7 @@ externdef h2dw_Tbl2:BYTE
 ; Arguments:  Arg1: -> ANSI hexadecimal string with 16 characters.
 ; Return:     rax = QWORD.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 hex2qwordA proc pHexA:POINTER
   movzx edx, CHRA ptr [rcx]
@@ -74,5 +75,6 @@ hex2qwordA proc pHexA:POINTER
 
   ret
 hex2qwordA endp
+OPTION PROC:DEFAULT
 
 end

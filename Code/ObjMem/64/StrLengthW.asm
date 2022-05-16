@@ -18,8 +18,10 @@
 ; Arguments:  Arg1: -> WIDE string.
 ; Return:     rax = Length of the string in characters.
 
+OPTION PROC:NONE
 align ALIGN_CODE
-StrLengthW proc uses rdi pStringW:POINTER
+StrLengthW proc pStringW:POINTER
+  push rdi
   mov rdi, rcx
   mov rcx, -1
   xor ax, ax
@@ -27,7 +29,9 @@ StrLengthW proc uses rdi pStringW:POINTER
   not rcx
   mov rax, rcx
   dec rax
+  pop rdi
   ret
 StrLengthW endp
+OPTION PROC:DEFAULT
 
 end

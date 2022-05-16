@@ -22,6 +22,7 @@
 ;             Arg3: Byte value to fill.
 ; Return:     Nothing.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 MemFillB proc pMem:POINTER, dCount:DWORD, bFillByte:BYTE
   ;rcx -> Memory block, edx = dCount; r8b = fill BYTE
@@ -60,5 +61,6 @@ MemFillB proc pMem:POINTER, dCount:DWORD, bFillByte:BYTE
 @@:
   ret
 MemFillB endp
+OPTION PROC:DEFAULT
 
 end

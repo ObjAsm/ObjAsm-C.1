@@ -1,5 +1,5 @@
 ; ==================================================================================================
-; Title:      sqword2decA.asm
+; Title:      uqword2decW.asm
 ; Author:     G. Friedrich
 ; Version:    C.1.1
 ; Notes:      Version C.1.1, May 2022
@@ -9,23 +9,23 @@
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
 
-TARGET_STR_TYPE = STR_TYPE_ANSI
-TARGET_STR_AFFIX textequ <A>
+TARGET_STR_TYPE = STR_TYPE_WIDE
+TARGET_STR_AFFIX textequ <W>
 
-externdef TwoDecDigitTableA:BYTE
-ProcName textequ <sqw2decA>
+externdef TwoDecDigitTableW:WORD
+ProcName textequ <uqw2decW>
 
 % include &ObjMemPath&ObjMem.cop
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  sqword2decA
-; Purpose:    Converts a signed QWORD to its decimal ANSI string representation.
-; Arguments:  Arg1: -> Destination ANSI string buffer.
-;             Arg2: SQWORD value.
+; Procedure:  uqword2decW
+; Purpose:    Converts an unsigned QWORD to its decimal WIDE string representation.
+; Arguments:  Arg1: -> Destination WIDE string buffer.
+;             Arg2: QWORD value.
 ; Return:     eax = Number of bytes copied to the destination buffer, including the ZTC.
-; Note:       The destination buffer must be at least 21 bytes large to allocate the output string
-;             (Sign + 19 ANSI characters + ZTC = 21 bytes).
+; Note:       The destination buffer must be at least 42 bytes large to allocate the output string
+;             (20 WIDE characters + ZTC = 42 bytes).
 
-% include &ObjMemPath&X\sqword2decT.asm
+% include &ObjMemPath&X\uqword2decT.asm
 
 end

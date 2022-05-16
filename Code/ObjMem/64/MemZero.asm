@@ -21,6 +21,7 @@
 ;             Arg2: Number of bytes to zero.
 ; Return:     Nothing.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 MemZero proc pMem:POINTER, dCount:DWORD
   ;rcx -> Memory block, edx = dCount
@@ -50,5 +51,6 @@ MemZero proc pMem:POINTER, dCount:DWORD
 @@:
   ret
 MemZero endp
+OPTION PROC:DEFAULT
 
 end

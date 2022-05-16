@@ -18,11 +18,13 @@
 ; Arguments:  Arg1: -> Source BStr.
 ; Return:     rax = Length of the string in characters.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 BStrLength proc pBStr:POINTER
   mov eax, DWORD ptr [rcx - 4]                          ;Get the byte length DWORD
   shr rax, 1                                            ;Character count
   ret
 BStrLength endp
+OPTION PROC:DEFAULT
 
 end

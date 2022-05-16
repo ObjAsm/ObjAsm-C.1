@@ -18,6 +18,7 @@
 ; Arguments:  Arg1: -> Source ANSI string.
 ; Return:     rax -> String.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 StrLowerA proc pStringA:POINTER
   push rcx                                              ;rcx -> StringA
@@ -38,5 +39,6 @@ StrLowerA proc pStringA:POINTER
   pop rax                                               ;Return string address
   ret
 StrLowerA endp
+OPTION PROC:DEFAULT
 
 end

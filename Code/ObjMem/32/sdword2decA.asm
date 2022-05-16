@@ -20,7 +20,7 @@ externdef TwoDecDigitTableA:BYTE
 ; Purpose:    Converts a signed DWORD to its decimal ANSI string representation.
 ; Arguments:  Arg1: -> Destination ANSI string buffer.
 ;             Arg2: SDWORD value.
-; Return:     Nothing.
+; Return:     eax = Number of bytes copied to the destination buffer, including the ZTC.
 ; Note:       The destination buffer must be at least 12 bytes large to allocate the output string
 ;             (Sign + 10 ANSI characters + ZTC = 12 bytes).
 
@@ -33,6 +33,7 @@ sdword2decA proc pBuffer:POINTER, sdValue:SDWORD
   mov edx, 0D1B71759h                   ;= 2^45\10000    13 bit extra shift
   mov ecx, [esp + 4]                    ;ecx -> pBuffer
   test eax, eax
+  push ecx
   jge @F
   mov BYTE ptr [ecx], '-'
   add ecx, 1
@@ -55,38 +56,33 @@ sdword2decA proc pBuffer:POINTER, sdValue:SDWORD
   mov dx, WORD ptr TwoDecDigitTableA[2*edx]
   mov [ecx], dx
   add ecx, 8
-
 @@00:
   mul esi
-
 @@01:
   mov dx, WORD ptr TwoDecDigitTableA[2*edx]
   mov [ecx - 6], dx
-
 @@02:
   mul esi
-
 @@03:
   mov dx, WORD ptr TwoDecDigitTableA[2*edx]
   mov [ecx - 4], dx
-
 @@04:
   mov eax, 28F5C29h
   mul edi
-
 @@05:
   mov dx, WORD ptr TwoDecDigitTableA[2*edx]
   mov [ecx - 2], dx
-
 @@06:
   mul esi
-
 @@07:
   mov ax, WORD ptr TwoDecDigitTableA[2*edx]
   mov [ecx], ax
   m2z BYTE ptr [ecx + 2]
   pop esi
   pop edi
+  pop edx
+  sub ecx, edx
+  lea eax, [ecx + 2]
   ret 8
 
 @@08:
@@ -94,7 +90,6 @@ sdword2decA proc pBuffer:POINTER, sdValue:SDWORD
   mov [ecx], dx
   add ecx, 7
   jnz @@00
-
 @@09:
   mul esi
   jnb @F
@@ -105,7 +100,6 @@ sdword2decA proc pBuffer:POINTER, sdValue:SDWORD
   sub ecx, 1
   mov [ecx - 5], dx
   jnz @@02
-
 @@:
   mul esi
   jnb @@10
@@ -116,7 +110,6 @@ sdword2decA proc pBuffer:POINTER, sdValue:SDWORD
   sub ecx, 1
   mov [ecx - 3], dx
   jnz @@04
-
 @@10:
   mov eax, 28F5C29h
   mul edi
@@ -129,7 +122,6 @@ sdword2decA proc pBuffer:POINTER, sdValue:SDWORD
   sub ecx, 1
   mov [ecx - 1], dx
   jnz @@06
-
 @@:
   mul esi
   cmp edx, 9
@@ -139,6 +131,9 @@ sdword2decA proc pBuffer:POINTER, sdValue:SDWORD
   m2z BYTE ptr [ecx + 2]
   pop esi
   pop edi
+  pop edx
+  sub ecx, edx
+  lea eax, [ecx + 2]
   ret 8
 sdword2decA endp
 

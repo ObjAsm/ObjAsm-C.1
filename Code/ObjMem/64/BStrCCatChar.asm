@@ -19,6 +19,7 @@
 ;             Arg2: -> WIDE character.
 ; Return:     rax -> BStr or NULL if failed.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 BStrCCatChar proc pDstBStr:POINTER, wChar:CHRW, dMaxChars:DWORD   
   ;rcx -> DstBStr, dx = wChar, r8 = dMaxChars
@@ -34,5 +35,6 @@ BStrCCatChar proc pDstBStr:POINTER, wChar:CHRW, dMaxChars:DWORD
 @@:
   ret
 BStrCCatChar endp
+OPTION PROC:DEFAULT
 
 end

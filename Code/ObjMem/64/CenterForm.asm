@@ -19,12 +19,14 @@
 ;             Arg2: Screen size in pixel.
 ; Return:     eax = Starting point in pixel.
 
+OPTION PROC:NONE
 align ALIGN_CODE
 CenterForm proc dWindowSize:DWORD, dScreenSize:DWORD
-  mov eax, dScreenSize
-  sub eax, dWindowSize
+  mov eax, edx
+  sub eax, ecx
   shr eax, 1
   ret
 CenterForm endp
+OPTION PROC:DEFAULT
 
 end
