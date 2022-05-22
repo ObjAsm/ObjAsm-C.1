@@ -35,8 +35,8 @@ sdword2decW proc pBuffer:POINTER, sdValue:SDWORD
   test eax, eax
   push ecx
   jge @F
-  mov BYTE ptr [ecx], '-'
-  add ecx, 1
+  mov WORD ptr [ecx], '-'
+  add ecx, 2
   neg eax
 @@:
   push edi
@@ -82,7 +82,7 @@ sdword2decW proc pBuffer:POINTER, sdValue:SDWORD
   pop edi
   pop edx
   sub ecx, edx
-  lea eax, [ecx + 4]
+  lea eax, [ecx + 6]
   ret 8
 
 @@08:
@@ -133,7 +133,7 @@ sdword2decW proc pBuffer:POINTER, sdValue:SDWORD
   pop edi
   pop edx
   sub ecx, edx
-  lea eax, [ecx + 4]
+  lea eax, [ecx + 6]
   ret 8
 sdword2decW endp
 

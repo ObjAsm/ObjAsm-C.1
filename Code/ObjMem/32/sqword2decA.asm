@@ -1,42 +1,31 @@
 ; ==================================================================================================
 ; Title:      sqword2decA.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
-; Notes:      Version C.1.0, October 2017
+; Version:    C.1.1
+; Notes:      Version C.1.1, May 2022
 ;               - First release.
 ; ==================================================================================================
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
 
-.code
+TARGET_STR_TYPE = STR_TYPE_ANSI
+TARGET_STR_AFFIX textequ <A>
+
+externdef TwoDecDigitTableA:BYTE
+ProcName textequ <sqword2decA>
+
+% include &ObjMemPath&ObjMem.cop
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  sqword2decA
 ; Purpose:    Converts a signed QWORD to its decimal ANSI string representation.
 ; Arguments:  Arg1: -> Destination ANSI string buffer.
-;             Arg2: sqword value.
+;             Arg2: SQWORD value.
 ; Return:     eax = Number of bytes copied to the destination buffer, including the ZTC.
-; Notes:      The destination buffer must be at least 21 bytes large to allocate the output string
+; Note:       The destination buffer must be at least 21 bytes large to allocate the output string
 ;             (Sign + 19 ANSI characters + ZTC = 21 bytes).
 
-OPTION PROLOGUE:NONE
-OPTION EPILOGUE:NONE
-
-align ALIGN_CODE
-sqword2decA proc pBuffer:POINTER, sqValue:SQWORD
-  push DWORD ptr [esp + 12]
-  push DWORD ptr [esp + 12]
-  push $OfsCStrA("%I64i")
-  push POINTER ptr [esp + 16]
-  call wsprintfA
-  inc eax
-  add esp, 16
-  ret 12
-sqword2decA endp
-
-OPTION PROLOGUE:PrologueDef
-OPTION EPILOGUE:EpilogueDef
+% include &ObjMemPath&32\sqword2decT.inc
 
 end

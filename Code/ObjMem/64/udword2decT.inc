@@ -1,8 +1,8 @@
 ; ==================================================================================================
-; Title:      sdw2decT.asm
+; Title:      udword2decT.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.1
-; Notes:      Version C.1.1, May 2022.
+; Notes:      Version C.1.1, May 2022
 ;               - First release.
 ;               - Character and bitness neutral code.
 ; links:      https://publik.tuwien.ac.at/files/publik_287602.pdf
@@ -12,6 +12,13 @@
 
 
 .code
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  udword2decT
+; Purpose:    Converts a unsigned DWORD to its decimal string representation.
+; Arguments:  Arg1: -> Destination string buffer.
+;             Arg2: DWORD value.
+; Return:     eax = Number of bytes copied to the destination buffer, including the ZTC.
 
 OPTION PROC:NONE
 align ALIGN_CODE

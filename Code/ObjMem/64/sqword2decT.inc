@@ -1,8 +1,8 @@
 ; ==================================================================================================
-; Title:      sqw2decT.asm
+; Title:      sqword2decT.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.1
-; Notes:      Version C.1.1, May 2022.
+; Notes:      Version C.1.1, May 2022
 ;               - First release.
 ;               - Character and bitness neutral code.
 ; links:      https://publik.tuwien.ac.at/files/publik_287602.pdf
@@ -13,15 +13,27 @@
 
 .code
 
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  sqword2decT
+; Purpose:    Converts a signed QWORD to its decimal string representation.
+; Arguments:  Arg1: -> Destination string buffer.
+;             Arg2: SQWORD value.
+; Return:     eax = Number of bytes copied to the destination buffer, including the ZTC.
+
 OPTION PROC:NONE
 align ALIGN_CODE
-ProcName proc pBuffer:POINTER, qValue:SQWORD   ;e.g. 1844'6744'0737'0955'1615
-
-  ;rcx -> Buffer, rdx = QWORD
+ProcName proc pBuffer:POINTER, sqValue:SQWORD   ;e.g. 1844'6744'0737'0955'1615
+  ;rcx -> Buffer, rdx = SQWORD
   %mov r10, offset TwoDecDigitTable&TARGET_STR_AFFIX
   mov rax, rdx                                  ;eax = sdValue
   mov rdx, 0DBE6FECEBDEDD5BFh                   ;2^97/10^10 + 1 => rdx = upper 10 dec digits
   mov r11, rcx
+  test rax, rax
+  jge @F
+  mov CHR ptr [rcx], '-'
+  add rcx, sizeof(CHR)
+  neg rax
+@@:
   mov r8, rax                                   ;Save a copy of the number
   mul rdx                                       ;rdx = upper 10 dec digits
   shr rdx, 33

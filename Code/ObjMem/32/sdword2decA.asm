@@ -82,7 +82,7 @@ sdword2decA proc pBuffer:POINTER, sdValue:SDWORD
   pop edi
   pop edx
   sub ecx, edx
-  lea eax, [ecx + 2]
+  lea eax, [ecx + 3]
   ret 8
 
 @@08:
@@ -133,7 +133,7 @@ sdword2decA proc pBuffer:POINTER, sdValue:SDWORD
   pop edi
   pop edx
   sub ecx, edx
-  lea eax, [ecx + 2]
+  lea eax, [ecx + 3]
   ret 8
 sdword2decA endp
 

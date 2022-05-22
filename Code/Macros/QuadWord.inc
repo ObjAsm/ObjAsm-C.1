@@ -62,7 +62,7 @@ qdmov macro qWrd:req, dWrd:req
   ifidni <qWrd>, <edx::eax>
     mov eax, (QUADWORD ptr qWrd2).LoDWord
     mov edx, 0                                          ;;Don't change flags
-  else                                                  
+  else
     if (opattr dWrd) and 00010000b                      ;;is a register?
       mov (QUADWORD ptr qWrd).LoDWord, dWrd
     else
@@ -227,17 +227,20 @@ endm
 ;                  ebx = divisor
 
 qddiv macro
-  cmp edx, ebx                                          ;;only one division needed ? (ecx = 0)
-  jb @F                                                 ;;yes, one division sufficient
-  mov ecx, eax                                          ;;save dividend-lo in ecx
-  mov eax, edx                                          ;;get dividend-hi
-  xor edx, edx                                          ;;zero extend it into edx::eax
-  div ebx                                               ;;quotient-hi in eax
-  xchg eax, ecx                                         ;;ecx = quotient-hi, eax =dividend-lo
-@@:                                                     
-  div ebx                                               ;;eax = quotient-lo
-  mov ebx, edx                                          ;;ebx = remainder
-  mov edx, ecx                                          ;;edx = quot.-hi(quotient in edx::eax)
+  .if edx == 0                                          ;;only one division needed?
+    div ebx                                             ;;yes, one division sufficient
+    mov ebx, edx                                        ;;eax = quotient-lo, ebx = remainder
+    xor edx, edx                                        ;;edx = quot.-hi(quotient in edx::eax)
+  .else
+    mov ecx, eax                                        ;;save dividend-lo in ecx
+    mov eax, edx                                        ;;get dividend-hi
+    xor edx, edx                                        ;;zero extend it into edx::eax
+    div ebx                                             ;;quotient-hi in eax
+    xchg eax, ecx                                       ;;ecx = quotient-hi, eax =dividend-lo
+    div ebx                                             ;;eax = quotient-lo
+    mov ebx, edx                                        ;;ebx = remainder
+    mov edx, ecx                                        ;;edx = quot.-hi(quotient in edx::eax)
+  .endif
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -252,11 +255,11 @@ qqdiv macro
   local @@Exit
 
   test ecx, ecx                                         ;;check if ecx is zero
-  jnz @F                                                
+  jnz @F
   qddiv                                                 ;;Perform qddiv
   xor ecx, ecx                                          ;;ecx = remainder-hi = zero
-  jmp @@Exit                                            
-@@:                                                     
+  jmp @@Exit
+@@:
   push edx                                              ;;save
   push eax                                              ;; dividend
   mov esi, ebx                                          ;;divisor now in

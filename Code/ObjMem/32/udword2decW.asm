@@ -75,7 +75,7 @@ udword2decW proc pBuffer:POINTER, dValue:DWORD
   pop esi
   sub ecx, edx
   pop edi
-  lea eax, [ecx + 4]
+  lea eax, [ecx + 6]
   ret 8
 
 @@08:
@@ -126,7 +126,7 @@ udword2decW proc pBuffer:POINTER, dValue:DWORD
   pop esi
   sub ecx, edx
   pop edi
-  lea eax, [ecx + 4]
+  lea eax, [ecx + 6]
   ret 8
 udword2decW endp
 

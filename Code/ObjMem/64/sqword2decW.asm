@@ -13,7 +13,7 @@ TARGET_STR_TYPE = STR_TYPE_WIDE
 TARGET_STR_AFFIX textequ <W>
 
 externdef TwoDecDigitTableW:WORD
-ProcName textequ <sqw2decW>
+ProcName textequ <sqword2decW>
 
 % include &ObjMemPath&ObjMem.cop
 
@@ -26,6 +26,6 @@ ProcName textequ <sqw2decW>
 ; Note:       The destination buffer must be at least 42 bytes large to allocate the output string
 ;             (Sign + 19 WIDE characters + ZTC = 42 bytes).
 
-% include &ObjMemPath&X\sqword2decT.asm
+% include &ObjMemPath&64\sqword2decT.inc
 
 end

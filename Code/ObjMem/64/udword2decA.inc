@@ -13,7 +13,7 @@ TARGET_STR_TYPE = STR_TYPE_ANSI
 TARGET_STR_AFFIX textequ <A>
 
 externdef TwoDecDigitTableA:BYTE
-ProcName textequ <udw2decA>
+ProcName textequ <udword2decA>
 
 % include &ObjMemPath&ObjMem.cop
 
@@ -26,6 +26,6 @@ ProcName textequ <udw2decA>
 ; Note:       The destination buffer must be at least 11 bytes large to allocate the output string
 ;             (10 ANSI characters + ZTC = 11 bytes).
 
-% include &ObjMemPath&X\udword2decT.asm
+% include &ObjMemPath&64\udword2decT.inc
 
 end
