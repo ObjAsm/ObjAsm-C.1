@@ -37,7 +37,7 @@ ProcName proc pBuffer:POINTER, sqValue:SQWORD   ;e.g. 1844'6744'0737'0955'1615
   mov r8, rax                                   ;Save a copy of the number
   mul rdx                                       ;rdx = upper 10 dec digits
   shr rdx, 33
-  jz @@20                                       ;if zero then don’t process the top 10 dec digits
+  jz @@20                                       ;If zero then don’t process the top 10 dec digits
   mov rax, 02AF31DC462h                         ;2^64/10^8 + 1
   mov r9, 10000000000
   imul r9, rdx
@@ -187,7 +187,7 @@ ProcName proc pBuffer:POINTER, sqValue:SQWORD   ;e.g. 1844'6744'0737'0955'1615
   cmp rdx, 9
   ja @@17                                       ;=> 2 dec digits
   lea eax, [edx + '0']
-  mov [rcx], ax                                 ;Write character and ZTC
+  mov [rcx], $SubReg(rax, sizeof(DCHR))         ;Write character and ZTC
   sub rcx, r11
   lea eax, [ecx + 2*sizeof(CHR)]                ;eax = number of bytes written incl. the ZTC
   ret

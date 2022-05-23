@@ -181,7 +181,7 @@ ProcName proc pBuffer:POINTER, qValue:QWORD    ;e.g. 1844'6744'0737'0955'1615
   cmp rdx, 9
   ja @@17                                       ;=> 2 dec digits
   lea eax, [edx + '0']
-  mov [rcx], ax                                 ;Write character and ZTC
+  mov [rcx], $SubReg(rax, sizeof(DCHR))         ;Write character and ZTC
   sub rcx, r11
   lea eax, [ecx + 2*sizeof(CHR)]                ;eax = number of bytes written incl. the ZTC
   ret

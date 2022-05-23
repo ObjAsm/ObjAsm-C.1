@@ -29,7 +29,7 @@ OPTION EPILOGUE:NONE
 
 align ALIGN_CODE
 sdword2decA proc pBuffer:POINTER, sdValue:SDWORD
-  mov eax, [esp + 8]                    ;eax -> dValue
+  mov eax, [esp + 8]                    ;eax = sdValue
   mov edx, 0D1B71759h                   ;= 2^45\10000    13 bit extra shift
   mov ecx, [esp + 4]                    ;ecx -> pBuffer
   test eax, eax

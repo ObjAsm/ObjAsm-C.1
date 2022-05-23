@@ -38,7 +38,7 @@ ProcName proc pBuffer:POINTER, sdValue:SDWORD
   mov r8d, eax                                  ;Save a copy of the number
   mul edx                                       ;Gives 6 high digits in edx
   shr edx, 13                                   ;Correct for multiplier offset used to give better accuracy
-  jz @@10                                       ;if zero then don’t need to process the upper 6 dec digits
+  jz @@10                                       ;If zero then don’t need to process the upper 6 dec digits
   mov eax, 68DB9h                               ;2^32/10000 + 1
 
   imul r9d, edx, 10000

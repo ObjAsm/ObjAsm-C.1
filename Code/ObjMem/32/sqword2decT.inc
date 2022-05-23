@@ -82,14 +82,14 @@ ProcName proc uses ebx edi esi pBuffer:POINTER, sqValue:SQWORD
   ;Copy 21 Chars
   mov ebx, pBuffer
   lea eax, cBuffer[24*sizeof(CHR)]
-  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI                     ;Copy 21 bytes
     movups xmm0, [edi + 1]                                ;16 bytes
     mov edx, [edi + 17]                                   ;4 bytes
     mov cl, [edi + 33]                                    ;1 byte
     movups [ebx], xmm0
     mov [ebx + 16], edx
     mov [ebx + 32], cl
-  else
+  else                                                    ;Copy 42 bytes
     movups xmm0, [edi + 2]                                ;16 bytes
     movups xmm1, [edi + 18]                               ;16 bytes
     movq xmm2, [edi + 34]                                 ;8 bytes
