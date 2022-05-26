@@ -1,15 +1,15 @@
 # Source files
-*.asm       text diff=astextplain
-*.inc       text diff=astextplain
-*.cop       text diff=astextplain
-*.api       text diff=astextplain
-*.ini       text diff=astextplain
-*.rap       text diff=astextplain
-*.txt       text diff=astextplain
-*.c         text diff=c
-*.cpp       text diff=cpp
-*.h         text diff=c
-*.md        text
+*.asm       text diff=astextplain eol=crlf
+*.inc       text diff=astextplain eol=crlf
+*.cop       text diff=astextplain eol=crlf
+*.api       text diff=astextplain eol=crlf
+*.ini       text diff=astextplain eol=crlf
+*.rap       text diff=astextplain eol=crlf
+*.txt       text diff=astextplain eol=crlf
+*.c         text diff=c eol=crlf
+*.cpp       text diff=cpp eol=crlf
+*.h         text diff=c eol=crlf
+*.md        text eol=crlf
 
 # Compiled files
 *.obj       binary
@@ -108,7 +108,7 @@
 *.dbf       binary
 
 # Text files where line endings should be preserved
-*.patch     -text
+*.patch     text
 
 # Exclude files from exporting
 #.gitattributes export-ignore
