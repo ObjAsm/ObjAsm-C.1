@@ -30,7 +30,7 @@ IsProcessElevated proc uses xbx, hProcess:HANDLE
   invoke OpenProcessToken, hProcess, TOKEN_QUERY, addr hToken
   .if eax != 0
     mov cbSize, sizeof(Elevation)
-    invoke GetTokenInformation, hToken, TokenElevation, addr Elevation, sizeof(Elevation), addr cbSize
+    invoke GetTokenInformation, hToken, TokenElevation, addr Elevation, sizeof Elevation, addr cbSize
     .if eax != 0
       mov ebx, Elevation.TokenIsElevated
     .endif
