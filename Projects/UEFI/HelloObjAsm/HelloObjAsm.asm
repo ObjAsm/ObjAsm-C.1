@@ -9,7 +9,7 @@
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc   ;Include & initialize standard modules
-SysSetup OOP, WIDE_STRING, UEFI64                       ;Load OOP files and basic OS support
+SysSetup OOP, WIDE_STRING, UEFI64, DEBUG(CON)           ;Load OOP files and basic OS support
 
 MakeObjects Primer, Demo01                              ;Contains Triangle and Rectangle
 
@@ -37,16 +37,16 @@ start proc uses xbx xdi xsi ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TAB
 
   OCall pShape_1::Triangle.Init, 10, 15                 ;Initialize Triangle
   OCall pShape_1::Shape.GetArea                         ;Invoke GetArea method of Triangle
-  invoke PrintLnHexDWORD, eax                           ;Result = 75 
+  DbgDec eax, "Triangle Area"                           ;Result = 75 
 
   New Rectangle                                         ;Create an new instance of Rectangle
   mov pShape_2, xax                                     ;Store instance pointer
   OCall pShape_2::Rectangle.Init, 10, 15                ;Initialize Rectangle
   OCall pShape_2::Shape.GetArea                         ;Invoke GetArea method of Rectangle
-  invoke PrintLnHexDWORD, eax                           ;Result = 150
+  DbgDec eax, "Rectangle Area"                          ;Result = 150
 
   OCall pShape_2::Rectangle.GetPerimeter                ;Invoke GetPerimeter method
-  invoke PrintLnHexDWORD, eax                           ;Result = 50 
+  DbgDec eax, "Rectangle Perimeter"                     ;Result = 50 
 
   Destroy pShape_2                                      ;Invoke Rectangle's Done and disposes it
   Destroy pShape_1                                      ;Invoke Triangle's Done and disposes it
@@ -60,8 +60,9 @@ start proc uses xbx xdi xsi ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TAB
   invoke [xbx].OutputString, xbx, $OfsCStr(13, 10, "bye bye...", 13, 10)
   assume xbx:nothing
 
+  invoke StrNew, $OfsCStr("Complete", 13, 10)
   mov xcx, pBootServices
-  invoke [xcx].EFI_BOOT_SERVICES.Exit, ImageHandle, EFI_SUCCESS, 10*sizeof(CHR), $OfsCStr("Complete", 13, 10)
+  invoke [xcx].EFI_BOOT_SERVICES.Exit, ImageHandle, EFI_SUCCESS, 11*sizeof(CHR), xax
 
   SysDone
 

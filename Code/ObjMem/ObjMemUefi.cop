@@ -8,6 +8,8 @@ TARGET_PLATFORM = PLATFORM_UEFI
 % include &MacPath&Memory.inc
 % include &MacPath&Strings.inc
 % include &MacPath&fMath.inc
+% include &MacPath&Debug.inc
+% include &MacPath&DebugShare.inc
 % include &ObjMemPath&ObjMem.inc         ;Use this file before installation
 
 externdef pBootServices:POINTER

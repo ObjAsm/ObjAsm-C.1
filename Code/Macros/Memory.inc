@@ -138,10 +138,11 @@ endm
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      MemAlloc / $MemAlloc
 ; Purpose:    Allocate a memory block on global memory.
-; Arguments:  Arg1: Memory block size. Must be less than 7FFF8h.
+; Arguments:  Arg1: Memory block size. For Windows muust be less than 7FFF8h.
 ;             Arg2: Optional memory allocation flags:
 ;                   MEM_DEFAULT, MEM_INIT_ZERO, MEM_GENERATE_EXEPTION, MEM_NO_SERIALIZE.
-; Returns:    rax -> allocated memory block. NULL or exception if failed.
+; Returns:    xax -> allocated memory block. NULL or exception if failed.
+;             UEFI returns an mem block aligned to 8.
 
 MEM_DEFAULT             equ   0
 MEM_INIT_ZERO           equ   BIT00
@@ -164,7 +165,7 @@ MemAlloc macro MemSize:req, Flags:=<MEM_DEFAULT>
     endif
     invoke HeapAlloc, hProcessHeap, $$MemAttr, MemSize
   elseif TARGET_PLATFORM eq PLATFORM_UEFI
-    invoke MemAllocUEFI, MemSize
+    invoke MemAlloc_UEFI, Flags, MemSize
   endif
   if DEBUGGING
     .if xax == NULL
@@ -251,17 +252,17 @@ MemFree macro MemPtr:req, Flags:=<0>
   elseif TARGET_PLATFORM eq PLATFORM_UEFI
     if (Flags and MEM_SAFE_FREE)
       .if MemPtr != NULL
-        invoke MemFreeUEFI, MemPtr
+        invoke MemFree_UEFI, MemPtr
         if DEBUGGING
-          .if xax == FALSE
+          .if xax != EFI_SUCCESS
             DbgWarning "MemFree failed (1)"
           .endif
         endif
       .endif
     else
-      invoke MemFreeUEFI, MemPtr
+      invoke MemFree_UEFI, MemPtr
       if DEBUGGING
-        .if xax == FALSE
+        .if xax != EFI_SUCCESS
           DbgWarning "MemFree failed (2)"
         .endif
       endif

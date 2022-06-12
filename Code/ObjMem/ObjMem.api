@@ -340,6 +340,8 @@ bin2xwordW, pStringW
 xword2binW, pStringW, xword
 sxword2decW, pStringW, sxword
 uxword2decW, pStringW, uxword
+xword2decA, pStringA, uxword
+xword2decW, pStringW, uxword
 
 ActivatePrevInstance, pStringID, pClassName
 ActivatePrevInstanceA, pStringIDA, pClassNameA
@@ -505,3 +507,8 @@ DbgOutComponent, pGUID, dCplor, pDestWndName
 DbgOutComponentName, pGUID, dCplor, pDestWndName
 DbgShowObjectHeader, pObjectName, pInstance, pDestWndName
 DbgShowTraceMethod, pMName, dCount, pTicks, pDestWndName
+
+RGB24To16ColorIndex, dColor
+MemAlloc_UEFI, dMemSize
+MemReAlloc_UEFI, pBuffer, dMemSize, dNewMemSize
+MemFree_UEFI, pBuffer

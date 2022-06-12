@@ -520,7 +520,7 @@ EFIPrintMemDescriptor proc uses rsi r10 r11 pConsoleOut:PCONOUT, pDescriptor:ptr
 EFIPrintMemDescriptor endp
 
 
-MemAllocUEFI proc dMemSize:DWORD
+MemAlloc_UEFI proc dAttr:DWORD, dMemSize:DWORD
   local pMemBlock:POINTER
   
   mov xax, pBootServices
@@ -529,12 +529,15 @@ MemAllocUEFI proc dMemSize:DWORD
   .ifBitSet xax, EFI_ERROR
     xor eax, eax
   .else
+    .ifBitSet dAttr, MEM_INIT_ZERO
+      invoke MemZero, pMemBlock, dMemSize
+    .endif
     mov xax, pMemBlock
   .endif
   ret 
-MemAllocUEFI endp
+MemAlloc_UEFI endp
 
-MemReAllocUEFI proc pMemBlock:POINTER, dMemSize:DWORD, dNewMemSize:DWORD
+MemReAlloc_UEFI proc pMemBlock:POINTER, dMemSize:DWORD, dNewMemSize:DWORD
   local pNewMemBlock:POINTER
   
   mov xax, pBootServices
@@ -547,13 +550,13 @@ MemReAllocUEFI proc pMemBlock:POINTER, dMemSize:DWORD, dNewMemSize:DWORD
     mov xax, pNewMemBlock
   .endif
   ret 
-MemReAllocUEFI endp
+MemReAlloc_UEFI endp
 
-MemFreeUEFI proc pMemBlock:POINTER
+MemFree_UEFI proc pMemBlock:POINTER
   mov xax, pBootServices
   invoke [xax].EFI_BOOT_SERVICES.FreePool, pMemBlock
   ret 
-MemFreeUEFI endp
+MemFree_UEFI endp
  
 
 ;include mutex64.inc

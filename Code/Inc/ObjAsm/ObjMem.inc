@@ -87,6 +87,8 @@ elseif TARGET_PLATFORM eq PLATFORM_UEFI
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
+  StrAllocA textequ <StrAllocA_UEFI>
+  StrAllocW textequ <StrAllocW_UEFI>
 endif
 
 if TARGET_PLATFORM eq PLATFORM_WINDOWS
@@ -110,6 +112,8 @@ elseif TARGET_PLATFORM eq PLATFORM_UEFI
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
+  StrNewA textequ <StrNewA_UEFI>
+  StrNewW textequ <StrNewW_UEFI>
 endif
 
 
@@ -767,6 +771,9 @@ else
   echo Warning: incompatible TARGET_STR_TYPE
 endif
 
+RGB24To16ColorIndex proto :DWORD
+MemAllocUEFI proto :DWORD
+
 if TARGET_BITNESS eq 32
   xword2hex   textequ <dword2hex>
   hex2xword   textequ <hex2dword>
@@ -781,6 +788,7 @@ if TARGET_BITNESS eq 32
   xword2binA  textequ <dword2binA>
   sxword2decA textequ <sdword2decA>
   uxword2decA textequ <udword2decA>
+  xword2decA  textequ <udword2decA>
 
   xword2hexW  textequ <dword2hexW>
   hex2xwordW  textequ <hex2dwordW>
@@ -788,6 +796,7 @@ if TARGET_BITNESS eq 32
   xword2binW  textequ <dword2binW>
   sxword2decW textequ <sdword2decW>
   uxword2decW textequ <udword2decW>
+  xword2decW  textequ <udword2decW>
 elseif TARGET_BITNESS eq 64
   xword2hex   textequ <qword2hex>
   hex2xword   textequ <hex2qword>
@@ -802,6 +811,7 @@ elseif TARGET_BITNESS eq 64
   xword2binA  textequ <qword2binA>
   sxword2decA textequ <sqword2decA>
   uxword2decA textequ <uqword2decA>
+  xword2decA  textequ <uqword2decA>
 
   xword2hexW  textequ <qword2hexW>
   hex2xwordW  textequ <hex2qwordW>
@@ -809,6 +819,7 @@ elseif TARGET_BITNESS eq 64
   xword2binW  textequ <qword2binW>
   sxword2decW textequ <sqword2decW>
   uxword2decW textequ <uqword2decW>
+  xword2decW  textequ <uqword2decW>
 else
   %echo Warning: incompatible Bitness: $ToStr(%TARGET_BITNESS)
 endif
@@ -822,6 +833,11 @@ ComPtrAssign              proto :POINTER, :POINTER
 
 
 ; DebugCenter procedures contained in DebugProcs.asm
+
+if TARGET_PLATFORM eq PLATFORM_UEFI
+  DbgOutTextA textequ <DbgOutTextA_UEFI>
+  DbgOutTextW textequ <DbgOutTextW_UEFI>
+endif
 
 DbgWndOpen                proto
 DbgConOpen                proto

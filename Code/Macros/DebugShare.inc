@@ -76,13 +76,6 @@ DBG_HEADER_INFO struc 1
 DBG_HEADER_INFO ends
 ;Source WIDE string & ZTC follow this structure
 
-DBG_CMD_INFO struc 1
-  bBlockID    BYTE    DBG_MSG_CMD
-  bInfo       BYTE    ?                     ;Used for single byte commands
-  dBlockLen   DWORD   ?                     ;Size of this structure + size of the data (may be zero)
-DBG_CMD_INFO ends
-;Data bytes may follow this structure
-
 DBG_STR_INFO struc 1
   bBlockID    BYTE    DBG_MSG_STR
   bInfo       BYTE    ?                     ;Not used
@@ -92,13 +85,22 @@ DBG_STR_INFO struc 1
 DBG_STR_INFO ends
 ;WIDE characters & ZTC (WIDE string) follow this structure
 
-DBG_BMP_INFO struc 1
-  bBlockID    BYTE    DBG_MSG_BMP
-  bInfo       BYTE    ?                     ;Not used
-  dBlockLen   DWORD   ?                     ;Size of this structure + size of bitmap data (RGBQUADs)
-  BmpHeader   BITMAPINFOHEADER  {}
-DBG_BMP_INFO ends
-;Bitmap data follow this structure
+if TARGET_PLATFORM eq PLATFORM_WINDOWS
+  DBG_CMD_INFO struc 1
+    bBlockID    BYTE    DBG_MSG_CMD
+    bInfo       BYTE    ?                   ;Used for single byte commands
+    dBlockLen   DWORD   ?                   ;Size of this structure + size of the data (may be zero)
+  DBG_CMD_INFO ends
+  ;Data bytes may follow this structure
+
+  DBG_BMP_INFO struc 1
+    bBlockID    BYTE    DBG_MSG_BMP
+    bInfo       BYTE    ?                   ;Not used
+    dBlockLen   DWORD   ?                   ;Size of this structure + size of bitmap data (RGBQUADs)
+    BmpHeader   BITMAPINFOHEADER  {}
+  DBG_BMP_INFO ends
+  ;Bitmap data follow this structure
+endif
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 

@@ -93,9 +93,11 @@ DBG_FONT_TEXT             textequ <Courier New>
 
 ;Debug device
 DBG_DEV_NUL               equ   00h
-DBG_DEV_WIN_LOG               equ   01h
-DBG_DEV_WIN_CON               equ   02h
-DBG_DEV_WIN_DC               equ   03h
+DBG_DEV_WIN_LOG           equ   01h
+DBG_DEV_WIN_CON           equ   02h
+DBG_DEV_WIN_DC            equ   03h       ;DebugCenter Windows application
+DBG_DEV_UEFI_CON          equ   04h
+;DBG_DEV_UEFI_LOG          equ   04h
 
 ;Debug options
 DBG_OPT_NONE              equ   00h
@@ -184,32 +186,32 @@ DbgSaveContext macro VarIsRef:=<FALSE>, Var
       else
         lea xbx, Var
       endif
-      ??VarRBX textequ <xbx>
+      ??VarXBX textequ <xbx>
     else
       if @InStr(1, RBX_SUBREGS, $Upper(Var)) eq 0
         if type(Var) eq 8
           mov rbx, Var
-          ??VarRBX textequ <rbx>
+          ??VarXBX textequ <rbx>
         elseif type(Var) eq 4
           mov ebx, Var
-          ??VarRBX textequ <ebx>
+          ??VarXBX textequ <ebx>
         elseif type(Var) eq 2
           mov bx, Var
-          ??VarRBX textequ <bx>
+          ??VarXBX textequ <bx>
         elseif type(Var) eq 1
           mov bl, Var
-          ??VarRBX textequ <bl>
+          ??VarXBX textequ <bl>
         else
           if (opattr Var) and OAT_IMMEDIATE
             mov xbx, Var
-            ??VarRBX textequ <xbx>
+            ??VarXBX textequ <xbx>
           else
             .err <DbgSaveContext - Value error>
             exitm
           endif
         endif
       else
-        ??VarRBX textequ Var
+        ??VarXBX textequ Var
       endif
     endif
   endif
@@ -218,7 +220,9 @@ DbgSaveContext macro VarIsRef:=<FALSE>, Var
   mov xdi, xsp                                          ;;Save current esp value in edi
   if TARGET_BITNESS eq 32
     and esp, 0FFFFFFF0h                                 ;;Align stack on a 16 byte boundary
-    invoke EnterCriticalSection, offset(DbgCritSect)    ;;This call don't change GetLastError
+    if TARGET_PLATFORM eq PLATFORM_WINDOWS
+      invoke EnterCriticalSection, offset(DbgCritSect)  ;;This call don't change GetLastError
+    endif
     sub esp, XMM_CONTEXT_SIZE
     fxsave [esp]                                        ;;This instruction reinitializes the XMM
     push esp                                            ;;Save FPU storage pointer
@@ -232,7 +236,9 @@ DbgSaveContext macro VarIsRef:=<FALSE>, Var
   else
     and rsp, 0FFFFFFFFFFFFFFF0h                         ;;Align stack on a 16 byte boundary
     sub rsp, 20h
-    invoke EnterCriticalSection, offset(DbgCritSect)    ;;This call don't change GetLastError
+    if TARGET_PLATFORM eq PLATFORM_WINDOWS
+      invoke EnterCriticalSection, offset(DbgCritSect)  ;;This call don't change GetLastError
+    endif
     sub rsp, XMM_CONTEXT_SIZE - 20h
     fxsave [rsp]                                        ;;This instruction reinitializes the XMM
     push rsp                                            ;;Save FPU storage pointer
@@ -248,7 +254,7 @@ DbgSaveContext macro VarIsRef:=<FALSE>, Var
       mov rdi, [rdi +  8*8]                             ;;Restore rdi from pushed register values
     endif
 
-    sub rsp, 40h                                        ;;Add an homing area and argument space
+    sub rsp, 40h                                        ;;Add a homing area and argument space
   endif                                                 ;; for the comming calls
 endm
 
@@ -270,7 +276,9 @@ DbgLoadContext macro
     fxrstor [rbx]                                       ;;Read XMM content back
     sub rsp, 20h
   endif
-  invoke LeaveCriticalSection, offset(DbgCritSect)
+  if TARGET_PLATFORM eq PLATFORM_WINDOWS
+    invoke LeaveCriticalSection, offset(DbgCritSect)
+  endif
   mov xsp, xbp                                          ;;Restore rsp
   popax                                                 ;;Restore CPU registers
   popfx                                                 ;;Direction flag is restored here too
@@ -599,7 +607,7 @@ DbgStrA macro Var:req, InfoText, Dest
                             DBG_EFFECT_NORMAL, ??DbgDstWnd
       endif
     endif
-    invoke DbgOutTextA, ??VarRBX, DBG_COLOR_STRING, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextA, ??VarXBX, DBG_COLOR_STRING, DBG_EFFECT_NORMAL, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
     DbgLoadContext
@@ -631,7 +639,7 @@ DbgStrW macro Var:req, InfoText, Dest
                             DBG_EFFECT_NORMAL, ??DbgDstWnd
       endif
     endif
-    invoke DbgOutTextW, ??VarRBX, DBG_COLOR_STRING, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextW, ??VarXBX, DBG_COLOR_STRING, DBG_EFFECT_NORMAL, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
     DbgLoadContext
@@ -664,7 +672,7 @@ DbgStrCA macro Var:req, StrLen:req, InfoText, Dest
                             DBG_EFFECT_NORMAL, ??DbgDstWnd
       endif
     endif
-    invoke DbgOutTextCA, ??VarRBX, StrLen, DBG_COLOR_STRING, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextCA, ??VarXBX, StrLen, DBG_COLOR_STRING, DBG_EFFECT_NORMAL, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
     DbgLoadContext
@@ -697,7 +705,7 @@ DbgStrCW macro Var:req, StrLen:req, InfoText, Dest
                             DBG_EFFECT_NORMAL, ??DbgDstWnd
       endif
     endif
-    invoke DbgOutTextCW, ??VarRBX, StrLen, DBG_COLOR_STRING, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextCW, ??VarXBX, StrLen, DBG_COLOR_STRING, DBG_EFFECT_NORMAL, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
     DbgLoadContext
@@ -730,7 +738,7 @@ DbgHex macro Var:req, InfoText, Dest
   if DEBUGGING
     DbgSaveContext FALSE, Var
     DbgSetDestWnd Dest
-    DbgOutHex <Var = >,, ??VarRBX,, ??DbgDstWnd
+    DbgOutHex <Var = >,, ??VarXBX,, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
     DbgLoadContext
@@ -803,7 +811,7 @@ DbgDec macro Var:req, InfoText, Dest
       sub rsp, $$Buffersize                             ;;Reserve a buffer on the stack.
       lea rdi, [rsp + 20h]                              ;;Get a POINTER to the output buffer
     endif
-    invoke wsprintfA, xdi, $OfsCStrA("%lit"), ??VarRBX
+    invoke xword2decA, xdi, ??VarXBX
     invoke DbgOutTextA, xdi, DBG_COLOR_DEFAULT_VAR, DBG_EFFECT_NORMAL, ??DbgDstWnd
     add xsp, $$Buffersize                               ;;Restore stack
     DbgShowTxtInfo InfoText, ??DbgDstWnd
@@ -876,7 +884,7 @@ DbgGUID macro Var:req, InfoText, Dest
         sub rsp, $$Buffersize                           ;;Reserve a buffer on the stack.
         lea rdi, [rsp + 20h]                            ;;Get a POINTER to the output buffer
       endif
-      invoke GUID2StrA, xdi, ??VarRBX
+      invoke GUID2StrA, xdi, ??VarXBX
       if ??DbgDataSize eq @WordSize
         invoke DbgOutTextA, $OfsCStrA($Esc("&Var& -\] ")), \
                             DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
@@ -945,7 +953,7 @@ DbgBmp macro hBmp:req, Dest
     DbgSaveContext FALSE, hBmp
     DbgSetDestWnd Dest
     ifidn DBG_DEVICE, <WND>
-      invoke DbgOutBitmap, ??VarRBX, ??DbgDstWnd
+      invoke DbgOutBitmap, ??VarXBX, ??DbgDstWnd
     else
       invoke DbgOutTextA, $OfsCStrA("Bitmap can not be shown on this device..."), \
                           DBG_COLOR_ERROR, DBG_EFFECT_NEWLINE, ??DbgDstWnd
@@ -996,7 +1004,7 @@ DbgMem macro pData:req, DataSize:req, OutputFormat:=<DBG_MEM_STR>, InfoText, Des
     invoke DbgOutTextA, $OfsCStrA("MEMORY DUMP of &pData"), DBG_COLOR_MEMORY, DBG_EFFECT_BOLD, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
-    invoke DbgOutMem, ??VarRBX, DataSize, OutputFormat, ??DbgDstWnd
+    invoke DbgOutMem, ??VarXBX, DataSize, OutputFormat, ??DbgDstWnd
     DbgLoadContext
   endif
 endm
@@ -1696,7 +1704,7 @@ DbgComponent macro Var:req, InfoText, Dest
     else
       DbgSaveContext TRUE, Var
       DbgSetDestWnd Dest
-      invoke DbgOutComponent, ??VarRBX, DBG_COLOR_OBJECT, ??DbgDstWnd
+      invoke DbgOutComponent, ??VarXBX, DBG_COLOR_OBJECT, ??DbgDstWnd
       DbgShowTxtInfo InfoText, ??DbgDstWnd
       DbgShowSrcInfo ??DbgDstWnd
       DbgLoadContext
@@ -1719,7 +1727,7 @@ DbgInterface macro Var:req, InfoText, Dest
     else
       DbgSaveContext TRUE, Var
       DbgSetDestWnd Dest
-      invoke DbgOutInterface, ??VarRBX, DBG_COLOR_INTERFACE, ??DbgDstWnd
+      invoke DbgOutInterface, ??VarXBX, DBG_COLOR_INTERFACE, ??DbgDstWnd
       DbgShowTxtInfo InfoText, ??DbgDstWnd
       DbgShowSrcInfo ??DbgDstWnd
       DbgLoadContext

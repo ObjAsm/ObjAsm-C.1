@@ -198,13 +198,13 @@ SysSetup macro Arguments:vararg
 
     elseifidni <Argument>, <DEBUG_TRUE>
       ifndef RELEASE_OA
-          DEBUGGING = 1
-          TARGET_MODE = MODE_DBG
-          TARGET_MODE_STR textequ <D>
+        DEBUGGING = 1
+        TARGET_MODE = MODE_DBG
+        TARGET_MODE_STR textequ <D>
       else
-          DEBUGGING = 0
-          TARGET_MODE = MODE_RLS
-          TARGET_MODE_STR textequ <R>
+        DEBUGGING = 0
+        TARGET_MODE = MODE_RLS
+        TARGET_MODE_STR textequ <R>
       endif
 
     elseifidni <Argument>, <DEBUG_FALSE>
@@ -267,14 +267,12 @@ SysSetup macro Arguments:vararg
       TARGET_USER_INTERFACE = USER_INTERFACE_CLI
       TARGET_BITNESS = 32
       TARGET_PLATFORM = PLATFORM_UEFI
-      DEBUGGING = 0
 
     elseifidni <Argument>, <UEFI64>
       TARGET_BIN_FORMAT = BIN_FORMAT_DLL
       TARGET_USER_INTERFACE = USER_INTERFACE_CLI
       TARGET_BITNESS = 64
       TARGET_PLATFORM = PLATFORM_UEFI
-      DEBUGGING = 0
 
     else
       echo SysSetup - Invalid argument
@@ -430,7 +428,7 @@ SysSetup macro Arguments:vararg
     DBG_SAVE_XMM_CONTEXT = TRUE                         ;;Debug macros preserve the XMM context
     DBG_SAVE_FPU_CONTEXT = TRUE                         ;;Debug macros preserve the FPU context
 
-    DBG_DEVICE textequ <WND>                            ;;Default debug device
+    DBG_DEVICE textequ <WIN_WND>                        ;;Default debug device
     DBG_TRACE = FALSE
     DBG_INFO  = FALSE
     DBG_SHOW_TIME_STAMP = FALSE
@@ -464,7 +462,9 @@ SysSetup macro Arguments:vararg
 
     externdef dDbgDev:DWORD                           ;;Export dDbgDev symbol
     externdef dDbgOpt:DWORD                           ;;Export dDbgOpt symbol
-    externdef DbgCritSect:CRITICAL_SECTION            ;;Export DbgCritSect symbol
+    if TARGET_PLATFORM eq PLATFORM_WINDOWS
+      externdef DbgCritSect:CRITICAL_SECTION          ;;Export DbgCritSect symbol
+    endif
 
     if TARGET_BIN_FORMAT eq BIN_FORMAT_LIB
       ;;Debug support symbols
@@ -503,12 +503,16 @@ SysSetup macro Arguments:vararg
 
       .data
       align ALIGN_DATA
-      %ifidn <DBG_DEVICE>, <WND>
-        dDbgDev   DWORD   DBG_DEV_WIN_DC
-      %elseifidn <DBG_DEVICE>, <CON>
-        dDbgDev   DWORD   DBG_DEV_WIN_CON
-      %elseifidn <DBG_DEVICE>, <LOG>
-        dDbgDev   DWORD   DBG_DEV_WIN_LOG
+      if TARGET_PLATFORM eq PLATFORM_WINDOWS
+        %ifidn <DBG_DEVICE>, <WND>
+          dDbgDev   DWORD   DBG_DEV_WIN_DC
+        %elseifidn <DBG_DEVICE>, <CON>
+          dDbgDev   DWORD   DBG_DEV_WIN_CON
+        %elseifidn <DBG_DEVICE>, <LOG>
+          dDbgDev   DWORD   DBG_DEV_WIN_LOG
+        endif
+      elseif TARGET_PLATFORM eq PLATFORM_UEFI
+        dDbgDev   DWORD   DBG_DEV_UEFI_CON
       endif
 
       ifdef DBG_INFO
@@ -517,7 +521,9 @@ SysSetup macro Arguments:vararg
         dDbgOpt   DWORD   0
       endif
 
-      DbgCritSect  CRITICAL_SECTION  {}
+      if TARGET_PLATFORM eq PLATFORM_WINDOWS
+        DbgCritSect  CRITICAL_SECTION  {}
+      endif
 
       if DBG_TRACE
         TRACING = TRUE
@@ -589,7 +595,7 @@ SysInit macro Arg1, Arg2
     pConsoleOut       PCONOUT     NULL
     pConsoleIn        PCONIN      NULL
   endif
-  
+
   if TARGET_OOP eq OOP_ENABLED
     p1stOMD     POINTER     ??1stOMD                    ;;-> 1st item in object metadata chain
   endif
@@ -630,6 +636,12 @@ SysInit macro Arg1, Arg2
       m2m pConsoleOut, [xdx].EFI_SYSTEM_TABLE.ConOut, xcx
     endif
 
+    if DEBUGGING
+      m2m pObjErrTableStart, ??ObjErrTableStart, xax
+      mov dObjErrTableCount, ??ObjErrTableCount
+      m2m pObjIDTableStart, ??ObjIDTableStart, xax
+      mov dObjIDTableCount, ??ObjIDTableCount
+    endif
   endif
 
   if TARGET_OOP eq OOP_ENABLED
