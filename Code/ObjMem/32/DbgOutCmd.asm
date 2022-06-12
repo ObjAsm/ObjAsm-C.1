@@ -8,7 +8,7 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 externdef DbgCritSect:CRITICAL_SECTION
 
@@ -27,9 +27,9 @@ DbgOutCmd proc bCommand:BYTE, pTargetWnd:POINTER
 
   invoke EnterCriticalSection, offset DbgCritSect
   mov eax, dDbgDev
-  .if eax == DBG_DEV_LOG
-  .elseif eax == DBG_DEV_CON
-  .else                                                 ;DBG_DEV_WND
+  .if eax == DBG_DEV_WIN_LOG
+  .elseif eax == DBG_DEV_WIN_CON
+  .else                                                 ;DBG_DEV_WIN_DC
     .if $invoke(DbgWndOpen)
       mov CDS.dwData, DGB_MSG_ID                        ;Identify this message source
       .if pTargetWnd != NULL

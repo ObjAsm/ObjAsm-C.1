@@ -8,7 +8,7 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 SHTDN_REASON_FLAG_COMMENT_REQUIRED          equ 01000000h
 SHTDN_REASON_FLAG_DIRTY_PROBLEM_ID_REQUIRED equ 02000000h

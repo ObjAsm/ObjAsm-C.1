@@ -4,11 +4,11 @@
 ; Version:    C.1.1
 ; Notes:      Version C.1.1, April 2020.
 ;               - First release.
-;               - Bitness neutral code. 
+;               - Bitness neutral code.
 ; ==================================================================================================
 
 
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
 

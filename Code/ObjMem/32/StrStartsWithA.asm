@@ -13,6 +13,6 @@ TARGET_STR_TYPE = STR_TYPE_ANSI
 TARGET_STR_AFFIX textequ <A>
 ProcName equ <StrStartsWithA>
 
-% include &ObjMemPath&X\StrStartsWith.asm
+% include &ObjMemPath&X\StrStartsWithT.asm
 
 end

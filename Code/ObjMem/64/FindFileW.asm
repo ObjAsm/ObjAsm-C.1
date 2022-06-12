@@ -16,7 +16,7 @@ ProcName textequ <FindFileW>
 ??SearchInDir textequ <??SearchInDirW>
 FIND_FILE_PARAMS textequ <FIND_FILE_PARAMSW>
 
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 FIND_FILE_PARAMSW struct
   pFileName   POINTER    ?

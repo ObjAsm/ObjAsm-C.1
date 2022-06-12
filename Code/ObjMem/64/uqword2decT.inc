@@ -15,7 +15,7 @@
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  uqword2decT
-; Purpose:    Converts a unsigned QWORD to its decimal string representation.
+; Purpose:    Convert a unsigned QWORD into its decimal string representation.
 ; Arguments:  Arg1: -> Destination string buffer.
 ;             Arg2: QWORD value.
 ; Return:     eax = Number of bytes copied to the destination buffer, including the ZTC.

@@ -4,7 +4,7 @@
 ; Version:    C.1.1
 ; Notes:      Version C.1.1, May 2022
 ;               - First release.
-;               - Character and bitness neutral code.
+;               - Character neutral code.
 ; links:      https://publik.tuwien.ac.at/files/publik_287602.pdf
 ;             https://calc.penjee.com/  128 hex calculator
 ;             https://de.wikipedia.org/wiki/Integer_(Datentyp)
@@ -14,7 +14,7 @@
 .code
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  udword2decT
+; Procedure:  udword2decA, udword2decW 
 ; Purpose:    Converts a unsigned DWORD to its decimal string representation.
 ; Arguments:  Arg1: -> Destination string buffer.
 ;             Arg2: DWORD value.

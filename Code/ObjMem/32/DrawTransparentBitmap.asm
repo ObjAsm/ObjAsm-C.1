@@ -8,7 +8,7 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 TBM_FIRSTPIXEL equ  80000000h
 

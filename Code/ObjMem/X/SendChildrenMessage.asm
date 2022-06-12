@@ -8,7 +8,7 @@
 ; ==================================================================================================
 
 
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 CHILD_MSG struc
   dMsgID  DWORD   ?

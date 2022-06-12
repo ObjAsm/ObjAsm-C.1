@@ -8,7 +8,7 @@
 ; ==================================================================================================
 
 
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 % include &MacPath&Objects.inc
 % include &COMPath&COM.inc
 % include &IncPath&Windows\ocidl.inc

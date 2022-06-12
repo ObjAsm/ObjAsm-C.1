@@ -8,7 +8,7 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
 
@@ -23,10 +23,10 @@ align ALIGN_CODE
 StrLengthA proc pString:POINTER
   push rdi
   mov rdi, rcx
-  mov rcx, -1
+  mov ecx, -1
   xor al, al
   repne scasb
-  not rcx
+  not ecx
   mov eax, ecx
   dec eax
   pop rdi

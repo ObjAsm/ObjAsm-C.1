@@ -22,10 +22,15 @@ option stackbase:??StackBase                            ;Default setting (DEBUGG
 ;W64F_STACKALIGN16  = 0x04, // 1=stack variables are 16-byte aligned
 ;W64F_SMART         = 0x08, // 1=takes care of everything (HJWasm)
 
-PAGESIZE        equ   4096
-STR_TYPE_ANSI   equ   1
-STR_TYPE_WIDE   equ   2
-__NO_NOISE__    equ   1                                 ;Supress Windows.inc babbling (MASM32 only)
+PAGESIZE          equ   4096
+PLATFORM_NONE     equ   1
+PLATFORM_UEFI     equ   2
+PLATFORM_WINDOWS  equ   3
+PLATFORM_OTHER    equ   4
+
+STR_TYPE_ANSI     equ   1
+STR_TYPE_WIDE     equ   2
+__NO_NOISE__      equ   1                               ;Supress Windows.inc babbling (MASM32 only)
 
 ;Paths used to locate objects, libraries, resources, etc. They are statically linked!
 

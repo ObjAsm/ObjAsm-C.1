@@ -1,14 +1,18 @@
 ; ==================================================================================================
 ; Title:      Memory.inc
 ; Authors:    G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Purpose:    ObjAsm support of basic memory handling macros.
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
+;             Version C.1.1, June 2022
+;               - UEFI support added.
 ; ==================================================================================================
 
 
-externdef hProcessHeap:HANDLE
+if TARGET_PLATFORM eq PLATFORM_WINDOWS
+  externdef hProcessHeap:HANDLE
+endif
 
 BIT00    equ    0000000000000001h
 BIT01    equ    0000000000000002h
@@ -147,17 +151,21 @@ MEM_NO_MOVE             equ   BIT03
 MEM_SAFE_FREE           equ   BIT04
 
 MemAlloc macro MemSize:req, Flags:=<MEM_DEFAULT>
-  $$MemAttr = MEM_DEFAULT
-  if (Flags and MEM_INIT_ZERO)
-    $$MemAttr = $$MemAttr or HEAP_ZERO_MEMORY
+  if TARGET_PLATFORM eq PLATFORM_WINDOWS
+    $$MemAttr = MEM_DEFAULT
+    if (Flags and MEM_INIT_ZERO)
+      $$MemAttr = $$MemAttr or HEAP_ZERO_MEMORY
+    endif
+    if (Flags and MEM_GENERATE_EXEPTION)
+      $$MemAttr = $$MemAttr or HEAP_GENERATE_EXCEPTIONS
+    endif
+    if (Flags and MEM_NO_SERIALIZE)
+      $$MemAttr = $$MemAttr or HEAP_NO_SERIALIZE
+    endif
+    invoke HeapAlloc, hProcessHeap, $$MemAttr, MemSize
+  elseif TARGET_PLATFORM eq PLATFORM_UEFI
+    invoke MemAllocUEFI, MemSize
   endif
-  if (Flags and MEM_GENERATE_EXEPTION)
-    $$MemAttr = $$MemAttr or HEAP_GENERATE_EXCEPTIONS
-  endif
-  if (Flags and MEM_NO_SERIALIZE)
-    $$MemAttr = $$MemAttr or HEAP_NO_SERIALIZE
-  endif
-  invoke HeapAlloc, hProcessHeap, $$MemAttr, MemSize
   if DEBUGGING
     .if xax == NULL
       DbgWarning "MemAlloc failed"
@@ -180,24 +188,28 @@ endm
 ; Returns:    rax -> allocated memory block. NULL or exception if failed.
 
 MemReAlloc macro MemPtr:req, MemSize:req, Flags:=<0>
-  $$MemAttr = MEM_DEFAULT
-  if (Flags and MEM_INIT_ZERO)
-    $$MemAttr = $$MemAttr or HEAP_ZERO_MEMORY
-  endif
-  if (Flags and MEM_GENERATE_EXEPTION)
-    $$MemAttr = $$MemAttr or HEAP_GENERATE_EXCEPTIONS
-  endif
-  if (Flags and MEM_NO_SERIALIZE)
-    $$MemAttr = $$MemAttr or HEAP_NO_SERIALIZE
-  endif
-  if (Flags and MEM_NO_MOVE)
-    $$MemAttr = $$MemAttr or HEAP_REALLOC_IN_PLACE_ONLY
-  endif
-  invoke HeapReAlloc, hProcessHeap, $$MemAttr, MemPtr, MemSize
-  if DEBUGGING
-    .if xax == FALSE
-      DbgWarning "MemReAlloc failed"
-    .endif
+  if TARGET_PLATFORM eq PLATFORM_WINDOWS
+    $$MemAttr = MEM_DEFAULT
+    if (Flags and MEM_INIT_ZERO)
+      $$MemAttr = $$MemAttr or HEAP_ZERO_MEMORY
+    endif
+    if (Flags and MEM_GENERATE_EXEPTION)
+      $$MemAttr = $$MemAttr or HEAP_GENERATE_EXCEPTIONS
+    endif
+    if (Flags and MEM_NO_SERIALIZE)
+      $$MemAttr = $$MemAttr or HEAP_NO_SERIALIZE
+    endif
+    if (Flags and MEM_NO_MOVE)
+      $$MemAttr = $$MemAttr or HEAP_REALLOC_IN_PLACE_ONLY
+    endif
+    invoke HeapReAlloc, hProcessHeap, $$MemAttr, MemPtr, MemSize
+    if DEBUGGING
+      .if xax == FALSE
+        DbgWarning "MemReAlloc failed"
+      .endif
+    endif
+  elseif TARGET_PLATFORM eq PLATFORM_UEFI
+    ;Not implemented
   endif
 endm
 
@@ -214,27 +226,47 @@ endm
 ; Returns:    eax = TRUE if succeeded, otherwise FALSE.
 
 MemFree macro MemPtr:req, Flags:=<0>
-  $$MemAttr = 0
-  if (Flags and MEM_NO_SERIALIZE)
-    $$MemAttr = $$MemAttr or HEAP_NO_SERIALIZE
-  endif
-  if (Flags and MEM_SAFE_FREE)
-    .if MemPtr != NULL
+  if TARGET_PLATFORM eq PLATFORM_WINDOWS
+    $$MemAttr = 0
+    if (Flags and MEM_NO_SERIALIZE)
+      $$MemAttr = $$MemAttr or HEAP_NO_SERIALIZE
+    endif
+    if (Flags and MEM_SAFE_FREE)
+      .if MemPtr != NULL
+        invoke HeapFree, hProcessHeap, $$MemAttr, MemPtr
+        if DEBUGGING
+          .if xax == FALSE
+            DbgWarning "MemFree failed (1)"
+          .endif
+        endif
+      .endif
+    else
       invoke HeapFree, hProcessHeap, $$MemAttr, MemPtr
       if DEBUGGING
         .if xax == FALSE
-          DbgWarning "MemFree failed (1)"
+          DbgWarning "MemFree failed (2)"
         .endif
       endif
-    .endif
-  else
-    invoke HeapFree, hProcessHeap, $$MemAttr, MemPtr
-    if DEBUGGING
-      .if xax == FALSE
-        DbgWarning "MemFree failed (2)"
-      .endif
     endif
-  endif
+  elseif TARGET_PLATFORM eq PLATFORM_UEFI
+    if (Flags and MEM_SAFE_FREE)
+      .if MemPtr != NULL
+        invoke MemFreeUEFI, MemPtr
+        if DEBUGGING
+          .if xax == FALSE
+            DbgWarning "MemFree failed (1)"
+          .endif
+        endif
+      .endif
+    else
+      invoke MemFreeUEFI, MemPtr
+      if DEBUGGING
+        .if xax == FALSE
+          DbgWarning "MemFree failed (2)"
+        .endif
+      endif
+    endif
+  endif 
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -323,7 +355,7 @@ xBitTog equ <xBitToggle>
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      .ifBitSet
-; Purpose:    Start a conditional clauses, that must be terminated with endif.
+; Purpose:    Start a conditional clauses, that must be terminated with .endif.
 ;             Examine if any of the indicated bits are set.
 ; Arguments:  Arg1: Bit holding variable.
 ;             Arg2: Bit to be tested for (ie: BIT12)
@@ -337,7 +369,7 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      .elseIfBitSet
-; Purpose:    Continue a conditional clauses, that must be terminated with endif.
+; Purpose:    Continue a conditional clauses, that must be terminated with .endif.
 ;             Examine if any of the indicated bits are set.
 ; Arguments:  Arg1: Bit holding variable.
 ;             Arg2: Bit to be tested for (ie: BIT12)
@@ -351,7 +383,7 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      .ifBitClr
-; Purpose:    Start a coditional clauses, that must be terminated with endif.
+; Purpose:    Start a coditional clauses, that must be terminated with .endif.
 ;             Examine if all of the indicated bits are not set.
 ; Arguments:  Arg1: Bit holding variable.
 ;             Arg2: Bit to be tested for (ie: BIT12)
@@ -365,7 +397,7 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      .elseIfBitClr
-; Purpose:    Start a coditional clauses, that must be terminated with endif.
+; Purpose:    Start a coditional clauses, that must be terminated with .endif.
 ;             Examine if all of the indicated bits are not set.
 ; Arguments:  Arg1: Bit holding variable.
 ;             Arg2: Bit to be tested for (ie: BIT12)

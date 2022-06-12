@@ -13,6 +13,6 @@ TARGET_STR_TYPE = STR_TYPE_ANSI
 TARGET_STR_AFFIX textequ <A>
 ProcName equ <SetShellPerceivedTypeA>
 
-% include &ObjMemPath&X\SetShellPerceivedType.asm
+% include &ObjMemPath&X\SetShellPerceivedTypeT.asm
 
 end

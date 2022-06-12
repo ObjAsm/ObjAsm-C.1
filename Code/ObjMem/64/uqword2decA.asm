@@ -15,11 +15,11 @@ TARGET_STR_AFFIX textequ <A>
 externdef TwoDecDigitTableA:BYTE
 ProcName textequ <uqword2decA>
 
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  uqword2decA
-; Purpose:    Converts an unsigned QWORD to its decimal ANSI string representation.
+; Purpose:    Convert an unsigned QWORD into its decimal ANSI string representation.
 ; Arguments:  Arg1: -> Destination ANSI string buffer.
 ;             Arg2: QWORD value.
 ; Return:     eax = Number of bytes copied to the destination buffer, including the ZTC.

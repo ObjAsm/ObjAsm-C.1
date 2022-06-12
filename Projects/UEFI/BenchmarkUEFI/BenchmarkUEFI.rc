@@ -1,0 +1,11 @@
+; ==================================================================================================
+; Title:      BenchmarkUEFI.rc
+; Author:     G. Friedrich
+; Version:    C.1.0
+; Purpose:    ObjAsm resource file.
+; Notes:      Version C.1.0, June 2022
+;               - First release.
+; ==================================================================================================
+
+
+#include "BenchmarkUEFI_Shared.rc"      //Application shared definitions

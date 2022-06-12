@@ -93,9 +93,9 @@ DBG_FONT_TEXT             textequ <Courier New>
 
 ;Debug device
 DBG_DEV_NUL               equ   00h
-DBG_DEV_LOG               equ   01h
-DBG_DEV_CON               equ   02h
-DBG_DEV_WND               equ   03h
+DBG_DEV_WIN_LOG               equ   01h
+DBG_DEV_WIN_CON               equ   02h
+DBG_DEV_WIN_DC               equ   03h
 
 ;Debug options
 DBG_OPT_NONE              equ   00h

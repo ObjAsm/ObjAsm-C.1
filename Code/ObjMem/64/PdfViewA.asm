@@ -13,6 +13,6 @@ TARGET_STR_TYPE = STR_TYPE_ANSI
 TARGET_STR_AFFIX textequ <A>
 ProcName equ <PdfViewA>
 
-% include &ObjMemPath&X\PdfView.asm
+% include &ObjMemPath&X\PdfViewT.asm
 
 end

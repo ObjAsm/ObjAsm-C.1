@@ -19,6 +19,7 @@ if exist *.asm (
   if errorlevel 1 goto Error
 
   REM Display targets on screen
+  echo Platform:       !TARGET_PLATFORM!
   echo User Interface: !TARGET_USER_INTERFACE!
   echo Binary Format:  !TARGET_BIN_FORMAT!
   echo Bitness:        !TARGET_BITNESS!
@@ -50,6 +51,12 @@ if exist *.asm (
   REM Link project
   call "%OBJASM_PATH%\Build\OA_LINK.cmd" %*
   if errorlevel 1 goto Error
+
+  if !TARGET_PLATFORM! == UEFI (
+    REM Convert PE/DLL to efi image
+    call "%OBJASM_PATH%\Build\OA_UEFI.cmd" %*
+    if errorlevel 1 goto Error
+  )
 
   REM Housekeeping
   call "%OBJASM_PATH%\Build\OA_POS.cmd" %*

@@ -8,7 +8,7 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 CStr StkGrdTitle,   "Stack overrun detected !!"
 CStr StkGrdMessage, "The application may be unstable.", 10, 13,\

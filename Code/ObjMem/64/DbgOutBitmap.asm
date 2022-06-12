@@ -8,7 +8,7 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
 
@@ -23,7 +23,7 @@ align ALIGN_CODE
 DbgOutBitmap proc uses rbx rdi rsi r12 hBmp:HANDLE, pDest:POINTER
   local CDS:COPYDATASTRUCT, hDC:HDC, BMI:BITMAPINFO, dResult:DWORD
 
-  .if dDbgDev == DBG_DEV_WND
+  .if dDbgDev == DBG_DEV_WIN_DC
     .if $invoke(DbgWndOpen)
       mov CDS.dwData, DGB_MSG_ID                        ;Set DebugCenter identifier
       mov hDC, $invoke(GetDC, 0)

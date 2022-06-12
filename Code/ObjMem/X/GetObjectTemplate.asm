@@ -8,7 +8,7 @@
 ; ==================================================================================================
 
 
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 externdef p1stOMD:POINTER
 

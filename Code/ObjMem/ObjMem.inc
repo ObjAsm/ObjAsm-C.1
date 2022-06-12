@@ -12,6 +12,7 @@
 
 externdef bCRLF:CHRA
 externdef wCRLF:CHRW
+cCRLF textequ <szCRLF>
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   szCRLF textequ <bCRLF>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
@@ -22,6 +23,7 @@ endif
 
 externdef bNULL:CHRA
 externdef wNULL:CHRW
+cNULL textequ <szNULL>
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   szNULL textequ <bNULL>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
@@ -64,27 +66,52 @@ MemZero  proto :POINTER, :DWORD
 
 ;String procedures
 
-BStrAlloc proto :DWORD
-StrAllocA proto :DWORD
-StrAllocW proto :DWORD
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  StrAlloc textequ <StrAllocA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  StrAlloc textequ <StrAllocW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
+if TARGET_PLATFORM eq PLATFORM_WINDOWS
+  BStrAlloc proto :DWORD
+  StrAllocA proto :DWORD
+  StrAllocW proto :DWORD
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    StrAlloc textequ <StrAllocA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    StrAlloc textequ <StrAllocW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+elseif TARGET_PLATFORM eq PLATFORM_UEFI
+  StrAllocA_UEFI proto :DWORD
+  StrAllocW_UEFI proto :DWORD
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    StrAlloc textequ <StrAllocA_UEFI>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    StrAlloc textequ <StrAllocW_UEFI>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
 endif
 
-BStrNew proto :POINTER
-StrNewA proto :POINTER
-StrNewW proto :POINTER
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  StrNew textequ <StrNewA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  StrNew textequ <StrNewW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
+if TARGET_PLATFORM eq PLATFORM_WINDOWS
+  BStrNew proto :POINTER
+  StrNewA proto :POINTER
+  StrNewW proto :POINTER
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    StrNew textequ <StrNewA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    StrNew textequ <StrNewW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+elseif TARGET_PLATFORM eq PLATFORM_UEFI
+  StrNewA_UEFI proto :POINTER
+  StrNewW_UEFI proto :POINTER
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    StrNew textequ <StrNewA_UEFI>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    StrNew textequ <StrNewW_UEFI>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
 endif
+
 
 BStrCNew proto :POINTER, :DWORD
 StrCNewA proto :POINTER, :DWORD
@@ -97,10 +124,17 @@ else
   echo Warning: incompatible TARGET_STR_TYPE
 endif
 
-BStrDispose proto :POINTER
-StrDisposeA proto :POINTER
-StrDisposeW textequ <StrDisposeA>
-StrDispose textequ <StrDisposeA>
+if TARGET_PLATFORM eq PLATFORM_WINDOWS
+  BStrDispose proto :POINTER
+  StrDispose proto :POINTER
+  StrDisposeA textequ <StrDispose>
+  StrDisposeW textequ <StrDispose>
+elseif TARGET_PLATFORM eq PLATFORM_UEFI
+  StrDispose_UEFI proto :POINTER
+  StrDispose textequ <StrDispose_UEFI>
+  StrDisposeA textequ <StrDispose_UEFI>
+  StrDisposeW textequ <StrDispose_UEFI>
+endif
 
 BStrLength proto :POINTER
 StrLengthA proto :POINTER
@@ -591,8 +625,10 @@ SDWORD2DEC_MAX_CHARS equ 12
 udword2decA proto :POINTER, :DWORD
 udword2decW proto :POINTER, :DWORD
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
+  dword2dec textequ <udword2decA>
   udword2dec textequ <udword2decA>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+  dword2dec textequ <udword2decW>
   udword2dec textequ <udword2decW>
 else
   echo Warning: incompatible TARGET_STR_TYPE
@@ -615,8 +651,10 @@ SQWORD2DEC_MAX_CHARS equ 21
 uqword2decA proto :POINTER, :QWORD
 uqword2decW proto :POINTER, :QWORD
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
+  qword2dec textequ <uqword2decA>
   uqword2dec textequ <uqword2decA>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+  qword2dec textequ <uqword2decW>
   uqword2dec textequ <uqword2decW>
 else
   echo Warning: incompatible TARGET_STR_TYPE
@@ -828,32 +866,35 @@ GetObjectTemplate         proto :DWORD
 
 ; General purpose procedures
 
-LoadCommonControls        proto :DWORD
-CenterForm                proto :DWORD, :DWORD
+if TARGET_PLATFORM eq PLATFORM_WINDOWS
+  LoadCommonControls      proto :DWORD
+  CenterForm              proto :DWORD, :DWORD
+  GetRawClientRect        proto :HANDLE, :PRECT
+  GetBottomWindow         proto :HANDLE
+  MoveWindowVisible       proto :HANDLE, :SDWORD, :SDWORD
+  WndFadeIn               proto :HANDLE, :DWORD, :DWORD, :DWORD, :DWORD
+  WndFadeOut              proto :HANDLE, :DWORD, :DWORD, :DWORD, :DWORD
+  DrawTransparentBitmap   proto :HANDLE, :HANDLE, :DWORD, :DWORD, :DWORD
+  Bmp2Rgn                 proto :HANDLE, :DWORD
+  AreVisualStylesEnabled  proto
+  SetClientSize           proto :HANDLE, :DWORD, :DWORD
+  SysShutdown             proto :DWORD, :DWORD
+  SysStandby              proto
+  WaitForProcess          proto :DWORD, :DWORD
+  IsProcessElevated       proto :HANDLE
+  IsWinNT                 proto
+  IsAdmin                 proto
+  GetLogProcCount         proto :POINTER
+  IsScrollBarVisible      proto :HANDLE, :DWORD
+  GetDlgBaseUnits         proto :HANDLE
+  SendChildrenMessage     proto :HANDLE, :DWORD, :WPARAM, :LPARAM
+endif
+
 IsPntInRect               proto :POINTER, :POINTER
-GetRawClientRect          proto :HANDLE, :PRECT
-GetBottomWindow           proto :HANDLE
-MoveWindowVisible         proto :HANDLE, :SDWORD, :SDWORD
-WndFadeIn                 proto :HANDLE, :DWORD, :DWORD, :DWORD, :DWORD
-WndFadeOut                proto :HANDLE, :DWORD, :DWORD, :DWORD, :DWORD
-DrawTransparentBitmap     proto :HANDLE, :HANDLE, :DWORD, :DWORD, :DWORD
-Bmp2Rgn                   proto :HANDLE, :DWORD
-AreVisualStylesEnabled    proto
-SetClientSize             proto :HANDLE, :DWORD, :DWORD
 Random32                  proto :DWORD
 IsGUIDEqual               proto :POINTER, :POINTER
-SysShutdown               proto :DWORD, :DWORD
-SysStandby                proto
-WaitForProcess            proto :DWORD, :DWORD
-IsProcessElevated         proto :HANDLE
-IsWinNT                   proto
-IsAdmin                   proto
-GetLogProcCount           proto :POINTER
 IsHardwareFeaturePresent  proto :BYTE
 NewObjInst                proto :DWORD
-IsScrollBarVisible        proto :HANDLE, :DWORD
-GetDlgBaseUnits           proto :HANDLE
-SendChildrenMessage       proto :HANDLE, :DWORD, :WPARAM, :LPARAM
 UTF8ToWide                proto :POINTER, :POINTER, :DWORD
 WideToUTF8                proto :POINTER, :POINTER, :DWORD
 Real4ToHalf               proto :REAL4

@@ -8,7 +8,7 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
 
@@ -33,7 +33,7 @@ DbgOutTextCW proc pStr:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD, pDe
   .endif
 
   mov eax, dDbgDev
-  .if eax == DBG_DEV_LOG
+  .if eax == DBG_DEV_WIN_LOG
     invoke DbgLogOpen
     .if $invoke(DbgLogOpen)
       mov eax, dLength
@@ -45,7 +45,7 @@ DbgOutTextCW proc pStr:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD, pDe
       invoke WriteFile, hDbgDev, offset wCRLF, 4, addr dCharsWritten, NULL
     .endif
 
-  .elseif eax == DBG_DEV_CON
+  .elseif eax == DBG_DEV_WIN_CON
     .if $invoke(DbgConOpen)
       m2z wAttrib
       mov eax, dColor
@@ -81,7 +81,7 @@ DbgOutTextCW proc pStr:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD, pDe
       .endif
     .endif
 
-  .else                                                 ;DBG_DEV_WND
+  .else                                                 ;DBG_DEV_WIN_DC
     .if $invoke(DbgWndOpen)
       mov CDS.dwData, DGB_MSG_ID                        ;Set DebugCenter identifier
       mov eax, dLength                                  ;String length

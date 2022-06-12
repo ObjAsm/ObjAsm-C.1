@@ -1,0 +1,31 @@
+; ==================================================================================================
+; Title:      udword2decA.asm
+; Author:     G. Friedrich
+; Version:    C.1.1
+; Notes:      Version C.1.1, May 2022
+;               - First release.
+; ==================================================================================================
+
+
+% include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
+
+TARGET_STR_TYPE = STR_TYPE_ANSI
+TARGET_STR_AFFIX textequ <A>
+
+externdef TwoDecDigitTableA:BYTE
+ProcName textequ <udword2decA>
+
+% include &ObjMemPath&ObjMemWin.cop
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  udword2decA
+; Purpose:    Converts a unsigned DWORD to its decimal ANSI string representation.
+; Arguments:  Arg1: -> Destination ANSI string buffer.
+;             Arg2: DWORD value.
+; Return:     eax = Number of bytes copied to the destination buffer, including the ZTC.
+; Note:       The destination buffer must be at least 11 bytes large to allocate the output string
+;             (10 ANSI characters + ZTC = 11 bytes).
+
+% include &ObjMemPath&64\udword2decT.inc
+
+end

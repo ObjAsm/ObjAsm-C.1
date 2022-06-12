@@ -13,6 +13,6 @@ TARGET_STR_TYPE = STR_TYPE_ANSI
 TARGET_STR_AFFIX textequ <A>
 ProcName equ <SetShellAssociationA>
 
-% include &ObjMemPath&X\SetShellAssociation.asm
+% include &ObjMemPath&X\SetShellAssociationT.asm
 
 end

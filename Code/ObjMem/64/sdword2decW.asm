@@ -15,7 +15,7 @@ TARGET_STR_AFFIX textequ <W>
 externdef TwoDecDigitTableW:WORD
 ProcName textequ <sdword2decW>
 
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  sdword2decW

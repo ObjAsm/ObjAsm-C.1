@@ -9,7 +9,7 @@
 ; ==================================================================================================
 
 
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 GFL_BUFFER_SIZE     equ 512*8                           ;Must be a multiple of 512 (8 sectors)
 GFL_LIST_SIZE_INIT  equ PAGESIZE                        ;Must be a multiple of sizeof(DWORD)

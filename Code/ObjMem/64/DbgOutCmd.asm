@@ -8,7 +8,7 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 externdef DbgCritSect:CRITICAL_SECTION
 
@@ -28,7 +28,7 @@ DbgOutCmd proc FRAME uses rbx rdi bCommand:BYTE, pTargetWnd:POINTER
   local CDS:COPYDATASTRUCT
 
   mov eax, dDbgDev
-  .if eax == DBG_DEV_WND
+  .if eax == DBG_DEV_WIN_DC
     .if $invoke(DbgWndOpen)
       mov CDS.dwData, DGB_MSG_ID                        ;Identify this message source
       .if pTargetWnd != NULL

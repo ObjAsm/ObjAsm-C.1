@@ -164,10 +164,17 @@ BIN_FORMAT_LIB          equ       3
 TARGET_BIN_FORMAT       =         BIN_FORMAT_EXE
 
 USER_INTERFACE_NONE     equ       1                     ;No user interface
-USER_INTERFACE_WIN      equ       2                     ;Window user interface
-TARGET_USER_INTERFACE   =         USER_INTERFACE_WIN    ;Default: Window
+USER_INTERFACE_GUI      equ       2                     ;Graphic user interface
+USER_INTERFACE_CLI      equ       3                     ;Command line interface
+TARGET_USER_INTERFACE   =         USER_INTERFACE_GUI    ;Default: Window
 
 TARGET_BITNESS          =         32                    ;Default 32-bit
+
+PLATFORM_NONE           equ       1
+PLATFORM_UEFI           equ       2
+PLATFORM_WINDOWS        equ       3
+PLATFORM_OTHER          equ       4                     ;E.g. Linux distros
+TARGET_PLATFORM         =         PLATFORM_WINDOWS
 
 MODE_RLS                equ       1
 MODE_DBG                equ       2
@@ -181,18 +188,24 @@ DEBUGGING               =         0
 
 SysSetup macro Arguments:vararg
   for Argument, <Arguments>
-    ifidni  <Argument>, <WIDE_STRING>                   ;;WIDE string support
+    ifidni <Argument>, <WIDE_STRING>                    ;;WIDE string support
       TARGET_STR_TYPE = STR_TYPE_WIDE
       TARGET_STR_AFFIX textequ <W>
       UNICODE equ 1
-    elseifidni  <Argument>, <ANSI_STRING>               ;;ANSI string support
+    elseifidni <Argument>, <ANSI_STRING>                ;;ANSI string support
       TARGET_STR_TYPE = STR_TYPE_ANSI
       TARGET_STR_AFFIX textequ <A>
 
     elseifidni <Argument>, <DEBUG_TRUE>
-      DEBUGGING = 1
-      TARGET_MODE = MODE_DBG
-      TARGET_MODE_STR textequ <D>
+      ifndef RELEASE_OA
+          DEBUGGING = 1
+          TARGET_MODE = MODE_DBG
+          TARGET_MODE_STR textequ <D>
+      else
+          DEBUGGING = 0
+          TARGET_MODE = MODE_RLS
+          TARGET_MODE_STR textequ <R>
+      endif
 
     elseifidni <Argument>, <DEBUG_FALSE>
       DEBUGGING = 0
@@ -202,59 +215,73 @@ SysSetup macro Arguments:vararg
     elseifidni <Argument>, <OOP>
       TARGET_OOP = OOP_ENABLED
 
-    elseifidni  <Argument>, <NUI32>
+    elseifidni <Argument>, <NUI32>
       TARGET_USER_INTERFACE = USER_INTERFACE_NONE
       TARGET_BITNESS = 32
     elseifidni  <Argument>, <NUI64>
       TARGET_USER_INTERFACE = USER_INTERFACE_NONE
       TARGET_BITNESS = 64
 
-    elseifidni  <Argument>, <WINDOWS>
-      echo WARNING: Legacy SysSetup argument - WINDOWS - using WIN32
-      TARGET_USER_INTERFACE = USER_INTERFACE_WIN
+    elseifidni <Argument>, <WIN32>
+      TARGET_PLATFORM = PLATFORM_WINDOWS
+      TARGET_USER_INTERFACE = USER_INTERFACE_GUI
       TARGET_BITNESS = 32
-    elseifidni  <Argument>, <WIN32>
-      TARGET_USER_INTERFACE = USER_INTERFACE_WIN
-      TARGET_BITNESS = 32
-    elseifidni  <Argument>, <WIN64>
-      TARGET_USER_INTERFACE = USER_INTERFACE_WIN
+    elseifidni <Argument>, <WIN64>
+      TARGET_PLATFORM = PLATFORM_WINDOWS
+      TARGET_USER_INTERFACE = USER_INTERFACE_GUI
       TARGET_BITNESS = 64
 
-    elseifidni  <Argument>, <CON32>
-      TARGET_USER_INTERFACE = USER_INTERFACE_CON
+    elseifidni <Argument>, <CON32>
+      TARGET_PLATFORM = PLATFORM_WINDOWS
+      TARGET_USER_INTERFACE = USER_INTERFACE_CLI
       TARGET_BITNESS = 32
-    elseifidni  <Argument>, <CON64>
-      TARGET_USER_INTERFACE = USER_INTERFACE_CON
+    elseifidni <Argument>, <CON64>
+      TARGET_PLATFORM = PLATFORM_WINDOWS
+      TARGET_USER_INTERFACE = USER_INTERFACE_CLI
       TARGET_BITNESS = 64
 
-    elseifidni  <Argument>, <LIBRARY>
-      echo WARNING: Legacy SysSetup argument - LIBRARY - falling back to LIB32
-      TARGET_BIN_FORMAT = BIN_FORMAT_LIB
-      TARGET_USER_INTERFACE = USER_INTERFACE_NONE
-      TARGET_BITNESS = 32
     elseifidni  <Argument>, <LIB32>
+      TARGET_PLATFORM = PLATFORM_WINDOWS
       TARGET_BIN_FORMAT = BIN_FORMAT_LIB
       TARGET_USER_INTERFACE = USER_INTERFACE_NONE
       TARGET_BITNESS = 32
     elseifidni  <Argument>, <LIB64>
+      TARGET_PLATFORM = PLATFORM_WINDOWS
       TARGET_BIN_FORMAT = BIN_FORMAT_LIB
       TARGET_USER_INTERFACE = USER_INTERFACE_NONE
       TARGET_BITNESS = 64
 
-    elseifidni  <Argument>, <DLL32>
+    elseifidni <Argument>, <DLL32>
+      TARGET_PLATFORM = PLATFORM_WINDOWS
       TARGET_BIN_FORMAT = BIN_FORMAT_DLL
       TARGET_USER_INTERFACE = USER_INTERFACE_NONE
       TARGET_BITNESS = 32
-    elseifidni  <Argument>, <DLL64>
+    elseifidni <Argument>, <DLL64>
+      TARGET_PLATFORM = PLATFORM_WINDOWS
       TARGET_BIN_FORMAT = BIN_FORMAT_DLL
       TARGET_USER_INTERFACE = USER_INTERFACE_NONE
       TARGET_BITNESS = 64
+
+    elseifidni <Argument>, <UEFI32>
+      TARGET_BIN_FORMAT = BIN_FORMAT_DLL
+      TARGET_USER_INTERFACE = USER_INTERFACE_CLI
+      TARGET_BITNESS = 32
+      TARGET_PLATFORM = PLATFORM_UEFI
+      DEBUGGING = 0
+
+    elseifidni <Argument>, <UEFI64>
+      TARGET_BIN_FORMAT = BIN_FORMAT_DLL
+      TARGET_USER_INTERFACE = USER_INTERFACE_CLI
+      TARGET_BITNESS = 64
+      TARGET_PLATFORM = PLATFORM_UEFI
+      DEBUGGING = 0
 
     else
       echo SysSetup - Invalid argument
       echo
     endif
   endm
+
 
   if TARGET_BITNESS eq 32
     % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
@@ -265,32 +292,55 @@ SysSetup macro Arguments:vararg
   .nolist
   .nocref
 
-  % include &IncPath&Windows\\Windows.inc
-  % include &MacPath&System.inc
-  % include &MacPath&Memory.inc
-  % include &MacPath&Strings.inc
-  % include &MacPath&WinHelpers.inc
+  if TARGET_PLATFORM eq PLATFORM_WINDOWS
+    % include &IncPath&Windows\\Windows.inc
+    % include &MacPath&System.inc
+    % include &MacPath&Memory.inc
+    % include &MacPath&Strings.inc
+    % include &MacPath&WinHelpers.inc
+    % include &IncPath&ObjAsm\\ObjMem.inc
+  elseif TARGET_PLATFORM eq PLATFORM_UEFI
+    % include &MacPath&UefiMac.inc
+    % include &IncPath&UEFI\\UefiBase.inc
+    % include &MacPath&System.inc
+    % include &MacPath&Memory.inc
+    % include &MacPath&Strings.inc
+    % include &IncPath&ObjAsm\\ObjMem.inc
+    % include &IncPath&UEFI\\UefiGUID.inc
+    % include &IncPath&UEFI\\UefiUtil.inc
+  endif
   % include &MacPath&ConstDiv.inc
-  % include &IncPath&ObjAsm\\ObjMem.inc
 
-  if TARGET_BIN_FORMAT ne BIN_FORMAT_LIB                ;;Only load libs when target is not a lib
-    % includelib &LibPath&Windows\\GDI32.lib
-    % includelib &LibPath&Windows\\Kernel32.lib
-    % includelib &LibPath&Windows\\User32.lib
-    % includelib &LibPath&Windows\\Advapi32.lib
-
-    if TARGET_BITNESS eq 32
-      % includelib &LibPath&ObjAsm\\ObjMem32.lib
-    else
-      % includelib &LibPath&ObjAsm\\ObjMem64.lib
+  if TARGET_PLATFORM eq PLATFORM_WINDOWS
+    if TARGET_BIN_FORMAT ne BIN_FORMAT_LIB                ;;Only load libs when target is not a lib
+      % includelib &LibPath&Windows\\GDI32.lib
+      % includelib &LibPath&Windows\\Kernel32.lib
+      % includelib &LibPath&Windows\\User32.lib
+      % includelib &LibPath&Windows\\Advapi32.lib
     endif
+  endif
+  if TARGET_BITNESS eq 32
+    % includelib &LibPath&ObjAsm\\ObjMem32.lib
+  else
+    % includelib &LibPath&ObjAsm\\ObjMem64.lib
   endif
 
   .list
   .cref
 
-  externdef hInstance:HINSTANCE                         ;;Export hInstance symbol
-  externdef hProcessHeap:HANDLE                         ;;Export hProcessHeap symbol
+
+  if TARGET_PLATFORM eq PLATFORM_WINDOWS
+    externdef hInstance:HINSTANCE                       ;;Export hInstance symbol
+    externdef hProcessHeap:HANDLE                       ;;Export hProcessHeap symbol
+  elseif TARGET_PLATFORM eq PLATFORM_UEFI
+    externdef hImage:EFI_HANDLE
+    externdef pSystemTable:POINTER
+    externdef pBootServices:P_BOOT_SERVICES
+    externdef pRuntimeServices:P_RUNTIME_SERVICES
+    externdef pConsoleOut:PCONOUT
+    externdef pConsoleIn:PCONIN
+  endif
+
   externdef p1stOMD:POINTER                             ;;Export p1stOMD symbol
 
   ;;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -325,10 +375,22 @@ SysSetup macro Arguments:vararg
     CREATETYPEDEFS    = FALSE                           ;;Don't emit TYPEDEF object POINTER info
   endif
 
+  if TARGET_PLATFORM eq PLATFORM_NONE
+    echo Platform:       NONE
+  elseif TARGET_PLATFORM eq PLATFORM_WINDOWS
+    echo Platform:       WINDOWS
+  elseif TARGET_PLATFORM eq PLATFORM_UEFI
+    echo Platform:       UEFI
+  elseif TARGET_PLATFORM eq PLATFORM_OTHER
+    echo Platform:       OTHER
+  endif
+
   if TARGET_USER_INTERFACE eq USER_INTERFACE_NONE
     echo User Interface: NONE
-  elseif TARGET_USER_INTERFACE eq USER_INTERFACE_WIN
-    echo User Interface: WINDOW
+  elseif TARGET_USER_INTERFACE eq USER_INTERFACE_GUI
+    echo User Interface: GRAPHIC
+  elseif TARGET_USER_INTERFACE eq USER_INTERFACE_CLI
+    echo User Interface: COMMAND LINE
   endif
 
   if TARGET_BIN_FORMAT eq BIN_FORMAT_EXE
@@ -376,7 +438,7 @@ SysSetup macro Arguments:vararg
 
     %for $$Arg, <$$DbgArgs>
       ifidni <$$Arg>, <RESGUARD>
-        ;IncludeAPIs ResGuard                            ;;Load ResGuard.dll
+        ;IncludeAPIs ResGuard                           ;;Load ResGuard.dll
         % include &IncPath&ObjAsm\\ResGuard.inc
         RESGUARD_LOADED = TRUE
       elseifidni <$$Arg>, <STKGUARD>
@@ -399,12 +461,6 @@ SysSetup macro Arguments:vararg
         endif
       endif
     endm
-
-    ifb $$sz1
-      CStrW szDbgSrc, @CatStr(<!">, %@FileName, <!">) ;;Use the Project File Name
-    else
-      CStrW szDbgSrc, $$sz1                           ;;Use the specified name
-    endif
 
     externdef dDbgDev:DWORD                           ;;Export dDbgDev symbol
     externdef dDbgOpt:DWORD                           ;;Export dDbgOpt symbol
@@ -438,14 +494,21 @@ SysSetup macro Arguments:vararg
       externdef dObjErrTableCount:DWORD
 
     else
+
+      ifb $$sz1
+        CStrW szDbgSrc, @CatStr(<!">, %@FileName, <!">) ;;Use the Project File Name
+      else
+        CStrW szDbgSrc, $$sz1                           ;;Use the specified name
+      endif
+
       .data
       align ALIGN_DATA
       %ifidn <DBG_DEVICE>, <WND>
-        dDbgDev   DWORD   DBG_DEV_WND
+        dDbgDev   DWORD   DBG_DEV_WIN_DC
       %elseifidn <DBG_DEVICE>, <CON>
-        dDbgDev   DWORD   DBG_DEV_CON
+        dDbgDev   DWORD   DBG_DEV_WIN_CON
       %elseifidn <DBG_DEVICE>, <LOG>
-        dDbgDev   DWORD   DBG_DEV_LOG
+        dDbgDev   DWORD   DBG_DEV_WIN_LOG
       endif
 
       ifdef DBG_INFO
@@ -505,38 +568,68 @@ endm
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      SysInit
 ; Purpose:    Initialize the model and internal variables.
-; Arguments:  Arg1: Instance HANDLE. If not specified, the Module HANDLE is loaded into hInstance.
+; Arguments:  Windows:
+;               Arg1: Instance HANDLE. If not specified, the Module HANDLE is loaded into hInstance.
+;               Arg2: unused.
+;             UEFI:
+;               Arg1: Image HANDLE.
+;               Arg2: -> SystemTable.
 
-SysInit macro hInst
+SysInit macro Arg1, Arg2
 .data
   align ALIGN_DATA
-  hInstance     HINSTANCE   0                           ;;Module instance
-  hProcessHeap  HANDLE      0                           ;;Process Heap HANDLE
+  if TARGET_PLATFORM eq PLATFORM_WINDOWS
+    hInstance         HINSTANCE   0                     ;;Module instance
+    hProcessHeap      HANDLE      0                     ;;Process Heap HANDLE
+  elseif TARGET_PLATFORM eq PLATFORM_UEFI
+    hImage            EFI_HANDLE  0
+    pSystemTable      POINTER     NULL
+    pBootServices     P_BOOT_SERVICES     NULL
+    pRuntimeServices  P_RUNTIME_SERVICES  NULL
+    pConsoleOut       PCONOUT     NULL
+    pConsoleIn        PCONIN      NULL
+  endif
+  
   if TARGET_OOP eq OOP_ENABLED
     p1stOMD     POINTER     ??1stOMD                    ;;-> 1st item in object metadata chain
   endif
 
 .code
-  ifnb <hInst>                                          ;;Used for DLLs
-    m2m hInstance, hInst, xax
-  else
-    mov hInstance, $invoke(GetModuleHandle, NULL)       ;;Retrieves module instance HANDLE
-  endif
+  if TARGET_PLATFORM eq PLATFORM_WINDOWS
+    ifnb <Arg1>                                         ;;Used for DLLs
+      m2m hInstance, Arg1, xax
+    else
+      mov hInstance, $invoke(GetModuleHandle, NULL)     ;;Retrieves module instance HANDLE
+    endif
 
-  mov hProcessHeap, $invoke(GetProcessHeap)             ;;Get and save the process heap HANDLE
+    mov hProcessHeap, $invoke(GetProcessHeap)           ;;Get and save the process heap HANDLE
 
-  if DEBUGGING
-    invoke InitializeCriticalSection, addr DbgCritSect
-    m2m pObjErrTableStart, ??ObjErrTableStart, xax
-    mov dObjErrTableCount, ??ObjErrTableCount
-    m2m pObjIDTableStart, ??ObjIDTableStart, xax
-    mov dObjIDTableCount, ??ObjIDTableCount
-  endif
+    if DEBUGGING
+      invoke InitializeCriticalSection, addr DbgCritSect
+      m2m pObjErrTableStart, ??ObjErrTableStart, xax
+      mov dObjErrTableCount, ??ObjErrTableCount
+      m2m pObjIDTableStart, ??ObjIDTableStart, xax
+      mov dObjIDTableCount, ??ObjIDTableCount
+    endif
 
-  if STKGUARDING ne FALSE
-    rdtsc                                               ;;Generate a run-time random QWORD cookie
-    xor xax, xdx
-    mov xStkGrdCookie, xax
+    if STKGUARDING ne FALSE
+      rdtsc                                             ;;Generate a run-time random QWORD cookie
+      xor xax, xdx
+      mov xStkGrdCookie, xax
+    endif
+
+  elseif TARGET_PLATFORM eq PLATFORM_UEFI
+    ifnb <Arg1>
+      m2m hImage, Arg1, xcx
+    endif
+    ifnb <Arg2>
+      mrm pSystemTable, Arg2, xdx
+      m2m pRuntimeServices, [xdx].EFI_SYSTEM_TABLE.RuntimeServices, xax
+      m2m pBootServices, [xdx].EFI_SYSTEM_TABLE.BootServices, xcx
+      m2m pConsoleIn, [xdx].EFI_SYSTEM_TABLE.ConIn, xax
+      m2m pConsoleOut, [xdx].EFI_SYSTEM_TABLE.ConOut, xcx
+    endif
+
   endif
 
   if TARGET_OOP eq OOP_ENABLED
@@ -554,7 +647,9 @@ SysDone macro
     ObjectsDone
   endif
 
-  if DEBUGGING
-    invoke DeleteCriticalSection, addr DbgCritSect
+  if TARGET_PLATFORM eq PLATFORM_WINDOWS
+    if DEBUGGING
+      invoke DeleteCriticalSection, addr DbgCritSect
+    endif
   endif
 endm

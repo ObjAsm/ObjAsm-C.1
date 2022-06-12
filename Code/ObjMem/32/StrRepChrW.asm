@@ -13,6 +13,6 @@ TARGET_STR_TYPE = STR_TYPE_WIDE
 TARGET_STR_AFFIX textequ <W>
 ProcName equ <StrRepChrW>
 
-% include &ObjMemPath&X\StrRepChr.asm
+% include &ObjMemPath&X\StrRepChrT.asm
 
 end
