@@ -40,7 +40,7 @@ ClientTask proc uses xbx pTCB:PTCB
   local xLoopCount:XWORD
   local xCounter:XWORD
 
-  ;Println "ClientTask running..."
+  ;PrintLn "ClientTask running..."
   mov xbx, pTCB
   assume xbx:PTCB
 
@@ -76,7 +76,7 @@ ClientTask endp
 RootTask proc uses xbx xsi pTCB:PTCB
   local xRemaining:XWORD
 
-  Println "RootTask running..."
+  PrintLn "RootTask running..."
 
   mov xsi, pTCB
   assume xsi:PTCB
@@ -91,7 +91,7 @@ RootTask proc uses xbx xsi pTCB:PTCB
     mov xax, NUMLOOPS
     sub xax, xbx
     mov xRemaining, xax
-    Println " %d : %d . %d . %d . %d ", xRemaining, [xsi].xProcNum, [xsi].xMaxCount, [xsi].xResult, [xsi].xReady
+    PrintLn " %d : %d . %d . %d . %d ", xRemaining, [xsi].xProcNum, [xsi].xMaxCount, [xsi].xResult, [xsi].xReady
     mov [rsi].xReady, 0                 ;Tell the Client Task it can run
     inc rbx
   .endw
@@ -101,7 +101,7 @@ RootTask proc uses xbx xsi pTCB:PTCB
     nop                                 ;CpuPause();//HinttoCPUthatweareinaspin-loop}
   .endw
   ;Print the final state of the tcb.
-  Println "END : %d . %d . %h . %d ", [rsi].xProcNum, [rsi].xMaxCount, [rsi].xResult, [rsi].xReady
+  PrintLn "END : %d . %d . %h . %d ", [rsi].xProcNum, [rsi].xMaxCount, [rsi].xResult, [rsi].xReady
   assume rsi:nothing
   ret
 RootTask endp
@@ -139,18 +139,18 @@ start proc uses xbx xdi xsi ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TAB
 
     mov Status, xax
     .if xax
-      Println "Unable to locate the MP Service procotol: %r ", Status
+      PrintLn "Unable to locate the MP Service procotol: %r ", Status
     .else
-      Println "LocateProtocol OK"
+      PrintLn "LocateProtocol OK"
 
       ;Get Number of Processors and Number of Enabled Processors
       mov xcx, pIServiceMP
       invoke [xcx].EFI_MP_SERVICES.GetNumberOfProcessors, xcx, addr xProcessorNum, addr xEnabledProcessorNum
       mov Status, xax
       .if xax
-        Println "Unable to get the number of processors: %r ", Status
+        PrintLn "Unable to get the number of processors: %r ", Status
       .else
-        Println "GetNumberOfProcessors OK, result = %d ", xProcessorNum
+        PrintLn "GetNumberOfProcessors OK, result = %d ", xProcessorNum
 
         ;Get Processor Health and Location information
         mov tcb.xProcNum, 2
@@ -158,9 +158,9 @@ start proc uses xbx xdi xsi ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TAB
         invoke [xcx].EFI_MP_SERVICES.GetProcessorInfo, xcx, tcb.xProcNum, addr ProcessorInfo
         mov Status, xax
         .if xax
-          Println "Unable to get information for processor %d : %r ", tcb.xProcNum, Status
+          PrintLn "Unable to get information for processor %d : %r ", tcb.xProcNum, Status
         .else
-          Println "GetProcessorInfo OK"
+          PrintLn "GetProcessorInfo OK"
         .endif
 
       .endif
@@ -174,7 +174,7 @@ start proc uses xbx xdi xsi ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TAB
       invoke [xdi].EFI_BOOT_SERVICES.CreateEvent, 0, TPL_NOTIFY, NULL, NULL, addr hEvent
       mov Status, xax
       .if xax == EFI_SUCCESS
-        Println "Successful Event creation."
+        PrintLn "Successful Event creation."
 
         ;Start a Task on the specified Processor
         mov xcx, pIServiceMP
@@ -182,12 +182,12 @@ start proc uses xbx xdi xsi ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TAB
         invoke [xcx].EFI_MP_SERVICES.StartupThisAP, xcx, addr ClientTask, tcb.xProcNum, hEvent, 1000, addr tcb, NULL
         mov Status, xax
         .if xax == EFI_SUCCESS
-          Println "Task successfully started"
+          PrintLn "Task successfully started"
         .else
-          Println "Failed to start Task on CPU%d : %r ", tcb.xProcNum, Status
+          PrintLn "Failed to start Task on CPU%d : %r ", tcb.xProcNum, Status
         .endif
       .else
-        Println "Event creation failed : %r ", Status
+        PrintLn "Event creation failed : %r ", Status
       .endif
 
       invoke RootTask, addr tcb
@@ -208,8 +208,9 @@ start proc uses xbx xdi xsi ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TAB
 
   SysDone
 
-  mov xcx, pBootServices
-  invoke [xcx].EFI_BOOT_SERVICES.Exit, ImageHandle, EFI_SUCCESS, 10*sizeof(CHR), $OfsCStr("Complete", 13, 10)
+  invoke StrNew, $OfsCStr("Complete", 13, 10)
+  mov xbx, pBootServices
+  invoke [xbx].EFI_BOOT_SERVICES.Exit, ImageHandle, EFI_SUCCESS, 11*sizeof(CHR), xax
 
 start endp
 

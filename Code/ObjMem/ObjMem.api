@@ -510,5 +510,5 @@ DbgShowTraceMethod, pMName, dCount, pTicks, pDestWndName
 
 RGB24To16ColorIndex, dColor
 MemAlloc_UEFI, dMemSize
-MemReAlloc_UEFI, pBuffer, dMemSize, dNewMemSize
+MemReAlloc_UEFI, pBuffer, dMemSize, dNewMemSize, dAttributes
 MemFree_UEFI, pBuffer

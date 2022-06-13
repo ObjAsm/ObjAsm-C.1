@@ -1,3 +1,13 @@
+; ==================================================================================================
+; Title:      UefiUtil.inc
+; Authors:    Héctor S. Enrique
+; Version:    C.1.0
+; Purpose:    ObjAsm support of basic UEFI handling macros and procedures.
+; Notes:      Version C.1.0, Héctor S. Enrique
+;               - First release.
+; ==================================================================================================
+
+
 Print macro mensaje, args:VARARG
   local pos1
 
@@ -39,19 +49,19 @@ Print macro mensaje, args:VARARG
 
       cuenta = 1
       EFI_ERROR$ dq offset UEFI_Error_0 
-      REPEAT 24
-       %   dq offset @CatStr(<UEFI_Error_>, %cuenta)
-          cuenta = cuenta + 1
-      ENDM
+      repeat 24
+        % dq offset @CatStr(<UEFI_Error_>, %cuenta)
+        cuenta = cuenta + 1
+      endm
     endif
 
     .code
 
     cuenta = 0
-    FOR arg,<args>
+    for arg,<args>
       @CatStr(<argumento_>, %cuenta) textequ <arg>
       cuenta = cuenta + 1 
-    ENDM
+    endm
     mov rax, 0
     mov CHR ptr UEFI_Print_buffer1, ax
 
@@ -65,10 +75,10 @@ Print macro mensaje, args:VARARG
 
     FORC char,<&mensaje>
       tk_1 INSTR 1, <">, <&char>
-      if tk_1 EQ 0
+      if tk_1 eq 0
 
         tk_3 INSTR 1, < >, <&char>
-        if (tk_3 EQ 1) AND (abierto EQ 0)
+        if (tk_3 eq 1) AND (abierto eq 0)
           ifidn tipoarg, <d> 
             invoke uqword2decW, addr UEFI_Print_buffer2, @CatStr(<argumento_>, %cuenta)
             invoke StrCat, addr UEFI_Print_buffer1, addr UEFI_Print_buffer2
@@ -98,14 +108,14 @@ Print macro mensaje, args:VARARG
         endif
 
         tk_2 INSTR 1,<%>,<&char>
-        if tk_2 EQ 0
-          if abierto EQ 1
-            contenido CATSTR contenido, <&char>
+        if tk_2 eq 0
+          if abierto eq 1
+            contenido catstr contenido, <&char>
           else
-            tipoarg CATSTR tipoarg, <&char>
+            tipoarg catstr tipoarg, <&char>
           endif
         else
-          if abierto EQ 1
+          if abierto eq 1
             abierto = 0
             @CatStr(<CStrW UEFI_Print_Message_>, %UEFI_Print_Message, <_>, %parte, <, !">,%contenido,<!">)
             invoke StrCat, addr UEFI_Print_buffer1, addr @CatStr(<UEFI_Print_Message_>, %UEFI_Print_Message, <_>, %parte)
@@ -114,14 +124,14 @@ Print macro mensaje, args:VARARG
           endif
         endif
       else
-        if abrecomilla EQ 1
+        if abrecomilla eq 1
         else
           abrecomilla = 1
           abierto = 1
         endif
       endif
-    ENDM
-    if parte EQ 0
+    endm
+    if parte eq 0
       if abierto
         @CatStr(<CStrW UEFI_Print_Message_>, %UEFI_Print_Message, <_>, %parte, <, !">,%contenido,<!">)
         invoke StrCat, addr UEFI_Print_buffer1, addr @CatStr(<UEFI_Print_Message_>, %UEFI_Print_Message, <_>, %parte)
@@ -129,17 +139,14 @@ Print macro mensaje, args:VARARG
     endif
   mov rcx, pConsoleOut                                     
   invoke [rcx].ConOut.OutputString, rcx, addr UEFI_Print_buffer1 
-
 endm
+
 
 PrintLn macro args:VARARG
   Print args
   mov rcx, pConsoleOut                                     
   invoke [rcx].ConOut.OutputString, rcx, addr crlf$ 
 endm
-
-
-
 
 
 TimingUEFIInit macro
@@ -163,6 +170,7 @@ TimingUEFIInit macro
   mov rax, pRuntimeServices
   invoke [rax].EFI_RUNTIME_SERVICES.GetTime, addr TimeUEFI1, addr capabilities   
 endm
+
 
 TimingUEFIEnding macro
   mov rax, pRuntimeServices
@@ -239,8 +247,8 @@ TimingUEFIEnding macro
   ;jmp @@lo4 
 endm
 
-.code
 
+.code
 WaitforKey proc
   local xIndex:XWORD 
   local dDone:DWORD
@@ -448,7 +456,7 @@ EFICompareGuid proc uses xsi xdi xbx guidA:ptr, guidB:ptr
   mov xdi, guidB
 
   mov rbx, [rsi]
-  mov rcx, [rsi+8]
+  mov rcx, [rsi + 8]
   mov rdx, [rdi]
   mov r8, [rdi+8]
 
@@ -519,44 +527,5 @@ EFIPrintMemDescriptor proc uses rsi r10 r11 pConsoleOut:PCONOUT, pDescriptor:ptr
   ret
 EFIPrintMemDescriptor endp
 
-
-MemAlloc_UEFI proc dAttr:DWORD, dMemSize:DWORD
-  local pMemBlock:POINTER
-  
-  mov xax, pBootServices
-  invoke [xax].EFI_BOOT_SERVICES.AllocatePool, EFI_MEMORY_TYPE_EfiBootServicesData, \
-                                               dMemSize, addr pMemBlock
-  .ifBitSet xax, EFI_ERROR
-    xor eax, eax
-  .else
-    .ifBitSet dAttr, MEM_INIT_ZERO
-      invoke MemZero, pMemBlock, dMemSize
-    .endif
-    mov xax, pMemBlock
-  .endif
-  ret 
-MemAlloc_UEFI endp
-
-MemReAlloc_UEFI proc pMemBlock:POINTER, dMemSize:DWORD, dNewMemSize:DWORD
-  local pNewMemBlock:POINTER
-  
-  mov xax, pBootServices
-  invoke [xax].EFI_BOOT_SERVICES.AllocatePool, EFI_MEMORY_TYPE_EfiBootServicesData, \
-                                               dNewMemSize, addr pNewMemBlock
-  .ifBitSet xax, EFI_ERROR
-    xor eax, eax
-  .else
-    invoke MemClone, pNewMemBlock, pMemBlock, dMemSize
-    mov xax, pNewMemBlock
-  .endif
-  ret 
-MemReAlloc_UEFI endp
-
-MemFree_UEFI proc pMemBlock:POINTER
-  mov xax, pBootServices
-  invoke [xax].EFI_BOOT_SERVICES.FreePool, pMemBlock
-  ret 
-MemFree_UEFI endp
- 
 
 ;include mutex64.inc

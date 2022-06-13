@@ -772,8 +772,8 @@ else
 endif
 
 RGB24To16ColorIndex proto :DWORD
-MemAlloc_UEFI proto :DWORD
-MemReAlloc_UEFI proto :POINTER, :DWORD, :DWORD
+MemAlloc_UEFI proto :DWORD, :DWORD
+MemReAlloc_UEFI proto :POINTER, :DWORD, :DWORD, :DWORD
 MemFree_UEFI proto :POINTER
 
 

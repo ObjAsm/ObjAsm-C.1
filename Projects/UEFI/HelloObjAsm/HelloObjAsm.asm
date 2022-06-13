@@ -60,11 +60,11 @@ start proc uses xbx xdi xsi ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TAB
   invoke [xbx].OutputString, xbx, $OfsCStr(13, 10, "bye bye...", 13, 10)
   assume xbx:nothing
 
-  invoke StrNew, $OfsCStr("Complete", 13, 10)
-  mov xcx, pBootServices
-  invoke [xcx].EFI_BOOT_SERVICES.Exit, ImageHandle, EFI_SUCCESS, 11*sizeof(CHR), xax
-
   SysDone
+
+  invoke StrNew, $OfsCStr("Complete", 13, 10)
+  mov xbx, pBootServices
+  invoke [xbx].EFI_BOOT_SERVICES.Exit, ImageHandle, EFI_SUCCESS, 11*sizeof(CHR), xax
 
   ret
 start endp

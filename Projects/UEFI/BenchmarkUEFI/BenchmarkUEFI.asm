@@ -1,37 +1,32 @@
 ; ==================================================================================================
-; Title:   BenchmarkUEFI.asm
-; Author:  Héctor S. Enrique
-; Version: 1.0.0
-; Purpose: ObjAsm compilation file for Benchmark UEFI Application.
-; Version: Version 1.0.0, December 2022
-;            - First release.
-;
-; Gabriele Paoloni. 2010. How to Benchmark Code Execution Times on Intel IA-32 and IA-64 Instruction
-; Set Architectures. Retrieved May 26, 2022, from http://www.intel.com/content/dam/www/public/
-; us/en/documents/white-papers/ia-32-ia-64-benchmark-code-execution-paper.pdf
+; Title:      BenchmarkUEFI.asm
+; Author:     Héctor S. Enrique
+; Version:    1.0.0
+; Purpose:    ObjAsm compilation file for Benchmark UEFI Application.
+; Version:    Version 1.0.0, Héctor S. Enrique
+;             - First release.
+; Note:       Gabriele Paoloni. 2010. How to Benchmark Code Execution Times on Intel IA-32 and IA-64
+;             Instruction Set Architectures. Retrieved May 26, 2022, from 
+;             http://www.intel.com/content/dam/www/public/us/en/documents/white-papers/ia-32-ia-64-benchmark-code-execution-paper.pdf
 ; ==================================================================================================
 
-return macro valor1
-  mov rax, &valor1
-  ret
-endm
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc   ;Include & initialize standard modules
-SysSetup OOP, WIDE_STRING, UEFI64                        ;Load OOP files and basic OS support
+SysSetup OOP, WIDE_STRING, UEFI64, DEBUG(CON)           ;Load OOP files and basic OS support
+
+.const
+  r8NaN   REAL8  7FF8000000000000r
 
 .data
-  MpProto POINTER NULL
-
   align @WordSize
   buffer CHR 32 dup (0)
   CStr crlf$,13,10
 
-  ; for glass
-  numerator REAL8 100000.0        ; values for measured
-  denominator REAL8 10.0          ; FPU sequence
-  result dq 0
+  ;For glass
+  r8Numerator   REAL8 100000.0        ;Values for measured
+  r8Denominator REAL8 10.0            ;FPU sequence
+  xResult       XWORD 0
 
-  NaN REAL8  7FF8000000000000r
   fpu QWORD 0
 .code
 
@@ -42,16 +37,17 @@ SIZE_OF_STAT equ 10000
 BOUND_OF_LOOP equ 1000
 
 UINT64_MAX equ 7ffffffffffffffh
+
 function_under_glass0 macro
   mov rax, 1
 endm
 
 function_under_glass1 macro
-  fld  QWORD ptr [numerator]
-  fdiv QWORD ptr [denominator]
-  fdiv QWORD ptr [denominator]
-  fdiv QWORD ptr [denominator]
-  fdiv QWORD ptr [denominator]
+  fld  QWORD ptr [r8Numerator]
+  fdiv QWORD ptr [r8Denominator]
+  fdiv QWORD ptr [r8Denominator]
+  fdiv QWORD ptr [r8Denominator]
+  fdiv QWORD ptr [r8Denominator]
   fstp QWORD ptr [result]
 endm
 
@@ -60,10 +56,10 @@ function_under_glass2 macro
   frstor fpu
 endm
 
-measured_loop proc loops:QWORD
+measured_loop proc qLoops:QWORD
   local i:QWORD
 
-  ForLp i, 0, loops
+  ForLp i, 0, qLoops
     function_under_glass1
   Next i
   ret
@@ -160,62 +156,44 @@ Filltimes endp
 include lineal.inc
 include Paoloni2010.inc
 
-Main PROC imageHandle:EFI_HANDLE, SystemTable:PTR_EFI_SYSTEM_TABLE
-                                                        ;Runtime model initialization
-    mov Handle, rcx
-    mov SystemTablePtr,rdx
+start proc ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TABLE
+  ;Runtime model initialization
+  SysInit ImageHandle, pSysTable
 
-    SysInit
+  mov xbx, pConsoleOut
+  assume xbx:ptr ConOut
+  invoke [xbx].ClearScreen, xbx
 
-    mov rax, SystemTablePtr
-    mov rsi, [rax].EFI_SYSTEM_TABLE.RuntimeServices
-    mov pRuntimeServices, rsi
-    mov rsi, [rax].EFI_SYSTEM_TABLE.BootServices
-    mov pBootServices, rsi
+  invoke [xbx].SetAttribute, xbx, EFI_YELLOW or EFI_BACKGROUND_BLACK
+  invoke [xbx].ConOut.OutputString, xbx, $OfsCStr("Benchmark with UEFI", 13, 10)
+  invoke [xbx].SetAttribute, xbx, EFI_WHITE or EFI_BACKGROUND_BLACK
 
-    mov rcx,SystemTablePtr
-    mov rax,[rcx].EFI_SYSTEM_TABLE.ConIn
-    mov pConsoleIn,rax
-    mov rax,[rcx].EFI_SYSTEM_TABLE.ConOut
-    mov pConsole,rax
-    invoke [rax].ConOut.ClearScreen, pConsole
-
-    mov rax, pConsole                                     ;Colors change
-    invoke [rax].ConOut.SetAttribute, pConsole, 0Eh
-
-    CStr HelloMsg,"Benchmark with UEFI",13,10,13,10
-    mov rcx, pConsole
-    invoke [rcx].ConOut.OutputString, rcx, ADDR HelloMsg
-
-    mov rax, pConsole                                     ;Colors change
-    invoke [rax].ConOut.SetAttribute, pConsole, 07h
-
-    mov r10, pBootServices
-    invoke [r10].EFI_BOOT_SERVICES.SetWatchdogTimer, 0, 0, 0, NULL
+  mov r10, pBootServices
+  invoke [r10].EFI_BOOT_SERVICES.SetWatchdogTimer, 0, 0, 0, NULL
 
 
-    ;------------------------------------
+  ;------------------------------------
 
-    call BM_start
+  call BM_start
 
-    ;------------------------------------
+  ;------------------------------------
 
-    Println "vuelve a Main"
-    call WaitforKey
+  invoke [xbx].SetAttribute, xbx, EFI_LIGHTGREEN or EFI_BACKGROUND_BLACK
+  invoke [xbx].OutputString, xbx, $OfsCStr(13, 10, "press a key to continue...")
 
-    mov rax, pConsole
-    invoke [rax].ConOut.SetAttribute, pConsole, 0Fh     ;Color change
+  invoke WaitforKey
 
-    CStr msg_bye, 13, 10,"bye bye...", 13, 10
-    mov rcx, pConsole
-    invoke [rcx].ConOut.OutputString, rcx, ADDR msg_bye
+  invoke [xbx].SetAttribute, xbx, EFI_YELLOW or EFI_BACKGROUND_BLACK
+  invoke [xbx].OutputString, xbx, $OfsCStr(13, 10, "bye bye...", 13, 10)
+  assume xbx:nothing
 
-    SysDone
+  invoke StrNew, $OfsCStr("Complete", 13, 10)
+  mov xcx, pBootServices
+  invoke [xcx].EFI_BOOT_SERVICES.Exit, ImageHandle, EFI_SUCCESS, 11*sizeof(CHR), xax
 
-    CStr complete, "Complete",13,10
-    mov rax, pBootServices
-    invoke [rax].EFI_BOOT_SERVICES.Exit, Handle, EFI_SUCCESS, 10, addr complete
+  SysDone
 
-Main endp
 
-end Main
+start endp
+
+end start

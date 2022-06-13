@@ -772,7 +772,10 @@ else
 endif
 
 RGB24To16ColorIndex proto :DWORD
-MemAllocUEFI proto :DWORD
+MemAlloc_UEFI proto :DWORD, :DWORD
+MemReAlloc_UEFI proto :POINTER, :DWORD, :DWORD, :DWORD
+MemFree_UEFI proto :POINTER
+
 
 if TARGET_BITNESS eq 32
   xword2hex   textequ <dword2hex>
