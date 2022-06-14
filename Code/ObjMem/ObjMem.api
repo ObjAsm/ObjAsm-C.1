@@ -401,6 +401,7 @@ Mem2HexW, pHexStringW, pMemory, dCount
 
 GetFileLines, hFile
 GetFileLinesA, hFile
+GetFileLinesw, hFile
 
 SetPrivilegeToken, hProcess, pPrivilegeName, dEnable
 SetPrivilegeTokenA, hProcess, pPrivilegeNameA, dEnable

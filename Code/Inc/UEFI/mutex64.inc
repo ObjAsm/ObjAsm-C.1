@@ -86,7 +86,7 @@ UseConsole macro texto1:VARARG
     mov r10, 4
     call qwait64
     qlock64 mut_eve, 4
-    mov rcx, pConsole
+    mov rcx, pConsoleOut
     invoke [rcx].ConOut.OutputString, rcx, $OfsCStr(<texto1>,13,10)
     qunlock64 mut_eve, 4
 endm
@@ -96,21 +96,21 @@ UseConsoleAddr macro texto1
     mov r10, 4
     call qwait64
     qlock64 mut_eve, 4
-    mov rcx, pConsole
+    mov rcx, pConsoleOut
     invoke [rcx].ConOut.OutputString, rcx, addr &texto1
     qunlock64 mut_eve, 4
 endm
 
 UseConsoleC macro color1, texto1:VARARG
     ifnb color1
-        mov rcx, pConsole                                     ;Colors change
+        mov rcx, pConsoleOut                                     ;Colors change
         invoke [rcx].ConOut.SetAttribute, rcx, <color1>
     endif
     lea rax, mut_eve
     mov r10, 4
     call qwait64
     qlock64 mut_eve, 4
-    mov rcx, pConsole
+    mov rcx, pConsoleOut
     invoke [rcx].ConOut.OutputString, rcx, $OfsCStr(<texto1>,13,10)
     qunlock64 mut_eve, 4
 endm

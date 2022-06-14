@@ -221,7 +221,7 @@ BM_start proc
   mov r10, pBootServices
   invoke [r10].EFI_BOOT_SERVICES.AllocatePool, EFI_MEMORY_UC, BOUND_OF_LOOP * 8, addr times
   .if !times
-    PrintC  "%E unable to allocate memory for times\n"
+    PrintC "%E unable to allocate memory for times\n"
     mov rax, EFI_ABORTED
   .endif
   ForLp_df j, 0, BOUND_OF_LOOP

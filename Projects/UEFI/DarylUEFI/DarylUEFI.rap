@@ -144,7 +144,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=13
+MilestoneOnDateDate=14
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -205,7 +205,7 @@ ProductVer4Range=0
 25=0,0,0,0,800
 21=
 22=0,0,0,0,47
-26=0,0,0,0,3419
+26=0,0,0,0,204
 27=
 29=
 28=
@@ -228,16 +228,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="Println"
-2="StrDispose"
-3="?mov"
-4="mov?"
-5="StrNew"
-6="PLATFORM_UEFI"
-7="UEFI"
-8="include"
-9="Main"
-10="xProcNum"
+1="xword2decA"
+2="GetFileLinesA"
+3="DbgOutTextA_UEFI"
+4="Println"
+5="StrDispose"
+6="?mov"
+7="mov?"
+8="StrNew"
+9="PLATFORM_UEFI"
+10="UEFI"
 [Collapse]
 1=
 2=,
@@ -350,9 +350,9 @@ ProductVer4Range=0
 25=
 27=
 [AutoLoad]
-AutoLoad=1,8,23,4
+AutoLoad=1,8,23,4,26
 [PTimer]
-PTimer=1110051072
+PTimer=1115467603
 [GroupExpand]
 GroupExpand=1,1,1,0,0,1,1,0
 [RADebugBP]

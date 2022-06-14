@@ -7,7 +7,8 @@
 ;             - First release.
 ; Note:       Gabriele Paoloni. 2010. How to Benchmark Code Execution Times on Intel IA-32 and IA-64
 ;             Instruction Set Architectures. Retrieved May 26, 2022, from 
-;             http://www.intel.com/content/dam/www/public/us/en/documents/white-papers/ia-32-ia-64-benchmark-code-execution-paper.pdf
+;             http://www.intel.com/content/dam/www/public/us/en/documents/white-papers/
+;             ia-32-ia-64-benchmark-code-execution-paper.pdf
 ; ==================================================================================================
 
 
@@ -20,17 +21,18 @@ SysSetup OOP, WIDE_STRING, UEFI64, DEBUG(CON)           ;Load OOP files and basi
 .data
   align @WordSize
   buffer CHR 32 dup (0)
-  CStr crlf$,13,10
 
   ;For glass
   r8Numerator   REAL8 100000.0        ;Values for measured
   r8Denominator REAL8 10.0            ;FPU sequence
-  xResult       XWORD 0
+  r8Result      REAL8 0.0
 
-  fpu QWORD 0
+  fpu BYTE 108 dup(0)
 .code
 
-include \masm32\macros\SmplMath\math.inc
+include \MASM32\SmplMath\macros\SmplMath\math.inc
+;include C:\_MySoftware_\SmplMath\SmplMath\math.inc
+
 fSlvSelectBackEnd FPU
 
 SIZE_OF_STAT equ 10000
@@ -43,12 +45,12 @@ function_under_glass0 macro
 endm
 
 function_under_glass1 macro
-  fld  QWORD ptr [r8Numerator]
-  fdiv QWORD ptr [r8Denominator]
-  fdiv QWORD ptr [r8Denominator]
-  fdiv QWORD ptr [r8Denominator]
-  fdiv QWORD ptr [r8Denominator]
-  fstp QWORD ptr [result]
+  fld  REAL8 ptr [r8Numerator]
+  fdiv REAL8 ptr [r8Denominator]
+  fdiv REAL8 ptr [r8Denominator]
+  fdiv REAL8 ptr [r8Denominator]
+  fdiv REAL8 ptr [r8Denominator]
+  fstp REAL8 ptr [r8Result]
 endm
 
 function_under_glass2 macro
@@ -91,7 +93,7 @@ Filltimes proc times:POINTER
   ForLp_df j, 0, BOUND_OF_LOOP
     ForLp_df i, 0, SIZE_OF_STAT
       mov r10, pBootServices
-      invoke [r10].EFI_BOOT_SERVICES.RaiseTPL,TPL_HIGH_LEVEL
+      invoke [r10].EFI_BOOT_SERVICES.RaiseTPL, TPL_HIGH_LEVEL
       mov Old_TPL, rax
       CPUID
       RDTSC
@@ -153,19 +155,19 @@ Filltimes proc times:POINTER
   ret
 Filltimes endp
 
-include lineal.inc
+include Lineal.inc
 include Paoloni2010.inc
 
-start proc ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TABLE
+start proc uses xbx xdi xsi ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TABLE
   ;Runtime model initialization
   SysInit ImageHandle, pSysTable
 
   mov xbx, pConsoleOut
   assume xbx:ptr ConOut
   invoke [xbx].ClearScreen, xbx
-
+  ;Color change: Bits 0..3 are the foreground color, and bits 4..6 are the background color
   invoke [xbx].SetAttribute, xbx, EFI_YELLOW or EFI_BACKGROUND_BLACK
-  invoke [xbx].ConOut.OutputString, xbx, $OfsCStr("Benchmark with UEFI", 13, 10)
+  invoke [xbx].ConOut.OutputString, xbx, $OfsCStr("Benchmark using UEFI", 13, 10)
   invoke [xbx].SetAttribute, xbx, EFI_WHITE or EFI_BACKGROUND_BLACK
 
   mov r10, pBootServices
@@ -187,13 +189,11 @@ start proc ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TABLE
   invoke [xbx].OutputString, xbx, $OfsCStr(13, 10, "bye bye...", 13, 10)
   assume xbx:nothing
 
-  invoke StrNew, $OfsCStr("Complete", 13, 10)
-  mov xcx, pBootServices
-  invoke [xcx].EFI_BOOT_SERVICES.Exit, ImageHandle, EFI_SUCCESS, 11*sizeof(CHR), xax
-
   SysDone
 
-
+  invoke StrNew, $OfsCStr("Complete", 13, 10)
+  mov xbx, pBootServices
+  invoke [xbx].EFI_BOOT_SERVICES.Exit, ImageHandle, EFI_SUCCESS, 11*sizeof(CHR), xax
 start endp
 
 end start
