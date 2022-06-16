@@ -9,8 +9,8 @@
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
 % include &ObjMemPath&ObjMemUefi.cop
-ProcName equ <StrNewW_UEFI>
 
+ProcName equ <StrNewW_UEFI>
 
 % include &ObjMemPath&X\StrNewT.asm
 

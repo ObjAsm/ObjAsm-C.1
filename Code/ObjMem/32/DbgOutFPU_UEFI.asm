@@ -1,26 +1,24 @@
 ; ==================================================================================================
-; Title:      DbgShowObjectHeader.asm
+; Title:      DbgOutFPU_UEFI.asm
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Notes:      Version C.1.0, October 2017
+; Notes:      Version C.1.0, June 2022.
 ;               - First release.
 ; ==================================================================================================
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMemWin.cop
+% include &ObjMemPath&ObjMemUefi.cop
 
-ProcName textequ <DbgShowObjectHeader>
+ProcName textequ <DbgOutFPU_UEFI>
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgShowObjectHeader
-; Purpose:    Outputs heading object information.
-; Arguments:  Arg1: -> Object Name.
-;             Arg2: -> Instance.
-;             Arg3: Text RGB color.
-;             Arg3: -> Destination Window name.
+; Procedure:  DbgOutFPU_UEFI
+; Purpose:    Display the content of the FPU.
+; Arguments:  Arg1: -> Destination Window name.
+;             Arg2: Text RGB color.
 ; Return:     Nothing.
 
-% include &ObjMemPath&X\DbgShowObjectHeaderX.asm
+% include &ObjMemPath&X\DbgOutFPUX.asm
 
 end

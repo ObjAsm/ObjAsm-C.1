@@ -8,9 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMemUEFI.cop
-ProcName equ <StrAllocW_UEFI>
+% include &ObjMemPath&ObjMemUefi.cop
 
+ProcName equ <StrAllocW_UEFI>
 
 % include &ObjMemPath&X\StrAllocT_UEFI.asm
 

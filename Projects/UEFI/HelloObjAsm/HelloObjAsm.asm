@@ -19,7 +19,7 @@ MakeObjects Primer, Demo01                              ;Contains Triangle and R
 
 .code
 start proc uses xbx xdi xsi ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TABLE
-  local cBuffer[100]:CHR, pObj:POINTER
+  local cBuffer[100]:CHR
 
   ;Runtime model initialization
   SysInit ImageHandle, pSysTable
@@ -37,7 +37,7 @@ start proc uses xbx xdi xsi ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TAB
 
   OCall pShape_1::Triangle.Init, 10, 15                 ;Initialize Triangle
   OCall pShape_1::Shape.GetArea                         ;Invoke GetArea method of Triangle
-  DbgDec eax, "Triangle Area"                           ;Result = 75 
+  DbgDec eax, "Triangle Area"                           ;Result = 75
 
   New Rectangle                                         ;Create an new instance of Rectangle
   mov pShape_2, xax                                     ;Store instance pointer
@@ -46,7 +46,19 @@ start proc uses xbx xdi xsi ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TAB
   DbgDec eax, "Rectangle Area"                          ;Result = 150
 
   OCall pShape_2::Rectangle.GetPerimeter                ;Invoke GetPerimeter method
-  DbgDec eax, "Rectangle Perimeter"                     ;Result = 50 
+  DbgDec eax, "Rectangle Perimeter"                     ;Result = 50
+
+  DbgLine
+  fldz
+  fld1
+  fld1
+  fld1
+  faddp st(1), st(0)
+  DbgFPU
+  DbgHex eax
+  DbgObject pShape_2::Rectangle
+  DbgVMT pShape_2::Rectangle
+  DbgLine2
 
   Destroy pShape_2                                      ;Invoke Rectangle's Done and disposes it
   Destroy pShape_1                                      ;Invoke Triangle's Done and disposes it

@@ -1,5 +1,5 @@
 ; ==================================================================================================
-; Title:      DbgShowObjectHeader.asm
+; Title:      DbgShowObjectHeaderX.asm
 ; Author:     G. Friedrich
 ; Version:    C.1.0
 ; Notes:      Version C.1.0, October 2017
@@ -7,13 +7,10 @@
 ; ==================================================================================================
 
 
-% include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMemWin.cop
-
-ProcName textequ <DbgShowObjectHeader>
+.code
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgShowObjectHeader
+; Procedure:  DbgShowObjectHeader / DbgShowObjectHeader_UEFI
 ; Purpose:    Outputs heading object information.
 ; Arguments:  Arg1: -> Object Name.
 ;             Arg2: -> Instance.
@@ -21,6 +18,16 @@ ProcName textequ <DbgShowObjectHeader>
 ;             Arg3: -> Destination Window name.
 ; Return:     Nothing.
 
-% include &ObjMemPath&X\DbgShowObjectHeaderX.asm
+align ALIGN_CODE
+ProcName proc pObjectName:POINTER, pInstance:POINTER, dColor:DWORD, pDest:POINTER
+  local bNum[20]:CHRA
+
+  invoke DbgOutTextA, $OfsCStrA("Object "), dColor, DBG_EFFECT_BOLD, pDest
+  invoke xword2hexA, addr bNum, pInstance
+  invoke DbgOutTextA, addr bNum, dColor, DBG_EFFECT_BOLD, pDest
+  invoke DbgOutTextA, $OfsCStrA("h::"), dColor, DBG_EFFECT_BOLD, pDest
+  invoke DbgOutTextA, pObjectName, dColor, DBG_EFFECT_BOLD, pDest
+  ret
+ProcName endp
 
 end

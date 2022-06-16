@@ -9,21 +9,29 @@ MemZero, pMem, dSize
 StrAlloc, dChars
 StrAllocA, dChars
 StrAllocW, dChars
+StrAllocA_UEFI, dChars
+StrAllocW_UEFI, dChars
 BStrAlloc, dChars
 
 StrNew, pString
 StrNewA, pStringW
 StrNewW, pStringA
+StrNewA_UEFI, pStringW
+StrNewW_UEFI, pStringA
 BStrNew, pBStr
 
 StrCNew, pString, dChars
 StrCNewA, pStringA, dChars
 StrCNewW, pStringW, dChars
+StrCNewA_UEFI, pStringA, dChars
+StrCNewW_UEFI, pStringW, dChars
 BStrCNew, pBStr, dChars
 
 StrDispose, pString
 StrDisposeA, pStringA
 StrDisposeW, pStringW
+StrDisposeA_UEFI, pStringA
+StrDisposeW_UEFI, pStringW
 BStrDispose, pBStr
 
 StrLength, pString
@@ -401,7 +409,7 @@ Mem2HexW, pHexStringW, pMemory, dCount
 
 GetFileLines, hFile
 GetFileLinesA, hFile
-GetFileLinesw, hFile
+GetFileLinesW, hFile
 
 SetPrivilegeToken, hProcess, pPrivilegeName, dEnable
 SetPrivilegeTokenA, hProcess, pPrivilegeNameA, dEnable
@@ -498,7 +506,6 @@ DbgOutTextCA, pStringA, dCount
 DbgOutTextCW, pStringW, dCount
 DbgOutBitmap, hBitmap, pDestWndName
 DbgOutMem, pMemory, dCount, dType, pDestWndName
-DbgOutFPU, pDestWndName
 DbgOutMsg, dMsgID, dColor, pDestWndName
 DbgOutApiErr, dError, pDestWndName
 DbgOutComErr, dError, pDestWndName
@@ -506,10 +513,15 @@ DbgOutInterface, pGUID, dCplor, pDestWndName
 DbgOutInterfaceName, pGUID, dCplor, pDestWndName
 DbgOutComponent, pGUID, dCplor, pDestWndName
 DbgOutComponentName, pGUID, dCplor, pDestWndName
-DbgShowObjectHeader, pObjectName, pInstance, pDestWndName
+DbgShowObjectHeader, pObjectName, pInstance, dColor, pDestWndName
+DbgShowObjectHeader_UEFI, pObjectName, pInstance, dColor, pDestWndName
 DbgShowTraceMethod, pMName, dCount, pTicks, pDestWndName
 
+DbgOutFPU, pDestWndName, dColor
+DbgOutFPU_UEFI, pDestWndName, dColor
+
 RGB24To16ColorIndex, dColor
+
 MemAlloc_UEFI, dMemSize
 MemReAlloc_UEFI, pBuffer, dMemSize, dNewMemSize, dAttributes
 MemFree_UEFI, pBuffer

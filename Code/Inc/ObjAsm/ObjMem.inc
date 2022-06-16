@@ -2,14 +2,13 @@
 ; Title:    ObjMem.inc
 ; Author:   G. Friedrich
 ; Version:  C.1.0
-; Purpose:  ObjAsm library functions and definitions.
+; Purpose:  ObjAsm library procedures and definitions.
 ; Notes:    Version 1.0.0, October 2017
 ;             - First release.
 ; ==================================================================================================
 
 
-; Common strings
-
+;String constants
 externdef bCRLF:CHRA
 externdef wCRLF:CHRW
 cCRLF textequ <szCRLF>
@@ -34,6 +33,7 @@ endif
 
 externdef bTAB:CHRA
 externdef wTAB:CHRW
+cTAB textequ <szTAB>
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   szTAB textequ <bTAB>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
@@ -44,6 +44,7 @@ endif
 
 externdef bError:CHRA
 externdef wError:CHRW
+cError textequ <szError>
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   szError textequ <bError>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
@@ -54,18 +55,16 @@ endif
 
 
 ;Memory management procedures
-
 MemFillB proto :POINTER, :DWORD, :BYTE
 MemFillW proto :POINTER, :DWORD, :WORD
 MemClone proto :POINTER, :POINTER, :DWORD
-MemComp  proto :POINTER, :POINTER, :DWORD
+MemComp proto :POINTER, :POINTER, :DWORD
 MemShift proto :POINTER, :POINTER, :DWORD
-MemSwap  proto :POINTER, :POINTER, :DWORD
-MemZero  proto :POINTER, :DWORD
+MemSwap proto :POINTER, :POINTER, :DWORD
+MemZero proto :POINTER, :DWORD
 
 
 ;String procedures
-
 if TARGET_PLATFORM eq PLATFORM_WINDOWS
   BStrAlloc proto :DWORD
   StrAllocA proto :DWORD
@@ -116,16 +115,29 @@ elseif TARGET_PLATFORM eq PLATFORM_UEFI
   StrNewW textequ <StrNewW_UEFI>
 endif
 
-
-BStrCNew proto :POINTER, :DWORD
-StrCNewA proto :POINTER, :DWORD
-StrCNewW proto :POINTER, :DWORD
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  StrCNew textequ <StrCNewA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  StrCNew textequ <StrCNewW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
+if TARGET_PLATFORM eq PLATFORM_WINDOWS
+  BStrCNew proto :POINTER, :DWORD
+  StrCNewA proto :POINTER, :DWORD
+  StrCNewW proto :POINTER, :DWORD
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    StrCNew textequ <StrCNewA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    StrCNew textequ <StrCNewW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+elseif TARGET_PLATFORM eq PLATFORM_UEFI
+  StrCNewA_UEFI proto :POINTER, :DWORD
+  StrCNewW_UEFI proto :POINTER, :DWORD
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    StrCNew textequ <StrCNewA_UEFI>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    StrCNew textequ <StrCNewW_UEFI>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  StrCNewA textequ <StrCNewA_UEFI>
+  StrCNewW textequ <StrCNewW_UEFI>
 endif
 
 if TARGET_PLATFORM eq PLATFORM_WINDOWS
@@ -382,7 +394,7 @@ else
 endif
 
 BStrCScan proto :POINTER, :DWORD, :CHRW
-StrCScanA  proto :POINTER, :DWORD, :CHRA
+StrCScanA proto :POINTER, :DWORD, :CHRA
 StrCScanW proto :POINTER, :DWORD, :CHRW
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   StrCScan textequ <StrCScanA>
@@ -772,363 +784,638 @@ else
 endif
 
 RGB24To16ColorIndex proto :DWORD
-MemAlloc_UEFI proto :DWORD, :DWORD
-MemReAlloc_UEFI proto :POINTER, :DWORD, :DWORD, :DWORD
-MemFree_UEFI proto :POINTER
-
 
 if TARGET_BITNESS eq 32
-  xword2hex   textequ <dword2hex>
-  hex2xword   textequ <hex2dword>
-  bin2xword   textequ <bin2dword>
-  xword2bin   textequ <dword2bin>
-  sxword2dec  textequ <sdword2dec>
-  uxword2dec  textequ <udword2dec>
+  xword2hex textequ <dword2hex>
+  hex2xword textequ <hex2dword>
+  bin2xword textequ <bin2dword>
+  xword2bin textequ <dword2bin>
+  sxword2dec textequ <sdword2dec>
+  uxword2dec textequ <udword2dec>
 
-  xword2hexA  textequ <dword2hexA>
-  hex2xwordA  textequ <hex2dwordA>
-  bin2xwordA  textequ <bin2dwordA>
-  xword2binA  textequ <dword2binA>
+  xword2hexA textequ <dword2hexA>
+  hex2xwordA textequ <hex2dwordA>
+  bin2xwordA textequ <bin2dwordA>
+  xword2binA textequ <dword2binA>
   sxword2decA textequ <sdword2decA>
   uxword2decA textequ <udword2decA>
-  xword2decA  textequ <udword2decA>
+  xword2decA textequ <udword2decA>
 
-  xword2hexW  textequ <dword2hexW>
-  hex2xwordW  textequ <hex2dwordW>
-  bin2xwordW  textequ <bin2dwordW>
-  xword2binW  textequ <dword2binW>
+  xword2hexW textequ <dword2hexW>
+  hex2xwordW textequ <hex2dwordW>
+  bin2xwordW textequ <bin2dwordW>
+  xword2binW textequ <dword2binW>
   sxword2decW textequ <sdword2decW>
   uxword2decW textequ <udword2decW>
-  xword2decW  textequ <udword2decW>
+  xword2decW textequ <udword2decW>
 elseif TARGET_BITNESS eq 64
-  xword2hex   textequ <qword2hex>
-  hex2xword   textequ <hex2qword>
-  bin2xword   textequ <bin2qword>
-  xword2bin   textequ <qword2bin>
-  sxword2dec  textequ <sqword2dec>
-  uxword2dec  textequ <uqword2dec>
+  xword2hex textequ <qword2hex>
+  hex2xword textequ <hex2qword>
+  bin2xword textequ <bin2qword>
+  xword2bin textequ <qword2bin>
+  sxword2dec textequ <sqword2dec>
+  uxword2dec textequ <uqword2dec>
 
-  xword2hexA  textequ <qword2hexA>
-  hex2xwordA  textequ <hex2qwordA>
-  bin2xwordA  textequ <bin2qwordA>
-  xword2binA  textequ <qword2binA>
+  xword2hexA textequ <qword2hexA>
+  hex2xwordA textequ <hex2qwordA>
+  bin2xwordA textequ <bin2qwordA>
+  xword2binA textequ <qword2binA>
   sxword2decA textequ <sqword2decA>
   uxword2decA textequ <uqword2decA>
-  xword2decA  textequ <uqword2decA>
+  xword2decA textequ <uqword2decA>
 
-  xword2hexW  textequ <qword2hexW>
-  hex2xwordW  textequ <hex2qwordW>
-  bin2xwordW  textequ <bin2qwordW>
-  xword2binW  textequ <qword2binW>
+  xword2hexW textequ <qword2hexW>
+  hex2xwordW textequ <hex2qwordW>
+  bin2xwordW textequ <bin2qwordW>
+  xword2binW textequ <qword2binW>
   sxword2decW textequ <sqword2decW>
   uxword2decW textequ <uqword2decW>
-  xword2decW  textequ <uqword2decW>
+  xword2decW textequ <uqword2decW>
 else
   %echo Warning: incompatible Bitness: $ToStr(%TARGET_BITNESS)
 endif
 
 
+if TARGET_PLATFORM eq PLATFORM_WINDOWS
 ; COM related procedures
-
-ComEventsAdvice           proto :POINTER, :POINTER, :POINTER, :POINTER, :POINTER
-ComEventsUnadvice         proto :POINTER, :DWORD
-ComPtrAssign              proto :POINTER, :POINTER
-
+  ComEventsAdvice proto :POINTER, :POINTER, :POINTER, :POINTER, :POINTER
+  ComEventsUnadvice proto :POINTER, :DWORD
+  ComPtrAssign proto :POINTER, :POINTER
 
 ; DebugCenter procedures contained in DebugProcs.asm
+  DbgWndOpen proto
+  DbgConOpen proto
+  DbgLogOpen proto
+  DbgClose proto
+  DbgOutCmd proto :BYTE, :POINTER
+  DbgOutBitmap proto :HANDLE, :POINTER
+  DbgOutApiErr proto :DWORD, :POINTER
+  DbgOutComErr proto :DWORD, :POINTER
+  DbgOutFPU proto :POINTER, :DWORD
+  DbgShowObjectHeader proto :POINTER, :POINTER, :DWORD, :POINTER
+  DbgShowTraceMethod proto :POINTER, :DWORD, :POINTER, :POINTER
 
-if TARGET_PLATFORM eq PLATFORM_UEFI
+  DbgOutInterfaceName proto :ptr GUID, :DWORD, :POINTER
+  DbgOutInterface proto :ptr GUID, :DWORD, :POINTER
+  DbgOutComponentName proto :ptr GUID, :DWORD, :POINTER
+  DbgOutComponent proto :ptr GUID, :DWORD, :POINTER
+
+elseif TARGET_PLATFORM eq PLATFORM_UEFI
+  MemAlloc_UEFI proto :DWORD, :DWORD
+  MemReAlloc_UEFI proto :POINTER, :DWORD, :DWORD, :DWORD
+  MemFree_UEFI proto :POINTER
+
+  DbgOutFPU_UEFI proto :POINTER, :DWORD
+  DbgShowObjectHeader_UEFI proto :POINTER, :POINTER, :DWORD, :POINTER
+
   DbgOutTextA textequ <DbgOutTextA_UEFI>
   DbgOutTextW textequ <DbgOutTextW_UEFI>
+  DbgOutFPU textequ <DbgOutFPU_UEFI>
+  DbgShowObjectHeader textequ <DbgShowObjectHeader_UEFI> 
 endif
 
-DbgWndOpen                proto
-DbgConOpen                proto
-DbgLogOpen                proto
-DbgClose                  proto
-DbgOutCmd                 proto :BYTE, :POINTER
-DbgOutTextA               proto :POINTER, :DWORD, :DWORD, :POINTER
-DbgOutTextW               proto :POINTER, :DWORD, :DWORD, :POINTER
-DbgOutTextCA              proto :POINTER, :DWORD, :DWORD, :DWORD, :POINTER
-DbgOutTextCW              proto :POINTER, :DWORD, :DWORD, :DWORD, :POINTER
-DbgOutBitmap              proto :HANDLE, :POINTER
-DbgOutMem                 proto :POINTER, :DWORD, :DWORD, :POINTER
-DbgOutFPU                 proto :POINTER
-DbgOutMsg                 proto :DWORD, :DWORD, :POINTER
-DbgOutApiErr              proto :DWORD, :POINTER
-DbgOutComErr              proto :DWORD, :POINTER
-DbgShowObjectHeader       proto :POINTER, :POINTER, :POINTER
-DbgShowTraceMethod        proto :POINTER, :DWORD, :POINTER, :POINTER
-
-DbgOutInterfaceName       proto :ptr GUID, :DWORD, :POINTER
-DbgOutInterface           proto :ptr GUID, :DWORD, :POINTER
-DbgOutComponentName       proto :ptr GUID, :DWORD, :POINTER
-DbgOutComponent           proto :ptr GUID, :DWORD, :POINTER
-
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  DbgOutText  textequ <DbgOutTextA>
+  DbgOutText textequ <DbgOutTextA>
   DbgOutTextC textequ <DbgOutTextCA>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  DbgOutText  textequ <DbgOutTextW>
+  DbgOutText textequ <DbgOutTextW>
   DbgOutTextC textequ <DbgOutTextCW>
 else
   echo Warning: incompatible TARGET_STR_TYPE
 endif
 
+DbgOutTextA proto :POINTER, :DWORD, :DWORD, :POINTER
+DbgOutTextW proto :POINTER, :DWORD, :DWORD, :POINTER
+DbgOutTextCA proto :POINTER, :DWORD, :DWORD, :DWORD, :POINTER
+DbgOutTextCW proto :POINTER, :DWORD, :DWORD, :DWORD, :POINTER
+DbgOutMem proto :POINTER, :DWORD, :DWORD, :POINTER
 
-; OOP model procedures
-
-GetObjectID               proto :POINTER
-GetAncestorID             proto :DWORD
-GetObjectTemplate         proto :DWORD
+DbgOutMsg proto :DWORD, :DWORD, :POINTER
 
 
-; General purpose procedures
+;OOP model procedures
+GetObjectID proto :POINTER
+GetAncestorID proto :DWORD
+GetObjectTemplate proto :DWORD
 
+
+;General purpose procedures
 if TARGET_PLATFORM eq PLATFORM_WINDOWS
-  LoadCommonControls      proto :DWORD
-  CenterForm              proto :DWORD, :DWORD
-  GetRawClientRect        proto :HANDLE, :PRECT
-  GetBottomWindow         proto :HANDLE
-  MoveWindowVisible       proto :HANDLE, :SDWORD, :SDWORD
-  WndFadeIn               proto :HANDLE, :DWORD, :DWORD, :DWORD, :DWORD
-  WndFadeOut              proto :HANDLE, :DWORD, :DWORD, :DWORD, :DWORD
-  DrawTransparentBitmap   proto :HANDLE, :HANDLE, :DWORD, :DWORD, :DWORD
-  Bmp2Rgn                 proto :HANDLE, :DWORD
-  AreVisualStylesEnabled  proto
-  SetClientSize           proto :HANDLE, :DWORD, :DWORD
-  SysShutdown             proto :DWORD, :DWORD
-  SysStandby              proto
-  WaitForProcess          proto :DWORD, :DWORD
-  IsProcessElevated       proto :HANDLE
-  IsWinNT                 proto
-  IsAdmin                 proto
-  GetLogProcCount         proto :POINTER
-  IsScrollBarVisible      proto :HANDLE, :DWORD
-  GetDlgBaseUnits         proto :HANDLE
-  SendChildrenMessage     proto :HANDLE, :DWORD, :WPARAM, :LPARAM
-endif
+  LoadCommonControls proto :DWORD
+  CenterForm proto :DWORD, :DWORD
+  GetRawClientRect proto :HANDLE, :PRECT
+  GetBottomWindow proto :HANDLE
+  MoveWindowVisible proto :HANDLE, :SDWORD, :SDWORD
+  WndFadeIn proto :HANDLE, :DWORD, :DWORD, :DWORD, :DWORD
+  WndFadeOut proto :HANDLE, :DWORD, :DWORD, :DWORD, :DWORD
+  DrawTransparentBitmap proto :HANDLE, :HANDLE, :DWORD, :DWORD, :DWORD
+  Bmp2Rgn proto :HANDLE, :DWORD
+  AreVisualStylesEnabled proto
+  SetClientSize proto :HANDLE, :DWORD, :DWORD
+  SysShutdown proto :DWORD, :DWORD
+  SysStandby proto
+  WaitForProcess proto :DWORD, :DWORD
+  IsProcessElevated proto :HANDLE
+  IsWinNT proto
+  IsAdmin proto
+  GetLogProcCount proto :POINTER
+  IsScrollBarVisible proto :HANDLE, :DWORD
+  GetDlgBaseUnits proto :HANDLE
+  SendChildrenMessage proto :HANDLE, :DWORD, :WPARAM, :LPARAM
 
-IsPntInRect               proto :POINTER, :POINTER
-Random32                  proto :DWORD
-IsGUIDEqual               proto :POINTER, :POINTER
-IsHardwareFeaturePresent  proto :BYTE
-NewObjInst                proto :DWORD
-UTF8ToWide                proto :POINTER, :POINTER, :DWORD
-WideToUTF8                proto :POINTER, :POINTER, :DWORD
-Real4ToHalf               proto :REAL4
-
-ErrorMessageBoxW       proto :HANDLE, :POINTER, :WORD, :DWORD
-ErrorMessageBoxA       proto :HANDLE, :POINTER, :WORD, :DWORD
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  ErrorMessageBox textequ <ErrorMessageBoxA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  ErrorMessageBox textequ <ErrorMessageBoxW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-SetPrivilegeTokenW        proto :HANDLE, :POINTER, :DWORD
-SetPrivilegeTokenA        proto :HANDLE, :POINTER, :DWORD
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  SetPrivilegeToken textequ <SetPrivilegeTokenA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  SetPrivilegeToken textequ <SetPrivilegeTokenW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-ParseW                    proto :POINTER, :POINTER, :DWORD
-ParseA                    proto :POINTER, :POINTER, :DWORD
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  Parse textequ <ParseA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  Parse textequ <ParseW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-ShortToLongPathNameW      proto :POINTER
-ShortToLongPathNameA      proto :POINTER
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  ShortToLongPathName textequ <ShortToLongPathNameA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  ShortToLongPathName textequ <ShortToLongPathNameW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-FileExistW proto :POINTER
-FileExistA proto :POINTER
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  FileExist textequ <FileExistA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  FileExist textequ <FileExistW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-FindFileW                 proto :POINTER, :POINTER, :POINTER
-FindFileA                 proto :POINTER, :POINTER, :POINTER
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  FindFile textequ <FindFileA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  FindFile textequ <FindFileW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-CreatePathW               proto :POINTER
-CreatePathA               proto :POINTER
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  CreatePath textequ <CreatePathA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  CreatePath textequ <CreatePathW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-GetPrevInstanceW proto :POINTER, :POINTER
-GetPrevInstanceA proto :POINTER, :POINTER
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  GetPrevInstance textequ <GetPrevInstanceA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  GetPrevInstance textequ <GetPrevInstanceW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-ActivatePrevInstanceW proto :POINTER, :POINTER
-ActivatePrevInstanceA proto :POINTER, :POINTER
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  ActivatePrevInstance textequ <ActivatePrevInstanceA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  ActivatePrevInstance textequ <ActivatePrevInstanceW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-FindModuleByAddrW       proto :POINTER, :POINTER
-FindModuleByAddrA       proto :POINTER, :POINTER
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  FindModuleByAddr textequ <FindModuleByAddrA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  FindModuleByAddr textequ <FindModuleByAddrW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-FindModuleByAddr9xW       proto :POINTER, :POINTER
-FindModuleByAddr9xA       proto :POINTER, :POINTER
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  FindModuleByAddr9x textequ <FindModuleByAddr9xA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  FindModuleByAddr9x textequ <FindModuleByAddr9xW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-SetExceptionMessageW      proto :POINTER, :POINTER, :POINTER
-SetExceptionMessageA      proto :POINTER, :POINTER, :POINTER
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  SetExceptionMessage textequ <SetExceptionMessageA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  SetExceptionMessage textequ <SetExceptionMessageW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-GetFileLinesW             proto :HANDLE
-GetFileLinesA             proto :HANDLE
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  GetFileLines textequ <GetFileLinesA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  GetFileLines textequ <GetFileLinesW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-NetErr2StrW               proto :DWORD, :POINTER, :DWORD
-NetErr2StrA               proto :DWORD, :POINTER, :DWORD
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  NetErr2Str textequ <NetErr2StrA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  NetErr2Str textequ <NetErr2StrW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-DllErr2StrW               proto :DWORD, :POINTER, :DWORD, :POINTER
-DllErr2StrA               proto :DWORD, :POINTER, :DWORD, :POINTER
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  DllErr2Str textequ <DllErr2StrA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  DllErr2Str textequ <DllErr2StrW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-Err2StrW                  proto :DWORD, :POINTER, :DWORD
-Err2StrA                  proto :DWORD, :POINTER, :DWORD
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  Err2Str textequ <Err2StrA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  Err2Str textequ <Err2StrW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-GetExceptionStrW          proto :DWORD
-GetExceptionStrA          proto :DWORD
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  GetExceptionStr textequ <GetExceptionStrA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  GetExceptionStr textequ <GetExceptionStrW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-MsgBoxW                   proto :HANDLE, :POINTER, :POINTER, :DWORD
-MsgBoxA                   proto :HANDLE, :POINTER, :POINTER, :DWORD
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  MsgBox textequ <MsgBoxA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  MsgBox textequ <MsgBoxW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
-
-
-; Radix Sort procedures
-
-RadixSortI32              proto :POINTER, :DWORD, :POINTER
-RadixSortPtrI32           proto :POINTER, :DWORD, :DWORD, :POINTER
-RadixSortUI32             proto :POINTER, :DWORD, :POINTER
-RadixSortPtrUI32          proto :POINTER, :DWORD, :DWORD, :POINTER
-RadixSortF32              proto :POINTER, :DWORD, :POINTER
-RadixSortPtrF32           proto :POINTER, :DWORD, :DWORD, :POINTER
-RadixSortF64              proto :POINTER, :DWORD, :POINTER
-RadixSortPtrF64           proto :POINTER, :DWORD, :DWORD, :POINTER
-
-
+  ErrorMessageBoxA proto :HANDLE, :POINTER, :WORD, :DWORD
+  ErrorMessageBoxW proto :HANDLE, :POINTER, :WORD, :DWORD
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    ErrorMessageBox textequ <ErrorMessageBoxA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    ErrorMessageBox textequ <ErrorMessageBoxW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+  SetPrivilegeTokenA proto :HANDLE, :POINTER, :DWORD
+  SetPrivilegeTokenW proto :HANDLE, :POINTER, :DWORD
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    SetPrivilegeToken textequ <SetPrivilegeTokenA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    SetPrivilegeToken textequ <SetPrivilegeTokenW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+  ParseA proto :POINTER, :POINTER, :DWORD
+  ParseW proto :POINTER, :POINTER, :DWORD
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    Parse textequ <ParseA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    Parse textequ <ParseW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+  ShortToLongPathNameA proto :POINTER
+  ShortToLongPathNameW proto :POINTER
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    ShortToLongPathName textequ <ShortToLongPathNameA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    ShortToLongPathName textequ <ShortToLongPathNameW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+  FileExistA proto :POINTER
+  FileExistW proto :POINTER
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    FileExist textequ <FileExistA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    FileExist textequ <FileExistW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+  FindFileA proto :POINTER, :POINTER, :POINTER
+  FindFileW proto :POINTER, :POINTER, :POINTER
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    FindFile textequ <FindFileA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    FindFile textequ <FindFileW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+  CreatePathA proto :POINTER
+  CreatePathW proto :POINTER
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    CreatePath textequ <CreatePathA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    CreatePath textequ <CreatePathW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+  GetPrevInstanceA proto :POINTER, :POINTER
+  GetPrevInstanceW proto :POINTER, :POINTER
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    GetPrevInstance textequ <GetPrevInstanceA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    GetPrevInstance textequ <GetPrevInstanceW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+  ActivatePrevInstanceA proto :POINTER, :POINTER
+  ActivatePrevInstanceW proto :POINTER, :POINTER
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    ActivatePrevInstance textequ <ActivatePrevInstanceA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    ActivatePrevInstance textequ <ActivatePrevInstanceW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+  FindModuleByAddrA proto :POINTER, :POINTER
+  FindModuleByAddrW proto :POINTER, :POINTER
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    FindModuleByAddr textequ <FindModuleByAddrA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    FindModuleByAddr textequ <FindModuleByAddrW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+  FindModuleByAddr9xA proto :POINTER, :POINTER
+  FindModuleByAddr9xW proto :POINTER, :POINTER
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    FindModuleByAddr9x textequ <FindModuleByAddr9xA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    FindModuleByAddr9x textequ <FindModuleByAddr9xW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+  SetExceptionMessageA proto :POINTER, :POINTER, :POINTER
+  SetExceptionMessageW proto :POINTER, :POINTER, :POINTER
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    SetExceptionMessage textequ <SetExceptionMessageA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    SetExceptionMessage textequ <SetExceptionMessageW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+  GetFileLinesA proto :HANDLE
+  GetFileLinesW proto :HANDLE
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    GetFileLines textequ <GetFileLinesA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    GetFileLines textequ <GetFileLinesW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+  NetErr2StrA proto :DWORD, :POINTER, :DWORD
+  NetErr2StrW proto :DWORD, :POINTER, :DWORD
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    NetErr2Str textequ <NetErr2StrA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    NetErr2Str textequ <NetErr2StrW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+  DllErr2StrW proto :DWORD, :POINTER, :DWORD, :POINTER
+  DllErr2StrA proto :DWORD, :POINTER, :DWORD, :POINTER
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    DllErr2Str textequ <DllErr2StrA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    DllErr2Str textequ <DllErr2StrW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+  Err2StrW proto :DWORD, :POINTER, :DWORD
+  Err2StrA proto :DWORD, :POINTER, :DWORD
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    Err2Str textequ <Err2StrA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    Err2Str textequ <Err2StrW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+  GetExceptionStrW proto :DWORD
+  GetExceptionStrA proto :DWORD
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    GetExceptionStr textequ <GetExceptionStrA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    GetExceptionStr textequ <GetExceptionStrW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+  MsgBoxW proto :HANDLE, :POINTER, :POINTER, :DWORD
+  MsgBoxA proto :HANDLE, :POINTER, :POINTER, :DWORD
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    MsgBox textequ <MsgBoxA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    MsgBox textequ <MsgBoxW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
 ; File hash procedures
+  GFH_MD2   equ   08001h
+  GFH_MD4   equ   08002h
+  GFH_MD5   equ   08003h
+  GFH_SHA   equ   08004h
+  GFH_SHA1  equ   08004h       ;Same as GFH_SHA
+  GFH_MAC   equ   08005h
+  
+  GetFileHashA proto :POINTER, :POINTER, :DWORD
+  GetFileHashW proto :POINTER, :POINTER, :DWORD
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    GetFileHash textequ <GetFileHashA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    GetFileHash textequ <GetFileHashW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  
+; ROP operators
+;
+; Reverse Polish notation
+;
+; Operand Meaning:                             Operator Meaning:
+; D Destination bitmap                         a Bitwise AND
+; P Selected brush (also called pattern)       n Bitwise NOT (inverse)
+; S Source bitmap                              o Bitwise OR
+;                                              x Bitwise exclusive OR (XOR)
 
-GetFileHashW              proto :POINTER, :POINTER, :DWORD
-GetFileHashA              proto :POINTER, :POINTER, :DWORD
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  GetFileHash textequ <GetFileHashA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  GetFileHash textequ <GetFileHashW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
+  ROP_0           equ   00000042h   ;BLACKNESS
+  ROP_DPSoon      equ   00010289h
+  ROP_DPSona      equ   00020C89h
+  ROP_PSon        equ   000300AAh
+  ROP_SDPona      equ   00040C88h
+  ROP_DPon        equ   000500A9h
+  ROP_PDSxnon     equ   00060865h
+  ROP_PDSaon      equ   000702C5h
+  ROP_SDPnaa      equ   00080F08h
+  ROP_PDSxon      equ   00090245h
+  ROP_DPna        equ   000A0329h
+  ROP_PSDnaon     equ   000B0B2Ah
+  ROP_SPna        equ   000C0324h
+  ROP_PDSnaon     equ   000D0B25h
+  ROP_PDSonon     equ   000E08A5h
+  ROP_Pn          equ   000F0001h
+  ROP_PDSona      equ   00100C85h
+  ROP_DSon        equ   001100A6h   ;NOTSRCERASE
+  ROP_SDPxnon     equ   00120868h
+  ROP_SDPaon      equ   001302C8h
+  ROP_DPSxnon     equ   00140869h
+  ROP_DPSaon      equ   001502C9h
+  ROP_PSDPSanaxx  equ   00165CCAh
+  ROP_SSPxDSxaxn  equ   00171D54h
+  ROP_SPxPDxa     equ   00180D59h
+  ROP_SDPSanaxn   equ   00191CC8h
+  ROP_PDSPaox     equ   001A06C5h
+  ROP_SDPSxaxn    equ   001B0768h
+  ROP_PSDPaox     equ   001C06CAh
+  ROP_DSPDxaxn    equ   001D0766h
+  ROP_PDSox       equ   001E01A5h
+  ROP_PDSoan      equ   001F0385h
+  ROP_DPSnaa      equ   00200F09h
+  ROP_SDPxon      equ   00210248h
+  ROP_DSna        equ   00220326h
+  ROP_SPDnaon     equ   00230B24h
+  ROP_SPxDSxa     equ   00240D55h
+  ROP_PDSPanaxn   equ   00251CC5h
+  ROP_SDPSaox     equ   002606C8h
+  ROP_SDPSxnox    equ   00271868h
+  ROP_DPSxa       equ   00280369h
+  ROP_PSDPSaoxxn  equ   002916CAh
+  ROP_DPSana      equ   002A0CC9h
+  ROP_SSPxPDxaxn  equ   002B1D58h
+  ROP_SPDSoax     equ   002C0784h
+  ROP_PSDnox      equ   002D060Ah
+  ROP_PSDPxox     equ   002E064Ah
+  ROP_PSDnoan     equ   002F0E2Ah
+  ROP_PSna        equ   0030032Ah
+  ROP_SDPnaon     equ   00310B28h
+  ROP_SDPSoox     equ   00320688h
+  ROP_Sn          equ   00330008h   ;NOTSRCCOPY
+  ROP_SPDSaox     equ   003406C4h
+  ROP_SPDSxnox    equ   00351864h
+  ROP_SDPox       equ   003601A8h
+  ROP_SDPoan      equ   00370388h
+  ROP_PSDPoax     equ   0038078Ah
+  ROP_SPDnox      equ   00390604h
+  ROP_SPDSxox     equ   003A0644h
+  ROP_SPDnoan     equ   003B0E24h
+  ROP_PSx         equ   003C004Ah
+  ROP_SPDSonox    equ   003D18A4h
+  ROP_SPDSnaox    equ   003E1B24h
+  ROP_PSan        equ   003F00EAh
+  ROP_PSDnaa      equ   00400F0Ah
+  ROP_DPSxon      equ   00410249h
+  ROP_SDxPDxa     equ   00420D5Dh
+  ROP_SPDSanaxn   equ   00431CC4h
+  ROP_SDna        equ   00440328h   ;SRCERASE
+  ROP_DPSnaon     equ   00450B29h
+  ROP_DSPDaox     equ   004606C6h
+  ROP_PSDPxaxn    equ   0047076Ah
+  ROP_SDPxa       equ   00480368h
+  ROP_PDSPDaoxxn  equ   004916C5h
+  ROP_DPSDoax     equ   004A0789h
+  ROP_PDSnox      equ   004B0605h
+  ROP_SDPana      equ   004C0CC8h
+  ROP_SSPxDSxoxn  equ   004D1954h
+  ROP_PDSPxox     equ   004E0645h
+  ROP_PDSnoan     equ   004F0E25h
+  ROP_PDna        equ   00500325h
+  ROP_DSPnaon     equ   00510B26h
+  ROP_DPSDaox     equ   005206C9h
+  ROP_SPDSxaxn    equ   00530764h
+  ROP_DPSonon     equ   005408A9h
+  ROP_Dn          equ   00550009h   ;DSTINVERT
+  ROP_DPSox       equ   005601A9h
+  ROP_DPSoan      equ   00570389h
+  ROP_PDSPoax     equ   00580785h
+  ROP_DPSnox      equ   00590609h
+  ROP_DPx         equ   005A0049h   ;PATINVERT
+  ROP_DPSDonox    equ   005B18A9h
+  ROP_DPSDxox     equ   005C0649h
+  ROP_DPSnoan     equ   005D0E29h
+  ROP_DPSDnaox    equ   005E1B29h
+  ROP_DPan        equ   005F00E9h
+  ROP_PDSxa       equ   00600365h
+  ROP_DSPDSaoxxn  equ   006116C6h
+  ROP_DSPDoax     equ   00620786h
+  ROP_SDPnox      equ   00630608h
+  ROP_SDPSoax     equ   00640788h
+  ROP_DSPnox      equ   00650606h
+  ROP_DSx         equ   00660046h   ;SRCINVERT
+  ROP_SDPSonox    equ   006718A8h
+  ROP_DSPDSonoxxn equ   006858A6h
+  ROP_PDSxxn      equ   00690145h
+  ROP_DPSax       equ   006A01E9h
+  ROP_PSDPSoaxxn  equ   006B178Ah
+  ROP_SDPax       equ   006C01E8h
+  ROP_PDSPDoaxxn  equ   006D1785h
+  ROP_SDPSnoax    equ   006E1E28h
+  ROP_PDSxnan     equ   006F0C65h
+  ROP_PDSana      equ   00700CC5h
+  ROP_SSDxPDxaxn  equ   00711D5Ch
+  ROP_SDPSxox     equ   00720648h
+  ROP_SDPnoan     equ   00730E28h
+  ROP_DSPDxox     equ   00740646h
+  ROP_DSPnoan     equ   00750E26h
+  ROP_SDPSnaox    equ   00761B28h
+  ROP_DSan        equ   007700E6h
+  ROP_PDSax       equ   007801E5h
+  ROP_DSPDSoaxxn  equ   00791786h
+  ROP_DPSDnoax    equ   007A1E29h
+  ROP_SDPxnan     equ   007B0C68h
+  ROP_SPDSnoax    equ   007C1E24h
+  ROP_DPSxnan     equ   007D0C69h
+  ROP_SPxDSxo     equ   007E0955h
+  ROP_DPSaan      equ   007F03C9h
+  ROP_DPSaa       equ   008003E9h
+  ROP_SPxDSxon    equ   00810975h
+  ROP_DPSxna      equ   00820C49h
+  ROP_SPDSnoaxn   equ   00831E04h
+  ROP_SDPxna      equ   00840C48h
+  ROP_PDSPnoaxn   equ   00851E05h
+  ROP_DSPDSoaxx   equ   008617A6h
+  ROP_PDSaxn      equ   008701C5h
+  ROP_DSa         equ   008800C6h   ;SRCAND
+  ROP_SDPSnaoxn   equ   00891B08h
+  ROP_DSPnoa      equ   008A0E06h
+  ROP_DSPDxoxn    equ   008B0666h
+  ROP_SDPnoa      equ   008C0E08h
+  ROP_SDPSxoxn    equ   008D0668h
+  ROP_SSDxPDxax   equ   008E1D7Ch
+  ROP_PDSanan     equ   008F0CE5h
+  ROP_PDSxna      equ   00900C45h
+  ROP_SDPSnoaxn   equ   00911E08h
+  ROP_DPSDPoaxx   equ   009217A9h
+  ROP_SPDaxn      equ   009301C4h
+  ROP_PSDPSoaxx   equ   009417AAh
+  ROP_DPSaxn      equ   009501C9h
+  ROP_DPSxx       equ   00960169h
+  ROP_PSDPSonoxx  equ   0097588Ah
+  ROP_SDPSonoxn   equ   00981888h
+  ROP_DSxn        equ   00990066h
+  ROP_DPSnax      equ   009A0709h
+  ROP_SDPSoaxn    equ   009B07A8h
+  ROP_SPDnax      equ   009C0704h
+  ROP_DSPDoaxn    equ   009D07A6h
+  ROP_DSPDSaoxx   equ   009E16E6h
+  ROP_PDSxan      equ   009F0345h
+  ROP_DPa         equ   00A000C9h
+  ROP_PDSPnaoxn   equ   00A11B05h
+  ROP_DPSnoa      equ   00A20E09h
+  ROP_DPSDxoxn    equ   00A30669h
+  ROP_PDSPonoxn   equ   00A41885h
+  ROP_PDxn        equ   00A50065h
+  ROP_DSPnax      equ   00A60706h
+  ROP_PDSPoaxn    equ   00A707A5h
+  ROP_DPSoa       equ   00A803A9h
+  ROP_DPSoxn      equ   00A90189h
+  ROP_D           equ   00AA0029h
+  ROP_DPSono      equ   00AB0889h
+  ROP_SPDSxax     equ   00AC0744h
+  ROP_DPSDaoxn    equ   00AD06E9h
+  ROP_DSPnao      equ   00AE0B06h
+  ROP_DPno        equ   00AF0229h
+  ROP_PDSnoa      equ   00B00E05h
+  ROP_PDSPxoxn    equ   00B10665h
+  ROP_SSPxDSxox   equ   00B21974h
+  ROP_SDPanan     equ   00B30CE8h
+  ROP_PSDnax      equ   00B4070Ah
+  ROP_DPSDoaxn    equ   00B507A9h
+  ROP_DPSDPaoxx   equ   00B616E9h
+  ROP_SDPxan      equ   00B70348h
+  ROP_PSDPxax     equ   00B8074Ah   ;MAGICROP => Halftone
+  ROP_DSPDaoxn    equ   00B906E6h
+  ROP_DPSnao      equ   00BA0B09h
+  ROP_DSno        equ   00BB0226h   ;MERGEPAINT
+  ROP_SPDSanax    equ   00BC1CE4h
+  ROP_SDxPDxan    equ   00BD0D7Dh
+  ROP_DPSxo       equ   00BE0269h
+  ROP_DPSano      equ   00BF08C9h
+  ROP_PSa         equ   00C000CAh   ;MERGECOPY
+  ROP_SPDSnaoxn   equ   00C11B04h
+  ROP_SPDSonoxn   equ   00C21884h
+  ROP_PSxn        equ   00C3006Ah
+  ROP_SPDnoa      equ   00C40E04h
+  ROP_SPDSxoxn    equ   00C50664h
+  ROP_SDPnax      equ   00C60708h
+  ROP_PSDPoaxn    equ   00C707AAh
+  ROP_SDPoa       equ   00C803A8h
+  ROP_SPDoxn      equ   00C90184h
+  ROP_DPSDxax     equ   00CA0749h
+  ROP_SPDSaoxn    equ   00CB06E4h
+  ROP_S           equ   00CC0020h   ;SRCCOPY
+  ROP_SDPono      equ   00CD0888h
+  ROP_SDPnao      equ   00CE0B08h
+  ROP_SPno        equ   00CF0224h
+  ROP_PSDnoa      equ   00D00E0Ah
+  ROP_PSDPxoxn    equ   00D1066Ah
+  ROP_PDSnax      equ   00D20705h
+  ROP_SPDSoaxn    equ   00D307A4h
+  ROP_SSPxPDxax   equ   00D41D78h
+  ROP_DPSanan     equ   00D50CE9h
+  ROP_PSDPSaoxx   equ   00D616EAh
+  ROP_DPSxan      equ   00D70349h
+  ROP_PDSPxax     equ   00D80745h
+  ROP_SDPSaoxn    equ   00D906E8h
+  ROP_DPSDanax    equ   00DA1CE9h
+  ROP_SPxDSxan    equ   00DB0D75h
+  ROP_SPDnao      equ   00DC0B04h
+  ROP_SDno        equ   00DD0228h
+  ROP_SDPxo       equ   00DE0268h
+  ROP_SDPano      equ   00DF08C8h
+  ROP_PDSoa       equ   00E003A5h
+  ROP_PDSoxn      equ   00E10185h
+  ROP_DSPDxax     equ   00E20746h   ;MAGICROP_2
+  ROP_PSDPaoxn    equ   00E306EAh
+  ROP_SDPSxax     equ   00E40748h
+  ROP_PDSPaoxn    equ   00E506E5h
+  ROP_SDPSanax    equ   00E61CE8h
+  ROP_SPxPDxan    equ   00E70D79h
+  ROP_SSPxDSxax   equ   00E81D74h
+  ROP_DSPDSanaxxn equ   00E95CE6h
+  ROP_DPSao       equ   00EA02E9h
+  ROP_DPSxno      equ   00EB0849h
+  ROP_SDPao       equ   00EC02E8h
+  ROP_SDPxno      equ   00ED0848h
+  ROP_DSo         equ   00EE0086h   ;SRCPAINT
+  ROP_SDPnoo      equ   00EF0A08h
+  ROP_P           equ   00F00021h   ;PATCOPY
+  ROP_PDSono      equ   00F10885h
+  ROP_PDSnao      equ   00F20B05h
+  ROP_PSno        equ   00F3022Ah
+  ROP_PSDnao      equ   00F40B0Ah
+  ROP_PDno        equ   00F50225h
+  ROP_PDSxo       equ   00F60265h
+  ROP_PDSano      equ   00F708C5h
+  ROP_PDSao       equ   00F802E5h
+  ROP_PDSxno      equ   00F90845h
+  ROP_DPo         equ   00FA0089h
+  ROP_DPSnoo      equ   00FB0A09h   ;PATPAINT
+  ROP_PSo         equ   00FC008Ah
+  ROP_PSDnoo      equ   00FD0A0Ah
+  ROP_DPSoo       equ   00FE02A9h
+  ROP_1           equ   00FF0062h   ;WHITENESS
 endif
 
-; CRC32 procedures
-aCRC32C                   proto :POINTER, :DWORD
-uCRC32C                   proto :POINTER, :DWORD
+IsPntInRect proto :POINTER, :POINTER
+Random32 proto :DWORD
+IsGUIDEqual proto :POINTER, :POINTER
+IsHardwareFeaturePresent proto :BYTE
+NewObjInst proto :DWORD
+UTF8ToWide proto :POINTER, :POINTER, :DWORD
+WideToUTF8 proto :POINTER, :POINTER, :DWORD
+Real4ToHalf proto :REAL4
 
-PdfViewW                  proto :HANDLE, :POINTER, :POINTER
-PdfViewA                  proto :HANDLE, :POINTER, :POINTER
+
+;Radix Sort procedures
+RadixSortI32 proto :POINTER, :DWORD, :POINTER
+RadixSortPtrI32 proto :POINTER, :DWORD, :DWORD, :POINTER
+RadixSortUI32 proto :POINTER, :DWORD, :POINTER
+RadixSortPtrUI32 proto :POINTER, :DWORD, :DWORD, :POINTER
+RadixSortF32 proto :POINTER, :DWORD, :POINTER
+RadixSortPtrF32 proto :POINTER, :DWORD, :DWORD, :POINTER
+RadixSortF64 proto :POINTER, :DWORD, :POINTER
+RadixSortPtrF64 proto :POINTER, :DWORD, :DWORD, :POINTER
+
+
+;CRC32 procedures
+aCRC32C proto :POINTER, :DWORD
+uCRC32C proto :POINTER, :DWORD
+
+PdfViewA proto :HANDLE, :POINTER, :POINTER
+PdfViewW proto :HANDLE, :POINTER, :POINTER
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   PdfView textequ <PdfViewA>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
@@ -1137,8 +1424,8 @@ else
   echo Warning: incompatible TARGET_STR_TYPE
 endif
 
-SetShellAssociationA      proto :DWORD, :POINTER, :POINTER, :POINTER, :POINTER
-SetShellAssociationW      proto :DWORD, :POINTER, :POINTER, :POINTER, :POINTER
+SetShellAssociationA proto :DWORD, :POINTER, :POINTER, :POINTER, :POINTER
+SetShellAssociationW proto :DWORD, :POINTER, :POINTER, :POINTER, :POINTER
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   SetShellAssociation textequ <SetShellAssociationA>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
@@ -1147,8 +1434,8 @@ else
   echo Warning: incompatible TARGET_STR_TYPE
 endif
 
-SetShellPerceivedTypeA      proto :DWORD, :POINTER, :POINTER
-SetShellPerceivedTypeW      proto :DWORD, :POINTER, :POINTER
+SetShellPerceivedTypeA proto :DWORD, :POINTER, :POINTER
+SetShellPerceivedTypeW proto :DWORD, :POINTER, :POINTER
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   SetShellPerceivedType textequ <SetShellPerceivedTypeA>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
@@ -1157,331 +1444,54 @@ else
   echo Warning: incompatible TARGET_STR_TYPE
 endif
 
-EHandler                  proto :POINTER, :POINTER, :POINTER, :POINTER
+EHandler proto :POINTER, :POINTER, :POINTER, :POINTER
 
-_chkstk                   proto c
-_alloca_probe_8           proto c
-_alloca_probe_16          proto c
+_chkstk proto c
+_alloca_probe_8 proto c
+_alloca_probe_16 proto c
 _alloca_8  equ _alloca_probe_8
 _alloca_16 equ _alloca_probe_16
 
 
-GFH_MD2  equ   08001h
-GFH_MD4  equ   08002h
-GFH_MD5  equ   08003h
-GFH_SHA  equ   08004h
-GFH_SHA1 equ   08004h       ;Same as GFH_SHA
-GFH_MAC  equ   08005h
-
-
 ;IsHardwareFeaturePresent equates
-IHFP_FPU        equ       00            ;FP coprocessor
-IHFP_VME        equ       01            ;Virtual 8086 Enhancements
-IHFP_DE         equ       02            ;Debugging Extensions
-IHFP_PSE        equ       03            ;Page Size Extension
-IHFP_TSC        equ       04            ;Availability of RDTSC instruction
-IHFP_MSR        equ       05            ;Availability of RDMSR and WRMSR instructions
-IHFP_PAE        equ       06            ;Physical Address Extension
-IHFP_MCE        equ       07            ;Machine Check Exception
-IHFP_CX8        equ       08            ;Availability of CMPXCH8B instruction
-IHFP_APIC       equ       09            ;Advanced Programmable Interrupt Controller present
-;Reserved       equ       10            ;Reserved for Intel CPUs
-IHFP_SEP        equ       11            ;Availability of SYSENTER and SYSEXIT instructions
-IHFP_MTTR       equ       12            ;Memory type range registers present
-IHFP_PGE        equ       13            ;PTE Global Bits present
-IHFP_MCA        equ       14            ;Machine Check Architecture present
-IHFP_CMOV       equ       15            ;Availability of CMOVxx instructions
-IHFP_PAT        equ       16            ;Page Attribute Table present
-IHFP_PSE36      equ       17            ;Extended 4MB page size
-IHFP_PSN        equ       18            ;Processor Serial Number (96 bit)
-IHFP_CLFSH      equ       19            ;Availability of CLFLUSH instruction
-;Reserved       equ       20            ;Reserved for Intel CPUs
-IHFP_DS         equ       21            ;Debug Store present
-IHFP_ACPI       equ       22            ;The processor has MSRs to monitor its temperaure
-IHFP_MMX        equ       23            ;Availability of MMX technology
-IHFP_FXSR       equ       24            ;Availability of FXSAVE anf FXSTOR instructions
-IHFP_SSE        equ       25            ;Availability of SSE technology
-IHFP_SSE2       equ       26            ;Availability of SSE2 technology
-IHFP_SS         equ       27            ;Self Snoop
-IHFP_HT         equ       28            ;Availability of HyperThreading
-IHFP_TM         equ       29            ;Thermal monitor present
-;Reserved       equ       30            ;Reserved for Intel CPUs
-IHFP_3DNOW2     equ       30            ;Extended 3DNow technology only for AMD processors
-IHFP_PBE        equ       31            ;Pending Break Enable for Intel CPUs
-IHFP_3DNOW      equ       31            ;3DNow technology only for AMD processors for AMD CPUs
-IHFP_SSE3       equ       32            ;Availability of SSE3 technology
+IHFP_FPU    equ   00    ;FP coprocessor
+IHFP_VME    equ   01    ;Virtual 8086 Enhancements
+IHFP_DE     equ   02    ;Debugging Extensions
+IHFP_PSE    equ   03    ;Page Size Extension
+IHFP_TSC    equ   04    ;Availability of RDTSC instruction
+IHFP_MSR    equ   05    ;Availability of RDMSR and WRMSR instructions
+IHFP_PAE    equ   06    ;Physical Address Extension
+IHFP_MCE    equ   07    ;Machine Check Exception
+IHFP_CX8    equ   08    ;Availability of CMPXCH8B instruction
+IHFP_APIC   equ   09    ;Advanced Programmable Interrupt Controller present
+;Reserved   equ   10    ;Reserved for Intel CPUs
+IHFP_SEP    equ   11    ;Availability of SYSENTER and SYSEXIT instructions
+IHFP_MTTR   equ   12    ;Memory type range registers present
+IHFP_PGE    equ   13    ;PTE Global Bits present
+IHFP_MCA    equ   14    ;Machine Check Architecture present
+IHFP_CMOV   equ   15    ;Availability of CMOVxx instructions
+IHFP_PAT    equ   16    ;Page Attribute Table present
+IHFP_PSE36  equ   17    ;Extended 4MB page size
+IHFP_PSN    equ   18    ;Processor Serial Number (96 bit)
+IHFP_CLFSH  equ   19    ;Availability of CLFLUSH instruction
+;Reserved   equ   20    ;Reserved for Intel CPUs
+IHFP_DS     equ   21    ;Debug Store present
+IHFP_ACPI   equ   22    ;The processor has MSRs to monitor its temperaure
+IHFP_MMX    equ   23    ;Availability of MMX technology
+IHFP_FXSR   equ   24    ;Availability of FXSAVE anf FXSTOR instructions
+IHFP_SSE    equ   25    ;Availability of SSE technology
+IHFP_SSE2   equ   26    ;Availability of SSE2 technology
+IHFP_SS     equ   27    ;Self Snoop
+IHFP_HT     equ   28    ;Availability of HyperThreading
+IHFP_TM     equ   29    ;Thermal monitor present
+;Reserved   equ   30    ;Reserved for Intel CPUs
+IHFP_3DNOW2 equ   30    ;Extended 3DNow technology only for AMD processors
+IHFP_PBE    equ   31    ;Pending Break Enable for Intel CPUs
+IHFP_3DNOW  equ   31    ;3DNow technology only for AMD processors for AMD CPUs
+IHFP_SSE3   equ   32    ;Availability of SSE3 technology
 
 
-;ROP operators
-;
-;Reverse Polish notation
-;
-;Operand Meaning:                             Operator Meaning:
-;D Destination bitmap                         a Bitwise AND
-;P Selected brush (also called pattern)       n Bitwise NOT (inverse)
-;S Source bitmap                              o Bitwise OR
-;                                             x Bitwise exclusive OR (XOR)
-
-ROP_0           equ       00000042h   ;BLACKNESS
-ROP_DPSoon      equ       00010289h
-ROP_DPSona      equ       00020C89h
-ROP_PSon        equ       000300AAh
-ROP_SDPona      equ       00040C88h
-ROP_DPon        equ       000500A9h
-ROP_PDSxnon     equ       00060865h
-ROP_PDSaon      equ       000702C5h
-ROP_SDPnaa      equ       00080F08h
-ROP_PDSxon      equ       00090245h
-ROP_DPna        equ       000A0329h
-ROP_PSDnaon     equ       000B0B2Ah
-ROP_SPna        equ       000C0324h
-ROP_PDSnaon     equ       000D0B25h
-ROP_PDSonon     equ       000E08A5h
-ROP_Pn          equ       000F0001h
-ROP_PDSona      equ       00100C85h
-ROP_DSon        equ       001100A6h   ;NOTSRCERASE
-ROP_SDPxnon     equ       00120868h
-ROP_SDPaon      equ       001302C8h
-ROP_DPSxnon     equ       00140869h
-ROP_DPSaon      equ       001502C9h
-ROP_PSDPSanaxx  equ       00165CCAh
-ROP_SSPxDSxaxn  equ       00171D54h
-ROP_SPxPDxa     equ       00180D59h
-ROP_SDPSanaxn   equ       00191CC8h
-ROP_PDSPaox     equ       001A06C5h
-ROP_SDPSxaxn    equ       001B0768h
-ROP_PSDPaox     equ       001C06CAh
-ROP_DSPDxaxn    equ       001D0766h
-ROP_PDSox       equ       001E01A5h
-ROP_PDSoan      equ       001F0385h
-ROP_DPSnaa      equ       00200F09h
-ROP_SDPxon      equ       00210248h
-ROP_DSna        equ       00220326h
-ROP_SPDnaon     equ       00230B24h
-ROP_SPxDSxa     equ       00240D55h
-ROP_PDSPanaxn   equ       00251CC5h
-ROP_SDPSaox     equ       002606C8h
-ROP_SDPSxnox    equ       00271868h
-ROP_DPSxa       equ       00280369h
-ROP_PSDPSaoxxn  equ       002916CAh
-ROP_DPSana      equ       002A0CC9h
-ROP_SSPxPDxaxn  equ       002B1D58h
-ROP_SPDSoax     equ       002C0784h
-ROP_PSDnox      equ       002D060Ah
-ROP_PSDPxox     equ       002E064Ah
-ROP_PSDnoan     equ       002F0E2Ah
-ROP_PSna        equ       0030032Ah
-ROP_SDPnaon     equ       00310B28h
-ROP_SDPSoox     equ       00320688h
-ROP_Sn          equ       00330008h   ;NOTSRCCOPY
-ROP_SPDSaox     equ       003406C4h
-ROP_SPDSxnox    equ       00351864h
-ROP_SDPox       equ       003601A8h
-ROP_SDPoan      equ       00370388h
-ROP_PSDPoax     equ       0038078Ah
-ROP_SPDnox      equ       00390604h
-ROP_SPDSxox     equ       003A0644h
-ROP_SPDnoan     equ       003B0E24h
-ROP_PSx         equ       003C004Ah
-ROP_SPDSonox    equ       003D18A4h
-ROP_SPDSnaox    equ       003E1B24h
-ROP_PSan        equ       003F00EAh
-ROP_PSDnaa      equ       00400F0Ah
-ROP_DPSxon      equ       00410249h
-ROP_SDxPDxa     equ       00420D5Dh
-ROP_SPDSanaxn   equ       00431CC4h
-ROP_SDna        equ       00440328h   ;SRCERASE
-ROP_DPSnaon     equ       00450B29h
-ROP_DSPDaox     equ       004606C6h
-ROP_PSDPxaxn    equ       0047076Ah
-ROP_SDPxa       equ       00480368h
-ROP_PDSPDaoxxn  equ       004916C5h
-ROP_DPSDoax     equ       004A0789h
-ROP_PDSnox      equ       004B0605h
-ROP_SDPana      equ       004C0CC8h
-ROP_SSPxDSxoxn  equ       004D1954h
-ROP_PDSPxox     equ       004E0645h
-ROP_PDSnoan     equ       004F0E25h
-ROP_PDna        equ       00500325h
-ROP_DSPnaon     equ       00510B26h
-ROP_DPSDaox     equ       005206C9h
-ROP_SPDSxaxn    equ       00530764h
-ROP_DPSonon     equ       005408A9h
-ROP_Dn          equ       00550009h   ;DSTINVERT
-ROP_DPSox       equ       005601A9h
-ROP_DPSoan      equ       00570389h
-ROP_PDSPoax     equ       00580785h
-ROP_DPSnox      equ       00590609h
-ROP_DPx         equ       005A0049h   ;PATINVERT
-ROP_DPSDonox    equ       005B18A9h
-ROP_DPSDxox     equ       005C0649h
-ROP_DPSnoan     equ       005D0E29h
-ROP_DPSDnaox    equ       005E1B29h
-ROP_DPan        equ       005F00E9h
-ROP_PDSxa       equ       00600365h
-ROP_DSPDSaoxxn  equ       006116C6h
-ROP_DSPDoax     equ       00620786h
-ROP_SDPnox      equ       00630608h
-ROP_SDPSoax     equ       00640788h
-ROP_DSPnox      equ       00650606h
-ROP_DSx         equ       00660046h   ;SRCINVERT
-ROP_SDPSonox    equ       006718A8h
-ROP_DSPDSonoxxn equ       006858A6h
-ROP_PDSxxn      equ       00690145h
-ROP_DPSax       equ       006A01E9h
-ROP_PSDPSoaxxn  equ       006B178Ah
-ROP_SDPax       equ       006C01E8h
-ROP_PDSPDoaxxn  equ       006D1785h
-ROP_SDPSnoax    equ       006E1E28h
-ROP_PDSxnan     equ       006F0C65h
-ROP_PDSana      equ       00700CC5h
-ROP_SSDxPDxaxn  equ       00711D5Ch
-ROP_SDPSxox     equ       00720648h
-ROP_SDPnoan     equ       00730E28h
-ROP_DSPDxox     equ       00740646h
-ROP_DSPnoan     equ       00750E26h
-ROP_SDPSnaox    equ       00761B28h
-ROP_DSan        equ       007700E6h
-ROP_PDSax       equ       007801E5h
-ROP_DSPDSoaxxn  equ       00791786h
-ROP_DPSDnoax    equ       007A1E29h
-ROP_SDPxnan     equ       007B0C68h
-ROP_SPDSnoax    equ       007C1E24h
-ROP_DPSxnan     equ       007D0C69h
-ROP_SPxDSxo     equ       007E0955h
-ROP_DPSaan      equ       007F03C9h
-ROP_DPSaa       equ       008003E9h
-ROP_SPxDSxon    equ       00810975h
-ROP_DPSxna      equ       00820C49h
-ROP_SPDSnoaxn   equ       00831E04h
-ROP_SDPxna      equ       00840C48h
-ROP_PDSPnoaxn   equ       00851E05h
-ROP_DSPDSoaxx   equ       008617A6h
-ROP_PDSaxn      equ       008701C5h
-ROP_DSa         equ       008800C6h   ;SRCAND
-ROP_SDPSnaoxn   equ       00891B08h
-ROP_DSPnoa      equ       008A0E06h
-ROP_DSPDxoxn    equ       008B0666h
-ROP_SDPnoa      equ       008C0E08h
-ROP_SDPSxoxn    equ       008D0668h
-ROP_SSDxPDxax   equ       008E1D7Ch
-ROP_PDSanan     equ       008F0CE5h
-ROP_PDSxna      equ       00900C45h
-ROP_SDPSnoaxn   equ       00911E08h
-ROP_DPSDPoaxx   equ       009217A9h
-ROP_SPDaxn      equ       009301C4h
-ROP_PSDPSoaxx   equ       009417AAh
-ROP_DPSaxn      equ       009501C9h
-ROP_DPSxx       equ       00960169h
-ROP_PSDPSonoxx  equ       0097588Ah
-ROP_SDPSonoxn   equ       00981888h
-ROP_DSxn        equ       00990066h
-ROP_DPSnax      equ       009A0709h
-ROP_SDPSoaxn    equ       009B07A8h
-ROP_SPDnax      equ       009C0704h
-ROP_DSPDoaxn    equ       009D07A6h
-ROP_DSPDSaoxx   equ       009E16E6h
-ROP_PDSxan      equ       009F0345h
-ROP_DPa         equ       00A000C9h
-ROP_PDSPnaoxn   equ       00A11B05h
-ROP_DPSnoa      equ       00A20E09h
-ROP_DPSDxoxn    equ       00A30669h
-ROP_PDSPonoxn   equ       00A41885h
-ROP_PDxn        equ       00A50065h
-ROP_DSPnax      equ       00A60706h
-ROP_PDSPoaxn    equ       00A707A5h
-ROP_DPSoa       equ       00A803A9h
-ROP_DPSoxn      equ       00A90189h
-ROP_D           equ       00AA0029h
-ROP_DPSono      equ       00AB0889h
-ROP_SPDSxax     equ       00AC0744h
-ROP_DPSDaoxn    equ       00AD06E9h
-ROP_DSPnao      equ       00AE0B06h
-ROP_DPno        equ       00AF0229h
-ROP_PDSnoa      equ       00B00E05h
-ROP_PDSPxoxn    equ       00B10665h
-ROP_SSPxDSxox   equ       00B21974h
-ROP_SDPanan     equ       00B30CE8h
-ROP_PSDnax      equ       00B4070Ah
-ROP_DPSDoaxn    equ       00B507A9h
-ROP_DPSDPaoxx   equ       00B616E9h
-ROP_SDPxan      equ       00B70348h
-ROP_PSDPxax     equ       00B8074Ah   ;MAGICROP => Halftone
-ROP_DSPDaoxn    equ       00B906E6h
-ROP_DPSnao      equ       00BA0B09h
-ROP_DSno        equ       00BB0226h   ;MERGEPAINT
-ROP_SPDSanax    equ       00BC1CE4h
-ROP_SDxPDxan    equ       00BD0D7Dh
-ROP_DPSxo       equ       00BE0269h
-ROP_DPSano      equ       00BF08C9h
-ROP_PSa         equ       00C000CAh   ;MERGECOPY
-ROP_SPDSnaoxn   equ       00C11B04h
-ROP_SPDSonoxn   equ       00C21884h
-ROP_PSxn        equ       00C3006Ah
-ROP_SPDnoa      equ       00C40E04h
-ROP_SPDSxoxn    equ       00C50664h
-ROP_SDPnax      equ       00C60708h
-ROP_PSDPoaxn    equ       00C707AAh
-ROP_SDPoa       equ       00C803A8h
-ROP_SPDoxn      equ       00C90184h
-ROP_DPSDxax     equ       00CA0749h
-ROP_SPDSaoxn    equ       00CB06E4h
-ROP_S           equ       00CC0020h   ;SRCCOPY
-ROP_SDPono      equ       00CD0888h
-ROP_SDPnao      equ       00CE0B08h
-ROP_SPno        equ       00CF0224h
-ROP_PSDnoa      equ       00D00E0Ah
-ROP_PSDPxoxn    equ       00D1066Ah
-ROP_PDSnax      equ       00D20705h
-ROP_SPDSoaxn    equ       00D307A4h
-ROP_SSPxPDxax   equ       00D41D78h
-ROP_DPSanan     equ       00D50CE9h
-ROP_PSDPSaoxx   equ       00D616EAh
-ROP_DPSxan      equ       00D70349h
-ROP_PDSPxax     equ       00D80745h
-ROP_SDPSaoxn    equ       00D906E8h
-ROP_DPSDanax    equ       00DA1CE9h
-ROP_SPxDSxan    equ       00DB0D75h
-ROP_SPDnao      equ       00DC0B04h
-ROP_SDno        equ       00DD0228h
-ROP_SDPxo       equ       00DE0268h
-ROP_SDPano      equ       00DF08C8h
-ROP_PDSoa       equ       00E003A5h
-ROP_PDSoxn      equ       00E10185h
-ROP_DSPDxax     equ       00E20746h   ;MAGICROP_2
-ROP_PSDPaoxn    equ       00E306EAh
-ROP_SDPSxax     equ       00E40748h
-ROP_PDSPaoxn    equ       00E506E5h
-ROP_SDPSanax    equ       00E61CE8h
-ROP_SPxPDxan    equ       00E70D79h
-ROP_SSPxDSxax   equ       00E81D74h
-ROP_DSPDSanaxxn equ       00E95CE6h
-ROP_DPSao       equ       00EA02E9h
-ROP_DPSxno      equ       00EB0849h
-ROP_SDPao       equ       00EC02E8h
-ROP_SDPxno      equ       00ED0848h
-ROP_DSo         equ       00EE0086h   ;SRCPAINT
-ROP_SDPnoo      equ       00EF0A08h
-ROP_P           equ       00F00021h   ;PATCOPY
-ROP_PDSono      equ       00F10885h
-ROP_PDSnao      equ       00F20B05h
-ROP_PSno        equ       00F3022Ah
-ROP_PSDnao      equ       00F40B0Ah
-ROP_PDno        equ       00F50225h
-ROP_PDSxo       equ       00F60265h
-ROP_PDSano      equ       00F708C5h
-ROP_PDSao       equ       00F802E5h
-ROP_PDSxno      equ       00F90845h
-ROP_DPo         equ       00FA0089h
-ROP_DPSnoo      equ       00FB0A09h   ;PATPAINT
-ROP_PSo         equ       00FC008Ah
-ROP_PSDnoo      equ       00FD0A0Ah
-ROP_DPSoo       equ       00FE02A9h
-ROP_1           equ       00FF0062h   ;WHITENESS
-
-
-; Objects
-
+;Objects
 if TARGET_BITNESS eq 64
   XWordVector equ QWordVector
   XVEC_MAX_CAPACITY equ VEC64_MAX_CAPACITY

@@ -87,125 +87,123 @@ Print macro mensaje, args:VARARG
   endif
   ifndef UEFI_Print_buffer1
     .data
-      UEFI_Print_buffer1 CHR 1024 dup (0)
-      UEFI_Print_buffer2 CHR   32 dup (0)
+    UEFI_Print_buffer1 CHR 1024 dup (0)
+    UEFI_Print_buffer2 CHR   32 dup (0)
 
-      CStr UEFI_Error_0, "EFI_SUCCESS"
-      CStr UEFI_Error_1, "EFI_LOAD_ERROR"
-      CStr UEFI_Error_2, "EFI_INVALID_PARAMETER"
-      CStr UEFI_Error_3, "EFI_UNSUPPORTED"
-      CStr UEFI_Error_4, "EFI_BAD_BUFFER_SIZE"
-      CStr UEFI_Error_5, "EFI_BUFFER_TOO_SMALL"
-      CStr UEFI_Error_6, "EFI_NOT_READY"
-      CStr UEFI_Error_7, "EFI_DEVICE_ERROR"
-      CStr UEFI_Error_8, "EFI_WRITE_PROTECTED"
-      CStr UEFI_Error_9, "EFI_OUT_OF_RESOURCES"
-      CStr UEFI_Error_10, "EFI_VOLUME_CORRUPTED"
-      CStr UEFI_Error_11, "EFI_VOLUME_FULL"
-      CStr UEFI_Error_12, "EFI_NO_MEDIA"
-      CStr UEFI_Error_13, "EFI_MEDIA_CHANGED"
-      CStr UEFI_Error_14, "EFI_NOT_FOUND"
-      CStr UEFI_Error_15, "EFI_ACCESS_DENIED"
-      CStr UEFI_Error_16, "EFI_NO_RESPONSE"
-      CStr UEFI_Error_17, "EFI_NO_MAPPING"
-      CStr UEFI_Error_18, "EFI_TIMEOUT"
-      CStr UEFI_Error_19, "EFI_NOT_STARTED"
-      CStr UEFI_Error_20, "EFI_ALREADY_STARTED"
-      CStr UEFI_Error_21, "EFI_ABORTED"
-      CStr UEFI_Error_22, "EFI_ICMP_ERROR"
-      CStr UEFI_Error_23, "EFI_TFTP_ERROR"
-      CStr UEFI_Error_24, "EFI_PROTOCOL_ERROR"
+    CStr UEFI_Error_0, "EFI_SUCCESS"
+    CStr UEFI_Error_1, "EFI_LOAD_ERROR"
+    CStr UEFI_Error_2, "EFI_INVALID_PARAMETER"
+    CStr UEFI_Error_3, "EFI_UNSUPPORTED"
+    CStr UEFI_Error_4, "EFI_BAD_BUFFER_SIZE"
+    CStr UEFI_Error_5, "EFI_BUFFER_TOO_SMALL"
+    CStr UEFI_Error_6, "EFI_NOT_READY"
+    CStr UEFI_Error_7, "EFI_DEVICE_ERROR"
+    CStr UEFI_Error_8, "EFI_WRITE_PROTECTED"
+    CStr UEFI_Error_9, "EFI_OUT_OF_RESOURCES"
+    CStr UEFI_Error_10, "EFI_VOLUME_CORRUPTED"
+    CStr UEFI_Error_11, "EFI_VOLUME_FULL"
+    CStr UEFI_Error_12, "EFI_NO_MEDIA"
+    CStr UEFI_Error_13, "EFI_MEDIA_CHANGED"
+    CStr UEFI_Error_14, "EFI_NOT_FOUND"
+    CStr UEFI_Error_15, "EFI_ACCESS_DENIED"
+    CStr UEFI_Error_16, "EFI_NO_RESPONSE"
+    CStr UEFI_Error_17, "EFI_NO_MAPPING"
+    CStr UEFI_Error_18, "EFI_TIMEOUT"
+    CStr UEFI_Error_19, "EFI_NOT_STARTED"
+    CStr UEFI_Error_20, "EFI_ALREADY_STARTED"
+    CStr UEFI_Error_21, "EFI_ABORTED"
+    CStr UEFI_Error_22, "EFI_ICMP_ERROR"
+    CStr UEFI_Error_23, "EFI_TFTP_ERROR"
+    CStr UEFI_Error_24, "EFI_PROTOCOL_ERROR"
 
-      cuenta = 1
-      EFI_ERROR$ dq offset UEFI_Error_0 
-      repeat 24
-        % dq offset @CatStr(<UEFI_Error_>, %cuenta)
-        cuenta = cuenta + 1
-      endm
-    endif
-
-    .code
-
-    cuenta = 0
-    for arg,<args>
-      @CatStr(<argumento_>, %cuenta) textequ <arg>
-      cuenta = cuenta + 1 
+    cuenta = 1
+    EFI_ERROR$ dq offset UEFI_Error_0 
+    repeat 24
+      % dq offset @CatStr(<UEFI_Error_>, %cuenta)
+      cuenta = cuenta + 1
     endm
-    mov rax, 0
-    mov CHR ptr UEFI_Print_buffer1, ax
+  endif
 
-    cuenta = 0
-    pos1 = 0
-    parte = 0
-    contenido textequ <>
-    tipoarg textequ <>
+  .code
+  cuenta = 0
+  for arg,<args>
+    @CatStr(<argumento_>, %cuenta) textequ <arg>
+    cuenta = cuenta + 1 
+  endm
+  mov CHR ptr UEFI_Print_buffer1, 0
 
-    abrecomilla = 0
+  cuenta = 0
+  pos1 = 0
+  parte = 0
+  contenido textequ <>
+  tipoarg textequ <>
 
-    forc char,<&mensaje>
-      tk_1 instr 1, <">, <&char>
-      if tk_1 eq 0
+  abrecomilla = 0
 
-        tk_3 instr 1, < >, <&char>
-        if (tk_3 eq 1) AND (abierto eq 0)
-          ifidn tipoarg, <d> 
-            invoke uqword2decW, addr UEFI_Print_buffer2, @CatStr(<argumento_>, %cuenta)
-            invoke StrCat, addr UEFI_Print_buffer1, addr UEFI_Print_buffer2
-          endif      
-          ifidn tipoarg, <h> 
-            invoke qword2hexW, addr UEFI_Print_buffer2, @CatStr(<argumento_>, %cuenta)
-            invoke StrCat, addr UEFI_Print_buffer1, addr UEFI_Print_buffer2
-          endif      
+  forc char,<&mensaje>
+    tk_1 instr 1, <">, <&char>
+    if tk_1 eq 0
 
-          ifidn tipoarg, <r>
-            cuento = 1
-            %mov rax, @CatStr(<argumento_>,%cuenta)
-            and rax, 0FFh
-            .if rax == 0
-               lea rdx, @CatStr(<UEFI_Error_>, 0)
-            repeat 24
-           % .elseif rax == cuento
-               lea rdx, @CatStr(<UEFI_Error_>, %cuento)
-               cuento = cuento + 1
-            endm
-            .endif
-            invoke StrCat, addr UEFI_Print_buffer1, rdx
-          endif  
-          abierto = 1    
-          tipoarg textequ <>
-          cuenta = cuenta + 1
-        endif
+      tk_3 instr 1, < >, <&char>
+      if (tk_3 eq 1) AND (abierto eq 0)
+        ifidn tipoarg, <d> 
+          invoke uqword2decW, addr UEFI_Print_buffer2, @CatStr(<argumento_>, %cuenta)
+          invoke StrCat, addr UEFI_Print_buffer1, addr UEFI_Print_buffer2
+        endif      
+        ifidn tipoarg, <h> 
+          invoke qword2hexW, addr UEFI_Print_buffer2, @CatStr(<argumento_>, %cuenta)
+          invoke StrCat, addr UEFI_Print_buffer1, addr UEFI_Print_buffer2
+        endif      
 
-        tk_2 instr 1,<%>,<&char>
-        if tk_2 eq 0
-          if abierto eq 1
-            contenido catstr contenido, <&char>
-          else
-            tipoarg catstr tipoarg, <&char>
-          endif
+        ifidn tipoarg, <r>
+          cuento = 1
+          %mov rax, @CatStr(<argumento_>,%cuenta)
+          and rax, 0FFh
+          .if rax == 0
+            lea rdx, @CatStr(<UEFI_Error_>, 0)
+          repeat 24
+         % .elseif rax == cuento
+            lea rdx, @CatStr(<UEFI_Error_>, %cuento)
+            cuento = cuento + 1
+          endm
+          .endif
+          invoke StrCat, addr UEFI_Print_buffer1, rdx
+        endif  
+        abierto = 1    
+        tipoarg textequ <>
+        cuenta = cuenta + 1
+      endif
+
+      tk_2 instr 1,<%>,<&char>
+      if tk_2 eq 0
+        if abierto eq 1
+          contenido catstr contenido, <&char>
         else
-          if abierto eq 1
-            abierto = 0
-            @CatStr(<CStrW UEFI_Print_Message_>, %UEFI_Print_Message, <_>, %parte, <, !">,%contenido,<!">)
-            invoke StrCat, addr UEFI_Print_buffer1, addr @CatStr(<UEFI_Print_Message_>, %UEFI_Print_Message, <_>, %parte)
-            contenido textequ <>
-            parte = parte + 1
-          endif
+          tipoarg catstr tipoarg, <&char>
         endif
       else
-        if abrecomilla eq 1
-        else
-          abrecomilla = 1
-          abierto = 1
+        if abierto eq 1
+          abierto = 0
+          @CatStr(<CStrW UEFI_Print_Message_>, %UEFI_Print_Message, <_>, %parte, <, !">,%contenido,<!">)
+          invoke StrCat, addr UEFI_Print_buffer1, addr @CatStr(<UEFI_Print_Message_>, %UEFI_Print_Message, <_>, %parte)
+          contenido textequ <>
+          parte = parte + 1
         endif
       endif
-    endm
-    if parte eq 0
-      if abierto
-        @CatStr(<CStrW UEFI_Print_Message_>, %UEFI_Print_Message, <_>, %parte, <, !">,%contenido,<!">)
-        invoke StrCat, addr UEFI_Print_buffer1, addr @CatStr(<UEFI_Print_Message_>, %UEFI_Print_Message, <_>, %parte)
+    else
+      if abrecomilla eq 1
+      else
+        abrecomilla = 1
+        abierto = 1
       endif
     endif
+  endm
+  if parte eq 0
+    if abierto
+      @CatStr(<CStrW UEFI_Print_Message_>, %UEFI_Print_Message, <_>, %parte, <, !">,%contenido,<!">)
+      invoke StrCat, addr UEFI_Print_buffer1, addr @CatStr(<UEFI_Print_Message_>, %UEFI_Print_Message, <_>, %parte)
+    endif
+  endif
   mov rcx, pConsoleOut                                     
   invoke [rcx].ConOut.OutputString, rcx, addr UEFI_Print_buffer1 
 endm

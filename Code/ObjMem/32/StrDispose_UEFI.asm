@@ -10,7 +10,6 @@
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
 % include &ObjMemPath&ObjMemUefi.cop
 
-
 % include &ObjMemPath&X\StrDispose_UEFI.asm
 
 end

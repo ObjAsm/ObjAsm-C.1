@@ -35,8 +35,8 @@ MemReAlloc_UEFI proc uses xbx pMemBlock:POINTER, dMemSize:DWORD, dNewMemSize:DWO
       .if eax < dNewMemSize
         invoke MemClone, pNewMemBlock, pMemBlock, eax
         .ifBitSet dAttr, MEM_INIT_ZERO
-          mov xcx, pNewMemBlock
-          add xcx, dNewMemSize
+          mov ecx, dNewMemSize
+          add xcx, pNewMemBlock
           mov edx, dNewMemSize
           sub edx, dMemSize
           invoke MemZero, xcx, edx

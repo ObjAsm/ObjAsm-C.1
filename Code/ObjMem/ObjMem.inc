@@ -44,7 +44,7 @@ endif
 
 externdef bError:CHRA
 externdef wError:CHRW
-cError textequi <szError>
+cError textequ <szError>
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   szError textequ <bError>
 elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
@@ -115,15 +115,29 @@ elseif TARGET_PLATFORM eq PLATFORM_UEFI
   StrNewW textequ <StrNewW_UEFI>
 endif
 
-BStrCNew proto :POINTER, :DWORD
-StrCNewA proto :POINTER, :DWORD
-StrCNewW proto :POINTER, :DWORD
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  StrCNew textequ <StrCNewA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  StrCNew textequ <StrCNewW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
+if TARGET_PLATFORM eq PLATFORM_WINDOWS
+  BStrCNew proto :POINTER, :DWORD
+  StrCNewA proto :POINTER, :DWORD
+  StrCNewW proto :POINTER, :DWORD
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    StrCNew textequ <StrCNewA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    StrCNew textequ <StrCNewW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+elseif TARGET_PLATFORM eq PLATFORM_UEFI
+  StrCNewA_UEFI proto :POINTER, :DWORD
+  StrCNewW_UEFI proto :POINTER, :DWORD
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    StrCNew textequ <StrCNewA_UEFI>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    StrCNew textequ <StrCNewW_UEFI>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+  StrCNewA textequ <StrCNewA_UEFI>
+  StrCNewW textequ <StrCNewW_UEFI>
 endif
 
 if TARGET_PLATFORM eq PLATFORM_WINDOWS
@@ -837,20 +851,27 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   DbgOutBitmap proto :HANDLE, :POINTER
   DbgOutApiErr proto :DWORD, :POINTER
   DbgOutComErr proto :DWORD, :POINTER
-  DbgShowObjectHeader proto :POINTER, :POINTER, :POINTER
+  DbgOutFPU proto :POINTER, :DWORD
+  DbgShowObjectHeader proto :POINTER, :POINTER, :DWORD, :POINTER
   DbgShowTraceMethod proto :POINTER, :DWORD, :POINTER, :POINTER
-  
+
   DbgOutInterfaceName proto :ptr GUID, :DWORD, :POINTER
   DbgOutInterface proto :ptr GUID, :DWORD, :POINTER
   DbgOutComponentName proto :ptr GUID, :DWORD, :POINTER
   DbgOutComponent proto :ptr GUID, :DWORD, :POINTER
+
 elseif TARGET_PLATFORM eq PLATFORM_UEFI
   MemAlloc_UEFI proto :DWORD, :DWORD
   MemReAlloc_UEFI proto :POINTER, :DWORD, :DWORD, :DWORD
   MemFree_UEFI proto :POINTER
 
+  DbgOutFPU_UEFI proto :POINTER, :DWORD
+  DbgShowObjectHeader_UEFI proto :POINTER, :POINTER, :DWORD, :POINTER
+
   DbgOutTextA textequ <DbgOutTextA_UEFI>
   DbgOutTextW textequ <DbgOutTextW_UEFI>
+  DbgOutFPU textequ <DbgOutFPU_UEFI>
+  DbgShowObjectHeader textequ <DbgShowObjectHeader_UEFI> 
 endif
 
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -868,7 +889,7 @@ DbgOutTextW proto :POINTER, :DWORD, :DWORD, :POINTER
 DbgOutTextCA proto :POINTER, :DWORD, :DWORD, :DWORD, :POINTER
 DbgOutTextCW proto :POINTER, :DWORD, :DWORD, :DWORD, :POINTER
 DbgOutMem proto :POINTER, :DWORD, :DWORD, :POINTER
-DbgOutFPU proto :POINTER
+
 DbgOutMsg proto :DWORD, :DWORD, :POINTER
 
 
