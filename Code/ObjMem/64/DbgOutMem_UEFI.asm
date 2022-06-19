@@ -1,22 +1,19 @@
 ; ==================================================================================================
-; Title:      DbgOutMem.asm
+; Title:      DbgOutMem_UEFI.asm
 ; Author:     G. Friedrich
-; Version:    C.1.1
-; Notes:      Version C.1.0, October 2017
+; Version:    C.1.0
+; Notes:      Version C.1.0, June 2022
 ;               - First release.
-;             Version C.1.1 June 2022
-;               - Bitness and Platform independant code.
-;               - UEFI adaptation and addition of UI64, I64, H64.
 ; ==================================================================================================
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMemWin.cop
+% include &ObjMemPath&ObjMemUefi.cop
 
-ProcName equ <DbgOutMem>
+ProcName equ <DbgOutMem_UEFI>
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgOutMem
+; Procedure:  DbgOutMem_UEFI
 ; Purpose:    Output the content of a memory block.
 ; Arguments:  Arg1: -> Memory block.
 ;             Arg2: Memory block size.

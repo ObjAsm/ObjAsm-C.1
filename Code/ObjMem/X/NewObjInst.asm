@@ -4,17 +4,17 @@
 ; Version:    C.1.0
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
-;               - Bitness independant code for Windows and UEFI
+;               - Bitness and Platform independant code.
 ; ==================================================================================================
 
 
 .code
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  NewObjInst
+; Procedure:  NewObjInst / NewObjInst_UEFI 
 ; Purpose:    Creates an object instance from an object ID.
 ; Arguments:  Arg1: Object ID.
-; Return:     rax -> new object instance or NULL if failed.
+; Return:     xax -> New object instance or NULL if failed.
 
 align ALIGN_CODE
 ProcName proc uses xbx xdi xsi dObjectID:DWORD

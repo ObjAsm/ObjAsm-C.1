@@ -12,6 +12,12 @@
 
 ProcName equ <NewObjInst_UEFI>
 
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  NewObjInst_UEFI 
+; Purpose:    Creates an object instance from an object ID.
+; Arguments:  Arg1: Object ID.
+; Return:     eax -> New object instance or NULL if failed.
+
 % include &ObjMemPath&X\NewObjInst.asm
 
 end

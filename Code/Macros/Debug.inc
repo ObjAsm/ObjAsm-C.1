@@ -97,29 +97,30 @@ DBG_DEV_WIN_LOG           equ   01h
 DBG_DEV_WIN_CON           equ   02h
 DBG_DEV_WIN_DC            equ   03h       ;DebugCenter Windows application
 DBG_DEV_UEFI_CON          equ   04h
-;DBG_DEV_UEFI_LOG          equ   04h
+;DBG_DEV_UEFI_LOG          equ   05h
 
 ;Debug options
 DBG_OPT_NONE              equ   00h
 DBG_OPT_SHOWINFO          equ   01h
 
 ;Debug memory formats
-DBG_MEM_STRA              equ   100       ;ANSI String
-DBG_MEM_STRW              equ   101       ;WIDE String
-DBG_MEM_UI8               equ   102       ;Unsigned BYTE Integer in decimal format
-DBG_MEM_UI16              equ   103       ;Unsigned WORD Integer in decimal format
-DBG_MEM_UI32              equ   104       ;Unsigned DWORD Integer in decimal format
-DBG_MEM_UI64              equ   105       ;Unsigned QWORD Integer in decimal format
-DBG_MEM_I8                equ   106       ;Signed BYTE Integer in decimal format
-DBG_MEM_I16               equ   107       ;Signed WORD Integer in decimal format
-DBG_MEM_I32               equ   108       ;Signed DWORD Integer in decimal format
-DBG_MEM_I64               equ   109       ;Signed QWORD Integer in decimal format
-DBG_MEM_R4                equ   110       ;REAL4 in decimal format
-DBG_MEM_R8                equ   111       ;REAL8 in decimal format
-DBG_MEM_H8                equ   112       ;BYTE Integer in hexadecimal format
-DBG_MEM_H16               equ   113       ;WORD Integer in hexadecimal format
-DBG_MEM_H32               equ   114       ;DWORD Integer in hexadecimal format
-DBG_MEM_H64               equ   115       ;QWORD Integer in hexadecimal format
+DBG_MEM_NONE              equ   100       ;No representation output
+DBG_MEM_STRA              equ   101       ;ANSI String
+DBG_MEM_STRW              equ   102       ;WIDE String
+DBG_MEM_UI8               equ   103       ;Unsigned BYTE Integer in decimal format
+DBG_MEM_UI16              equ   104       ;Unsigned WORD Integer in decimal format
+DBG_MEM_UI32              equ   105       ;Unsigned DWORD Integer in decimal format
+DBG_MEM_UI64              equ   106       ;Unsigned QWORD Integer in decimal format
+DBG_MEM_I8                equ   107       ;Signed BYTE Integer in decimal format
+DBG_MEM_I16               equ   108       ;Signed WORD Integer in decimal format
+DBG_MEM_I32               equ   109       ;Signed DWORD Integer in decimal format
+DBG_MEM_I64               equ   110       ;Signed QWORD Integer in decimal format
+DBG_MEM_R4                equ   111       ;REAL4 in decimal format
+DBG_MEM_R8                equ   112       ;REAL8 in decimal format
+DBG_MEM_H8                equ   113       ;BYTE Integer in hexadecimal format
+DBG_MEM_H16               equ   114       ;WORD Integer in hexadecimal format
+DBG_MEM_H32               equ   115       ;DWORD Integer in hexadecimal format
+DBG_MEM_H64               equ   116       ;QWORD Integer in hexadecimal format
 
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   DBG_MEM_STR equ DBG_MEM_STRA
@@ -172,7 +173,6 @@ endif
 
 DbgSaveContext macro VarIsRef:=<FALSE>, Var
   pushcontext assumes
-  assume xbx:nothing, xdi:nothing, xsi:nothing
   pushfx                                                ;;Save CPU flags
   pushax
   ifnb <Var>
@@ -358,7 +358,7 @@ endm
 ;             Arg4: Output color (default = black).
 ;             Arg5: Optional destination Window name.
 ; Note:       If register addressing is used, a size prefix is required.
-;             i.e.:  DbgOutHex DWORD ptr [rcx]
+;             i.e.:  DbgHexHex DWORD ptr [rcx]
 ;             THIS MACRO TRASHES XDI & XSI!
 
 OutHexAux macro
@@ -1015,14 +1015,14 @@ endm
 ;             Arg4: Additional information.
 ;             Arg5: Optional destination Window name.
 
-DbgMem macro pData:req, DataSize:req, OutputFormat:=<DBG_MEM_STR>, InfoText, Dest
+DbgMem macro pData:req, DataSize:req, OutputFormat:=<DBG_MEM_NONE>, InfoText, Dest
   if DEBUGGING
     DbgSaveContext FALSE, pData                          ;;Pass pData as a value
     DbgSetDestWnd Dest
     invoke DbgOutTextA, $OfsCStrA("MEMORY DUMP of &pData"), DBG_COLOR_MEMORY, DBG_EFFECT_BOLD, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
-    invoke DbgOutMem, ??VarXBX, DataSize, OutputFormat, ??DbgDstWnd
+    invoke DbgOutMem, ??VarXBX, DataSize, OutputFormat, DBG_COLOR_MEMORY, DBG_COLOR_TEXT, ??DbgDstWnd
     DbgLoadContext
   endif
 endm
@@ -1179,7 +1179,7 @@ DbgObject macro Expression, InfoText, Dest
       %ifndef ??ObjExpr
         %.err <DbgObject - unknown object: ??ObjExpr>
       else
-        DbgSaveContext FALSE, ??InsExpr
+        DbgSaveContext TRUE, ??InsExpr
         DbgSetDestWnd Dest
         invoke DbgShowObjectHeader, $OfsCStrA(<!"%??ObjExpr!">), xbx, DBG_COLOR_OBJECT, ??DbgDstWnd
         DbgShowTxtInfo InfoText, ??DbgDstWnd
@@ -1201,7 +1201,7 @@ DbgObject macro Expression, InfoText, Dest
             lea xbx, @CatStr(<[xdi].>, <??TestObject>, <.>, %$$sz1)
             push xdi
             %DbgOutHex < - &$$sz1 = >, DBG_COLOR_OBJECT, \
-                       @CatStr(<[xbx].>, <??TestObject>, <.>, %$$sz1),, ??DbgDstWnd
+                       @CatStr(<[xdi].>, <??TestObject>, <.>, %$$sz1),, ??DbgDstWnd
             pop xdi
             %ifidn <??TestObject>, <??ObjExpr>
               invoke DbgOutTextA, $OfsCStrA(<!" (%$$sz2)!">), \
@@ -1236,14 +1236,14 @@ DbgVMT macro Expression, InfoText, Dest
       %ifndef ??ObjExpr
         %.err <DbgVMT - unknown object: ??ObjExpr>
       else
-        DbgSaveContext FALSE, ??InsExpr
+        DbgSaveContext TRUE, ??InsExpr
         DbgSetDestWnd Dest
-        invoke DbgShowObjectHeader, $OfsCStrA(<!"%??ObjExpr!">), xbx, DBG_COLOR_VMT, ??DbgDstWnd
+        invoke DbgShowObjectHeader, $OfsCStrA(<!"%??ObjExpr!">), xbx, DBG_COLOR_OBJECT, ??DbgDstWnd
         DbgShowTxtInfo InfoText, ??DbgDstWnd
         DbgShowSrcInfo ??DbgDstWnd
         mov xdi, [xbx]                                  ;;xbx -> VMT
-        DbgOutHex < Virtual Method Table @ >, DBG_COLOR_VMT, xbx, DBG_COLOR_VMT, ??DbgDstWnd
-        invoke DbgOutTextA, offset(bCRLF), DBG_COLOR_VMT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+        DbgOutHex < Virtual Method Table @ >, DBG_COLOR_VMT, xbx, DBG_COLOR_TEXT, ??DbgDstWnd
+        invoke DbgOutTextA, offset(bCRLF), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
         %for ??TestObject, @CatStr(<!<>, %??ObjExpr, <_InherFrwPath!>>)
           $$ACount = 0
           %repeat @CatStr(<??TestObject>, <_VtlMtdCount>)
@@ -1252,9 +1252,9 @@ DbgVMT macro Expression, InfoText, Dest
             %invoke DbgOutTextA, $OfsCStrA(@CatStr(<!" - >, @SubStr(%$$sz1, ??MtdPfxOfs), \
                                  < method @ !">)), DBG_COLOR_VMT, DBG_EFFECT_NORMAL, ??DbgDstWnd
             DbgOutHex,, @CatStr(<[xdi - sizeof(??>, ??TestObject, <_VMT) - @WordSize].??>, \
-                                ??TestObject, <_VMT.>, %$$sz1), DBG_COLOR_VMT, ??DbgDstWnd
+                                ??TestObject, <_VMT.>, %$$sz1), 0, ??DbgDstWnd
             invoke DbgOutTextA, offset(bCRLF), \
-                                DBG_COLOR_VMT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+                                DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
           endm
         endm
         DbgLoadContext

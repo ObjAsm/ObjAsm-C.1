@@ -498,25 +498,31 @@ DbgConOpen
 DbgLogOpen
 DbgClose
 DbgOutCmd, bCommand, pData
-DbgOutText, pString
-DbgOutTextA, pStringA
-DbgOutTextW, pStringW
-DbgOutTextC, pString, dCount
-DbgOutTextCA, pStringA, dCount
-DbgOutTextCW, pStringW, dCount
+DbgOutText, pString, dColor, dEffects, pDestWndName
+DbgOutTextA, pStringA, dColor, dEffects, pDestWndName
+DbgOutTextW, pStringW, dColor, dEffects, pDestWndName
+DbgOutText_UEFI, pString, dColor, dEffects, pDestWndName
+DbgOutTextA_UEFI, pStringA, dColor, dEffects, pDestWndName
+DbgOutTextW_UEFI, pStringW, dColor, dEffects, pDestWndName
+DbgOutTextC, pString, dCount, dColor, dEffects, pDestWndName
+DbgOutTextCA, pStringA, dCount, dColor, dEffects, pDestWndName
+DbgOutTextCW, pStringW, dCount, dColor, dEffects, pDestWndName
+DbgOutTextC_UEFI, pString, dCount, dColor, dEffects, pDestWndName
+DbgOutTextCA_UEFI, pStringA, dCount, dColor, dEffects, pDestWndName
+DbgOutTextCW_UEFI, pStringW, dCount, dColor, dEffects, pDestWndName
 DbgOutBitmap, hBitmap, pDestWndName
-DbgOutMem, pMemory, dCount, dType, pDestWndName
+DbgOutMem, pMemory, dCount, dType, dMemColor, dRepColor, pDestWndName
+DbgOutMem_UEFI, pMemory, dCount, dType, dColor, pDestWndName
 DbgOutMsg, dMsgID, dColor, pDestWndName
 DbgOutApiErr, dError, pDestWndName
 DbgOutComErr, dError, pDestWndName
-DbgOutInterface, pGUID, dCplor, pDestWndName
-DbgOutInterfaceName, pGUID, dCplor, pDestWndName
-DbgOutComponent, pGUID, dCplor, pDestWndName
-DbgOutComponentName, pGUID, dCplor, pDestWndName
+DbgOutInterface, pGUID, dColor, pDestWndName
+DbgOutInterfaceName, pGUID, dColor, pDestWndName
+DbgOutComponent, pGUID, dColor, pDestWndName
+DbgOutComponentName, pGUID, dColor, pDestWndName
 DbgShowObjectHeader, pObjectName, pInstance, dColor, pDestWndName
 DbgShowObjectHeader_UEFI, pObjectName, pInstance, dColor, pDestWndName
 DbgShowTraceMethod, pMName, dCount, pTicks, pDestWndName
-
 DbgOutFPU, pDestWndName, dColor
 DbgOutFPU_UEFI, pDestWndName, dColor
 

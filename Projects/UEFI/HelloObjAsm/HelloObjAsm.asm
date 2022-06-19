@@ -48,18 +48,6 @@ start proc uses xbx xdi xsi ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TAB
   OCall pShape_2::Rectangle.GetPerimeter                ;Invoke GetPerimeter method
   DbgDec eax, "Rectangle Perimeter"                     ;Result = 50
 
-  DbgLine
-  fldz
-  fld1
-  fld1
-  fld1
-  faddp st(1), st(0)
-  DbgFPU
-  DbgHex eax
-  DbgObject pShape_2::Rectangle
-  DbgVMT pShape_2::Rectangle
-  DbgLine2
-
   Destroy pShape_2                                      ;Invoke Rectangle's Done and disposes it
   Destroy pShape_1                                      ;Invoke Triangle's Done and disposes it
 

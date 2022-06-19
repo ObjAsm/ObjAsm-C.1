@@ -851,8 +851,6 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   DbgOutBitmap proto :HANDLE, :POINTER
   DbgOutApiErr proto :DWORD, :POINTER
   DbgOutComErr proto :DWORD, :POINTER
-  DbgOutFPU proto :POINTER, :DWORD
-  DbgShowObjectHeader proto :POINTER, :POINTER, :DWORD, :POINTER
   DbgShowTraceMethod proto :POINTER, :DWORD, :POINTER, :POINTER
 
   DbgOutInterfaceName proto :ptr GUID, :DWORD, :POINTER
@@ -860,19 +858,26 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   DbgOutComponentName proto :ptr GUID, :DWORD, :POINTER
   DbgOutComponent proto :ptr GUID, :DWORD, :POINTER
 
+  DbgOutMsg proto :DWORD, :DWORD, :POINTER
 elseif TARGET_PLATFORM eq PLATFORM_UEFI
   MemAlloc_UEFI proto :DWORD, :DWORD
   MemReAlloc_UEFI proto :POINTER, :DWORD, :DWORD, :DWORD
   MemFree_UEFI proto :POINTER
 
-  DbgOutFPU_UEFI proto :POINTER, :DWORD
-  DbgShowObjectHeader_UEFI proto :POINTER, :POINTER, :DWORD, :POINTER
-
   DbgOutTextA textequ <DbgOutTextA_UEFI>
   DbgOutTextW textequ <DbgOutTextW_UEFI>
+  DbgOutMem textequ <DbgOutMem_UEFI> 
   DbgOutFPU textequ <DbgOutFPU_UEFI>
   DbgShowObjectHeader textequ <DbgShowObjectHeader_UEFI> 
 endif
+
+DbgOutTextA proto :POINTER, :DWORD, :DWORD, :POINTER
+DbgOutTextW proto :POINTER, :DWORD, :DWORD, :POINTER
+DbgOutTextCA proto :POINTER, :DWORD, :DWORD, :DWORD, :POINTER
+DbgOutTextCW proto :POINTER, :DWORD, :DWORD, :DWORD, :POINTER
+DbgOutMem proto :POINTER, :DWORD, :DWORD, :DWORD, :DWORD, :POINTER
+DbgOutFPU proto :POINTER, :DWORD
+DbgShowObjectHeader proto :POINTER, :POINTER, :DWORD, :POINTER
 
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   DbgOutText textequ <DbgOutTextA>
@@ -883,14 +888,6 @@ elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
 else
   echo Warning: incompatible TARGET_STR_TYPE
 endif
-
-DbgOutTextA proto :POINTER, :DWORD, :DWORD, :POINTER
-DbgOutTextW proto :POINTER, :DWORD, :DWORD, :POINTER
-DbgOutTextCA proto :POINTER, :DWORD, :DWORD, :DWORD, :POINTER
-DbgOutTextCW proto :POINTER, :DWORD, :DWORD, :DWORD, :POINTER
-DbgOutMem proto :POINTER, :DWORD, :DWORD, :POINTER
-
-DbgOutMsg proto :DWORD, :DWORD, :POINTER
 
 
 ;OOP model procedures
