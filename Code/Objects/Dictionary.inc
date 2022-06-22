@@ -143,7 +143,6 @@ Method Dictionary.Hash, uses xbx, pKey:PSTRING
     else
 ;      invoke StrSize, pKey
 
-      int 3
       mov xax, pKey
       mov xcx, xax
       mov xbx, xax

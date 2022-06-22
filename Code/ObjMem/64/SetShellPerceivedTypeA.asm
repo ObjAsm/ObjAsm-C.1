@@ -13,6 +13,17 @@ TARGET_STR_TYPE = STR_TYPE_ANSI
 TARGET_STR_AFFIX textequ <A>
 ProcName equ <SetShellPerceivedTypeA>
 
-% include &ObjMemPath&X\SetShellPerceivedTypeT.asm
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  SetShellPerceivedTypeA
+; Purpose:    Set shell perception of a file type.
+; Arguments:  Arg1: TRUE = system wide perseption, FALSE = user account only.
+;             Arg2: -> File extension (without dot).
+;             Arg3: -> Type (Folder, Text, Image, Audio, Video, Compressed, Document, System, 
+;                            Application, Gamemedia, Contacts)
+; Return:     eax = HRESULT.
+; Note:       To retrieve the perceived type use the AssocGetPerceivedType API.
+;             dGlobal = TRUE requires adminitrative rights.
+
+% include &ObjMemPath&Common\SetShellPerceivedTypeTX.inc
 
 end

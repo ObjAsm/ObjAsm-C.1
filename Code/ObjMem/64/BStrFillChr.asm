@@ -12,6 +12,6 @@
 TARGET_STR_TYPE = STR_TYPE_WIDE
 TARGET_STR_AFFIX textequ <W>
 
-% include &ObjMemPath&X\BStrFillChr.asm
+% include &ObjMemPath&Common\BStrFillChrTX.inc
 
 end

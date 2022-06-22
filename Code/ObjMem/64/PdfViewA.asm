@@ -13,6 +13,15 @@ TARGET_STR_TYPE = STR_TYPE_ANSI
 TARGET_STR_AFFIX textequ <A>
 ProcName equ <PdfViewA>
 
-% include &ObjMemPath&X\PdfViewT.asm
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  PdfViewA
+; Purpose:    Displays a PDF document on a named destination.
+; Arguments:  Arg1: Parent HANDLE.
+;             Arg2: -> PDF document.
+;             Arg3: -> Destination.
+; Return:     eax = HINSTANCE. See ShellExecute return values. 
+;             A value greater than 32 indicates success.
+
+% include &ObjMemPath&Common\PdfViewTX.inc
 
 end

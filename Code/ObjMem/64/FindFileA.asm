@@ -25,6 +25,6 @@ FIND_FILE_PARAMSA struct
   cPreStr     CHRA       MAX_PATH DUP(?)
 FIND_FILE_PARAMSA ends
 
-% include &ObjMemPath&X\FindFileT.asm
+% include &ObjMemPath&Common\FindFileTX.inc
 
 end

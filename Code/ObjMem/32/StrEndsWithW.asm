@@ -13,6 +13,13 @@ TARGET_STR_TYPE = STR_TYPE_WIDE
 TARGET_STR_AFFIX textequ <W>
 ProcName equ <StrEndsWithW>
 
-% include &ObjMemPath&X\StrEndsWithT.asm
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  StrEndsWithW
+; Purpose:    Compares the ending of a string.
+; Arguments:  Arg1: -> Analized string.
+;             Arg2: -> Suffix string.
+; Return:     eax = TRUE of the ending matches, otherwise FALSE.
+
+% include &ObjMemPath&Common\StrEndsWithTXP.inc
 
 end

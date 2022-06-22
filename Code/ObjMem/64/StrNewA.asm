@@ -11,7 +11,15 @@
 % include &ObjMemPath&ObjMemWin.cop
 ProcName equ <StrNewA>
 
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  StrNewA
+; Purpose:    Allocate a new copy of the source string.
+;             If the pointer to the source string is NULL, StrNew returns NULL and doesn't allocate
+;             any memory space. Otherwise, StrNew makes a duplicate of the source string.
+;             The allocated memory space is Length(String) + ZTC.
+; Arguments:  Arg1: -> Source WIDE string.
+; Return:     rax -> New string copy.
 
-% include &ObjMemPath&X\StrNewT.asm
+% include &ObjMemPath&Common\StrNewTXP.inc
 
 end

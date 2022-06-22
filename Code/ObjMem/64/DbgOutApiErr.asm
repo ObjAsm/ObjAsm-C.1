@@ -8,6 +8,6 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&X\DbgOutApiErr.asm
+% include &ObjMemPath&Common\DbgOutApiErrX.inc
 
 end

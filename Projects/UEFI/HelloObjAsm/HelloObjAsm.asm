@@ -47,14 +47,14 @@ start proc uses xbx xdi xsi ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TAB
 
   OCall pShape_2::Rectangle.GetPerimeter                ;Invoke GetPerimeter method
   DbgDec eax, "Rectangle Perimeter"                     ;Result = 50
-
+  
   Destroy pShape_2                                      ;Invoke Rectangle's Done and disposes it
   Destroy pShape_1                                      ;Invoke Triangle's Done and disposes it
 
   invoke [xbx].SetAttribute, xbx, EFI_LIGHTGREEN or EFI_BACKGROUND_BLACK
   invoke [xbx].OutputString, xbx, $OfsCStr(13, 10, "press a key to continue...")
 
-  invoke WaitforKey
+  invoke Wait4Key
 
   invoke [xbx].SetAttribute, xbx, EFI_YELLOW or EFI_BACKGROUND_BLACK
   invoke [xbx].OutputString, xbx, $OfsCStr(13, 10, "bye bye...", 13, 10)

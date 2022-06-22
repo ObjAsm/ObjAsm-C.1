@@ -21,6 +21,6 @@ ProcName textequ <DbgShowObjectHeader>
 ;             Arg3: -> Destination Window name.
 ; Return:     Nothing.
 
-% include &ObjMemPath&X\DbgShowObjectHeaderX.asm
+% include &ObjMemPath&Common\\DbgShowObjectHeaderXP.inc
 
 end

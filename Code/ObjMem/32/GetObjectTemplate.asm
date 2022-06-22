@@ -1,5 +1,5 @@
 ; ==================================================================================================
-; Title:      GetObjectTemplate.asm
+; Title:      \GetObjectTemplateX.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
 ; Notes:      Version C.1.0, October 2017
@@ -8,6 +8,14 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&X\GetObjectTemplate.asm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  GetObjectTemplate
+; Purpose:    Get the template address of an object type ID.
+; Arguments:  Arg1: Object type ID.
+; Return:     eax -> Object template or NULL if not found.
+;             ecx = Object template size or zero if not found.
+
+% include &ObjMemPath&Common\\GetObjectTemplateXP.inc
 
 end

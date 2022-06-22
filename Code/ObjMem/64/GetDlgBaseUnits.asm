@@ -8,6 +8,6 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&X\GetDlgBaseUnits.asm
+% include &ObjMemPath&Common\GetDlgBaseUnitsX.inc
 
 end

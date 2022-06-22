@@ -8,6 +8,6 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&X\ComEventsAdvice.asm
+% include &ObjMemPath&Common\ComEventsAdviceX.inc
 
 end

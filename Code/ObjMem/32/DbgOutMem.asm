@@ -5,7 +5,7 @@
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
 ;             Version C.1.1 June 2022
-;               - Bitness and Platform independant code.
+;               - Bitness and Platform independent code.
 ;               - UEFI adaptation and addition of UI64, I64, H64.
 ; ==================================================================================================
 
@@ -14,6 +14,7 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 ProcName equ <DbgOutMem>
+BYTES_PER_LINE equ 16     ;Must be a multiple of 8
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutMem
@@ -26,6 +27,6 @@ ProcName equ <DbgOutMem>
 ;             Arg6: -> Destination Window name.
 ; Return:     Nothing.
 
-% include &ObjMemPath&X\DbgOutMemXP.inc
+% include &ObjMemPath&Common\DbgOutMemXP.inc
 
 end

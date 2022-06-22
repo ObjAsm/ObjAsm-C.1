@@ -19,6 +19,6 @@ ProcName textequ <DbgOutFPU_UEFI>
 ;             Arg2: Text RGB color.
 ; Return:     Nothing.
 
-% include &ObjMemPath&X\DbgOutFPUX.asm
+% include &ObjMemPath&Common\\DbgOutFPUXP.inc
 
 end

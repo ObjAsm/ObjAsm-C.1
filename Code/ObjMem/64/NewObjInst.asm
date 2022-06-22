@@ -18,6 +18,6 @@ ProcName equ <NewObjInst>
 ; Arguments:  Arg1: Object ID.
 ; Return:     rax -> New object instance or NULL if failed.
 
-% include &ObjMemPath&X\NewObjInst.asm
+% include &ObjMemPath&Common\NewObjInstXP.inc
 
 end

@@ -10,7 +10,7 @@
 
 PrintC macro mensaje, args:VARARG
   local pos1
-  
+
   mensaje1 textequ <>
   porc = 0
   cambioactivado = 0
@@ -22,30 +22,30 @@ PrintC macro mensaje, args:VARARG
       if porc eq 0
         mensaje1 catstr mensaje1, <&char>
       elseif porc eq 2
-        if cambiacolor eq 0 
+        if cambiacolor eq 0
           mensaje1 catstr mensaje1, <%>,lastchar, <&char>
         endif
         porc = 0
       elseif porc eq 1
         cambiacolor = 0
-        lastchar textequ <&char> 
+        lastchar textequ <&char>
         ifidn lastchar, <N>
           cambiacolor = 1
           newueficolor = EFI_LIGHTGRAY
         endif
-        ifidn lastchar, <H> 
+        ifidn lastchar, <H>
           cambiacolor = 1
           newueficolor = EFI_WHITE
         endif
-        ifidn lastchar, <E> 
+        ifidn lastchar, <E>
           cambiacolor = 1
           newueficolor = EFI_RED
         endif
-        ifidn lastchar, <A> 
+        ifidn lastchar, <A>
           cambiacolor = 1
           newueficolor = EFI_YELLOW
         endif
-        ifidn lastchar, <B> 
+        ifidn lastchar, <B>
           cambiacolor = 1
           newueficolor = EFI_BLUE
         endif
@@ -59,9 +59,9 @@ PrintC macro mensaje, args:VARARG
         endif
       endif
     endif
-  endm 
+  endm
   if porc eq 2
-    if cambiacolor eq 0 
+    if cambiacolor eq 0
       mensaje1 catstr mensaje1, <%>, lastchar, <&char>
     endif
   endif
@@ -117,7 +117,7 @@ Print macro mensaje, args:VARARG
     CStr UEFI_Error_24, "EFI_PROTOCOL_ERROR"
 
     cuenta = 1
-    EFI_ERROR$ dq offset UEFI_Error_0 
+    EFI_ERROR$ dq offset UEFI_Error_0
     repeat 24
       % dq offset @CatStr(<UEFI_Error_>, %cuenta)
       cuenta = cuenta + 1
@@ -128,7 +128,7 @@ Print macro mensaje, args:VARARG
   cuenta = 0
   for arg,<args>
     @CatStr(<argumento_>, %cuenta) textequ <arg>
-    cuenta = cuenta + 1 
+    cuenta = cuenta + 1
   endm
   mov CHR ptr UEFI_Print_buffer1, 0
 
@@ -146,14 +146,14 @@ Print macro mensaje, args:VARARG
 
       tk_3 instr 1, < >, <&char>
       if (tk_3 eq 1) AND (abierto eq 0)
-        ifidn tipoarg, <d> 
+        ifidn tipoarg, <d>
           invoke uqword2decW, addr UEFI_Print_buffer2, @CatStr(<argumento_>, %cuenta)
           invoke StrCat, addr UEFI_Print_buffer1, addr UEFI_Print_buffer2
-        endif      
-        ifidn tipoarg, <h> 
+        endif
+        ifidn tipoarg, <h>
           invoke qword2hexW, addr UEFI_Print_buffer2, @CatStr(<argumento_>, %cuenta)
           invoke StrCat, addr UEFI_Print_buffer1, addr UEFI_Print_buffer2
-        endif      
+        endif
 
         ifidn tipoarg, <r>
           cuento = 1
@@ -168,8 +168,8 @@ Print macro mensaje, args:VARARG
           endm
           .endif
           invoke StrCat, addr UEFI_Print_buffer1, rdx
-        endif  
-        abierto = 1    
+        endif
+        abierto = 1
         tipoarg textequ <>
         cuenta = cuenta + 1
       endif
@@ -204,15 +204,15 @@ Print macro mensaje, args:VARARG
       invoke StrCat, addr UEFI_Print_buffer1, addr @CatStr(<UEFI_Print_Message_>, %UEFI_Print_Message, <_>, %parte)
     endif
   endif
-  mov rcx, pConsoleOut                                     
-  invoke [rcx].ConOut.OutputString, rcx, addr UEFI_Print_buffer1 
+  mov rcx, pConsoleOut
+  invoke [rcx].ConOut.OutputString, rcx, addr UEFI_Print_buffer1
 endm
 
 
 PrintLn macro args:VARARG
   Print args
-  mov rcx, pConsoleOut                                     
-  invoke [rcx].ConOut.OutputString, rcx, offset cCRLF 
+  mov rcx, pConsoleOut
+  invoke [rcx].ConOut.OutputString, rcx, offset cCRLF
 endm
 
 
@@ -221,7 +221,7 @@ TimingUEFIInit macro
   TimeUEFI1 EFI_TIME {}
   TimeUEFI2 EFI_TIME {}
   capabilities EFI_TIME_CAPABILITIES {}
-  
+
   miliseconds REAL8   0.0
   seconds     UINT32  0
   nanoseconds SDWORD  0
@@ -235,7 +235,7 @@ TimingUEFIInit macro
 
 .code
   mov r8, pRuntimeServices
-  invoke [r8].EFI_RUNTIME_SERVICES.GetTime, addr TimeUEFI1, addr capabilities   
+  invoke [r8].EFI_RUNTIME_SERVICES.GetTime, addr TimeUEFI1, addr capabilities
 endm
 
 
@@ -244,7 +244,7 @@ TimingUEFIEnding macro
   invoke [rax].EFI_RUNTIME_SERVICES.GetTime, addr TimeUEFI2, NULL
   xor ecx, ecx
   xor rax, rax
-  mov al, TimeUEFI2.Hour 
+  mov al, TimeUEFI2.Hour
   .if al > TimeUEFI1.Hour
     sub al, TimeUEFI1.Hour
     mov ecx, 60*60
@@ -256,7 +256,7 @@ TimingUEFIEnding macro
     mov ecx, 60*60
     mul ecx
     mov ecx, eax
-  .endif 
+  .endif
 
   xor rax, rax
   mov al, TimeUEFI2.Minute
@@ -266,7 +266,7 @@ TimingUEFIEnding macro
     mul edx
     movsx edx, al
     add ecx, edx
-  .endif 
+  .endif
 
   xor rax, rax
   mov al, TimeUEFI2.Second
@@ -308,71 +308,33 @@ TimingUEFIEnding macro
   invoke [rcx].ConOut.OutputString, rcx, addr timingbuffer
 
   qunlock64 mut_eve, 4
-  
+
   @@lo4:
   ;pause
-  ;jmp @@lo4 
+  ;jmp @@lo4
 endm
 
 
 .code
-WaitforKey proc
-  local xIndex:XWORD 
-  local dDone:DWORD
-    
-  mov xIndex, EVT_NOTIFY_SIGNAL
-    
-get_key_wait_for_event:
-  mov xdx, pConsoleIn
-  lea xdx, [xdx].ConIn.WaitForKey
-  mov xax, pBootServices
-  invoke [xax].EFI_BOOT_SERVICES.WaitForEvent, 1, xdx, addr xIndex
-  cmp xax, EFI_SUCCESS
-  jnz get_key_fin
-
-get_key_read_it:
-  lea xdx, xIndex                     ;Out: EFI_INPUT_KEY
-  mov xcx, pConsoleIn
-  call [xcx].ConIn.ReadKeyStroke
-  cmp xax, EFI_SUCCESS
-  jz get_key_done                     ;The keystroke information was returned.
-
-  and dDone, 0
-
-  mov xcx, EFI_NOT_READY
-  cmp xax, xcx
-  jz get_key_wait_for_event           ;There was no keystroke data available.
-
-;  cmp rax,EFI_DEVICE_ERROR
-;  jz get_key_done    ; The keystroke information was not returned due to hardware errors.
-
-get_key_done:
-  mov eax, dDone
-
-get_key_fin:
-    ret
-WaitforKey endp
-
 Wait4Key proc uses xbx xsi
-  local xIndex:XWORD 
-    
+  local xKeyEvent:XWORD
+
   mov xbx, pConsoleIn
   mov xsi, pBootServices
   .while TRUE
-    mov xIndex, EVT_NOTIFY_SIGNAL
-    invoke [xsi].EFI_BOOT_SERVICES.WaitForEvent, 1, addr [xbx].ConIn.WaitForKey, addr xIndex
-    .if xax != EFI_SUCCESS
-      invoke [xbx].ConIn.ReadKeyStroke, xbx, addr xIndex
-      .if xax != EFI_SUCCESS
-        .continue .if xax == EFI_NOT_READY
-      .endif
+    mov xKeyEvent, EVT_NOTIFY_SIGNAL
+    invoke [xsi].EFI_BOOT_SERVICES.WaitForEvent, 1, addr [xbx].ConIn.WaitForKey, addr xKeyEvent
+    .if xax == EFI_SUCCESS
+      invoke [xbx].ConIn.ReadKeyStroke, xbx, addr xKeyEvent
+      .continue .if xax == EFI_NOT_READY
+      .break
     .endif
   .endw
   ret
 Wait4Key endp
 
 
-RAWINTERFACE iEFIUtil 
+RAWINTERFACE iEFIUtil
   STDFUNC PrintMemoryDescriptor, <voidarg>, pConsoleOut:PCONOUT, pDescriptor:ptr EFI_MEMORY_DESCRIPTOR
   STDFUNC PrintGraphicsModeInfo, <voidarg>, pConsoleOut:PCONOUT, ModeNumber:DWORD, pGfxMode:ptr EFIGraphicsMode, showHeader:BOOLEAN
   STDFUNC CompareGUID, <voidarg>, guidA:ptr, guidB:ptr
@@ -540,18 +502,18 @@ EFIPrintGfxInfo proc uses rsi r10 r11 pConsoleOut:PCONOUT, ModeNumber:DWORD, pGf
       pConsoleOut->OutputString(pConsoleOut, L"Mode       | Resolution              | Stride     | Pixel Format \r\n")
       pConsoleOut->OutputString(pConsoleOut, L"-----------+-------------------------+------------+--------------------\r\n")
     .endif
-  
+
     PrintHexDWORD(ModeNumber)
     pConsoleOut->OutputString(pConsoleOut, L" | ")
-  
+
     PrintHexDWORD((EFI_GRAPHICS_OUTPUT_MODE_INFORMATION ptr [rsi]).HorizontalResolution)
     pConsoleOut->OutputString(pConsoleOut, L" x ")
     PrintHexDWORD((EFI_GRAPHICS_OUTPUT_MODE_INFORMATION ptr [rsi]).VerticalResolution)
     pConsoleOut->OutputString(pConsoleOut, L" | ")
-    
+
     PrintHexDWORD((EFI_GRAPHICS_OUTPUT_MODE_INFORMATION ptr [rsi]).PixelsPerScanLine)
     pConsoleOut->OutputString(pConsoleOut, L" | ")
-    
+
     mov r10d, (EFI_GRAPHICS_OUTPUT_MODE_INFORMATION ptr [rsi]).PixelFormat
     .switch r10
       .case EFI_PIX_FMT_PixelRedGreenBlueReserved8BitPerColor
@@ -573,19 +535,19 @@ EFIPrintGfxInfo endp
 
 EFIPrintMemDescriptor proc uses rsi r10 r11 pConsoleOut:PCONOUT, pDescriptor:ptr EFI_MEMORY_DESCRIPTOR
   mov rsi, rdx
-  if 0 
+  if 0
     PrintHexDWORD((EFI_MEMORY_DESCRIPTOR ptr [rsi])._Type)
     pConsoleOut->OutputString(pConsoleOut, L" | ")
-  
+
     PrintHexQWORD((EFI_MEMORY_DESCRIPTOR ptr [rsi]).PhysicalStart)
     pConsoleOut->OutputString(pConsoleOut, L" | ")
-  
+
     PrintHexQWORD((EFI_MEMORY_DESCRIPTOR ptr [rsi]).VirtualStart)
     pConsoleOut->OutputString(pConsoleOut, L" | ")
-  
+
     PrintHexQWORD((EFI_MEMORY_DESCRIPTOR ptr [rsi]).NumberOfPages)
     pConsoleOut->OutputString(pConsoleOut, L" | ")
-  
+
     PrintHexQWORD((EFI_MEMORY_DESCRIPTOR ptr [rsi]).Attribute)
     pConsoleOut->OutputString(pConsoleOut, &cCRLF)
   endif

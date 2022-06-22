@@ -13,8 +13,8 @@
 ; Procedure:  MemFree_UEFI
 ; Purpose:    Dispose a memory block.
 ; Arguments:  Arg1: -> Memory block.
-; Return:     eax = EFI_SUCCESS or an UEFI error code.
+; Return:     rax = EFI_SUCCESS or an UEFI error code.
 
-% include &ObjMemPath&X\MemFree_UEFI.asm
+% include &ObjMemPath&Common\MemFreeX_UEFI.inc
 
 end

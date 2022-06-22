@@ -13,6 +13,18 @@ TARGET_STR_TYPE = STR_TYPE_WIDE
 TARGET_STR_AFFIX textequ <W>
 ProcName equ <SetShellAssociationW>
 
-% include &ObjMemPath&X\SetShellAssociationT.asm
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  SetShellAssociationW
+; Purpose:    Set association for a file extension.
+; Arguments:  Arg1: TRUE = system wide association, FALSE = user account only.
+;             Arg2: -> File extension (without dot).
+;             Arg3: -> Verb ("open", "print", "play", "edit", etc.). This verb is displayed
+;                   in the explorer context menu of a file with this extension.
+;             Arg4: -> Application to associate with (full path).
+;             Arg5: -> Application arguments, usually $OfsCStr("%1").
+; Return:     eax = HRESULT.
+; Note:       dGlobal = TRUE requires adminitrative rights.
+
+% include &ObjMemPath&Common\SetShellAssociationTX.inc
 
 end

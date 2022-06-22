@@ -8,6 +8,6 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&X\DbgOutComErr.asm
+% include &ObjMemPath&Common\DbgOutComErrX.inc
 
 end

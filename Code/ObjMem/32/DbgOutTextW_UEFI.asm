@@ -21,6 +21,6 @@ ProcName textequ <DbgOutTextW_UEFI>
 ;             Arg4: -> Destination window WIDE name.
 ; Return:     Nothing.
 
-% include &ObjMemPath&X\DbgOutTextT_UEFI.asm
+% include &ObjMemPath&Common\\DbgOutTextTX_UEFI.inc
 
 end

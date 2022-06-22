@@ -16,8 +16,8 @@
 ;             Arg2: Memory block size in BYTEs.
 ;             Arg3: New memory block size in BYTEs.
 ;             Arg4: Memory block attributes [0, MEM_INIT_ZERO].
-; Return:     xax -> New memory block.
+; Return:     eax -> New memory block.
 
-% include &ObjMemPath&X\MemReAlloc_UEFI.asm
+% include &ObjMemPath&Common\MemReAllocX_UEFI.inc
 
 end

@@ -9,6 +9,6 @@
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
 
-% include &ObjMemPath&X\BStrStartsWith.asm
+% include &ObjMemPath&Common\BStrStartsWithX.inc
 
 end

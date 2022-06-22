@@ -1,5 +1,5 @@
 ; ==================================================================================================
-; Title:      StrEndsWithA.asm
+; Title:      StrRepChrA.asm
 ; Author:     G. Friedrich
 ; Version:    C.1.1
 ; Notes:      Version C.1.1, May 2020
@@ -13,6 +13,13 @@ TARGET_STR_TYPE = STR_TYPE_ANSI
 TARGET_STR_AFFIX textequ <A>
 ProcName equ <StrRepChrA>
 
-% include &ObjMemPath&X\StrRepChrT.asm
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  StrRepChrA
+; Purpose:    Create a new string filled with a given char.
+; Arguments:  Arg1: Used character.
+;             Arg2: Repetition count.
+; Return:     rax -> New string or NULL if failed.
+
+% include &ObjMemPath&Common\StrRepChrTXP.inc
 
 end

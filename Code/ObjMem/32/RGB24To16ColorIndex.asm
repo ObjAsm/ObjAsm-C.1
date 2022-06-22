@@ -15,6 +15,6 @@
 ; Arguments:  Arg1: RGB color.
 ; Return:     eax = Palette index.
 
-% include &ObjMemPath&X\RGB24To16ColorIndex.asm
+% include &ObjMemPath&Common\RGB24To16ColorIndexXP.inc
 
 end

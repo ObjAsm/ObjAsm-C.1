@@ -13,6 +13,13 @@ TARGET_STR_TYPE = STR_TYPE_ANSI
 TARGET_STR_AFFIX textequ <A>
 ProcName equ <StrRepChrA>
 
-% include &ObjMemPath&X\StrRepChrT.asm
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  StrRepChrA
+; Purpose:    Create a new string filled with a given char.
+; Arguments:  Arg1: Used character.
+;             Arg2: Repetition count.
+; Return:     eax -> New string or NULL if failed.
+
+% include &ObjMemPath&Common\StrRepChrTXP.inc
 
 end

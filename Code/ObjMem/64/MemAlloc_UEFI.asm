@@ -14,8 +14,8 @@
 ; Purpose:    Allocate a memory block.
 ; Arguments:  Arg1: Memory block attributes [0, MEM_INIT_ZERO].
 ;             Arg2: Memory block size in BYTEs.
-; Return:     xax -> Memory block or NULL if failed.
+; Return:     rax -> Memory block or NULL if failed.
 
-% include &ObjMemPath&X\MemAlloc_UEFI.asm
+% include &ObjMemPath&Common\MemAllocX_UEFI.inc
 
 end

@@ -8,6 +8,6 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&X\ComPtrAssign.asm
+% include &ObjMemPath&Common\ComPtrAssignX.inc
 
 end

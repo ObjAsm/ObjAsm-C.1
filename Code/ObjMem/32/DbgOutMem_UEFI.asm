@@ -11,6 +11,8 @@
 % include &ObjMemPath&ObjMemUefi.cop
 
 ProcName equ <DbgOutMem_UEFI>
+BYTES_PER_LINE equ 8      ;Must be a multiple of 8
+
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutMem_UEFI
@@ -23,6 +25,6 @@ ProcName equ <DbgOutMem_UEFI>
 ;             Arg6: -> Destination Window name.
 ; Return:     Nothing.
 
-% include &ObjMemPath&X\DbgOutMemXP.inc
+% include &ObjMemPath&Common\DbgOutMemXP.inc
 
 end

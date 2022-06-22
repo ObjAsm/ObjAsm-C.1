@@ -13,6 +13,6 @@ TARGET_STR_TYPE = STR_TYPE_WIDE
 TARGET_STR_AFFIX textequ <W>
 ProcName equ <MsgBoxW>
 
-% include &ObjMemPath&X\MsgBoxT.asm
+% include &ObjMemPath&Common\MsgBoxTX.inc
 
 end
