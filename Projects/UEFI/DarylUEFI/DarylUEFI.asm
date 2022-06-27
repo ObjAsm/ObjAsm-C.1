@@ -1,12 +1,12 @@
 ;==================================================================================================
-; Title:   DarylUEFI.asm
-; Author:  Héctor S. Enrique
-; Version: 1.0.0
-; Purpose: ObjAsm version of "Multiprocessing with UEFI, Daryl McDaniel"
-;          (Software and Solutions Group, Intel), UEFI Plugfest, June 22 - 24, 2010,
-; Version: 1.0.0, December 2022
-;            - First release.
-; Links:   - https://uefi.org/sites/default/files/resources/Plugfest_Multiprocessing-with_UEFI-McDaniel.pdf
+; Title:        DarylUEFI.asm
+; Author:       Héctor S. Enrique
+; Version:      1.0.0
+; Purpose:      ObjAsm version of "Multiprocessing with UEFI, Daryl McDaniel"
+;               (Software and Solutions Group, Intel), UEFI Plugfest, June 22 - 24, 2010,
+; Version:      1.0.0, December 2022
+;               - First release.
+; Links:        https://uefi.org/sites/default/files/resources/Plugfest_Multiprocessing-with_UEFI-McDaniel.pdf
 ; ==================================================================================================
 
 
@@ -200,7 +200,7 @@ start proc uses xbx xdi xsi ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TAB
   invoke [xbx].SetAttribute, xbx, EFI_LIGHTGREEN or EFI_BACKGROUND_BLACK
   invoke [xbx].OutputString, xbx, $OfsCStr(13, 10, "press a key to continue...")
 
-  invoke WaitforKey
+  invoke Wait4Key
 
   invoke [xbx].SetAttribute, xbx, EFI_YELLOW or EFI_BACKGROUND_BLACK
   invoke [xbx].OutputString, xbx, $OfsCStr(13, 10, "bye bye...", 13, 10)
@@ -208,9 +208,8 @@ start proc uses xbx xdi xsi ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TAB
 
   SysDone
 
-  invoke StrNew, $OfsCStr("Complete", 13, 10)
   mov xbx, pBootServices
-  invoke [xbx].EFI_BOOT_SERVICES.Exit, ImageHandle, EFI_SUCCESS, 11*sizeof(CHR), xax
+  invoke [xbx].EFI_BOOT_SERVICES.Exit, ImageHandle, EFI_SUCCESS, 0, NULL
 
 start endp
 

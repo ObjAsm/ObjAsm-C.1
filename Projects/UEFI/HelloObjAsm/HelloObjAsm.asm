@@ -1,6 +1,6 @@
 ; ==================================================================================================
 ; Title:      HelloObjAsm.asm
-; Author:     G. Friedrich
+; Author:     Héctor S. Enrique / G. Friedrich
 ; Version:    C.1.0
 ; Purpose:    ObjAsm UEFI Demo.
 ; Notes:      Version C.1.0, June 2022
@@ -62,9 +62,8 @@ start proc uses xbx xdi xsi ImageHandle:EFI_HANDLE, pSysTable:PTR_EFI_SYSTEM_TAB
 
   SysDone
 
-  invoke StrNew, $OfsCStr("Complete", 13, 10)
   mov xbx, pBootServices
-  invoke [xbx].EFI_BOOT_SERVICES.Exit, ImageHandle, EFI_SUCCESS, 11*sizeof(CHR), xax
+  invoke [xbx].EFI_BOOT_SERVICES.Exit, ImageHandle, EFI_SUCCESS, 0, NULL
 
   ret
 start endp

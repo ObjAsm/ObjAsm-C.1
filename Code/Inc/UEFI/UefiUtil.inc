@@ -8,88 +8,87 @@
 ; ==================================================================================================
 
 
-PrintC macro mensaje, args:VARARG
-  local pos1
-
-  mensaje1 textequ <>
+PrintC macro FormatText, Args:VARARG
+  Mensaje textequ <>
   porc = 0
-  cambioactivado = 0
-  forc char, <&mensaje>
-    tk_1 instr 1,<%>, <&char>
+  CambioActivado = 0
+  CambiaColor = 0
+
+  forc Char, <&FormatText>
+    tk_1 instr 1, <%>, <&Char>
     if tk_1 eq 1
       porc = 1
     else
       if porc eq 0
-        mensaje1 catstr mensaje1, <&char>
+        Mensaje catstr Mensaje, <&Char>
       elseif porc eq 2
-        if cambiacolor eq 0
-          mensaje1 catstr mensaje1, <%>,lastchar, <&char>
+        if CambiaColor eq 0
+          Mensaje catstr Mensaje, <%>, LastChar, <&Char>
         endif
         porc = 0
       elseif porc eq 1
-        cambiacolor = 0
-        lastchar textequ <&char>
-        ifidn lastchar, <N>
-          cambiacolor = 1
-          newueficolor = EFI_LIGHTGRAY
+        CambiaColor = 0
+        LastChar textequ <&Char>
+        ifidn LastChar, <N>
+          CambiaColor = 1
+          NewUefiColor = EFI_LIGHTGRAY
         endif
-        ifidn lastchar, <H>
-          cambiacolor = 1
-          newueficolor = EFI_WHITE
+        ifidn LastChar, <H>
+          CambiaColor = 1
+          NewUefiColor = EFI_WHITE
         endif
-        ifidn lastchar, <E>
-          cambiacolor = 1
-          newueficolor = EFI_RED
+        ifidn LastChar, <E>
+          CambiaColor = 1
+          NewUefiColor = EFI_RED
         endif
-        ifidn lastchar, <A>
-          cambiacolor = 1
-          newueficolor = EFI_YELLOW
+        ifidn LastChar, <A>
+          CambiaColor = 1
+          NewUefiColor = EFI_YELLOW
         endif
-        ifidn lastchar, <B>
-          cambiacolor = 1
-          newueficolor = EFI_BLUE
+        ifidn LastChar, <B>
+          CambiaColor = 1
+          NewUefiColor = EFI_BLUE
         endif
-        ifidn lastchar, <V>
-          cambiacolor = 1
-          newueficolor = EFI_GREEN
+        ifidn LastChar, <V>
+          CambiaColor = 1
+          NewUefiColor = EFI_GREEN
         endif
         porc = 2
-        if (cambioactivado eq 0) AND (cambiacolor eq 1)
-          cambioactivado = 1
+        if (CambioActivado eq 0) AND (CambiaColor eq 1)
+          CambioActivado = 1
         endif
       endif
     endif
   endm
   if porc eq 2
-    if cambiacolor eq 0
-      mensaje1 catstr mensaje1, <%>, lastchar, <&char>
+    if CambiaColor eq 0
+      Mensaje catstr Mensaje, <%>, LastChar, <&Char>
     endif
   endif
-  if cambioactivado eq 1
+  if CambioActivado eq 1
     mov rax, pConsoleOut                                     ;Colors change
-    % invoke [rax].ConOut.SetAttribute, pConsoleOut, newueficolor
+    % invoke [rax].ConOut.SetAttribute, pConsoleOut, NewUefiColor
   endif
-% PrintLn @CatStr(mensaje1, <,> <args>)
-  if cambioactivado eq 1
+% PrintLn @CatStr(Mensaje, <,>, <Args>)
+  if CambioActivado eq 1
     mov rax, pConsoleOut                                     ;Colors change
     % invoke [rax].ConOut.SetAttribute, pConsoleOut, 07h
   endif
 endm
 
 
-Print macro mensaje, args:VARARG
-  local pos1
-
+Print macro FormatText, Args:VARARG
   ifndef UEFI_Print_Message
     UEFI_Print_Message = 0
   else
     UEFI_Print_Message = UEFI_Print_Message + 1
   endif
-  ifndef UEFI_Print_buffer1
-    .data
-    UEFI_Print_buffer1 CHR 1024 dup (0)
-    UEFI_Print_buffer2 CHR   32 dup (0)
+  ifndef UEFI_Print_OutBBuffer
+    .data?
+    UEFI_Print_OutBBuffer CHR 1024 dup (?)
+    UEFI_Print_AuxBBuffer CHR   32 dup (?)
 
+    .const
     CStr UEFI_Error_0, "EFI_SUCCESS"
     CStr UEFI_Error_1, "EFI_LOAD_ERROR"
     CStr UEFI_Error_2, "EFI_INVALID_PARAMETER"
@@ -125,92 +124,106 @@ Print macro mensaje, args:VARARG
   endif
 
   .code
+  mov CHR ptr UEFI_Print_OutBBuffer, 0
+  mov CHR ptr UEFI_Print_AuxBBuffer, 0
   cuenta = 0
-  for arg,<args>
-    @CatStr(<argumento_>, %cuenta) textequ <arg>
+  for Arg, <Args>
+    @CatStr(<argumento_>, %cuenta) textequ <Arg>
     cuenta = cuenta + 1
   endm
-  mov CHR ptr UEFI_Print_buffer1, 0
+  mov CHR ptr UEFI_Print_OutBBuffer, 0
 
-  cuenta = 0
-  pos1 = 0
-  parte = 0
-  contenido textequ <>
-  tipoarg textequ <>
+  ArgCounter = 0
+  PartialContent textequ <>
+  GetType = 0
+  ContentOpen = 0
 
-  abrecomilla = 0
-
-  forc char,<&mensaje>
-    tk_1 instr 1, <">, <&char>
-    if tk_1 eq 0
-
-      tk_3 instr 1, < >, <&char>
-      if (tk_3 eq 1) AND (abierto eq 0)
-        ifidn tipoarg, <d>
-          invoke uqword2decW, addr UEFI_Print_buffer2, @CatStr(<argumento_>, %cuenta)
-          invoke StrCat, addr UEFI_Print_buffer1, addr UEFI_Print_buffer2
-        endif
-        ifidn tipoarg, <h>
-          invoke qword2hexW, addr UEFI_Print_buffer2, @CatStr(<argumento_>, %cuenta)
-          invoke StrCat, addr UEFI_Print_buffer1, addr UEFI_Print_buffer2
-        endif
-
-        ifidn tipoarg, <r>
-          cuento = 1
-          %mov rax, @CatStr(<argumento_>,%cuenta)
-          and rax, 0FFh
-          .if rax == 0
-            lea rdx, @CatStr(<UEFI_Error_>, 0)
-          repeat 24
-         % .elseif rax == cuento
-            lea rdx, @CatStr(<UEFI_Error_>, %cuento)
-            cuento = cuento + 1
-          endm
-          .endif
-          invoke StrCat, addr UEFI_Print_buffer1, rdx
-        endif
-        abierto = 1
-        tipoarg textequ <>
-        cuenta = cuenta + 1
+  forc Char, <&FormatText>
+    ifidn <&Char>, <%>
+      GetType = 1
+      %ifnb <PartialContent>
+        invoke StrCat, offset UEFI_Print_OutBBuffer, $OfsCStr(@CatStr(<!">, %PartialContent, <!">))
+        PartialContent textequ <>
       endif
 
-      tk_2 instr 1,<%>,<&char>
-      if tk_2 eq 0
-        if abierto eq 1
-          contenido catstr contenido, <&char>
-        else
-          tipoarg catstr tipoarg, <&char>
-        endif
+    elseif GetType eq 1
+      GetType = 0
+      ifidn <&Char>, <d>
+        invoke uqword2decW, offset UEFI_Print_AuxBBuffer, @CatStr(<argumento_>, %ArgCounter)
+        invoke StrCat, offset UEFI_Print_OutBBuffer, offset UEFI_Print_AuxBBuffer
+        ArgCounter = ArgCounter + 1
+      elseifidn <&Char>, <h>
+        invoke qword2hexW, offset UEFI_Print_AuxBBuffer, @CatStr(<argumento_>, %ArgCounter)
+        invoke StrCat, offset UEFI_Print_OutBBuffer, offset UEFI_Print_AuxBBuffer
+        ArgCounter = ArgCounter + 1
+      elseifidn <&Char>, <f>
+        fld @CatStr(<argumento_>, %ArgCounter)  
+        invoke St0ToStr, offset UEFI_Print_AuxBBuffer, 0, 4, 0
+        fstp st
+        invoke StrCat, offset UEFI_Print_OutBBuffer, offset UEFI_Print_AuxBBuffer
+        ArgCounter = ArgCounter + 1
+      elseifidn <&Char>, <r>
+        cuento = 1
+        %mov rax, @CatStr(<argumento_>, %ArgCounter)
+        and rax, 0FFh
+        .if rax == 0
+          mov rdx, offset @CatStr(<UEFI_Error_>, 0)
+        repeat 24
+      % .elseif rax == cuento
+          mov rdx, offset @CatStr(<UEFI_Error_>, %cuento)
+          cuento = cuento + 1
+        endm
+        .endif
+        invoke StrCat, offset UEFI_Print_OutBBuffer, rdx
+        ArgCounter = ArgCounter + 1
+      elseifidn <&Char>, <q>
+        cuento = 1
+        %mov rax, @CatStr(<argumento_>,%ArgCounter)
+        and rax, 0FFh
+        .if rax == 0
+          %lea rdx, @CatStr(<UEFI_File_Error_>, 0)
+        repeat 9
+      % .elseif rax == cuento
+          %lea rdx, @CatStr(<UEFI_File_Error_>, %cuento)
+          cuento = cuento + 1
+        endm
+        .endif
+        invoke StrCat, offset UEFI_Print_OutBBuffer, rdx
+        ArgCounter = ArgCounter + 1
+      elseifidn <&Char>, <%>
+        invoke StrCatChar, offset UEFI_Print_OutBBuffer, '%'
       else
-        if abierto eq 1
-          abierto = 0
-          @CatStr(<CStrW UEFI_Print_Message_>, %UEFI_Print_Message, <_>, %parte, <, !">,%contenido,<!">)
-          invoke StrCat, addr UEFI_Print_buffer1, addr @CatStr(<UEFI_Print_Message_>, %UEFI_Print_Message, <_>, %parte)
-          contenido textequ <>
-          parte = parte + 1
+        %echo Error: unknown argment type <&Char>
+        %echo FormatText
+        ArgCounter = ArgCounter + 1
+      endif 
+
+    elseifidn <&Char>, <">
+      if ContentOpen eq 0
+        ContentOpen = 1
+      else
+        ContentOpen = 0
+        %ifnb <PartialContent>
+          invoke StrCat, offset UEFI_Print_OutBBuffer, $OfsCStr(@CatStr(<!">, %PartialContent, <!">))
+          PartialContent textequ <>
         endif
       endif
+
     else
-      if abrecomilla eq 1
-      else
-        abrecomilla = 1
-        abierto = 1
+      if ContentOpen eq 1
+        PartialContent catstr PartialContent, <&Char>
       endif
+      
     endif
   endm
-  if parte eq 0
-    if abierto
-      @CatStr(<CStrW UEFI_Print_Message_>, %UEFI_Print_Message, <_>, %parte, <, !">,%contenido,<!">)
-      invoke StrCat, addr UEFI_Print_buffer1, addr @CatStr(<UEFI_Print_Message_>, %UEFI_Print_Message, <_>, %parte)
-    endif
-  endif
+  
   mov rcx, pConsoleOut
-  invoke [rcx].ConOut.OutputString, rcx, addr UEFI_Print_buffer1
+  invoke [rcx].ConOut.OutputString, rcx, offset UEFI_Print_OutBBuffer
 endm
 
 
-PrintLn macro args:VARARG
-  Print args
+PrintLn macro Args:VARARG
+  Print Args
   mov rcx, pConsoleOut
   invoke [rcx].ConOut.OutputString, rcx, offset cCRLF
 endm

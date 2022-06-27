@@ -192,7 +192,7 @@ DbgSaveContext macro VarIsRef:=<FALSE>, Var
       endif
       ??VarXBX textequ <xbx>
     else
-      if @InStr(1, RBX_SUBREGS, $Upper(Var)) eq 0
+      if @InStr(1, RBX_SUBREGS, <$Upper(Var)>) eq 0
         if type(Var) eq 8
           mov rbx, Var
           ??VarXBX textequ <rbx>
@@ -776,7 +776,7 @@ DbgBin macro Var:req, InfoText, Dest
   if DEBUGGING
     DbgSaveContext FALSE, Var
     DbgSetDestWnd Dest
-    invoke DbgOutTextA, $OfsCStrA("&Var = "), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextA, $OfsCStrA("&Var = "), DBG_COLOR_DEFAULT_PRE, DBG_EFFECT_NORMAL, ??DbgDstWnd
     if TARGET_BITNESS eq 32
       $$Buffersize = 24h                                ;;32 + "y" + ZTC + Padding(2) = 24h
       sub esp, $$Buffersize                             ;;Reserve a buffer on the stack.
@@ -798,7 +798,7 @@ DbgBin macro Var:req, InfoText, Dest
     stosb
     loop @B
     mov DCHRA ptr [xdi], "y"                            ;;Set "y" specifier and ZTC
-    invoke DbgOutTextA, xsi, DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextA, xsi, DBG_COLOR_DEFAULT_VAR, DBG_EFFECT_NORMAL, ??DbgDstWnd
     add xsp, $$Buffersize                               ;;Restore stack
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
@@ -866,9 +866,9 @@ DbgFloat macro Var:req, InfoText, Dest
         mov xdi, xsp
         sub xsp, DBG_FLOAT_BUFFERSIZE + 20h             ;;Reserve a buffer for the number
         lea xsi, [xsp + 20h]                            ;; Keep stack aligned!
-        invoke DbgOutTextA, $OfsCStrA("&Var = "), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+        invoke DbgOutTextA, $OfsCStrA("&Var = "), DBG_COLOR_DEFAULT_PRE, DBG_EFFECT_NORMAL, ??DbgDstWnd
         invoke St0ToStrA, xsi, 0, DBG_FLOAT_RESOLUTION, 1
-        invoke DbgOutTextA, xsi, DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+        invoke DbgOutTextA, xsi, DBG_COLOR_FPU, DBG_EFFECT_NORMAL, ??DbgDstWnd
         add xsp, DBG_FLOAT_BUFFERSIZE + 20h             ;;Restore stack
         DbgShowTxtInfo InfoText, ??DbgDstWnd
         DbgShowSrcInfo ??DbgDstWnd
@@ -905,12 +905,12 @@ DbgGUID macro Var:req, InfoText, Dest
       invoke GUID2StrA, xdi, ??VarXBX
       if ??DbgDataSize eq @WordSize
         invoke DbgOutTextA, $OfsCStrA($Esc("&Var& -\] ")), \
-                            DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+                            DBG_COLOR_DEFAULT_PRE, DBG_EFFECT_NORMAL, ??DbgDstWnd
       else
         invoke DbgOutTextA, $OfsCStrA("&Var& = "), \
-                            DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+                            DBG_COLOR_DEFAULT_PRE, DBG_EFFECT_NORMAL, ??DbgDstWnd
       endif
-      invoke DbgOutTextA, xdi, DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+      invoke DbgOutTextA, xdi, DBG_COLOR_DEFAULT_VAR, DBG_EFFECT_NORMAL, ??DbgDstWnd
       add xsp, $$Buffersize                             ;;Restore stack
       DbgShowTxtInfo InfoText, ??DbgDstWnd
       DbgShowSrcInfo ??DbgDstWnd
@@ -935,7 +935,7 @@ DbgARGB macro Var:req, InfoText, Dest
     endif
     mov edi, ebx
     shr ebx, 24
-    DbgOutHex <Var = [A:>, DBG_COLOR_TEXT, al, DBG_COLOR_TEXT, ??DbgDstWnd
+    DbgOutHex <Var = [A:>, DBG_COLOR_DEFAULT_PRE, al, DBG_COLOR_TEXT, ??DbgDstWnd
     invoke DbgOutTextA, $OfsCStrA(", "), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
     mov ebx, edi
     DbgOutHex <R:>, DBG_COLOR_RGB_RED, al, DBG_COLOR_RGB_RED, ??DbgDstWnd

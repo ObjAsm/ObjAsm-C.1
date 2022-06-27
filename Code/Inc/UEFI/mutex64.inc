@@ -11,12 +11,11 @@ qlock64 macro trg, position:=<0>
   linear rcx, rax, position
   dec byte ptr [rcx]
   pop rcx
-  endm
+endm
 
 qunlock64 macro trg, position:=<0>
-  
   local @@unlk
-  
+
   push rcx
   lea rax, trg
   linear rcx, rax, position
@@ -25,11 +24,12 @@ qunlock64 macro trg, position:=<0>
   inc byte ptr [rcx]
   @@unlk:
   pop rcx
-  endm
+endm
+
 .data
-    mut_core db 0FFh, 0FFh
-  mut_cpu db 0FFh, 0FFh, 0FFh, 0FFh,0FFh, 0FFh, 0FFh, 0FFh
-  mut_eve db 0FFh, 0FFh, 0FFh, 0FFh,0FFh, 0FFh, 0FFh, 0FFh,0FFh, 0FFh, 0FFh, 0FFh
+  mut_core db 0FFh, 0FFh
+  mut_cpu db 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh
+  mut_eve db 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,0FFh, 0FFh, 0FFh, 0FFh
 
 .code
 qwait64:
@@ -37,13 +37,13 @@ qwait64:
   push rcx
   linear rcx, rax, r10
 
-  @@Loop1a:    
+  @@Loop1a:
   CMP byte ptr [rcx], 0ffh
   JZ @@OutLoop1a
-  pause 
+  pause
   JMP @@Loop1a
   @@OutLoop1a:
-  
+
   pop rcx
 ret
 
@@ -54,14 +54,14 @@ qwaitlock64:
   push rcx
   linear rcx,rax
 
-  @@Loop1:    
+  @@Loop1:
   mov al,[rcx]
   CMP al,0ffh
   JZ @@OutLoop1
-  pause 
+  pause
   JMP @@Loop1
   @@OutLoop1:
-  
+
   ; Lock is free, can we grab it?
   mov bl,0feh
   MOV AL,0ffh
@@ -75,42 +75,42 @@ qwaitlock64:
 ret
 
 lockwait64 MACRO mut_var, position
-    qlock64 &mut_var, &position
-    lea rax, &mut_var
-    mov r10, &position
-    call qwait64
+  qlock64 &mut_var, &position
+  lea rax, &mut_var
+  mov r10, &position
+  call qwait64
 endm
 
 UseConsole macro texto1:VARARG
-    lea rax, mut_eve
-    mov r10, 4
-    call qwait64
-    qlock64 mut_eve, 4
-    mov rcx, pConsoleOut
-    invoke [rcx].ConOut.OutputString, rcx, $OfsCStr(<texto1>,13,10)
-    qunlock64 mut_eve, 4
+  lea rax, mut_eve
+  mov r10, 4
+  call qwait64
+  qlock64 mut_eve, 4
+  mov rcx, pConsoleOut
+  invoke [rcx].ConOut.OutputString, rcx, $OfsCStr(<texto1>, 13, 10)
+  qunlock64 mut_eve, 4
 endm
 
 UseConsoleAddr macro texto1
-    lea rax, mut_eve
-    mov r10, 4
-    call qwait64
-    qlock64 mut_eve, 4
-    mov rcx, pConsoleOut
-    invoke [rcx].ConOut.OutputString, rcx, addr &texto1
-    qunlock64 mut_eve, 4
+  lea rax, mut_eve
+  mov r10, 4
+  call qwait64
+  qlock64 mut_eve, 4
+  mov rcx, pConsoleOut
+  invoke [rcx].ConOut.OutputString, rcx, addr &texto1
+  qunlock64 mut_eve, 4
 endm
 
 UseConsoleC macro color1, texto1:VARARG
-    ifnb color1
-        mov rcx, pConsoleOut                                     ;Colors change
-        invoke [rcx].ConOut.SetAttribute, rcx, <color1>
-    endif
-    lea rax, mut_eve
-    mov r10, 4
-    call qwait64
-    qlock64 mut_eve, 4
-    mov rcx, pConsoleOut
-    invoke [rcx].ConOut.OutputString, rcx, $OfsCStr(<texto1>,13,10)
-    qunlock64 mut_eve, 4
+  ifnb color1
+    mov rcx, pConsoleOut                                     ;Colors change
+    invoke [rcx].ConOut.SetAttribute, rcx, <color1>
+  endif
+  lea rax, mut_eve
+  mov r10, 4
+  call qwait64
+  qlock64 mut_eve, 4
+  mov rcx, pConsoleOut
+  invoke [rcx].ConOut.OutputString, rcx, $OfsCStr(<texto1>, 13, 10)
+  qunlock64 mut_eve, 4
 endm

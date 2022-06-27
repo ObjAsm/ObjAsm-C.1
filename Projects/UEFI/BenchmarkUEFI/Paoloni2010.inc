@@ -6,355 +6,276 @@
 ; Version:    Version 1.0.0, May 2022
 ;             - First release.
 ;
-; Note:       Gabriele Paoloni. 2010. How to Benchmark Code Execution Times on Intel IA-32 and IA-64
-;             Instruction Set Architectures. Retrieved May 26, 2022, from 
+; Note:       Gabriele Paoloni, 2010. How to Benchmark Code Execution Times on Intel IA-32 and IA-64
+;             Instruction Set Architectures. Retrieved May 26, 2022, from
 ;             http://www.intel.com/content/dam/www/public/us/en/documents/white-papers/ia-32-ia-64-benchmark-code-execution-paper.pdf
+;
+;             https://www.mun.ca/biology/scarr/Simplified_calculation_of_variance.html#:~:text=A%20more%20straightforward%20calculation%20recognizes,i2%20)%20%2F%20n%20%2D%202
+;             https://www.mun.ca/biology/scarr/Mean_&_Variance.html#:~:text=easily%20calculated%20as
 ; ==================================================================================================
 
 
-var_calc2 proc inputs:POINTER, .size:QWORD
-  local i:QWORD, i_t:QWORD
-  local acc:REAL8, previous:REAL8, temp_var:REAL8
-  local salto:QWORD
-  local .r9:QWORD
+CalcQwVariance proc pQwValues:POINTER, qCount:QWORD
+  local qStep:QWORD
 
-  fSlv8 acc = 0
-  fSlv8 previous = 0
-  
-  ForLp_df i, 0, .size
-    .if fLT(acc, previous)
-      mov salto, 0
-      jmp overflow
-    .endif
-    fSlv8 previous = acc;
-    mov r9, i
-    shl r9, 3
-    add r9, inputs
-    mov rax, QWORD ptr [r9]
-    mov .r9, rax
-    fild QWORD ptr [r9]
-    fadd acc
-    fstp acc
-  Next i
-
-  fSlv acc = acc * acc
-  .if fLT(acc, previous)
-    mov salto, 1
-    jmp overflow
+  mov rcx, pQwValues
+  xor eax, eax
+  fldz
+  .while rax < qCount
+    fild QWORD ptr [rcx]            ;Load time value
+    fld st(0)                       ;Duplicate
+    fmulp st(1), st(0)              ;Square
+    faddp st(1), st(0)              ;Cummulate
+    add rcx, sizeof(QWORD)          ;Goto next value
+    inc rax                         ;Increment counter
+  .endw
+  fild qCount
+  fmulp                             ;st(0) = Count*Sum(Value^2)
+  ;Check overflow
+  fstsw ax
+  .ifBitSet ax, MASK fOverflow
+    fUnload
+    mov qStep, 0
+    jmp Overflow
   .endif
 
-  fSlv8 temp_var = 0
-  fSlv8 previous = 0
-
-  ForLp_df i, 0, .size
-    .if fLT(temp_var, previous)
-      mov salto, 2
-      jmp overflow
-    .endif
-    fSlv8 previous = temp_var
-    mov r9, i
-    shl r9, 3
-    add r9, inputs
-    fild QWORD ptr [r9]
-    fld st
-    fmul
-    fadd temp_var
-    fstp temp_var
-  Next i
-  fSlvW temp_var *= .size;
-  
-  .if fLT(temp_var, previous)
-    mov salto, 3
-    jmp overflow
-  .endif    
-  fSlv8 = (temp_var - acc) / .size ^ 2
-  ret
-overflow:
-  PrintC "%E \n\n  CRITICAL OVERFLOW ERROR IN var_calc %d \n\n ", salto
-  fSlv = r8NaN
-  ret
-var_calc2 endp
-
-fvar_calc proc inputs: POINTER, .size:QWORD
-  local i:QWORD, i_t:QWORD
-  local acc:REAL8, previous:REAL8, temp_var:REAL8
-  local salto:QWORD
-  local variance:REAL8
-  
-  fSlv8 acc = 0
-  fSlv8 previous = 0
-  
-  ForLp_df i, 0, .size
-    .if fLT(acc, previous)
-      mov salto, 0
-      jmp overflow
-    .endif
-    fSlv8 previous = acc;
-    mov r9, i
-    shl r9, 3
-    add r9, inputs
-    ;add r9, QWORD ptr[r8]
-    fld QWORD ptr [r9]
-    fadd acc
-    fstp acc
-  Next i
-
-  fSlv acc = acc * acc
-  .if fLT(acc, previous)
-    mov salto, 1
-    jmp overflow
+  mov rcx, pQwValues
+  xor eax, eax
+  fldz
+  .while rax < qCount
+    fadd QWORD ptr[rcx]             ;Cummulate
+    add rcx, sizeof(QWORD)          ;Goto next value
+    inc rax                         ;Increment counter
+  .endw                             ;st(0) = Sum(Value)
+  ;Check overflow
+  fstsw ax
+  .ifBitSet ax, MASK fOverflow
+    fUnload 2
+    mov qStep, 1
+    jmp Overflow
   .endif
 
-  fSlv8 temp_var = 0
-  fSlv8 previous = 0
-
-  ForLp_df i, 0, .size
-    .if fLT(temp_var, previous)
-      mov salto, 2
-      jmp overflow
-    .endif
-    fSlv8 previous = temp_var
-    mov r9, i
-    shl r9, 3
-    add r9, inputs
-    fld REAL8 ptr [r9]
-    fld st
-    fmul
-    fadd temp_var
-    fstp temp_var
-  Next i
-  fSlvW temp_var *= .size;
-  
-  .if fLT(temp_var, previous)
-    mov salto, 3
-    jmp overflow
-  .endif    
-  fSlv8 = (temp_var - acc) / .size ^ 2
-  ret
-
-overflow:
-  PrintC "%E \n\n  CRITICAL OVERFLOW ERROR IN var_calc %d \n\n ", salto
-  fSlv = r8NaN
-  ret
-fvar_calc endp
-
-var_calc proc inputs: POINTER, .size:QWORD
-  local i:QWORD, i_t:QWORD
-  local acc:REAL8, previous:REAL8, temp_var:REAL8
-  local salto:QWORD
-  
-  fSlv8 acc = 0
-  fSlv8 previous = 0
-  
-  ForLp_df i, 0, .size
-    .if fLT(acc, previous)
-      mov salto, 0
-      jmp overflow
-    .endif
-    fSlv8 previous = acc;
-    mov r9, i
-    shl r9, 3
-    mov r8, inputs
-    add r9, QWORD ptr[r8]
-    fild QWORD ptr [r9]
-    fadd acc
-    fstp acc
-  Next i
-
-  fSlv acc = acc * acc
-  .if fLT(acc, previous)
-    mov salto, 1
-    jmp overflow
+  fld st(0)                         ;Duplictae
+  fmulp st(1), st(0)                ;Square; st(0) = [Sum(Value)]^2
+  ;Check overflow
+  fstsw ax
+  .ifBitSet ax, MASK fOverflow
+    fUnload 2
+    mov qStep, 2
+    jmp Overflow
   .endif
 
-  fSlv8 temp_var = 0
-  fSlv8 previous = 0
-
-  ForLp_df i, 0, .size
-    .if fLT(temp_var, previous)
-      mov salto, 2
-      jmp overflow
-    .endif
-    fSlv8 previous = temp_var
-    mov r9, i
-    shl r9, 3
-    mov r8, inputs
-    add r9, QWORD ptr[r8]
-    mov r8, QWORD ptr [r9]
-    fSlvW temp_var += r8 ^ 2
-  Next i
-
-  fSlvW temp_var *= .size;
-  
-  .if fLT(temp_var, previous)
-    mov salto, 3
-    jmp overflow
-  .endif    
-  fSlv8 = (temp_var - acc) / .size ^ 2
+  fsubp st(1), st(0)                ;st(0) = Count*Sum(Value^2) - [Sum(Value)]^2 
+  fild qCount
+  fld st(0)                         ;Dulicate
+  fmulp st(1), st(0)                ;Square
+  fdivp st(1), st(0)                ;st(0) = {Count*Sum(Value^2) - [Sum(Value)]^2}/Count^2 
   ret
 
-overflow:
-  PrintC "%E \n\n  CRITICAL OVERFLOW ERROR IN var_calc %d \n\n ", salto
-  fSlv = r8NaN
+Overflow:
+  fclex
+  fld r8NaN
+  PrintC "%E CRITICAL OVERFLOW ERROR IN CalcQwVariance %d", qStep
   ret
-var_calc endp
+CalcQwVariance endp
+
+CalcR8Variance proc pR8Values:POINTER, qCount:QWORD
+  local qStep:QWORD
+
+  mov rcx, pR8Values
+  xor eax, eax
+  fldz
+  .while rax < qCount
+    fild REAL8 ptr [rcx]            ;Load time value
+    fld st(0)                       ;Duplicate
+    fmulp st(1), st(0)              ;Square
+    faddp st(1), st(0)              ;Cummulate
+    add rcx, sizeof(REAL8)          ;Goto next value
+    inc rax                         ;Increment counter
+  .endw
+  fild qCount
+  fmulp                             ;st(0) = Count*Sum(Value^2)
+  ;Check overflow
+  fstsw ax
+  .ifBitSet ax, MASK fOverflow
+    fUnload
+    mov qStep, 0
+    jmp Overflow
+  .endif
+
+  mov rcx, pR8Values
+  xor eax, eax
+  fldz
+  .while rax < qCount
+    fadd REAL8 ptr[rcx]             ;Cummulate
+    add rcx, sizeof(REAL8)          ;Goto next value
+    inc rax                         ;Increment counter
+  .endw                             ;st(0) = Sum(Value)
+  ;Check overflow
+  fstsw ax
+  .ifBitSet ax, MASK fOverflow
+    fUnload 2
+    mov qStep, 1
+    jmp Overflow
+  .endif
+
+  fld st(0)                         ;Duplictae
+  fmulp st(1), st(0)                ;Square; st(0) = [Sum(Value)]^2
+  ;Check overflow
+  fstsw ax
+  .ifBitSet ax, MASK fOverflow
+    fUnload 2
+    mov qStep, 2
+    jmp Overflow
+  .endif
+
+  fsubp st(1), st(0)                ;st(0) = Count*Sum(Value^2) - [Sum(Value)]^2 
+  fild qCount
+  fld st(0)                         ;Dulicate
+  fmulp st(1), st(0)                ;Square
+  fdivp st(1), st(0)                ;st(0) = {Count*Sum(Value^2) - [Sum(Value)]^2}/Count^2 
+  ret
+
+Overflow:
+  fclex
+  fld r8NaN
+  PrintC "%E CRITICAL OVERFLOW ERROR IN CalcR8Variance %d", qStep
+  ret
+CalcR8Variance endp
 
 ;----------------------------------------------------------------------------------------------
 
-BM_start proc
-  local i:QWORD, i_t:QWORD, j:QWORD, j_t:QWORD
-  local spurious:QWORD, k:QWORD, k_t:QWORD
-  local times:POINTER
-  local variances:POINTER, variance:REAL8
+Benchmark proc uses rbx rdi rsi
+  local pTimes:POINTER, pVariances:POINTER, r8Variance:REAL8, qSpurious:QWORD, pMinValues:POINTER
+  local qMaxDiff:QWORD, qMaxTime:QWORD, qMinTime:QWORD, qPrevMinTime:QWORD
+  local r8AccVariance:REAL8, qMaxMaxDiff:QWORD, r8VarOfVars:REAL8, r8VarOfMins:REAL8, r8Temp:REAL8
+  local r8Measure:REAL8, r8Overhead:REAL8
 
-  local min_values:POINTER
-  local max_dev:REAL8, min_time:QWORD, max_time:QWORD, prev_min:QWORD
-  local tot_var:REAL8, max_dev_all:REAL8, var_of_vars:REAL8, var_of_mins:REAL8
-
-  local .r8:QWORD, .rax:QWORD
-  local tempR:REAL8
-
-  local measure:REAL8, overhead:REAL8
-  
-  PrintC "%H Loading hello module..."
-
-  mov r10, pBootServices
-  invoke [r10].EFI_BOOT_SERVICES.AllocatePool, EFI_MEMORY_UC, BOUND_OF_LOOP * 8, addr times
-  .if !times
-    PrintC "%E unable to allocate memory for times\n"
+  mov rsi, pBootServices
+  invoke [rsi].EFI_BOOT_SERVICES.AllocatePool, EFI_MEMORY_UC, BOUND_OF_LOOP*sizeof(REAL8), addr pVariances
+  .if pVariances == NULL
+    PrintC "%EUnable to allocate memory for pVariances"
     mov rax, EFI_ABORTED
-  .endif
-  ForLp_df j, 0, BOUND_OF_LOOP
-    mov r8, times
-    shl rax, 3
-    add r8, rax
-    mov .r8, r8
-    mov r10, pBootServices
-    invoke [r10].EFI_BOOT_SERVICES.AllocatePool, EFI_MEMORY_UC, SIZE_OF_STAT * 8, r8
-    mov r8, .r8
-    mov r9, QWORD ptr [r8]
-    .if !r9
-      PrintC "%E unable to allocate memory for times[%d]\n", j
-      ForLp_df k, 0, j
-        mov rcx, times
-        shl rax, 3
-        add rcx, rax
-        invoke [rax].EFI_BOOT_SERVICES.FreePool, rcx 
-      Next k
-      mov rax, 0;
-    .endif
-  Next j
+  .else
+    invoke [rsi].EFI_BOOT_SERVICES.AllocatePool, EFI_MEMORY_UC, BOUND_OF_LOOP*sizeof(QWORD), addr pMinValues
+    .if pMinValues == NULL
+      PrintC "%EUnable to allocate memory for pMinValues"
+      invoke [rsi].EFI_BOOT_SERVICES.FreePool, pVariances
+    .else
+      invoke [rsi].EFI_BOOT_SERVICES.AllocatePool, EFI_MEMORY_UC, BOUND_OF_LOOP*sizeof(POINTER), addr pTimes
+      .if pTimes == NULL
+        PrintC "%EUnable to allocate memory for pTimes"
+        invoke [rsi].EFI_BOOT_SERVICES.FreePool, pMinValues
+        invoke [rsi].EFI_BOOT_SERVICES.FreePool, pVariances
+        mov rax, EFI_ABORTED
+      .else
+        xor ebx, ebx
+        .while rbx < BOUND_OF_LOOP
+          mov rax, pTimes
+          invoke [rsi].EFI_BOOT_SERVICES.AllocatePool, EFI_MEMORY_UC, SIZE_OF_STAT*sizeof(REAL8), addr [rax + sizeof(POINTER)*rbx]
+          .break .if rax != EFI_SUCCESS
+          inc rbx
+        .endw
+        .if rbx != BOUND_OF_LOOP
+          PrintC "%EUnable to allocate memory for Time[%d]", rbx
+          .while rbx != 0
+            dec rbx
+            mov rdx, pTimes
+            invoke [rsi].EFI_BOOT_SERVICES.FreePool, addr [rdx + sizeof(POINTER)*rbx]
+            dec rbx
+          .endw
+          invoke [rsi].EFI_BOOT_SERVICES.FreePool, pTimes
+          invoke [rsi].EFI_BOOT_SERVICES.FreePool, pMinValues
+          invoke [rsi].EFI_BOOT_SERVICES.FreePool, pVariances
+          mov rax, EFI_ABORTED
+        .else
+          invoke FillTimes, pTimes
 
-  mov r10, pBootServices
-  invoke [r10].EFI_BOOT_SERVICES.AllocatePool, EFI_MEMORY_UC, BOUND_OF_LOOP * 8, ADDR variances
+          xor ebx, ebx
+          mov qSpurious, rbx
+          mov qMaxMaxDiff, rbx
+          .while rbx < BOUND_OF_LOOP
+            mov qMinTime, -1
+            mov qMaxTime, 0
 
-  .if !variances
-    PrintC "%E unable to allocate memory for variances\n"
-    mov rax, 0;
-  .endif
+            xor edi, edi
+            mov rax, pTimes
+            mov rcx, POINTER ptr [rax + sizeof(POINTER)*rbx]
+            .while rdi < SIZE_OF_STAT
+              mov rdx, QWORD ptr [rcx + sizeof(QWORD)*rdi]
+              .if qMinTime > rdx
+                mov qMinTime, rdx
+              .endif
+              .if qMaxTime < rdx
+                mov qMaxTime, rdx
+              .endif
+              inc edi
+            .endw
+            mov rax, qMaxTime
+            sub rax, qMinTime
+            mov qMaxDiff, rax
+            .if rax > qMaxMaxDiff
+              mov qMaxMaxDiff, rax
+            .endif
 
-  mov r10, pBootServices
-  invoke [r10].EFI_BOOT_SERVICES.AllocatePool, EFI_MEMORY_UC, BOUND_OF_LOOP * 8, ADDR min_values
+            mov rcx, pMinValues
+            mov rax, qMinTime
+            mov QWORD ptr [rcx + sizeof(QWORD)*rbx], rax
 
-  .if !min_values
-    PrintC "%E unable to allocate memory for min_values\n"
-    mov rax, 0
-  .endif
+            mov rcx, qPrevMinTime
+            .if (rcx != 0) && (rcx > rax)
+              inc qSpurious
+            .endif
+            mov qPrevMinTime, rax
 
-  invoke Filltimes, times
+            mov rdi, pTimes
+            invoke CalcQwVariance, POINTER ptr [rdi + sizeof(POINTER)*rbx], SIZE_OF_STAT
+            mov rdx, pVariances
+            fst REAL8 ptr [rdx + sizeof(REAL8)*rbx]
+            fst r8Variance
+            fadd r8AccVariance
+            fstp r8AccVariance
+            ;PrintLn "Loop size: %d; Variance: %f; max. Deviation: %d; min. Time: %d", rbx, r8Variance, qMaxDiff, qMinTime
+            inc rbx
+          .endw
 
-  ForLp_df j, 0, BOUND_OF_LOOP
+          invoke CalcR8Variance, pVariances, BOUND_OF_LOOP
+          fstp r8VarOfVars
+          invoke CalcQwVariance, pMinValues, BOUND_OF_LOOP
+          fstp r8VarOfMins
 
-    mov min_time , 0
-    mov max_time , 0
+          mov rax, BOUND_OF_LOOP
+          %fSlv8 r8Temp = r8AccVariance / rax
 
-    ForLp_df i, 0, SIZE_OF_STAT
-      mov r8, times
-      mov r9, j
-      shl r9, 3
-      add r9, r8
-      mov r8, QWORD ptr [r9]
-      mov r9, i
-      shl r9, 3
-      add r8, r9
-      mov r10, QWORD ptr [r8]
-      mov .r8, r10 
-      .if ((min_time == 0) || (min_time > r10))
-        mov min_time, r10
+          PrintLn "Spurious min. values    = %d", qSpurious
+          PrintLn "Max. difference         = %d cycles", qMaxMaxDiff
+          PrintLn "Variance of min. values =%f cycles", r8VarOfMins
+          PrintLn "Total variance          =%f cycles^2", r8Temp
+          PrintLn "Variance of variances   =%f cycles^4", r8VarOfVars
+          
+          invoke LinearRegression, pMinValues, BOUND_OF_LOOP
+          fstp r8Measure
+          fstp r8Overhead
+          PrintLn "Overhead =%f cycles, Code Execution Time =%f cycles", r8Overhead, r8Measure
+
+          ;Release allocated memory
+          mov rsi, pBootServices
+          mov rbx, BOUND_OF_LOOP
+          mov rdi, pTimes
+          .repeat
+            invoke [rsi].EFI_BOOT_SERVICES.FreePool, addr [rdi]
+            add rdi, sizeof(POINTER)
+            dec rbx
+          .until ZERO?
+
+          invoke [rsi].EFI_BOOT_SERVICES.FreePool, pMinValues
+          invoke [rsi].EFI_BOOT_SERVICES.FreePool, pVariances
+          invoke [rsi].EFI_BOOT_SERVICES.FreePool, pTimes
+          mov rax, EFI_SUCCESS
+        .endif
       .endif
-      mov r10, .r8    
-      .if (max_time < r10)
-        mov max_time, r10
-      .endif    
-    Next i
-    mov rax, max_time
-    sub rax, min_time
-    fSlv8 max_dev = max_time - min_time
-
-    mov r8, min_values
-    mov rax, j
-    shl rax, 3
-    add r8, rax
-    mov rax, min_time
-    mov QWORD ptr [r8], rax
-
-    .if ((prev_min != 0) && (prev_min > rax))
-       inc spurious
     .endif
-    .if fGT(max_dev, max_dev_all)
-      fSlv8 max_dev_all = max_dev
-    .endif
-    
-    mov rcx, times
-    mov rax, j
-    shl rax, 3
-    add rcx, rax
-    invoke var_calc, rcx, SIZE_OF_STAT
-    mov rdx, variances
-    mov rax, j
-    shl rax, 3
-    add rdx, rax
-    fst REAL8 ptr [rdx]
-    fst variance 
-    fadd tot_var
-    fstp tot_var
-    PrintC "loop_size:%d $$$$ variance(cycles): %f ; max_deviation: %f ;min time: %d ", j, variance, max_dev, min_time
-    m2m prev_min, min_time, rax
-  Next j
-
-  invoke fvar_calc, variances, BOUND_OF_LOOP
-  fstp var_of_vars 
-  invoke var_calc2, min_values, BOUND_OF_LOOP
-  fstp var_of_mins 
-
-  mov r8, BOUND_OF_LOOP    
-  %fSlv8 tempR = tot_var / r8
-  PrintC "  total number of spurious min values = %d ", spurious
-  PrintC "  total variance             = %f ", tempR
-  PrintC "  absolute max deviation     = %f ", max_dev_all
-  PrintC "  variance of variances      = %f ", var_of_vars
-  PrintC "  variance of minimum values = %f ", var_of_mins
-
-  invoke lineal, min_values, BOUND_OF_LOOP
-  fstp measure
-  fstp overhead
-  PrintC "%H     overhead = %f        measure = %f ", overhead, measure    
-
-  ForLp_df j, 0, BOUND_OF_LOOP
-    mov rdx, times
-    shl rax, 3
-    add rdx, rax
-    mov rcx, QWORD ptr [rdx]
-    mov r10, pBootServices
-    invoke [r10].EFI_BOOT_SERVICES.FreePool, rcx 
-  Next j
-
-  mov r10, pBootServices
-  invoke [r10].EFI_BOOT_SERVICES.FreePool, times 
-  mov r10, pBootServices
-  invoke [r10].EFI_BOOT_SERVICES.FreePool, variances
-  mov r10, pBootServices
-  invoke [r10].EFI_BOOT_SERVICES.FreePool, min_values 
-  mov rax, EFI_SUCCESS
-BM_start endp
+  .endif
+  ret
+Benchmark endp
 
