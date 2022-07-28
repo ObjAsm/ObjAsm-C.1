@@ -7,12 +7,12 @@
 ;            - First release.
 ;
 ; ==================================================================================================
-xword textequ <XWORD> 
+xword textequ <XWORD>
 
 return macro valor1
     mov rax, &valor1
     ret
-endm 
+endm
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc   ;Include & initialize standard modules
 SysSetup OOP, WIDE_STRING, UEFI64;, DEBUG(CON)             ;Load OOP files and basic OS support
@@ -21,7 +21,7 @@ SysSetup OOP, WIDE_STRING, UEFI64;, DEBUG(CON)             ;Load OOP files and b
     Handle           EFI_HANDLE 0
     SystemTablePtr   dq 0
     MpProto          dq 0
-    
+
     ;pConsole         PCONOUT 0
     ;pConsoleIn       PCONIN  0
     ;pBootServices    P_BOOT_SERVICES 0
@@ -46,8 +46,7 @@ SysSetup OOP, WIDE_STRING, UEFI64;, DEBUG(CON)             ;Load OOP files and b
     ScreenBufferM POINTER 0
 .code
 
-include \MASM32\SmplMath\macros\SmplMath\math.inc
-;include \masm32\macros\SmplMath\math.inc
+include \masm32\macros\SmplMath\math.inc
 fSlvSelectBackEnd FPU
 
 include aizawa7.inc
@@ -57,7 +56,7 @@ start PROC FRAME imageHandle:EFI_HANDLE, SystemTable:PTR_EFI_SYSTEM_TABLE
     local Status : EFI_STATUS
     local ivar : dword
     local qvar : qword
- 
+
                                              ;Runtime model initialization
     mov Handle, rcx
     mov SystemTablePtr, rdx
@@ -80,10 +79,10 @@ start PROC FRAME imageHandle:EFI_HANDLE, SystemTable:PTR_EFI_SYSTEM_TABLE
 
     mov rax, pConsoleOut                                     ;Colors change
     invoke [rax].ConOut.SetAttribute, pConsoleOut, 0Eh
-    
+
     CStr HelloMsg,"Plot with UEFI",13,10,13,10
-    mov rcx, pConsoleOut                                     
-    invoke [rcx].ConOut.OutputString, rcx, ADDR HelloMsg 
+    mov rcx, pConsoleOut
+    invoke [rcx].ConOut.OutputString, rcx, ADDR HelloMsg
 
     mov rcx, pConsoleOut                                     ;Colors change
     invoke [rcx].ConOut.SetAttribute, pConsoleOut, 07h
@@ -102,7 +101,7 @@ start PROC FRAME imageHandle:EFI_HANDLE, SystemTable:PTR_EFI_SYSTEM_TABLE
         return EFI_SUCCESS
     .endif
     mov xax, GraphicsOutput
-    mov xbx, [xax].EFI_GRAPHICS_OUTPUT_PROTOCOL.Mode   
+    mov xbx, [xax].EFI_GRAPHICS_OUTPUT_PROTOCOL.Mode
 
     m2m qvar,[xbx].EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE.MaxMode,xax
     ;PrintLn "Max mode     =[ %d  ] ", qvar
@@ -113,10 +112,10 @@ start PROC FRAME imageHandle:EFI_HANDLE, SystemTable:PTR_EFI_SYSTEM_TABLE
     ;m2m ScreenBufferM, [xbx].EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE.FrameBufferBase, xax
     ;DbgHex ScreenBufferM
 
-    mov xbx, [xbx].EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE.Info      
+    mov xbx, [xbx].EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE.Info
     m2m ivar,[xbx].EFI_GRAPHICS_OUTPUT_MODE_INFORMATION.Version, eax
     ;PrintLn "Version      =[ %i  ] ", ivar
-    
+
     m2m ivar,[xbx].EFI_GRAPHICS_OUTPUT_MODE_INFORMATION.HorizontalResolution, eax
     mov cdXSize, eax
     mov xcdXSize, xax
@@ -127,40 +126,40 @@ start PROC FRAME imageHandle:EFI_HANDLE, SystemTable:PTR_EFI_SYSTEM_TABLE
     mov xcdYSize, xax
     ;PrintLn "Screen height=[ %i  ] ", ivar
 
-    ;m2m ivar, [xbx].EFI_GRAPHICS_OUTPUT_MODE_INFORMATION.PixelFormat, eax
-    ;PrintLn "Format       =[ %i  ] ", ivar
+    m2m ivar, [xbx].EFI_GRAPHICS_OUTPUT_MODE_INFORMATION.PixelFormat, eax
+    PrintLn "Format       =[ %i  ] ", ivar
 
     m2m ivar,[xbx].EFI_GRAPHICS_OUTPUT_MODE_INFORMATION.PixelsPerScanLine, eax
     shl xax, 2
     mov Delta, xax
     ;PrintLn "Num of pixel =[ %i  ] ", ivar
-     
+
     ;------------------------------------
 
-    ;PrintLn "waiting for a key..."
-    ;call Wait4Key
+    PrintLn "waiting for a key..."
+    call Wait4Key
 
     mov rcx, pConsoleOut
     invoke [rcx].ConOut.ClearScreen, rcx
- 
+
     invoke IniciaObjeto
 
     invoke MemAlloc_UEFI, 0, sizeof triplete *500000
-    mov todos, xax   
+    mov todos, xax
 
         mov eax , cdXSize
         mov ecx , cdYSize
         mul ecx
         shl eax, 2
     invoke MemAlloc_UEFI, 0, eax
-    mov ScreenBuffer, xax   
+    mov ScreenBuffer, xax
 
 @as1:
     invoke CalculaObjeto
     mov rcx, GraphicsOutput ; EFI_GRAPHICS_OUTPUT_PROTOCOL
-    invoke [rcx].EFI_GRAPHICS_OUTPUT_PROTOCOL.Blt, rcx, ScreenBuffer, BLT_OP_EfiBltBufferToVideo,0,0,0,0,xcdXSize,xcdYSize, Delta 
+    invoke [rcx].EFI_GRAPHICS_OUTPUT_PROTOCOL.Blt, rcx, ScreenBuffer, BLT_OP_EfiBltBufferToVideo,0,0,0,0,xcdXSize,xcdYSize, Delta
     jmp @as1
-   
+
     ;------------------------------------
 
     PrintLn "waiting for a key..."
@@ -171,15 +170,15 @@ start PROC FRAME imageHandle:EFI_HANDLE, SystemTable:PTR_EFI_SYSTEM_TABLE
     invoke MemFree_UEFI, ScreenBuffer
     invoke MemFree_UEFI, todos
 
-    CStr msg_bye, 13, 10,"bye bye...", 13, 10 
-    mov rcx, pConsoleOut                                     
+    CStr msg_bye, 13, 10,"bye bye...", 13, 10
+    mov rcx, pConsoleOut
     invoke [rcx].ConOut.OutputString, rcx, ADDR msg_bye
-    
+
     SysDone
-    
+
     mov rax, pBootServices
     invoke [rax].EFI_BOOT_SERVICES.Exit, Handle, EFI_SUCCESS, 0, NULL
-    
+
 start endp
 
 end start

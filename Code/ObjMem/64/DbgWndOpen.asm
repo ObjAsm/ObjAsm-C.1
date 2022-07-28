@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgWndOpen
 ; Purpose:    Open a "Debug Center" instance.

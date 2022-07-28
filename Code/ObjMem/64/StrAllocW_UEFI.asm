@@ -8,16 +8,18 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
+TARGET_STR_TYPE = STR_TYPE_WIDE
 % include &ObjMemPath&ObjMemUefi.cop
 
 ProcName equ <StrAllocW_UEFI>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrAllocW_UEFI 
 ; Purpose:    Allocate space for a string with n characters.
 ; Arguments:  Arg1: Character count without the ZTC.
 ; Return:     rax -> New allocated string or NULL if failed.
 
-% include &ObjMemPath&Common\StrAllocTX_UEFI.inc
+% include &ObjMemPath&Common\StrAlloc_TX_UEFI.inc
 
 end

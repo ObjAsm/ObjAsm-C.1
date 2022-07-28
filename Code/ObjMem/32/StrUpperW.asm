@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrUpperW
 ; Purpose:    Convert all WIDE string characters into uppercase.

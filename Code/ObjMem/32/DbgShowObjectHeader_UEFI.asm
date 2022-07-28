@@ -12,15 +12,16 @@
 
 ProcName textequ <DbgShowObjectHeader_UEFI>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgShowObjectHeader_UEFI
-; Purpose:    Outputs heading object information.
+; Purpose:    Output heading object information.
 ; Arguments:  Arg1: -> Object Name.
 ;             Arg2: -> Instance.
 ;             Arg3: Text RGB color.
-;             Arg3: -> Destination Window name.
+;             Arg3: -> Destination Window WIDE name.
 ; Return:     Nothing.
 
-% include &ObjMemPath&Common\\DbgShowObjectHeaderXP.inc
+% include &ObjMemPath&Common\\DbgShowObjectHeader_XP.inc
 
 end

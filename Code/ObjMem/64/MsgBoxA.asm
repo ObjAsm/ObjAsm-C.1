@@ -8,11 +8,23 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\Objects\\Lib\\64A\\Objects.cop
-
 TARGET_STR_TYPE = STR_TYPE_ANSI
-TARGET_STR_AFFIX textequ <A>
+% include &ObjMemPath&ObjMemWin.cop
+
 ProcName equ <MsgBoxA>
 
-% include &ObjMemPath&Common\MsgBoxTX.inc
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  MsgBoxA
+; Purpose:    Show a customized MessageBox.
+; Arguments:  Arg1: Parent HANDLE.
+;             Arg2: -> Markup text.
+;             Arg3: -> Caption text.
+;             Arg4: Flags.
+; Return:     eax = Zero if failed, otherwise pressed button ID.
+; Note:       Caption, text etc. are transferred via a caption string which contains a header and
+;             the address of a MsgBoxInfo structure in text form.
+
+% include &ObjMemPath&Common\MsgBox_TX.inc
 
 end

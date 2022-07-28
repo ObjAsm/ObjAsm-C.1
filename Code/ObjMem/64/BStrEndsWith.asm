@@ -8,7 +8,16 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
+% include &ObjMemPath&ObjMemWin.cop
 
-% include &ObjMemPath&Common\BStrEndsWithX.inc
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  BStrEndsWith
+; Purpose:    Compare the ending of a BSTR.
+; Arguments:  Arg1: -> Analized BSTR.
+;             Arg2: -> Suffix BSTR.
+; Return:     eax = TRUE of the ending matches, otherwise FALSE.
+
+% include &ObjMemPath&Common\BStrEndsWith_X.inc
 
 end

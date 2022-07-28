@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  BStrECatChar
 ; Purpose:    Append a WIDE character to a BStr and return the address of the ZTC.

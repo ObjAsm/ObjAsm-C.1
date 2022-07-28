@@ -13,7 +13,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrLRTrimW
 ; Purpose:    Trim blank and tab characters from the beginning and the end of a WIDE string.

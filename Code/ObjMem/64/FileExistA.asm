@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  FileExistA
 ; Purpose:    Check the existence of a file.

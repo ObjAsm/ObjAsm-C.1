@@ -8,18 +8,19 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-
 TARGET_STR_TYPE = STR_TYPE_WIDE
-TARGET_STR_AFFIX textequ <W>
+% include &ObjMemPath&ObjMemWin.cop
+
 ProcName equ <StrStartsWithW>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrStartsWithW 
-; Purpose:    Compares the beginning of a string.
+; Purpose:    Compare the beginning of a string.
 ; Arguments:  Arg1: -> Analized string.
 ;             Arg2: -> Prefix string.
 ; Return:     eax = TRUE of the beginning matches, otherwise FALSE.
 
-% include &ObjMemPath&Common\StrStartsWithTXP.inc
+% include &ObjMemPath&Common\StrStartsWith_TXP.inc
 
 end

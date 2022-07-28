@@ -27,12 +27,12 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  qword2binW
-; Purpose:    Converts a QWORD to its binary WIDE string representation.
+; Purpose:    Convert a QWORD to its binary WIDE string representation.
 ; Arguments:  Arg1: -> Destination buffer.
 ;             Arg2: QWORD value.
 ; Return:     Nothing.
-; Note:       The destination buffer must be at least 130 bytes large to allocate the output string
-;             (64 character words + ZTC = 130 bytes).
+; Note:       The destination buffer must be at least 130 BYTEs large to allocate the output string
+;             (64 character WORDs + ZTC = 130 BYTEs).
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

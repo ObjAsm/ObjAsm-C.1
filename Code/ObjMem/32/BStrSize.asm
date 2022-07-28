@@ -11,12 +11,11 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  BStrSize
 ; Purpose:    Determine the size of a BStr including the zero terminating character + leading DWORD.
 ; Arguments:  Arg1: -> Source BStr.
-; Return:     eax = String size including the length field and zero terminator in bytes.
+; Return:     eax = String size including the length field and zero terminator in BYTEs.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

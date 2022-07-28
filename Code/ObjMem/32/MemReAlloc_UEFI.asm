@@ -8,7 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
+% include &ObjMemPath&ObjMemUefi.cop
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  MemReAlloc_UEFI
 ; Purpose:    Shrink or expand a memory block.
@@ -18,6 +20,6 @@
 ;             Arg4: Memory block attributes [0, MEM_INIT_ZERO].
 ; Return:     eax -> New memory block.
 
-% include &ObjMemPath&Common\MemReAllocX_UEFI.inc
+% include &ObjMemPath&Common\MemReAlloc_X_UEFI.inc
 
 end

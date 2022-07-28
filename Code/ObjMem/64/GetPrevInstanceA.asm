@@ -11,13 +11,12 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  GetPrevInstanceA
 ; Purpose:    Return a HANDLE to a previously running instance of an application.
 ; Arguments:  Arg1: -> ANSI application name.
 ;             Arg2: -> ANSI class name.
-; Return:     eax = Window HANDLE of the application instance or zero if failed.
+; Return:     rax = Window HANDLE of the application instance or zero if failed.
 
 align ALIGN_CODE
 GetPrevInstanceA proc uses rdi pStrIDA:POINTER, pClassNameA:POINTER

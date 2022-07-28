@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrECatW
 ; Purpose:    Append a WIDE string to another and return the address of the ending zero character.

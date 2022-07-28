@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  IsHardwareFeaturePresent
 ; Purpose:    Check if a CPU hardware feature is present on the system.

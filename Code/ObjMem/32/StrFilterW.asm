@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure: StrFilterW
 ; Purpose:   Perform a case sensitive string match test using wildcards (* and ?).

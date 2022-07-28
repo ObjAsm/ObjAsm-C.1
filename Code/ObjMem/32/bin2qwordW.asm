@@ -10,8 +10,6 @@
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
 % include &ObjMemPath&ObjMemWin.cop
 
-.code
-
 NextCharW macro
   movzx ecx, WORD ptr [ebx]
   add ebx, 2
@@ -22,6 +20,7 @@ NextCharW macro
   rcl edx, 1
 endm
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  bin2qwordW
 ; Purpose:    Compute a WIDE string binary representation of a QWORD.

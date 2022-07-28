@@ -13,7 +13,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrLRTrimA
 ; Purpose:    Trim blank and tab characters from the beginning and the end of an ANSI string.

@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrCECatW
 ; Purpose:    Concatenate 2 WIDE strings with length limitation and return the ZTC address. 
@@ -20,7 +19,7 @@
 ; Arguments:  Arg1: -> Destination WIDE character buffer.
 ;             Arg2: -> Source WIDE string.
 ;             Arg3: Maximal number of charachters that the destination string can hold including the
-;                  ZTC.
+;                   ZTC.
 ; Return:     rax -> ZTC.
 
 align ALIGN_CODE

@@ -13,7 +13,6 @@
 externdef HexCharTableW:CHRW
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  Mem2HexW
 ; Purpose:    Convert the memory content into a hex WIDE string representation.

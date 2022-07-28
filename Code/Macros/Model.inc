@@ -612,10 +612,12 @@ SysInit macro Arg1, Arg2
 
     if DEBUGGING
       invoke InitializeCriticalSection, addr DbgCritSect
-      m2m pObjErrTableStart, ??ObjErrTableStart, xax
-      mov dObjErrTableCount, ??ObjErrTableCount
-      m2m pObjIDTableStart, ??ObjIDTableStart, xax
-      mov dObjIDTableCount, ??ObjIDTableCount
+      if TARGET_OOP eq OOP_ENABLED
+        m2m pObjErrTableStart, ??ObjErrTableStart, xax
+        mov dObjErrTableCount, ??ObjErrTableCount
+        m2m pObjIDTableStart, ??ObjIDTableStart, xax
+        mov dObjIDTableCount, ??ObjIDTableCount
+      endif
     endif
 
     if STKGUARDING ne FALSE

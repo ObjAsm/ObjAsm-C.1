@@ -9,10 +9,10 @@
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
 % include &ObjMemPath&ObjMemWin.cop
+
 % include &MacPath&Strings.inc
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  GetExceptionStrA
 ; Purpose:    Translate an exception code to an ANSI string.

@@ -11,12 +11,11 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrSizeW
 ; Purpose:    Determine the size of a WIDE string including the ZTC.
 ; Arguments:  Arg1: -> WIDE string.
-; Return:     rax = size of the string in bytes.
+; Return:     rax = Size of the string in BYTEs.
 
 OPTION PROC:NONE
 align ALIGN_CODE
@@ -29,7 +28,7 @@ StrSizeW proc pStringW:POINTER
   mov r8, r9
   shr r9, 32
   lea r10, @@JmpTableW
-  jmp POINTER ptr [r10 + sizeof(POINTER)*rdx]           ;Jump forward to skip non string bytes
+  jmp POINTER ptr [r10 + sizeof(POINTER)*rdx]           ;Jump forward to skip non string BYTEs
 
 align @WordSize
 @@JmpTableW:

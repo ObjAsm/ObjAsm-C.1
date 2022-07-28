@@ -11,14 +11,13 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrW2StrA
-; Purpose:    Convert a WIDE string into an ANSI string. WIDE characters are converted to bytes by
-;            decimation of the high byte.
+; Purpose:    Convert a WIDE string into an ANSI string. WIDE characters are converted to BYTEs by
+;             decimation of the high byte.
 ; Arguments:  Arg1: -> Destination ANSI character buffer.
 ;             Arg2: -> Source WIDE string.
-; Return:     rax = number of characters.
+; Return:     rax = Number of characters.
 
 OPTION PROC:NONE
 align ALIGN_CODE

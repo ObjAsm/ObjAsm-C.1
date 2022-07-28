@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  GUID2BStr
 ; Purpose:    Convert a GUID to a BStr.
@@ -27,7 +26,7 @@ GUID2BStr proc pStr:POINTER, pGUID:POINTER
   mov CHRW ptr [rcx + 16], "-"                          ;Append "-"
   add rcx, 18
   invoke dword2hexW, rcx, [rdx + 4]                     ;Convert next DWORD to hex
-  mov eax, DWORD ptr [rcx + 00]                         ;Rearrange words
+  mov eax, DWORD ptr [rcx + 00]                         ;Rearrange WORDs
   mov r8d, DWORD ptr [rcx + 04]
   mov r9d, DWORD ptr [rcx + 08]
   mov r10d, DWORD ptr [rcx + 12]
@@ -39,7 +38,7 @@ GUID2BStr proc pStr:POINTER, pGUID:POINTER
   mov CHRW ptr [rcx + 18], "-"                          ;Append "-"
   add rcx, 20
   invoke dword2hexW, rcx, [rdx + 8]                     ;Convert next DWORD to hex
-  mov eax, DWORD ptr [rcx + 00]                         ;Rearrange bytes
+  mov eax, DWORD ptr [rcx + 00]                         ;Rearrange BYTEs
   mov r8d, DWORD ptr [rcx + 04]
   mov r9d, DWORD ptr [rcx + 08]
   mov r10d, DWORD ptr [rcx + 12]
@@ -50,7 +49,7 @@ GUID2BStr proc pStr:POINTER, pGUID:POINTER
   mov CHRW ptr [rcx + 08], "-"                          ;Insert "-"
   add rcx, 18
   invoke dword2hexW, rcx, [rdx + 12]                    ;Convert next DWORD to hex
-  mov eax, DWORD ptr [rcx + 00]                         ;Rearrange bytes
+  mov eax, DWORD ptr [rcx + 00]                         ;Rearrange BYTEs
   mov r8d, DWORD ptr [rcx + 04]
   mov r9d, DWORD ptr [rcx + 08]
   mov r10d, DWORD ptr [rcx + 12]

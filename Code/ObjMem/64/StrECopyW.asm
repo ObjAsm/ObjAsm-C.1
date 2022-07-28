@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrECopyW
 ; Purpose:    Copy a WIDE string to a buffer and return the address of the ZTC.

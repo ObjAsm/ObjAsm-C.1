@@ -13,10 +13,9 @@
 TBM_FIRSTPIXEL equ  80000000h
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DrawTransparentBitmap
-; Purpose:    Draws a bitmap with transparency on a device context.
+; Purpose:    Draw a bitmap with transparency on a device context.
 ; Arguments:  Arg1: DC handle.
 ;             Arg2: Bitmap handle to draw.
 ;             Arg3; X start position on DC.

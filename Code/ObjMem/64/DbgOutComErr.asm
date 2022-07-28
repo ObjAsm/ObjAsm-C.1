@@ -8,6 +8,16 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&Common\DbgOutComErrX.inc
+% include &ObjMemPath&ObjMemWin.cop
+
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  DbgOutComErr 
+; Purpose:    Identify a COM error with a string.
+; Arguments:  Arg1: COM error ID.
+;             Arg2: -> Destination Window WIDE name.
+; Return:     Nothing.
+
+% include &ObjMemPath&Common\DbgOutComErr_X.inc
 
 end

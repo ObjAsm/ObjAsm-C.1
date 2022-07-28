@@ -8,16 +8,18 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-
 TARGET_STR_TYPE = STR_TYPE_ANSI
+% include &ObjMemPath&ObjMemWin.cop
+
 ProcName equ <StrAllocA>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrAllocA
 ; Purpose:    Allocate space for a string with n characters.
 ; Arguments:  Arg1: Character count without the ZTC.
 ; Return:     rax -> New allocated string or NULL if failed.
 
-% include &ObjMemPath&Common\StrAllocTX.inc
+% include &ObjMemPath&Common\StrAlloc_TX.inc
 
 end

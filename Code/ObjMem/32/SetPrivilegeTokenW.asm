@@ -15,10 +15,9 @@ TypeLookupPrivilegeValueW typedef proto :POINTER, :POINTER, :POINTER
 TypeAdjustTokenPrivileges typedef proto :HANDLE, :DWORD, :POINTER, :DWORD, :POINTER, :POINTER
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  SetPrivilegeTokenW
-; Purpose:    Enabling of provilege tokens.
+; Purpose:    Enable provilege tokens.
 ; Arguments:  Arg1: Process handle.
 ;             Arg2: -> Privilege name (ANSI string).
 ;             Arg3: Eanble = TRUE, disable = FALSE

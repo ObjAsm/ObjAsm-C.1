@@ -12,13 +12,14 @@
 
 ProcName textequ <DbgOutFPU_UEFI>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutFPU_UEFI
 ; Purpose:    Display the content of the FPU.
-; Arguments:  Arg1: -> Destination Window name.
+; Arguments:  Arg1: -> Destination Window WIDE name.
 ;             Arg2: Text RGB color.
 ; Return:     Nothing.
 
-% include &ObjMemPath&Common\\DbgOutFPUXP.inc
+% include &ObjMemPath&Common\\DbgOutFPU_XP.inc
 
 end

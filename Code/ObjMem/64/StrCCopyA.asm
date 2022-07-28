@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrCCopyA
 ; Purpose:    Copy the the source ANSI string with length limitation.
@@ -19,7 +18,7 @@
 ;             characters + 1.
 ; Arguments:  Arg1: -> Destination buffer.
 ;             Arg2: -> Source ANSI string.
-;             Arg3: Maximal number of charachters to be copied, excluding the ZTC.
+;             Arg3: Maximal number of charachters to copy, excluding the ZTC.
 ; Return:     eax = Number of copied characters, not including the ZTC.
 
 align ALIGN_CODE

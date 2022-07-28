@@ -20,7 +20,6 @@ NextCharW macro
 endm
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  bin2dwordW
 ; Purpose:    Load an WIDE string binary representation of a DWORD.

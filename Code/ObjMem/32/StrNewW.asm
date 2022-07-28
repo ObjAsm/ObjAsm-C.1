@@ -9,8 +9,10 @@
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
 % include &ObjMemPath&ObjMemWin.cop
+
 ProcName equ <StrNewW>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrNewW
 ; Purpose:    Allocate a new copy of the source string.
@@ -18,8 +20,8 @@ ProcName equ <StrNewW>
 ;             any memory space. Otherwise, StrNew makes a duplicate of the source string.
 ;             The allocated memory space is Length(String) + ZTC.
 ; Arguments:  Arg1: -> Source WIDE string.
-; Return:     rax -> New string copy.
+; Return:     eax -> New string copy.
 
-% include &ObjMemPath&Common\StrNewTXP.inc
+% include &ObjMemPath&Common\StrNew_TXP.inc
 
 end

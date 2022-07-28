@@ -8,11 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-
 TARGET_STR_TYPE = STR_TYPE_ANSI
-TARGET_STR_AFFIX textequ <A>
+% include &ObjMemPath&ObjMemWin.cop
+
 ProcName equ <StrFillChrA>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrFillChrA
 ; Purpose:    Fill a preallocated String with a character.
@@ -21,6 +22,6 @@ ProcName equ <StrFillChrA>
 ;             Arg3: Character Count.
 ; Return:     Nothing.
 
-% include &ObjMemPath&Common\StrFillChrTXP.inc
+% include &ObjMemPath&Common\StrFillChr_TXP.inc
 
 end

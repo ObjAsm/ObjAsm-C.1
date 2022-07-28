@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrMidW
 ; Purpose:    Extract a substring from a WIDE source string.
@@ -19,7 +18,7 @@
 ;             Arg2: -> Source WIDE string.
 ;             Arg3: Start character index. Index ranges [0 .. length-1].
 ;             Arg3: Character count.
-; Return:     eax = number of copied characters.
+; Return:     eax = Number of copied characters.
 
 align ALIGN_CODE
 StrMidW proc pBuffer:POINTER, pSrcStringW:POINTER, dStartChar:DWORD, dCharCount:DWORD

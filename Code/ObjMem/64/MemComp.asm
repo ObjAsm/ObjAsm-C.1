@@ -11,15 +11,14 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  MemComp
 ; Purpose:    Compare 2 memory blocks.
-;             Both memory blocks must be at least as large as the maximal number of bytes to compare,
+;             Both memory blocks must be at least as large as the maximal number of BYTEs to compare,
 ;             otherwise a fault may be triggered.
 ; Arguments:  Arg1: -> Memory block 1.
 ;             Arg2: -> Memory block 2.
-;             Arg3: Maximal number of bytes to compare.
+;             Arg3: Maximal number of BYTEs to compare.
 ; Return:     If MemBlock1 != MemBlock2, then eax <> 0.
 ;             If MemBlock1 == MemBlock2, then eax = 0.
 

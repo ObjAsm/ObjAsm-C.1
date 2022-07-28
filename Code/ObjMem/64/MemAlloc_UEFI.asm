@@ -8,7 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
+% include &ObjMemPath&ObjMemUefi.cop
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  MemAlloc_UEFI
 ; Purpose:    Allocate a memory block.
@@ -16,6 +18,6 @@
 ;             Arg2: Memory block size in BYTEs.
 ; Return:     rax -> Memory block or NULL if failed.
 
-% include &ObjMemPath&Common\MemAllocX_UEFI.inc
+% include &ObjMemPath&Common\MemAlloc_X_UEFI.inc
 
 end

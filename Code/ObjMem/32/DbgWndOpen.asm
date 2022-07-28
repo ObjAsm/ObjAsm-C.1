@@ -11,9 +11,8 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgClose
+; Procedure:  DbgWndOpen
 ; Purpose:    Open Debug Center instance.
 ; Arguments:  None.
 ; Return:     eax = TRUE if it was opened, otherwise FALSE.

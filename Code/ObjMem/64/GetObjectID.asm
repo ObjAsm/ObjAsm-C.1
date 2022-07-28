@@ -11,10 +11,9 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  GetObjectID
-; Purpose:    Retrieves the type ID of an object instance.
+; Purpose:    Retrieve the type ID of an object instance.
 ; Arguments:  Arg1: -> Object instance.
 ; Return:     eax = Object class ID.
 

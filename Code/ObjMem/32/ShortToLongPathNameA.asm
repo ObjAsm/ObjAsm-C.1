@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  ShortToLongPathNameA
 ; Purpose:    Allocate a new ANSI string containing the long path of a short path string.

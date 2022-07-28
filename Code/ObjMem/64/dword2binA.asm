@@ -32,15 +32,14 @@ SetDword macro z
 endm
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  dword2binA
-; Purpose:    Converts a DWORD to its binary ANSI string representation.
+; Purpose:    Convert a DWORD to its binary ANSI string representation.
 ; Arguments:  Arg1: -> Destination buffer.
 ;             Arg2: DWORD value.
 ; Return:     Nothing.
-; Notes:      The destination buffer must be at least 33 bytes large to allocate the output string 
-;             (32 character bytes + ZTC = 33 bytes).
+; Notes:      The destination buffer must be at least 33 BYTEs large to allocate the output string 
+;             (32 character BYTEs + ZTC = 33 BYTEs).
 
 OPTION PROC:NONE
 align ALIGN_CODE

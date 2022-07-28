@@ -531,3 +531,18 @@ RGB24To16ColorIndex, dColor
 MemAlloc_UEFI, dMemSize
 MemReAlloc_UEFI, pBuffer, dMemSize, dNewMemSize, dAttributes
 MemFree_UEFI, pBuffer
+
+SLR_Init, PSRL_DATA
+SLR_Calc_AB_DW, PSRL_DATA
+SLR_Calc_AB_QW, PSRL_DATA
+SLR_Calc_AB_R4, PSRL_DATA
+SLR_Calc_AB_R8, PSRL_DATA
+SLR_Calc_AB_MSE_DW, PSRL_DATA
+SLR_Calc_AB_MSE_QW, PSRL_DATA
+SLR_Calc_AB_MSE_R4, PSRL_DATA
+SLR_Calc_AB_MSE_R8, PSRL_DATA
+
+CalcVarianceDW, pArray, xCount, pVariance
+CalcVarianceQW, pArray, xCount, pVariance
+CalcVarianceR4, pArray, xCount, pVariance
+CalcVarianceR8, pArray, xCount, pVariance

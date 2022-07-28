@@ -35,12 +35,12 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure: qword2binA
-; Purpose:   Converts a QWORD to its binary ANSI string representation.
+; Purpose:   Convert a QWORD to its binary ANSI string representation.
 ; Arguments: Arg1: -> Destination buffer.
 ;            Arg2: QWORD value.
 ; Return:    Nothing.
-; Note:      The destination buffer must be at least 65 bytes large to allocate the output string
-;            (64 character bytes + ZTC = 65 bytes).
+; Note:      The destination buffer must be at least 65 BYTEs large to allocate the output string
+;            (64 character BYTEs + ZTC = 65 BYTEs).
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

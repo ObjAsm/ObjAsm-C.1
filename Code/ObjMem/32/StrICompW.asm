@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure: StrICompW
 ; Purpose:   Compare 2 WIDE strings without case sensitivity.
@@ -31,7 +30,7 @@ StrICompW proc pString1W:POINTER, pString2W:POINTER
   push edi
   xor edi, edi
   xor eax, eax
-align ALIGN_CODE                                        ;This line is 4 bytes aligned
+align ALIGN_CODE                                        ;This line is 4 BYTEs aligned
 @@Char:
   mov ax, [edi + ecx]                                   ;Load char to compare
   test ax, ax                                           ;Test if end of string

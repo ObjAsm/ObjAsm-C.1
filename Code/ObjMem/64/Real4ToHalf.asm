@@ -8,7 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
+% include &ObjMemPath&ObjMemWin.cop
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  Real4ToHalf
 ; Purpose:    Convert a REAL4 to an HALF.
@@ -19,6 +21,6 @@
 ;                VCVTPS2PH xmm1, xmm0, 0
 ;                movd eax, xmm1
 
-% include &ObjMemPath&Common\Real4ToHalfXP.inc
+% include &ObjMemPath&Common\Real4ToHalf_XP.inc
 
 end

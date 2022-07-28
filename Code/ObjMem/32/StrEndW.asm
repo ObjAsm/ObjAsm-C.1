@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrEndW
 ; Purpose:    Get the address of the zero character that terminates the string.
@@ -28,7 +27,7 @@ StrEndW proc pStringW:POINTER
   and eax, 0FFFFFFFCh                                   ;Remove the last 2 bits to align the addr
   sub edx, eax                                          ;edx = 0..3
   mov ecx, DWORD ptr [eax]
-  jmp @@JmpTableW[4*edx]                                ;Jump forward to skip non string bytes
+  jmp @@JmpTableW[4*edx]                                ;Jump forward to skip non string BYTEs
 
   align ALIGN_CODE
 @@JmpTableW:

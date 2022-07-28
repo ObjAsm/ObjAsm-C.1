@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  ErrorMessageBoxA
 ; Purpose:    Show a messagebox containing an error string in the locale lenguage and an user string.

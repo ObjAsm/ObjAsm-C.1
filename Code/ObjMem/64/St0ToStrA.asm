@@ -9,12 +9,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
+TARGET_STR_TYPE = STR_TYPE_ANSI
+% include &ObjMemPath&ObjMemWin.cop
 
 option stackbase:rbp
 
-TARGET_STR_TYPE = STR_TYPE_ANSI
-TARGET_STR_AFFIX textequ <A>
-
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  St0ToStrA
 ; Purpose:    Create an ANSI string representation of the content of the st(0) FPU register.
@@ -27,6 +27,6 @@ TARGET_STR_AFFIX textequ <A>
 ; Notes:      - Based on the work of Raymond Filiatreault (FpuLib).
 ;             - st4, st5, st6 and st7 must be empty.
 
-% include &ObjMemPath&Common\St0ToStrAXP.inc
+% include &ObjMemPath&Common\St0ToStr_AXP.inc
 
 end

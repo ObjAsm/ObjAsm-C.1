@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DllErr2StrW
 ; Purpose:    Translate an error code to a WIDE string stored in a DLL.

@@ -8,7 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
+% include &ObjMemPath&ObjMemWin.cop
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  GetObjectTemplate
 ; Purpose:    Get the template address of an object type ID.
@@ -16,6 +18,6 @@
 ; Return:     eax -> Object template or NULL if not found.
 ;             ecx = Object template size or zero if not found.
 
-% include &ObjMemPath&Common\\GetObjectTemplateXP.inc
+% include &ObjMemPath&Common\\GetObjectTemplate_XP.inc
 
 end

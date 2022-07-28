@@ -11,10 +11,9 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  CreatePathA
-; Purpose:    Creates a path on the destination drive.
+; Purpose:    Create a path on the destination drive.
 ; Arguments:  Arg1: -> ANSI path string.
 ; Return:     Nothing.
 

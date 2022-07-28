@@ -8,15 +8,17 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
+% include &ObjMemPath&ObjMemWin.cop
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  aCRC32C
-; Purpose:    Computes the CRC-32C (Castagnoli), using the polynomial 11EDC6F41h from an aligned
+; Purpose:    Compute the CRC-32C (Castagnoli), using the polynomial 11EDC6F41h from an aligned
 ;             memory block.
 ; Arguments:  Arg1: -> Aligned memory block.
 ;             Arg2: Memory block size in BYTEs.
 ; Return:     eax = CRC32C.
 
-% include &ObjMemPath&Common\aCRC32CXP.inc
+% include &ObjMemPath&Common\aCRC32C_XP.inc
 
 end

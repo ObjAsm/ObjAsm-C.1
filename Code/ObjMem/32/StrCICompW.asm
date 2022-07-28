@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrCICompW
 ; Purpose:    Compare 2 WIDE strings without case sensitivity and length limitation.

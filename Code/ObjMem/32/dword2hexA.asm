@@ -13,15 +13,14 @@
 externdef HexCharTableA:BYTE
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  dword2hexA
-; Purpose:    Converts a DWORD to its hexadecimal ANSI string representation.
+; Purpose:    Convert a DWORD to its hexadecimal ANSI string representation.
 ; Arguments:  Arg1: -> Destination buffer.
 ;             Arg2: DWORD value.
 ; Return:     Nothing.
-; Note:       The destination buffer must be at least 9 bytes large to allocate the output string
-;             (8 character bytes + ZTC = 9 bytes).
+; Note:       The destination buffer must be at least 9 BYTEs large to allocate the output string
+;             (8 character BYTEs + ZTC = 9 BYTEs).
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

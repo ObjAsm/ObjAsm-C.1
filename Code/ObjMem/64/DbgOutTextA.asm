@@ -8,19 +8,21 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
+% include &ObjMemPath&ObjMemWin.cop
 
 TARGET_STR_TYPE = STR_TYPE_ANSI
 ProcName textequ <DbgOutTextA>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutTextA
-; Purpose:    Sends an ANSI string to the debug output device.
+; Purpose:    Send an ANSI string to the debug output device.
 ; Arguments:  Arg1: -> Zero terminated ANSI string.
 ;             Arg2: Color value.
 ;             Arg3: Effect value (DBG_EFFECT_XXX)
 ;             Arg4: -> Destination window WIDE name.
 ; Return:     Nothing.
 
-% include &ObjMemPath&Common\\\\DbgOutTextTX.inc
+% include &ObjMemPath&Common\\\\DbgOutText_TX.inc
 
 end

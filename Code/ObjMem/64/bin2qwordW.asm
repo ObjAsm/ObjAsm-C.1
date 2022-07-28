@@ -20,7 +20,6 @@ NextCharW macro
 endm
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  bin2qwordW
 ; Purpose:    Load an WIDE string binary representation of a QWORD.

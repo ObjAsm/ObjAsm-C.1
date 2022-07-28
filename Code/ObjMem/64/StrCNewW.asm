@@ -8,11 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
+TARGET_STR_TYPE = STR_TYPE_WIDE
 % include &ObjMemPath&ObjMemWin.cop
 
-TARGET_STR_TYPE = STR_TYPE_WIDE
 ProcName textequ <StrCNewW>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrCNewW
 ; Purpose:    Allocate a new copy of the source WIDE string with length limitation.
@@ -24,6 +25,6 @@ ProcName textequ <StrCNewW>
 ;             Arg2: Maximal character count.
 ; Return:     rax -> New WIDE string copy.
 
-% include &ObjMemPath&64\StrCNewT.inc
+% include &ObjMemPath&Common\StrCNewT64P.inc
 
 end

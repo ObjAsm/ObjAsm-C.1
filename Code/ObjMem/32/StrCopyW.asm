@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrCopyW
 ; Purpose:    Copy a WIDE string to a destination buffer.
@@ -25,7 +24,7 @@ OPTION EPILOGUE:NONE
 align ALIGN_CODE
 StrCopyW proc pBuffer:POINTER, pSrcStringW:POINTER
   invoke StrLengthW, [esp + 8]                          ;pSrcStringW
-  lea ecx, [2*eax + 2]                                  ;Calc # of bytes including zero terminator 
+  lea ecx, [2*eax + 2]                                  ;Calc # of BYTEs including zero terminator 
   invoke MemShift, [esp + 12], [esp + 12], ecx          ;pBuffer, pSrcStringW
   ret 8
 StrCopyW endp

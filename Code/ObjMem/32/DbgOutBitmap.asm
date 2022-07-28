@@ -11,12 +11,11 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutBitmap 
-; Purpose:    Sends a bitmap to the Debug Center Window.
+; Purpose:    Send a bitmap to the Debug Center Window.
 ; Arguments:  Arg1: Bitamp HANDLE.
-;             Arg2: -> Destination window name.
+;             Arg2: -> Destination window WIDE name.
 ; Return:     Nothing.
 
 align ALIGN_CODE

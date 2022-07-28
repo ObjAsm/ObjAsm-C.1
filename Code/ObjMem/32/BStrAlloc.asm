@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  BStrAlloc
 ; Purpose:    Allocate space for a BStr with n characters. The length field is set to zero.

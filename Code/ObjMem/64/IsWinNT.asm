@@ -11,10 +11,9 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  IsWinNT
-; Purpose:    Detects if the OS is Windows NT based.
+; Purpose:    Detect if the OS is Windows NT based.
 ; Arguments:  None.
 ; Return:     rax = TRUE if OS is Windows NT based, otherwise FALSE.
 

@@ -11,14 +11,13 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrRightW
 ; Purpose:    Copy the right n characters from the source string into the destination buffer.
 ; Arguments:  Arg1: -> Destination WIDE character buffer.
 ;             Arg2: -> Source WIDE string.
 ;             Arg3: Character count.
-; Return:     rax = number of characters.
+; Return:     rax = Number of characters.
 
 align ALIGN_CODE
 StrRightW proc uses rbx rdi rsi pBuffer:POINTER, pSrcStringW:POINTER, dCharCount:DWORD

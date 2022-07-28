@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  BStrDispose
 ; Purpose:    Free the memory allocated for the string using BStrNew, BStrCNew, BStrLENew or

@@ -152,8 +152,6 @@ PintaBola proc uses xbx px :dword, py:dword
                 add xcx, ScreenBuffer
                 mov xax, offset mtBolaa
                 mov eax, [xax+xdx*4]
-           		bswap eax
-        		ror eax, 8
                 mov dword ptr [xcx] , eax 
             .endif
             add pos, 4
@@ -211,7 +209,7 @@ BorraBola proc px :dword, py:dword, vel:real8
     .if fEQ(vel, 0.0)
         fSlv8 velrel = 1
     .else    
-        fSlv8 velrel =vel/meanspeed
+        fSlv8 velrel = vel/meanspeed
     .endif  
    ;PrintDouble velrel
     
@@ -226,38 +224,14 @@ BorraBola proc px :dword, py:dword, vel:real8
             .if edx !=0 && edx !=4 && edx!=20 && edx!=24
                 mov ecx, pos
                 add xcx, ScreenBuffer
-                .if fGT(velrel, 1.75)
-                    ;fSlv velcol = trunc(velrel*95)
-                    ;mov eax, velcol
-                    if 0
-                    ; ??
-                    shl eax, 16
-                    endif
-                    mov xax, offset mtBola
-                    mov dword ptr eax, [xax+xdx*4]
+                mov xax, offset mtBola
+                mov dword ptr eax, [xax+xdx*4]
+                @if velrel fGT 1.75
                     shr eax, 8
-                    
-                .else
-                    .if fLT(velrel, 0.25)
-                    if 0
-                        ;??
-                        fSlv velcol = 95-trunc(velrel*95)
-                        mov eax, velcol
-                        xor eax, mtBola[edx*4]
-                        mov xax, offset mtBola
-                        mov dword ptr eax, [xax+xdx*4]
-                    endif
-                        mov xax, offset mtBola
-                        mov dword ptr eax, [xax+xdx*4]
-                        shl eax, 8
-                    .else
-                        mov xax, offset mtBola
-                        mov dword ptr eax, [xax+xdx*4]
-                    
-                    .endif
-                .endif
+                @elseif velrel fLT 0.25
+                    shl eax, 8
+                @endif
                 mov dword ptr [xcx] , eax
-    
             .endif
             add pos, 4
         Next x1
@@ -327,10 +301,10 @@ BorraBola2 proc uses xbx px :dword, py:dword, pz : real8
                 mov ecx, pos
                 add xcx, ScreenBuffer
                 mov xax, offset mtBola
-                mov xax , [xax+xdx*4];
+                ;mov xax , [xax+xdx*4];
                 mov eax, [xax+xdx*4]
-           		bswap eax
-        		ror eax, 8
+           		;bswap eax
+        		;ror eax, 8
                 ;freg_push eax   ??
                 .if eax > 9000h
                     ;freg_pop eax
@@ -495,7 +469,8 @@ MuestraTodo proc
             endif
         .else
             mov r8, [xdx].triplete.speed
-            invoke BorraBola, [xdx].triplete.xg, [xdx].triplete.yg, r8  
+            movsd xmm2, [xdx].triplete.speed
+            invoke BorraBola, [xdx].triplete.xg, [xdx].triplete.yg, xmm2  
         .endif
     Next i
     ret

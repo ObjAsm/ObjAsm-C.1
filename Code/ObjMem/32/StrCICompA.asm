@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrCICompA
 ; Purpose:    Compare 2 ANSI strings without case sensitivity and length limitation.

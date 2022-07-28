@@ -60,7 +60,6 @@ LSH_RetValue          QWORD ?                   ;Language Specific Handler, retu
 
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  EHandler
 ; Purpose:    ASM exception handler

@@ -866,9 +866,9 @@ elseif TARGET_PLATFORM eq PLATFORM_UEFI
 
   DbgOutTextA textequ <DbgOutTextA_UEFI>
   DbgOutTextW textequ <DbgOutTextW_UEFI>
-  DbgOutMem textequ <DbgOutMem_UEFI> 
+  DbgOutMem textequ <DbgOutMem_UEFI>
   DbgOutFPU textequ <DbgOutFPU_UEFI>
-  DbgShowObjectHeader textequ <DbgShowObjectHeader_UEFI> 
+  DbgShowObjectHeader textequ <DbgShowObjectHeader_UEFI>
 endif
 
 DbgOutTextA proto :POINTER, :DWORD, :DWORD, :POINTER
@@ -929,7 +929,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
   SetPrivilegeTokenA proto :HANDLE, :POINTER, :DWORD
   SetPrivilegeTokenW proto :HANDLE, :POINTER, :DWORD
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -939,7 +939,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
   ParseA proto :POINTER, :POINTER, :DWORD
   ParseW proto :POINTER, :POINTER, :DWORD
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -949,7 +949,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
   ShortToLongPathNameA proto :POINTER
   ShortToLongPathNameW proto :POINTER
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -959,7 +959,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
   FileExistA proto :POINTER
   FileExistW proto :POINTER
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -969,7 +969,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
   FindFileA proto :POINTER, :POINTER, :POINTER
   FindFileW proto :POINTER, :POINTER, :POINTER
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -979,7 +979,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
   CreatePathA proto :POINTER
   CreatePathW proto :POINTER
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -989,7 +989,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
   GetPrevInstanceA proto :POINTER, :POINTER
   GetPrevInstanceW proto :POINTER, :POINTER
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -999,7 +999,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
   ActivatePrevInstanceA proto :POINTER, :POINTER
   ActivatePrevInstanceW proto :POINTER, :POINTER
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -1009,7 +1009,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
   FindModuleByAddrA proto :POINTER, :POINTER
   FindModuleByAddrW proto :POINTER, :POINTER
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -1019,7 +1019,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
   FindModuleByAddr9xA proto :POINTER, :POINTER
   FindModuleByAddr9xW proto :POINTER, :POINTER
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -1029,7 +1029,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
   SetExceptionMessageA proto :POINTER, :POINTER, :POINTER
   SetExceptionMessageW proto :POINTER, :POINTER, :POINTER
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -1039,7 +1039,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
   GetFileLinesA proto :HANDLE
   GetFileLinesW proto :HANDLE
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -1049,7 +1049,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
   NetErr2StrA proto :DWORD, :POINTER, :DWORD
   NetErr2StrW proto :DWORD, :POINTER, :DWORD
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -1059,7 +1059,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
   DllErr2StrW proto :DWORD, :POINTER, :DWORD, :POINTER
   DllErr2StrA proto :DWORD, :POINTER, :DWORD, :POINTER
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -1069,7 +1069,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
   Err2StrW proto :DWORD, :POINTER, :DWORD
   Err2StrA proto :DWORD, :POINTER, :DWORD
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -1079,7 +1079,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
   GetExceptionStrW proto :DWORD
   GetExceptionStrA proto :DWORD
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -1089,7 +1089,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
   MsgBoxW proto :HANDLE, :POINTER, :POINTER, :DWORD
   MsgBoxA proto :HANDLE, :POINTER, :POINTER, :DWORD
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -1099,7 +1099,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
 ; File hash procedures
   GFH_MD2   equ   08001h
   GFH_MD4   equ   08002h
@@ -1107,7 +1107,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   GFH_SHA   equ   08004h
   GFH_SHA1  equ   08004h       ;Same as GFH_SHA
   GFH_MAC   equ   08005h
-  
+
   GetFileHashA proto :POINTER, :POINTER, :DWORD
   GetFileHashW proto :POINTER, :POINTER, :DWORD
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -1117,7 +1117,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   else
     echo Warning: incompatible TARGET_STR_TYPE
   endif
-  
+
 ; ROP operators
 ;
 ; Reverse Polish notation
@@ -1384,6 +1384,28 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   ROP_PSDnoo      equ   00FD0A0Ah
   ROP_DPSoo       equ   00FE02A9h
   ROP_1           equ   00FF0062h   ;WHITENESS
+
+  SetShellAssociationA proto :DWORD, :POINTER, :POINTER, :POINTER, :POINTER
+  SetShellAssociationW proto :DWORD, :POINTER, :POINTER, :POINTER, :POINTER
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    SetShellAssociation textequ <SetShellAssociationA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    SetShellAssociation textequ <SetShellAssociationW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+
+  SetShellPerceivedTypeA proto :DWORD, :POINTER, :POINTER
+  SetShellPerceivedTypeW proto :DWORD, :POINTER, :POINTER
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    SetShellPerceivedType textequ <SetShellPerceivedTypeA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    SetShellPerceivedType textequ <SetShellPerceivedTypeW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+
+  EHandler proto :POINTER, :POINTER, :POINTER, :POINTER
 endif
 
 IsPntInRect proto :POINTER, :POINTER
@@ -1411,6 +1433,7 @@ RadixSortPtrF64 proto :POINTER, :DWORD, :DWORD, :POINTER
 aCRC32C proto :POINTER, :DWORD
 uCRC32C proto :POINTER, :DWORD
 
+;PDF View
 PdfViewA proto :HANDLE, :POINTER, :POINTER
 PdfViewW proto :HANDLE, :POINTER, :POINTER
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -1421,27 +1444,34 @@ else
   echo Warning: incompatible TARGET_STR_TYPE
 endif
 
-SetShellAssociationA proto :DWORD, :POINTER, :POINTER, :POINTER, :POINTER
-SetShellAssociationW proto :DWORD, :POINTER, :POINTER, :POINTER, :POINTER
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  SetShellAssociation textequ <SetShellAssociationA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  SetShellAssociation textequ <SetShellAssociationW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
+;Simple Linear Regression
+SLR_DATA struc
+  pData       POINTER   ?   ;In
+  xCount      XWORD     ?   ;In
+  r8Slope     REAL8     ?   ;Out
+  r8Intercept REAL8     ?   ;Out
+  r8MSE       REAL8     ?   ;Out
+  r8X         REAL8     ?   ;Internal use
+  r8X2        REAL8     ?   ;Internal use
+  r8Q         REAL8     ?   ;Internal use
+SLR_DATA ends
+PSLR_DATA typedef ptr SLR_DATA
 
-SetShellPerceivedTypeA proto :DWORD, :POINTER, :POINTER
-SetShellPerceivedTypeW proto :DWORD, :POINTER, :POINTER
-if TARGET_STR_TYPE eq STR_TYPE_ANSI
-  SetShellPerceivedType textequ <SetShellPerceivedTypeA>
-elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
-  SetShellPerceivedType textequ <SetShellPerceivedTypeW>
-else
-  echo Warning: incompatible TARGET_STR_TYPE
-endif
+SLR_Init            proto :PSLR_DATA
+SLR_Calc_AB_DW      proto :PSLR_DATA
+SLR_Calc_AB_QW      proto :PSLR_DATA
+SLR_Calc_AB_R4      proto :PSLR_DATA
+SLR_Calc_AB_R8      proto :PSLR_DATA
+SLR_Calc_AB_MSE_DW  proto :PSLR_DATA
+SLR_Calc_AB_MSE_QW  proto :PSLR_DATA
+SLR_Calc_AB_MSE_R4  proto :PSLR_DATA
+SLR_Calc_AB_MSE_R8  proto :PSLR_DATA
 
-EHandler proto :POINTER, :POINTER, :POINTER, :POINTER
+CalcVarianceDW    proto :POINTER, :XWORD, :POINTER
+CalcVarianceQW    proto :POINTER, :XWORD, :POINTER
+CalcVarianceR4    proto :POINTER, :XWORD, :POINTER
+CalcVarianceR8    proto :POINTER, :XWORD, :POINTER
+
 
 _chkstk proto c
 _alloca_probe_8 proto c

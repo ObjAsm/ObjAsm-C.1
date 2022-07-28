@@ -9,10 +9,10 @@
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
 % include &ObjMemPath&ObjMemWin.cop
+
 % include &MacPath&Strings.inc
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  Err2StrA
 ; Purpose:    Translate a system error code to an ANSI string.

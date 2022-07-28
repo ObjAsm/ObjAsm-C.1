@@ -13,6 +13,7 @@
 ProcName equ <DbgOutMem_UEFI>
 BYTES_PER_LINE equ 8      ;Must be a multiple of 8
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutMem_UEFI
 ; Purpose:    Output the content of a memory block.
@@ -21,9 +22,9 @@ BYTES_PER_LINE equ 8      ;Must be a multiple of 8
 ;             Arg3: Representation format.
 ;             Arg4: Memory output color.
 ;             Arg5: Representation output color.
-;             Arg6: -> Destination Window name.
+;             Arg6: -> Destination Window WIDE name.
 ; Return:     Nothing.
 
-% include &ObjMemPath&Common\DbgOutMemXP.inc
+% include &ObjMemPath&Common\DbgOutMem_XP.inc
 
 end

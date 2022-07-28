@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrMoveW
 ; Purpose:    Move part of a WIDE string. The ending zero charactrer is not appended automatically.

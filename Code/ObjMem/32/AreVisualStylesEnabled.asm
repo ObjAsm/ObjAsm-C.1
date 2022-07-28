@@ -9,10 +9,10 @@
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
 % include &ObjMemPath&ObjMemWin.cop
+
 % include &IncPath&Windows\uxtheme.inc
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  AreVisualStylesEnabled
 ; Purpose:    Determine if there is an activated theme for the running application

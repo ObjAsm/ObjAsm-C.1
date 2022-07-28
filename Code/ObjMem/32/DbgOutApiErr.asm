@@ -8,6 +8,16 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&Common\DbgOutApiErrX.inc
+% include &ObjMemPath&ObjMemWin.cop
+
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  DbgOutApiErr
+; Purpose:    Identify a API error with a string.
+; Arguments:  Arg1: Api error code obtained with GetLastError.
+;             Arg2: -> Destination Window WIDE name.
+; Return:     Nothing.
+
+% include &ObjMemPath&Common\DbgOutApiErr_X.inc
 
 end

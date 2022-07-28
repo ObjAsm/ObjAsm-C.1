@@ -11,13 +11,12 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrRTrimW
 ; Purpose:    Trim blank characters from the end of a WIDE string.
 ; Arguments:  Arg1: -> Destination WIDE character buffer.
 ;             Arg2: -> Source WIDE string.
-; Return:     eax = number of characters in destination buffer.
+; Return:     eax = Number of characters in destination buffer.
 
 align ALIGN_CODE
 StrRTrimW proc uses rbx rdi rsi pDstStringW:POINTER, pSrcStringW:POINTER

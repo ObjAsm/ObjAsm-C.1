@@ -11,10 +11,9 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  ActivatePrevInstanceA
-; Purpose:    Activates a previously existing instance of an application.
+; Purpose:    Activate a previously existing instance of an application.
 ; Arguments:  Arg1: -> ANSI application name.
 ;             Arg2: -> ANSI class name.
 ; Return:     eax = TRUE if activated, otherwise FALSE.

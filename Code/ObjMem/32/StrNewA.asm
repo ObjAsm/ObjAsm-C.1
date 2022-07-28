@@ -9,8 +9,10 @@
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
 % include &ObjMemPath&ObjMemWin.cop
+
 ProcName equ <StrNewA>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrNewA
 ; Purpose:    Allocate a new copy of the source string.
@@ -20,6 +22,6 @@ ProcName equ <StrNewA>
 ; Arguments:  Arg1: -> Source WIDE string.
 ; Return:     eax -> New string copy.
 
-% include &ObjMemPath&Common\StrNewTXP.inc
+% include &ObjMemPath&Common\StrNew_TXP.inc
 
 end

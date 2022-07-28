@@ -9,10 +9,10 @@
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
 % include &ObjMemPath&ObjMemWin.cop
-% include &ObjMemPath&64\RadixSort.inc                  ;Helper macros
+
+% include &ObjMemPath&Common\RadixSort64.inc            ;Helper macros
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  RadixSortPtrUI32
 ; Purpose:    Ascending sort of a POINTER array to structures containing a DWORD key using the
@@ -56,7 +56,7 @@ align ALIGN_CODE
 RadixSortPtrUI32 proc uses rbx rdi rsi pArray:POINTER, dCount:DWORD, dOffset:DWORD, pWorkArea:POINTER
   ;rcx -> Array, edx = dCount, r8 = dOffset, r9 -> WorkArea
   mov ebx, edx                                          ;dCount
-  shl ebx, $Log2(@WordSize)                             ;ebx = Array size in bytes
+  shl ebx, $Log2(@WordSize)                             ;ebx = Array size in BYTEs
   .if ZERO?
     mov eax, TRUE
   .else

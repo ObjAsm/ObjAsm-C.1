@@ -16,7 +16,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  GetLogProcCount
 ; Purpose:    Return the number of logical CPUs on the current system.

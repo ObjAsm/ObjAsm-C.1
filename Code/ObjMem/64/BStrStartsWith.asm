@@ -8,7 +8,16 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
+% include &ObjMemPath&ObjMemWin.cop
 
-% include &ObjMemPath&Common\BStrStartsWithX.inc
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  BStrStartsWith
+; Purpose:    Compare the beginning of a BSTR.
+; Arguments:  Arg1: -> Analized BSTR.
+;             Arg2: -> Prefix BSTR.
+; Return:     eax = TRUE of the beginning matches, otherwise FALSE.
+
+% include &ObjMemPath&Common\BStrStartsWith_X.inc
 
 end

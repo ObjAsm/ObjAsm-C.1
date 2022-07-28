@@ -8,11 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-
 TARGET_STR_TYPE = STR_TYPE_WIDE
-TARGET_STR_AFFIX textequ <W>
+% include &ObjMemPath&ObjMemWin.cop
+
 ProcName equ <SetShellPerceivedTypeW>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  SetShellPerceivedTypeW
 ; Purpose:    Set shell perception of a file type.
@@ -24,6 +25,6 @@ ProcName equ <SetShellPerceivedTypeW>
 ; Note:       To retrieve the perceived type use the AssocGetPerceivedType API.
 ;             dGlobal = TRUE requires adminitrative rights.
 
-% include &ObjMemPath&Common\SetShellPerceivedTypeTX.inc
+% include &ObjMemPath&Common\SetShellPerceivedType_TX.inc
 
 end

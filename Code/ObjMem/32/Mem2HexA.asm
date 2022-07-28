@@ -13,7 +13,6 @@
 externdef HexCharTableA:BYTE
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  Mem2HexA
 ; Purpose:    Convert the memory content into a hex ANSI string representation.

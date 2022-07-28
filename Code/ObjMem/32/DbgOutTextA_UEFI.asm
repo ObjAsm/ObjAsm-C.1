@@ -8,10 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-
 TARGET_STR_TYPE = STR_TYPE_ANSI
+% include &ObjMemPath&ObjMemUefi.cop
+
 ProcName textequ <DbgOutTextA_UEFI>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutTextA_UEFI
 ; Purpose:    Sends an ANSI string to the debug output device.
@@ -21,6 +23,6 @@ ProcName textequ <DbgOutTextA_UEFI>
 ;             Arg4: -> Destination window WIDE name.
 ; Return:     Nothing.
 
-% include &ObjMemPath&Common\\DbgOutTextTX_UEFI.inc
+% include &ObjMemPath&Common\DbgOutText_TX_UEFI.inc
 
 end

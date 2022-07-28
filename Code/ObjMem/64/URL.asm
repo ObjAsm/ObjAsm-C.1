@@ -14,12 +14,13 @@
 
 externdef HexCharTableW:CHRW
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  UrlEscDecode
 ; Purpose:    Translate a wide string containig URL escape sequences to a plain wide string.
 ; Arguments:  Arg1: -> Input wide string.
 ;             Arg2: -> Output Buffer.
-;             Arg3: Output Buffer size in bytes.
+;             Arg3: Output Buffer size in BYTEs.
 ; Return:     eax = Number of chars written, including the ZTC.
 
 UrlEscDecodeGetHex macro
@@ -99,7 +100,7 @@ UrlEscDecode endp
 ; Purpose:    Translate a plain wide string to a wide string containig URL escape sequences.
 ; Arguments:  Arg1: -> Input wide string.
 ;             Arg2: -> Output Buffer.
-;             Arg3: Output Buffer size in bytes.
+;             Arg3: Output Buffer size in BYTEs.
 ; Return:     eax = Number of chars written.
 
 UrlEscEncode proc uses xbx xdi xsi pInputStr:PSTRINGW, pBuffer:PSTRINGW, dCount:DWORD
@@ -169,7 +170,7 @@ UrlEscEncode endp
 ; Method:     UrlEscEncodeSize
 ; Purpose:    Calculates the requiered buffer size for UrlEscEncode method.
 ; Arguments:  Arg1: -> Input wide string.
-; Return:     eax = Number of bytes requierd, including the ZTC.
+; Return:     eax = Number of BYTEs requierd, including the ZTC.
 
 UrlEscEncodeSize proc uses xsi pInputStr:PSTRINGW
 .const

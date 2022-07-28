@@ -14,7 +14,6 @@
 dTen    DWORD    10
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrToSt0A
 ; Purpose:    Load an ANSI string representation of a floating point number into the st(0)

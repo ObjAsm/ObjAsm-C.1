@@ -9,10 +9,10 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-
 TARGET_STR_TYPE = STR_TYPE_WIDE
-TARGET_STR_AFFIX textequ <W>
+% include &ObjMemPath&ObjMemWin.cop
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  St0ToStrW
 ; Purpose:    Create an WIDE string representation of the content of the st(0) FPU register.
@@ -25,6 +25,6 @@ TARGET_STR_AFFIX textequ <W>
 ; Notes:      - Based on the work of Raymond Filiatreault (FpuLib).
 ;             - st4, st5, st6 and st7 must be empty.
 
-% include &ObjMemPath&Common\St0ToStrWXP.inc
+% include &ObjMemPath&Common\St0ToStr_WXP.inc
 
 end

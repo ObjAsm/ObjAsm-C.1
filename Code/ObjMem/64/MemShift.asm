@@ -11,16 +11,15 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  MemShift
-; Purpose:    Copies a memory block from a source to a destination buffer.
+; Purpose:    Copy a memory block from a source to a destination buffer.
 ;             Source and destination may overlap.
-;             Destination buffer must be at least as large as number of bytes to copy, otherwise a
+;             Destination buffer must be at least as large as number of BYTEs to copy, otherwise a
 ;             fault may be triggered.
 ; Arguments:  Arg1: -> Destination buffer.
 ;             Arg2: -> Source buffer.
-;             Arg3: Number of bytes to be copied.
+;             Arg3: Number of BYTEs to copy.
 ; Return:     Nothing.
 
 

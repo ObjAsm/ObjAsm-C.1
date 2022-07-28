@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DisableCPUSerialNumber
 ; Purpose:    Disable the reading of the CPU serial number. 

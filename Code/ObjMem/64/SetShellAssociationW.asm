@@ -8,11 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-
 TARGET_STR_TYPE = STR_TYPE_WIDE
-TARGET_STR_AFFIX textequ <W>
+% include &ObjMemPath&ObjMemWin.cop
+
 ProcName equ <SetShellAssociationW>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  SetShellAssociationW
 ; Purpose:    Set association for a file extension.
@@ -25,6 +26,6 @@ ProcName equ <SetShellAssociationW>
 ; Return:     eax = HRESULT.
 ; Note:       dGlobal = TRUE requires adminitrative rights.
 
-% include &ObjMemPath&Common\SetShellAssociationTX.inc
+% include &ObjMemPath&Common\SetShellAssociation_TX.inc
 
 end

@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DllErr2StrA
 ; Purpose:    Translate an error code to an ANSI string stored in a DLL.

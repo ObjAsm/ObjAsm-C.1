@@ -11,10 +11,9 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutTextCW
-; Purpose:    Sends a counted WIDE string to the debug output device.
+; Purpose:    Send a counted WIDE string to the debug output device.
 ; Arguments:  Arg1: -> Null terminated WIDE string.
 ;             Arg2: Maximal character count.
 ;             Arg3: Color value.

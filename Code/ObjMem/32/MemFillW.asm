@@ -11,14 +11,13 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  MemFillW
 ; Purpose:    Fill a memory block with a given word value.
-;             Destination buffer must be at least as large as number of bytes to fill, otherwise a
+;             Destination buffer must be at least as large as number of BYTEs to fill, otherwise a
 ;             fault may be triggered.
 ; Arguments:  Arg1: -> Destination memory block.
-;             Arg2: Memory block size in bytes.
+;             Arg2: Memory block size in BYTEs.
 ;             Arg3: Word value to fill with.
 ; Return:     Nothing.
 

@@ -8,7 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
+% include &ObjMemPath&ObjMemWin.cop
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  SetClientSize
 ; Purpose:    Set the client window size.
@@ -17,6 +19,6 @@
 ;             Arg3: Client area height in pixel.
 ; Return:     Nothing.
 
-% include &ObjMemPath&Common\SetClientSizeX.inc
+% include &ObjMemPath&Common\SetClientSize_X.inc
 
 end

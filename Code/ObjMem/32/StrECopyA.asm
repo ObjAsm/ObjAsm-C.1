@@ -11,14 +11,13 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrECopyA
 ; Purpose:    Copy an ANSI to a buffer and return the address of the ending zero character.
 ;             Source and destination strings may overlap.
 ; Arguments:  Arg1: -> Destination ANSI character buffer.
 ;             Arg2: -> Source ANSI string.
-; Return:     eax -> Ending zero character.
+; Return:     eax -> ZTC.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

@@ -9,10 +9,10 @@
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
 % include &ObjMemPath&ObjMemWin.cop
-% include &ObjMemPath&64\RadixSort.inc                  ;Helper macros
+
+% include &ObjMemPath&Common\RadixSort64.inc            ;Helper macros
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  RadixSortI32
 ; Purpose:    Ascending sort of an array of SDWORDs using a modified "4 passes radix sort" algorithm.
@@ -33,7 +33,7 @@ align ALIGN_CODE
 RadixSortI32 proc uses rbx rdi rsi pArray:POINTER, dCount:DWORD, pWorkArea:POINTER
   ;rcx -> Array, edx = dCount, r8 -> WorkArea
   mov ebx, edx                                          ;dCount
-  shl ebx, $Log2(sizeof(SDWORD))                        ;ebx = Array size in bytes
+  shl ebx, $Log2(sizeof(SDWORD))                        ;ebx = Array size in BYTEs
   .if ZERO?
     mov eax, TRUE
   .else

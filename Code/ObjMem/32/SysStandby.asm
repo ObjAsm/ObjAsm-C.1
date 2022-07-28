@@ -13,7 +13,6 @@
 CStrW wSysStandby_SeShutdownPrivilege, "SeShutdownPrivilege"
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  SysStandby
 ; Purpose:    Set the system in standby modus.

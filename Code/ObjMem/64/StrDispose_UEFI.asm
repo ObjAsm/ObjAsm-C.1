@@ -10,6 +10,7 @@
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
 % include &ObjMemPath&ObjMemUefi.cop
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrDispose_UEFI
 ; Purpose:    Free the memory allocated for the string using StrNew_UEFI, StrCNew_UEFI, 
@@ -18,6 +19,6 @@
 ; Arguments:  Arg1: -> String.
 ; Return:     Nothing.
 
-% include &ObjMemPath&Common\StrDisposeTX_UEFI.inc
+% include &ObjMemPath&Common\StrDispose_TX_UEFI.inc
 
 end

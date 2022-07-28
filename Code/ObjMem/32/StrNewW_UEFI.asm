@@ -12,6 +12,7 @@
 
 ProcName equ <StrNewW_UEFI>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrNewW_UEFI
 ; Purpose:    Allocate a new copy of the source string.
@@ -21,6 +22,6 @@ ProcName equ <StrNewW_UEFI>
 ; Arguments:  Arg1: -> Source WIDE string.
 ; Return:     eax -> New string copy.
 
-% include &ObjMemPath&Common\StrNewTXP.inc
+% include &ObjMemPath&Common\StrNew_TXP.inc
 
 end

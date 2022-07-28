@@ -9,10 +9,10 @@
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
 % include &ObjMemPath&ObjMemWin.cop
+
 % include &IncPath&Windows\Windows.inc
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrDispose
 ; Purpose:    Free the memory allocated for the string using StrNew, StrCNew, StrLENew or

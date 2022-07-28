@@ -15,15 +15,14 @@
 externdef HexCharTableW:CHRW
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  qword2hexW
-; Purpose:    Converts a QWORD to its hexadecimal WIDE string representation.
+; Purpose:    Convert a QWORD to its hexadecimal WIDE string representation.
 ; Arguments:  Arg1: -> Destination WIDE string buffer.
 ;             Arg2: QWORD value.
 ; Return:     Nothing.
-; Notes:      The destination buffer must be at least 34 bytes large to allocate the output string
-;             (16 character words + ZTC = 34 bytes).
+; Notes:      The destination buffer must be at least 34 BYTEs large to allocate the output string
+;             (16 character WORDs + ZTC = 34 BYTEs).
 
 OPTION PROC:NONE
 align ALIGN_CODE

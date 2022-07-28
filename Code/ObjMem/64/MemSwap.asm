@@ -11,16 +11,15 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  MemSwap
-; Purpose:    Exchanges the memory content from a memory buffer to another.
+; Purpose:    Exchange the memory content from a memory buffer to another.
 ;             They must NOT overlap.
-;             Both buffers must be at least as large as number of bytes to exchange, otherwise a
+;             Both buffers must be at least as large as number of BYTEs to exchange, otherwise a
 ;             fault may be triggered.
 ; Arguments:  Arg1: -> Memory buffer 1.
 ;             Arg2: -> Memory buffer 2.
-;             Arg3: Number of bytes to be exchanged.
+;             Arg3: Number of BYTEs to exchange.
 ; Return:     Nothing.
 
 OPTION PROC:NONE

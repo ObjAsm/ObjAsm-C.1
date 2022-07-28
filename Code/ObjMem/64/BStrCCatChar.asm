@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  BStrCCatChar
 ; Purpose:    Append a WIDE character to a BStr with length limitation.
@@ -23,7 +22,7 @@ OPTION PROC:NONE
 align ALIGN_CODE
 BStrCCatChar proc pDstBStr:POINTER, wChar:CHRW, dMaxChars:DWORD   
   ;rcx -> DstBStr, dx = wChar, r8 = dMaxChars
-  shl r8, 1                                             ;r8 = dMaxChars in bytes
+  shl r8, 1                                             ;r8 = dMaxChars in BYTEs
   mov r9d, DWORD ptr [rcx - 4]
   xor eax, eax
   cmp r8d, r9d

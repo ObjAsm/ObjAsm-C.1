@@ -147,7 +147,7 @@ if DEBUGGING
     externdef hDbgDev:HANDLE
     .data?
     hDbgDev             HANDLE    ?
-  endif  
+  endif
 
   .data?
     pObjIDTableStart    POINTER   ?
@@ -559,7 +559,7 @@ DbgTextF macro Dest, Color:=<DBG_COLOR_TEXT>, Message:req, Args:vararg
            DebugTextF CHRA 1024 dup(?)
           S_DATA ends
         endif
-  
+
         invoke wsprintf, offset DebugTextF, $OfsCStrA($Esc(Message)), Args
         invoke DbgOutText, offset DebugTextF, Color, DBG_EFFECT_NEWLINE, ??DbgDstWnd
       else
@@ -856,6 +856,7 @@ DbgFloat macro Var:req, InfoText, Dest
       else
         DbgSaveContext TRUE, Var
         DbgSetDestWnd Dest
+        fInit
         if ??DbgDataSize eq 4
           fld REAL4 ptr [xbx]
         elseif ??DbgDataSize eq 8

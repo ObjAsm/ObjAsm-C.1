@@ -11,13 +11,12 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutComponent 
-; Purpose:    Identifies a COM-Component.
+; Purpose:    Identify a COM-Component.
 ; Arguments:  Arg1: -> CSLID.
 ;             Arg2: Foreground color.
-;             Arg2: Destination Window name.
+;             Arg2: -> Destination Window WIDE name.
 
 align ALIGN_CODE
 DbgOutComponent proc pIID:ptr GUID, dColor:DWORD, pDestWnd:POINTER

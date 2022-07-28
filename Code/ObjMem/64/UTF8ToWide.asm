@@ -10,7 +10,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
+% include &ObjMemPath&ObjMemWin.cop
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  UTF8ToWide
 ; Purpose:    Convert an UTF8 byte stream to a WIDE (UTF16) string.
@@ -24,6 +26,6 @@
 ; Notes:      - The destination WIDE string is always terminated with a ZTC
 ;               (only if buffer size >= 2).
 
-% include &ObjMemPath&Common\UTF8ToWideXP.inc
+% include &ObjMemPath&Common\UTF8ToWide_XP.inc
 
 end

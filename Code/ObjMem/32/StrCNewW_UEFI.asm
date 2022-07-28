@@ -8,11 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
+TARGET_STR_TYPE = STR_TYPE_WIDE
 % include &ObjMemPath&ObjMemUEFI.cop
 
-TARGET_STR_TYPE = STR_TYPE_WIDE
 ProcName textequ <StrCNewW_UEFI>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrCNewW_UEFI
 ; Purpose:    Allocate a new copy of the source WIDE string with length limitation.
@@ -22,8 +23,8 @@ ProcName textequ <StrCNewW_UEFI>
 ;             second parameter.
 ; Arguments:  Arg1: -> Source WIDE string.
 ;             Arg2: Maximal character count.
-; Return:     rax -> New WIDE string copy.
+; Return:     eax -> New WIDE string copy.
 
-% include &ObjMemPath&32\StrCNewT.inc
+% include &ObjMemPath&Common\StrCNewT32P.inc
 
 end

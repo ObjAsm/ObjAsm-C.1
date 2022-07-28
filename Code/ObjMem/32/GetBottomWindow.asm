@@ -11,15 +11,13 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
-align ALIGN_CODE
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  GetBottomWindow
 ; Purpose:    Get the Z order bottom child window HANDLE.
 ; Arguments:  Arg1: Parenat HWND.
 ; Return:     eax = Z order bottom child window HANDLE.
 
+align ALIGN_CODE
 GetBottomWindow proc uses edi hWnd:HANDLE
   invoke GetTopWindow, hWnd
   .while eax != 0

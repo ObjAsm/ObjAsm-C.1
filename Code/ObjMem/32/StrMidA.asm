@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrMidA
 ; Purpose:    Extract a substring from an ANSI source string.
@@ -19,7 +18,7 @@
 ;             Arg2: -> Source ANSI string.
 ;             Arg3: Start character index. Index ranges [1 .. String length].
 ;             Arg3: Character count.
-; Return:     eax = number of copied characters.
+; Return:     eax = Number of copied characters.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

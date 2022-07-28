@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrICompA
 ; Purpose:    Compare 2 ANSI strings without case sensitivity.
@@ -31,7 +30,7 @@ StrICompA proc pString1A:POINTER, pString2A:POINTER
   push edi
   xor edi, edi
   xor eax, eax
-align ALIGN_CODE                                        ;This line is 4 bytes aligned
+align ALIGN_CODE                                        ;This line is 4 BYTEs aligned
 @@Char:
   mov al, [edi + ecx]                                   ;Load char to compare
   test al, al                                           ;Test if end of string

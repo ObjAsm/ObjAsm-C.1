@@ -11,12 +11,11 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrSizeA
 ; Purpose:    Determine the size of an ANSI string including the ZTC.
 ; Arguments:  Arg1: -> ANSI string.
-; Return:     eax = size of the string in bytes.
+; Return:     eax = Size of the string in BYTEs.
 
 OPTION PROC:NONE
 align ALIGN_CODE
@@ -28,8 +27,8 @@ StrSizeA proc pStringA:POINTER
   sub rdx, rax                                          ;edx = 0..3
   mov ecx, DWORD ptr [rax]
   lea r9, @@0
-  lea r10, [r9 + 8*rdx]                                 ;code size (test + jz) = 8 bytes         
-  jmp r10                                               ;Jump forward to skip non string bytes
+  lea r10, [r9 + 8*rdx]                                 ;code size (test + jz) = 8 BYTEs         
+  jmp r10                                               ;Jump forward to skip non string BYTEs
 
 @@0:
   test ecx, 0000000FFh

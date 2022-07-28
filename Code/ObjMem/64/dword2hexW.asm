@@ -13,15 +13,14 @@
 externdef HexCharTableW:CHRW
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  dword2hexW
-; Purpose:    Converts a DWORD to its hexadecimal WIDE string representation.
+; Purpose:    Convert a DWORD to its hexadecimal WIDE string representation.
 ; Arguments:  Arg1: -> Destination WIDE string buffer.
 ;             Arg2: DWORD value.
 ; Return:     Nothing.
-; Notes:      The destination buffer must be at least 18 bytes large to allocate the output string
-;             (8 character words + ZTC = 18 bytes).
+; Notes:      The destination buffer must be at least 18 BYTEs large to allocate the output string
+;             (8 character WORDs + ZTC = 18 BYTEs).
 
 OPTION PROC:NONE
 align ALIGN_CODE

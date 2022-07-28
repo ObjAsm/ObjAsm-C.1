@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrCECatA
 ; Purpose:    Concatenate 2 ANSI strings with length limitation and return the ending zero character

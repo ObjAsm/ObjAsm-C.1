@@ -12,12 +12,13 @@
 
 ProcName equ <StrAllocW_UEFI>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrAllocW_UEFI 
 ; Purpose:    Allocate space for a string with n characters.
 ; Arguments:  Arg1: Character count without the ZTC.
 ; Return:     eax -> New allocated string or NULL if failed.
 
-% include &ObjMemPath&Common\StrAllocTX_UEFI.inc
+% include &ObjMemPath&Common\StrAlloc_TX_UEFI.inc
 
 end

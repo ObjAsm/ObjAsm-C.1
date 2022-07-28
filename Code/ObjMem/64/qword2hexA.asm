@@ -13,15 +13,14 @@
 externdef HexCharTableA:CHRA
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  qword2hexA
-; Purpose:    Converts a QWORD to its hexadecimal ANSI string representation.
+; Purpose:    Convert a QWORD to its hexadecimal ANSI string representation.
 ; Arguments:  Arg1: -> Destination ANSI string buffer.
 ;             Arg2: QWORD value.
 ; Return:     Nothing.
-; Note:       The destination buffer must be at least 17 bytes large to allocate the output string
-;             (16 character bytes + ZTC = 17 bytes).
+; Note:       The destination buffer must be at least 17 BYTEs large to allocate the output string
+;             (16 character BYTEs + ZTC = 17 BYTEs).
 
 OPTION PROC:NONE
 align ALIGN_CODE

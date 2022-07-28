@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrCECatW
 ; Purpose:    Concatenate 2 WIDE strings with length limitation and return the ending zero character

@@ -8,11 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
+TARGET_STR_TYPE = STR_TYPE_ANSI
 % include &ObjMemPath&ObjMemWin.cop
 
-TARGET_STR_TYPE = STR_TYPE_ANSI
 ProcName textequ <StrCNewA>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrCNewW
 ; Purpose:    Allocate a new copy of the source ANSI string with length limitation.
@@ -22,8 +23,8 @@ ProcName textequ <StrCNewA>
 ;             second parameter.
 ; Arguments:  Arg1: -> Source ANSI string.
 ;             Arg2: Maximal character count.
-; Return:     rax -> New ANSI string copy.
+; Return:     eax -> New ANSI string copy.
 
-% include &ObjMemPath&32\StrCNewT.inc
+% include &ObjMemPath&Common\StrCNewT32P.inc
 
 end

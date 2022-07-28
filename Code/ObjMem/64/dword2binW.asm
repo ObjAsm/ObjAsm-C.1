@@ -10,7 +10,6 @@
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
 % include &ObjMemPath&ObjMemWin.cop
 
-.code
 
 SetDword macro z
   mov eax, 00300030h
@@ -25,14 +24,15 @@ SetDword macro z
   mov [rcx + 4*z], eax
 endm
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  dword2binW
-; Purpose:    Converts a DWORD to its binary WIDE string representation.
+; Purpose:    Convert a DWORD to its binary WIDE string representation.
 ; Arguments:  Arg1: -> Destination buffer.
 ;             Arg2: DWORD value.
 ; Return:     Nothing.
-; Notes:      The destination buffer must be at least 66 bytes large to allocate the output string
-;             (32 character words + ZTC = 66 bytes).
+; Notes:      The destination buffer must be at least 66 BYTEs large to allocate the output string
+;             (32 character WORDs + ZTC = 66 BYTEs).
 
 OPTION PROC:NONE
 align ALIGN_CODE

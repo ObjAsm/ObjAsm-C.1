@@ -46,7 +46,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 align ALIGN_CODE
 
 _chkstk proc c

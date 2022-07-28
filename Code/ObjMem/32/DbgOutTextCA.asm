@@ -11,10 +11,9 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgClose
-; Purpose:    Sends a counted ANSI string to the debug output device
+; Purpose:    Send a counted ANSI string to the debug output device
 ; Arguments:  Arg1: -> Null terminated ANSI string.
 ;             Arg2: Character count.
 ;             Arg3: Color value.

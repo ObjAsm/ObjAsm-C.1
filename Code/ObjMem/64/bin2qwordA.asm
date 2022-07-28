@@ -21,7 +21,6 @@ NextCharA macro
 endm
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  bin2qwordA
 ; Purpose:    Load an ANSI string binary representation of a QWORD.

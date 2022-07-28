@@ -13,10 +13,9 @@
 externdef HexCharTableW:WORD
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  GetFileHashW
-; Purpose:    Computes the hash value from the content of a file.
+; Purpose:    Compute the hash value from the content of a file.
 ; Arguments:  Arg1: -> Hash return value
 ;             Arg2: -> WIDE file name.
 ;             Arg3: Hash type.
@@ -24,7 +23,7 @@ externdef HexCharTableW:WORD
 ; Links:      http://www.masm32.com/board/index.php?topic=4322.msg32297#msg32297
 ; Notes:      Original translation from MSDN library by Edgar Hansen
 ;             It requires a fully qualified path to a file to generate a hash for and a pointer
-;             to a WIDE string buffer to hold the resulting hash in HEX (16 bytes for MDx, 20 bytes
+;             to a WIDE string buffer to hold the resulting hash in HEX (16 BYTEs for MDx, 20 BYTEs
 ;             for SHAx) and an algorithm ID, for MD5 set dHashType to GFH_MD5.
 ;             See ObjMem.inc GFH_xxx.
 

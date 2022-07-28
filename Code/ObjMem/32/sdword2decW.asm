@@ -14,15 +14,14 @@
 externdef TwoDecDigitTableW:WORD
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  sdword2decW
-; Purpose:    Converts a signed DWORD to its decimal WIDE string representation.
+; Purpose:    Convert a signed DWORD to its decimal WIDE string representation.
 ; Arguments:  Arg1: -> Destination WIDE string buffer.
 ;             Arg2: SDWORD value.
-; Return:     eax = Number of bytes copied to the destination buffer, including the ZTC.
-; Note:       The destination buffer must be at least 24 bytes large to allocate the output string
-;             (Sign + 10 WIDE characters + ZTC = 24 bytes).
+; Return:     eax = Number of BYTEs copied to the destination buffer, including the ZTC.
+; Note:       The destination buffer must be at least 24 BYTEs large to allocate the output string
+;             (Sign + 10 WIDE characters + ZTC = 24 BYTEs).
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

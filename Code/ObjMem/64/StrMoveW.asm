@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrMoveW
 ; Purpose:    Move part of a WIDE string. The ZTC is NOT appended automatically.

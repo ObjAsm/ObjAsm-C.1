@@ -13,15 +13,14 @@
 externdef HexCharTableW:WORD
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  qword2hexW
-; Purpose:    Converts a QWORD to its hexadecimal WIDE string representation.
+; Purpose:    Convert a QWORD to its hexadecimal WIDE string representation.
 ; Arguments:  Arg1: -> Destination buffer.
 ;             Arg2: QWORD value.
 ; Return:     Nothing.
-; Note:       The destination buffer must be at least 34 bytes large to allocate the output string
-;             (16 character words + ZTC = 34 bytes).
+; Note:       The destination buffer must be at least 34 BYTEs large to allocate the output string
+;             (16 character WORDs + ZTC = 34 BYTEs).
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

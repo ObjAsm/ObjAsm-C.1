@@ -8,19 +8,19 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-
 TARGET_STR_TYPE = STR_TYPE_WIDE
-ProcName textequ <DbgOutTextW>
+% include &ObjMemPath&ObjMemWin.cop
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutTextW
-; Purpose:    Sends a WIDE string to the debug output device.
+; Purpose:    Send a WIDE string to the debug output device.
 ; Arguments:  Arg1: -> Zero terminated WIDE string.
 ;             Arg2: Color value.
 ;             Arg3: Effect value (DBG_EFFECT_XXX)
 ;             Arg4: -> Destination window WIDE name.
 ; Return:     Nothing.
 
-% include &ObjMemPath&Common\\\\DbgOutTextTX.inc
+% include &ObjMemPath&Common\\\\DbgOutText_TX.inc
 
 end

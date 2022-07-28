@@ -9,10 +9,10 @@
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
 % include &ObjMemPath&ObjMemWin.cop
-% include &ObjMemPath&32\RadixSort.inc                  ;Helper macros
+
+% include &ObjMemPath&Common\RadixSort32.inc            ;Helper macros
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  RadixSortPtrI32
 ; Purpose:    Ascending sort of an array of POINTERs to structures containing a SDWORD key using a
@@ -59,7 +59,7 @@ align ALIGN_CODE
 RadixSortPtrI32 proc pArray:POINTER, dCount:DWORD, dOffset:DWORD, pWorkArea:POINTER
   push ebx
   mov ebx, [esp + 12]                                   ;dCount
-  shl ebx, 2                                            ;ebx = Array size in bytes
+  shl ebx, 2                                            ;ebx = Array size in BYTEs
   .if ZERO?
     mov eax, TRUE
   .else

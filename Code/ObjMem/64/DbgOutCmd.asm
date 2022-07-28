@@ -12,15 +12,14 @@
 
 externdef DbgCritSect:CRITICAL_SECTION
 
-.code
-
 option stackbase:rbp
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutCmd
 ; Purpose:    Send a command to a specific Debug window.
 ; Arguments:  Arg1: Command ID [BYTE].
-;             Arg2: Target Debug Window name.
+;             Arg2: -> Destination Window WIDE name.
 ; Return:     Nothing.
 
 align ALIGN_CODE

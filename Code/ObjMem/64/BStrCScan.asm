@@ -11,10 +11,9 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  BStrCScan
-; Purpose:    Scans from the beginning of a BStr for a character with length limitation.
+; Purpose:    Scan from the beginning of a BStr for a character with length limitation.
 ; Arguments:  Arg1: -> Source WIDE string.
 ;             Arg2: Maximal character count.
 ;             Arg3: WIDE character to search for.

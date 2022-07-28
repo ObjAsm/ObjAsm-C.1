@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  IsScrollBarVisible
 ; Purpose:    Determine if a Scrollbar is currently visible. 

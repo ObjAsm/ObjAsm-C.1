@@ -8,24 +8,24 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-
 TARGET_STR_TYPE = STR_TYPE_WIDE
-TARGET_STR_AFFIX textequ <W>
+% include &ObjMemPath&ObjMemWin.cop
 
 externdef TwoDecDigitTableW:WORD
 ProcName textequ <udword2decW>
 
 % include &ObjMemPath&ObjMemWin.cop
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  udword2decW
-; Purpose:    Converts an unsigned DWORD to its decimal WIDE string representation.
+; Purpose:    Convert an unsigned DWORD to its decimal WIDE string representation.
 ; Arguments:  Arg1: -> Destination WIDE string buffer.
 ;             Arg2: DWORD value.
-; Return:     eax = Number of bytes copied to the destination buffer, including the ZTC.
-; Note:       The destination buffer must be at least 22 bytes large to allocate the output string
-;             (10 WIDE characters + ZTC = 22 bytes).
+; Return:     eax = Number of BYTEs copied to the destination buffer, including the ZTC.
+; Note:       The destination buffer must be at least 22 BYTEs large to allocate the output string
+;             (10 WIDE characters + ZTC = 22 BYTEs).
 
-% include &ObjMemPath&64\udword2decT.inc
+% include &ObjMemPath&Common\udword2decT64.inc
 
 end

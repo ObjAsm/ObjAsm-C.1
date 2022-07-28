@@ -11,10 +11,9 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  Bmp2Rgn
-; Purpose:    Creates a GDI region based on a device dependant or independent bitmap (DDB or DIB).
+; Purpose:    Create a GDI region based on a device dependant or independent bitmap (DDB or DIB).
 ;             This region is defined by the non transparent area delimited by the transparent color.
 ; Arguments:  Arg1: Bitmap handle.
 ;             Arg2: RGB transparet color.

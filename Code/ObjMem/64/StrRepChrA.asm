@@ -8,11 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-
 TARGET_STR_TYPE = STR_TYPE_ANSI
-TARGET_STR_AFFIX textequ <A>
+% include &ObjMemPath&ObjMemWin.cop
+
 ProcName equ <StrRepChrA>
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrRepChrA
 ; Purpose:    Create a new string filled with a given char.
@@ -20,6 +21,6 @@ ProcName equ <StrRepChrA>
 ;             Arg2: Repetition count.
 ; Return:     rax -> New string or NULL if failed.
 
-% include &ObjMemPath&Common\StrRepChrTXP.inc
+% include &ObjMemPath&Common\StrRepChr_TXP.inc
 
 end

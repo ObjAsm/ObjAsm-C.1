@@ -17,28 +17,27 @@ CheckPointAndAdjustPosition macro
   lea r8, MI
   mov MI.cbSize, sizeof(MONITORINFO)
   invoke GetMonitorInfo, rax, r8
-  .if sdword ptr esi > MI.rcWork.bottom
+  .if SDWORD ptr esi > MI.rcWork.bottom
     sub esi, MI.rcWork.bottom
     sub sdYPos, esi
-  .elseif sdword ptr esi < MI.rcWork.top
+  .elseif SDWORD ptr esi < MI.rcWork.top
     sub esi, MI.rcWork.top
     sub sdYPos, esi
   .endif
 
-  .if sdword ptr edi > MI.rcWork.right
+  .if SDWORD ptr edi > MI.rcWork.right
     sub edi, MI.rcWork.right
     sub sdXPos, edi
-  .elseif sdword ptr edi < MI.rcWork.left
+  .elseif SDWORD ptr edi < MI.rcWork.left
     sub edi, MI.rcWork.left
     sub sdXPos, edi
   .endif
 endm
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  MoveWindowVisible
-; Purpose:    On a multimonitor system, moves a window but remains always in the visible region.
+; Purpose:    On a multimonitor system, move a window but remains always in the visible region.
 ; Arguments:  Arg1: HANDLE of the Window to move.
 ;             Arg2: Target X position in pixel.
 ;             Arg3: Target Y position in pixel.

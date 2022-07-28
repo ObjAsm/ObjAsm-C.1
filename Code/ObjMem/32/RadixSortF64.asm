@@ -9,10 +9,10 @@
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
 % include &ObjMemPath&ObjMemWin.cop
-% include &ObjMemPath&32\RadixSort.inc                  ;Helper macros
+
+% include &ObjMemPath&Common\RadixSort32.inc          ;Helper macros
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  RadixSortF64
 ; Purpose:    Ascending sort of an array of double precision floats (REAL8) using a modified 
@@ -35,7 +35,7 @@ align ALIGN_CODE
 RadixSortF64 proc pArray:POINTER, dCount:dword, pWorkArea:POINTER
   push ebx
   mov ebx, [esp + 12]                                   ;dCount
-  shl ebx, 3                                            ;ebx = Array size in bytes
+  shl ebx, 3                                            ;ebx = Array size in BYTEs
   .if ZERO?
     mov eax, TRUE
   .else

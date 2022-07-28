@@ -20,7 +20,6 @@ NextCharA macro
 endm
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  bin2dwordA
 ; Purpose:    Load an ANSI string binary representation of a DWORD.

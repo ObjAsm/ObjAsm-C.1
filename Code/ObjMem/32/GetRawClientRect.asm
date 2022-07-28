@@ -8,7 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
+% include &ObjMemPath&ObjMemWin.cop
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  GetRawClientRect
 ; Purpose:    Calculate the window client RECT including scrollbars, but without the room needed
@@ -17,6 +19,6 @@
 ;             Arg2: -> RECT.
 ; Return:     Nothing.
 
-% include &ObjMemPath&Common\GetRawClientRectX.inc
+% include &ObjMemPath&Common\GetRawClientRect_X.inc
 
 end

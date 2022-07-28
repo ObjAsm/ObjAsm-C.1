@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  BStrCECopy
 ; Purpose:    Copy the the source BStr with length limitation and return the ZTC address.
@@ -28,7 +27,7 @@ align ALIGN_CODE
 BStrCECopy proc pDstBStr:POINTER, pSrcBStr:POINTER, dMaxLen:DWORD
   mov ecx, [esp + 8]                                    ;ecx -> SrcBStr
   mov eax, [esp + 4]                                    ;eax -> DstBStr
-  shl DWORD ptr [esp + 12], 1                           ;dMaxLen => bytes
+  shl DWORD ptr [esp + 12], 1                           ;dMaxLen => BYTEs
   mov edx, DWORD ptr [ecx - 4]                          
   cmp edx, [esp + 12]                                   ;dMaxLen
   jbe @F                                                

@@ -8,7 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
+% include &ObjMemPath&ObjMemWin.cop
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  IsProcessElevated
 ; Purpose:    Check if the current process has elevated privileges.
@@ -17,6 +19,6 @@
 ; Example:    invoke GetCurrentProcess
 ;             invoke IsProcessElevated, xax
 
-% include &ObjMemPath&Common\IsProcessElevatedX.inc
+% include &ObjMemPath&Common\IsProcessElevated_X.inc
 
 end

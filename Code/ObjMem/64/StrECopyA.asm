@@ -11,7 +11,6 @@
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrECopyA
 ; Purpose:    Copy an ANSI string to a buffer and return the address of the ZTC.
