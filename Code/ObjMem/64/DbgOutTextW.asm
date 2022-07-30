@@ -11,6 +11,8 @@
 TARGET_STR_TYPE = STR_TYPE_WIDE
 % include &ObjMemPath&ObjMemWin.cop
 
+ProcName textequ <DbgOutTextW>
+
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutTextW
@@ -21,6 +23,6 @@ TARGET_STR_TYPE = STR_TYPE_WIDE
 ;             Arg4: -> Destination window WIDE name.
 ; Return:     Nothing.
 
-% include &ObjMemPath&Common\\\\DbgOutText_TX.inc
+% include &ObjMemPath&Common\\DbgOutText_TX.inc
 
 end

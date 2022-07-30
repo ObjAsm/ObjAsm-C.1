@@ -15,11 +15,11 @@
 ; Procedure: MemShift
 ; Purpose:   Copy a memory block from a source to a destination buffer.
 ;            Source and destination may overlap.
-;            Destination buffer must be at least as large as number of BYTEs to copy, otherwise a
+;            Destination buffer must be at least as large as number of BYTEs to shift, otherwise a
 ;            fault may be triggered.
 ; Arguments: Arg1: -> Destination buffer.
 ;            Arg2: -> Source buffer.
-;            Arg3: Number of BYTEs to copy.
+;            Arg3: Number of BYTEs to shift.
 ; Return:    Nothing.
 
 OPTION PROLOGUE:NONE

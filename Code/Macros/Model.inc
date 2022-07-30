@@ -515,7 +515,7 @@ SysSetup macro Arguments:vararg
         dDbgDev   DWORD   DBG_DEV_UEFI_CON
       endif
 
-      ifdef DBG_INFO
+      if DBG_INFO eq TRUE
         dDbgOpt   DWORD   DBG_OPT_SHOWINFO
       else
         dDbgOpt   DWORD   0

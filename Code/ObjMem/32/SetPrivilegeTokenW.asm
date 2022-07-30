@@ -17,7 +17,7 @@ TypeAdjustTokenPrivileges typedef proto :HANDLE, :DWORD, :POINTER, :DWORD, :POIN
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  SetPrivilegeTokenW
-; Purpose:    Enable provilege tokens.
+; Purpose:    Enable privilege tokens.
 ; Arguments:  Arg1: Process handle.
 ;             Arg2: -> Privilege name (ANSI string).
 ;             Arg3: Eanble = TRUE, disable = FALSE

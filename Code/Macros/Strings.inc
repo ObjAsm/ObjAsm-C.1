@@ -80,9 +80,9 @@ CRLF  equ <13,10>
 
 $Esc macro Text:req
   $$CES_Text textequ <>
-  $$CES_Backslash = 0                                   ;;backslash reached
-  $$CES_LeadingQM = 0                                   ;;leading quotation mark ( "...... )
-  $$CES_SepComma = 0                                    ;;separating comma ( ...,... )
+  $$CES_Backslash = 0                                   ;;Backslash reached
+  $$CES_LeadingQM = 0                                   ;;Leading quotation mark ( "...... )
+  $$CES_SepComma = 0                                    ;;Separating comma ( ...,... )
   $$CES_Count = 0
 
   forc $$CES_Character, <Text>

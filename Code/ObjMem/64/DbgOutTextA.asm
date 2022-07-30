@@ -8,9 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
+TARGET_STR_TYPE = STR_TYPE_ANSI
 % include &ObjMemPath&ObjMemWin.cop
 
-TARGET_STR_TYPE = STR_TYPE_ANSI
 ProcName textequ <DbgOutTextA>
 
 .code
@@ -23,6 +23,6 @@ ProcName textequ <DbgOutTextA>
 ;             Arg4: -> Destination window WIDE name.
 ; Return:     Nothing.
 
-% include &ObjMemPath&Common\\\\DbgOutText_TX.inc
+% include &ObjMemPath&Common\\DbgOutText_TX.inc
 
 end

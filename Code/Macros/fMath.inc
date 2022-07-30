@@ -120,6 +120,8 @@ f_DENOR             equ   5
 f_NOR               equ   0
 f_SCI               equ   BIT00
 f_TRIM              equ   BIT01
+f_ALIGN             equ   BIT02
+f_PLUS              equ   BIT03
 
 DEG2RAD equ <+1.7453292519943295769236907684890e-0002>
 RAD2DEG equ <+5.7295779513082320876798154814105e+0001>

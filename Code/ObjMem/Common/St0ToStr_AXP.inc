@@ -1,13 +1,14 @@
 ; ==================================================================================================
 ; Title:      St0ToStr_AXP.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
+;               - Bitness and platform independent code.
+;             Version C.1.0, July 2022
+;               - Support for f_ALIGN and f_PLUS added.
 ; ==================================================================================================
 
-
-% include &ObjMemPath&ObjMemWin.cop
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  St0ToStrA
@@ -16,10 +17,15 @@
 ;             Arg2: Minimal number of places from the start of string up to the decimal point.
 ;                   (f_NOR only)
 ;             Arg3: Number of decimal places after the decimal point.
-;             Arg4: Format flag (f_NOR, f_SCI, f_TRIM) defined in fMath.inc
+;             Arg4: Format flag (f_NOR, f_SCI, f_TRIM, f_ALIGNED) defined in fMath.inc
 ; Return:     eax = Result code f_OK, f_ERROR, f_NAN, ...
 ; Notes:      - Based on the work of Raymond Filiatreault (FpuLib).
 ;             - st4, st5, st6 and st7 must be empty.
+;             - f_NOR: regular output format
+;             - f_SCI: Scientific output format
+;             - f_TRIM: Trim zeros on the right
+;             - f_ALIGN: Add a heading space to align the output with other negative numbers
+;             - f_PLUS: like f_ALIGN, but using a + character.
 
 align ALIGN_CODE
 St0ToStrA proc uses xdi xsi pBuffer:POINTER, dPadding:DWORD, dDecimals:DWORD, dFlags:DWORD
@@ -49,7 +55,7 @@ St0ToStrA proc uses xdi xsi pBuffer:POINTER, dPadding:DWORD, dDecimals:DWORD, dF
   test wStatusWord, mask fC0                            ;Now check it for NAN
   jnz @@Error                                           ;Src is NAN or infinity - cannot convert
 
-  ;Value to be converted = 0
+  ;Value to convert = 0
   xor eax, eax
   mov dExponent, eax
   lea xcx, tBCD
@@ -126,7 +132,11 @@ St0ToStrA proc uses xdi xsi pBuffer:POINTER, dPadding:DWORD, dDecimals:DWORD, dF
 @@UnpackBCD:
   lea xsi, tBCD + 9                                     ;Go to the most significant byte (sign byte)
   lea xdi, bUnpacked
-  mov ax, 3020h                                         ;" 0"
+  .ifBitSet dFlags, f_PLUS
+    mov eax, 302Bh                                      ;"+0"
+  .else
+    mov eax, 3020h                                      ;" 0"
+  .endif
   mov cl, BYTE ptr [xsi]                                ;Sign byte
   .if cl == 80h
     mov al, "-"                                         ;Insert sign if negative number
@@ -164,7 +174,15 @@ St0ToStrA proc uses xdi xsi pBuffer:POINTER, dPadding:DWORD, dDecimals:DWORD, dF
 
     @@NoPadding:
     pushfx                                              ;Save padding flags
-    movsb                                               ;Insert sign
+    lodsb
+    .if al == ' '
+      .ifBitSet dFlags, f_ALIGN
+        stosb
+      .endif
+    .else
+      stosb
+    .endif
+
     mov ecx, 1                                          ;At least 1 integer digit
     mov eax, dExponent
     test eax, eax                                       ;Is size negative (i.e. number smaller than 1)
@@ -195,7 +213,14 @@ St0ToStrA proc uses xdi xsi pBuffer:POINTER, dPadding:DWORD, dDecimals:DWORD, dF
 
   .else
     ;SCIENTIFIC NOTATION
-    movsb
+    lodsb
+    .if al == ' '
+      .ifBitSet dFlags, f_ALIGN
+        stosb
+      .endif
+    .else
+      stosb
+    .endif
     mov ecx, dDecimals
     mov eax, 18
     sub eax, ecx
@@ -295,32 +320,31 @@ St0ToStrA proc uses xdi xsi pBuffer:POINTER, dPadding:DWORD, dDecimals:DWORD, dF
 
   mov xcx, pBuffer
   .if eax == 0
-    FillStringA [xcx], <Error>
+    FillString [xcx], <Error>
     mov eax, f_ERROR
   .elseif eax == 1
-    FillStringA [xcx], <NAN>
+    FillString [xcx], <NAN>
     mov eax, f_NAN
   .elseif eax == 2
-    FillStringA [xcx], <Failed>
+    FillString [xcx], <Failed>
     mov eax, f_ERROR
   .elseif eax == 3
     .ifBitSet wStatusWord, mask fC1
-      FillStringA [xcx], <-Inf>
+      FillString [xcx], <-Inf>
       mov eax, f_INFN
     .else
-      FillStringA [xcx], <+Inf>
+      FillString [xcx], <+Inf>
       mov eax, f_INFP
     .endif
   .elseif eax == 4
-    FillStringA [xcx], <Null>
+    FillString [xcx], <Null>
     mov eax, f_ERROR
   .elseif eax == 5
-    FillStringA [xcx], <Empty>
+    FillString [xcx], <Empty>
     mov eax, f_ERROR
   .elseif eax == 6
-    FillStringA [xcx], <Denor>
+    FillString [xcx], <Denor>
     mov eax, f_DENOR
   .endif
   fclex                                                 ;Clear FPU exception flags
-  ret
 St0ToStrA endp

@@ -23,6 +23,6 @@ ProcName textequ <DbgOutTextA>
 ;             Arg4: -> Destination window WIDE name.
 ; Return:     Nothing.
 
-% include &ObjMemPath&Common\DbgOutText_TX.inc
+% include &ObjMemPath&Common\\DbgOutText_TX.inc
 
 end
