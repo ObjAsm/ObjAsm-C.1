@@ -1,9 +1,11 @@
 ; ==================================================================================================
 ; Title:      StrCCatA.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
+;             Version C.1.1, July 2022
+;               - Return value added.
 ; ==================================================================================================
 
 
@@ -20,7 +22,7 @@
 ;             Arg2: -> Source ANSI string.
 ;             Arg3: Maximal number of charachters that the destination string can hold including the
 ;                   ZTC.
-; Return:     Nothing.
+; Return:     eax = Number of added BYTEs.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE
@@ -33,7 +35,10 @@ StrCCatA proc pBuffer:POINTER, pSrcStringA:POINTER, dMaxChars:DWORD
   sub ecx, eax
   jbe @F                                                ;Destination is too small!
   invoke StrCCopyA, eax, [esp + 12], ecx
+  sub eax, sizeof(CHRA)                                 ;Exclude ZTC
+  ret 12
 @@:
+  xor eax, eax
   ret 12
 StrCCatA endp
 

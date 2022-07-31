@@ -1,9 +1,11 @@
 ; ==================================================================================================
 ; Title:      StrCatA.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
+;             Version C.1.1, July 2022
+;               - Return value added.
 ; ==================================================================================================
 
 
@@ -22,6 +24,7 @@ align ALIGN_CODE
 StrCatA proc pDstStrA:POINTER, pSrcStrA:POINTER
   invoke StrEndA, rcx                                   ;pDstStrA
   invoke StrCopyA, rax, pSrcStrA
+  sub rax, sizeof(CHRA)                                 ;Sizeof ZTC
   ret
 StrCatA endp
 

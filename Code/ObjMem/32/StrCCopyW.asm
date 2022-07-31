@@ -19,7 +19,7 @@
 ; Arguments:  Arg1: -> Destination buffer.
 ;             Arg2: -> Source WIDE string.
 ;             Arg3: Maximal number of charachters to copy, excluding the ZTC.
-; Return:     eax = Number of copied characters, not including the ZTC.
+; Return:     eax = Number of copied BYTEs, including the ZTC.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE
@@ -30,10 +30,11 @@ StrCCopyW proc pBuffer:POINTER, pSrcStringW:POINTER, dMaxChars:DWORD
   shl eax, 1
   push eax
   add eax, [esp + 8]
-  m2z WORD ptr [eax]                                    ;Set ZTC
+  m2z CHRW ptr [eax]                                    ;Set ZTC
   push [esp + 12]
   push [esp + 12]
   call MemShift
+  add eax, Sizeof(CHRW)                                 ;ZTC size
   ret 12
 StrCCopyW endp
 

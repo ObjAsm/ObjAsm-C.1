@@ -1,9 +1,11 @@
 ; ==================================================================================================
 ; Title:      MemShift.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
+;             Version C.1.1, July 2022
+;               - Return value added.
 ; ==================================================================================================
 
 
@@ -20,13 +22,16 @@
 ; Arguments:  Arg1: -> Destination buffer.
 ;             Arg2: -> Source buffer.
 ;             Arg3: Number of BYTEs to shift.
-; Return:     Nothing.
+; Return:     rax = Number of BYTEs shifted.
 
+OPTION PROLOGUE:NONE
+OPTION EPILOGUE:NONE
 
 align ALIGN_CODE
 MemShift proc pDstMem:POINTER, pSrcMem:POINTER, dByteCount:DWORD
   push rdi
   push rsi
+  push r8                                               ;Save dByteCount as return value
   mov rdi, rcx                                          ;rdi -> DstMem
   mov rsi, rdx                                          ;rsi -> SrcMem
   mov ecx, r8d                                          ;ecx = dByteCount
@@ -59,6 +64,7 @@ MemShift proc pDstMem:POINTER, pSrcMem:POINTER, dByteCount:DWORD
 @@:
   cld
 @@0:
+  pop rax                                               ;Return value: rax = dByteCount 
   pop rsi
   pop rdi
   ret
@@ -78,6 +84,7 @@ MemShift proc pDstMem:POINTER, pSrcMem:POINTER, dByteCount:DWORD
   jz @F
   movsb
 @@:
+  pop rax                                               ;Return value: rax = dByteCount 
   pop rsi
   pop rdi
   ret

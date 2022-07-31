@@ -362,49 +362,49 @@ endm
 ;             THIS MACRO TRASHES XDI & XSI!
 
 OutHexAux macro
-  if ??DbgDataSize ge 16
+  if ??DbgDataSize ge 2*sizeof(QWORD)
     invoke qword2hexA, xdi, [xbx + 8]
-    add xdi, 16
+    add xdi, QWORD2HEX_MAX_CHARS - 1
     invoke qword2hexA, xdi, [xbx]
-    H_Offset = 16
+    H_Offset = QWORD2HEX_MAX_CHARS - 1
     if ??DbgDataSize ne 16
-      add xdi, 16
+      add xdi, H_Offset
       mov QCHRA ptr [xdi], "..."
       H_Offset = 3
     endif
-  elseif ??DbgDataSize ge 8
+  elseif ??DbgDataSize ge sizeof(QWORD)
     invoke qword2hexA, xdi, [xbx]
-    H_Offset = 16
+    H_Offset = QWORD2HEX_MAX_CHARS - 1
     if ??DbgDataSize ne 8
-      add xdi, 16
+      add xdi, H_Offset
       mov QCHRA ptr [xdi], "..."
       H_Offset = 3
     endif
-  elseif ??DbgDataSize ge 4
+  elseif ??DbgDataSize ge sizeof(DWORD)
     invoke dword2hexA, xdi, [xbx]
-    H_Offset = 8
+    H_Offset = DWORD2HEX_MAX_CHARS - 1
     if ??DbgDataSize ne 4
-      add xdi, 8
+      add xdi, H_Offset
       mov QCHRA ptr [xdi], "..."
       H_Offset = 3
     endif
-  elseif ??DbgDataSize ge 2
+  elseif ??DbgDataSize ge sizeof(WORD)
     movzx edx, WORD ptr [xbx]
     invoke dword2hexA, xdi, edx
     add xsi, 4
-    H_Offset = 8
+    H_Offset = DWORD2HEX_MAX_CHARS - 1
     if ??DbgDataSize ne 2
-      add xdi, 8
+      add xdi, H_Offset
       mov QCHRA ptr [xdi], "..."
       H_Offset = 3
     endif
   else
     movzx edx, BYTE ptr [xbx]
     invoke dword2hexA, xdi, edx
-    add xsi, 6
-    H_Offset = 8
+    add xsi, 2
+    H_Offset = 2
   endif
-  mov DCHRA ptr [xdi + H_Offset], "h"
+  mov DCHRA ptr [xdi + H_Offset], "h"                   ;Include ZTC
 endm
 
 DbgOutHex macro PreText:=<>, PreColor:=<DBG_COLOR_DEFAULT_PRE>, Var:req, \
@@ -419,9 +419,9 @@ DbgOutHex macro PreText:=<>, PreColor:=<DBG_COLOR_DEFAULT_PRE>, Var:req, \
     if (opattr Var) and OAT_REGISTER                      ;;Is Var a register?
       mov esi, esp                                        ;;+ 2 padding bytes = 0Ch
       invoke dword2hexA, esi, ebx
-      mov DCHRA ptr [esi + 8], "h"                        ;;Set "h" + ZTC
-      if ??DbgDataSize lt 4
-        add esi, 8 - 2*??DbgDataSize                      ;;Skip unnecessary zeros
+      mov DCHRA ptr [esi + DWORD2HEX_MAX_CHARS - 1], "h"  ;;Set "h" + ZTC
+      if ??DbgDataSize lt sizeof(DWORD)
+        add esi, 2*(sizeof(DWORD) - ??DbgDataSize)        ;;Skip unnecessary zeros
       endif
     else
       if TARGET_PLATFORM eq PLATFORM_WINDOWS
@@ -450,9 +450,9 @@ DbgOutHex macro PreText:=<>, PreColor:=<DBG_COLOR_DEFAULT_PRE>, Var:req, \
     if (opattr Var) and OAT_REGISTER                      ;;Is Var a register?
       lea rsi, [rsp + 20h]
       invoke qword2hexA, rsi, rbx
-      mov DCHRA ptr [rsi + 16], "h"                       ;;Set "h" + ZTC
-      if ??DbgDataSize lt 8
-        add rsi, 16 - 2*??DbgDataSize                     ;;Skip unnecessary zeros
+      mov DCHRA ptr [rsi + QWORD2HEX_MAX_CHARS - 1], "h"  ;;Set "h" + ZTC
+      if ??DbgDataSize lt sizeof(QWORD)
+        add rsi, 2*(sizeof(QWORD) - ??DbgDataSize)        ;;Skip unnecessary zeros
       endif
     else
       if TARGET_PLATFORM eq PLATFORM_WINDOWS

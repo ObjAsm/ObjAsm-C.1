@@ -19,7 +19,7 @@
 ; Arguments:  Arg1: -> Destination buffer.
 ;             Arg2: -> Source ANSI string.
 ;             Arg3: Maximal number of charachters to copy, excluding the ZTC.
-; Return:     eax = Number of copied characters, not including the ZTC.
+; Return:     rax = Number of copied BYTEs, including the ZTC.
 
 align ALIGN_CODE
 StrCCopyA proc uses rdi pBuffer:POINTER, pSrcStringA:POINTER, dMaxChars:DWORD
@@ -27,6 +27,7 @@ StrCCopyA proc uses rdi pBuffer:POINTER, pSrcStringA:POINTER, dMaxChars:DWORD
   invoke StrCLengthA, rdx, r8d                          ;pSrcStr, dMaxChars
   m2z CHRA ptr [rax + rdi]                              ;Set ZTC
   invoke MemShift, rdi, pSrcStringA, eax
+  add rax, sizeof(CHRA)                                 ;ZTC size
   ret
 StrCCopyA endp
 
