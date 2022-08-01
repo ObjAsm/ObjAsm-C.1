@@ -549,19 +549,19 @@ endm
 ; Example:    DbgTextF "Output", $RGB(000,000,000), "Data = '%s'", xax
 
 DbgTextF macro Dest, Color:=<DBG_COLOR_TEXT>, Message:req, Args:vararg
+  local DebugTextBuffer
+
   if DEBUGGING
     if TARGET_PLATFORM eq PLATFORM_WINDOWS
       DbgSaveContext
       DbgSetDestWnd Dest
       ifnb <Args>
-        ifndef DebugTextF
-          S_DATA segment
-           DebugTextF CHRA 1024 dup(?)
-          S_DATA ends
-        endif
+        S_DATA segment
+         DebugTextBuffer CHRA 1024 dup(?)
+        S_DATA ends
 
-        invoke wsprintf, offset DebugTextF, $OfsCStrA($Esc(Message)), Args
-        invoke DbgOutText, offset DebugTextF, Color, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+        invoke wsprintf, offset DebugTextBuffer, $OfsCStrA($Esc(Message)), Args
+        invoke DbgOutText, offset DebugTextBuffer, Color, DBG_EFFECT_NEWLINE, ??DbgDstWnd
       else
         invoke DbgOutText, $OfsCStrA($Esc(Message)), Color, DBG_EFFECT_NEWLINE, ??DbgDstWnd
       endif

@@ -277,6 +277,14 @@ sdword2dec, pDecString, sdword
 sdword2decA, pDecStringA, sdword
 sdword2decW, pDecStringW, sdword
 
+byte2hex, pHexString, byte
+byte2hexA, pHexStringA, byte
+byte2hexW, pHexStringW, byte
+
+word2hex, pHexString, word
+word2hexA, pHexStringA, word
+word2hexW, pHexStringW, word
+
 dword2hex, pHexString, dword
 dword2hexA, pHexStringA, dword
 dword2hexW, pHexStringW, dword

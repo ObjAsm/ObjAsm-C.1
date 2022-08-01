@@ -22,30 +22,28 @@ externdef HexCharTableW:BYTE
 ; Note:       The destination buffer must be at least 18 BYTEs large to allocate the output string
 ;             (8 character WORDs + ZTC = 18 BYTEs).
 
-OPTION PROLOGUE:NONE
-OPTION EPILOGUE:NONE
+OPTION PROC:NONE
 
 align ALIGN_CODE
 dword2hexW proc pBuffer:POINTER, dValue:DWORD
   mov edx, [esp + 4]                                    ;edx -> Buffer
   lea ecx, [esp + 8]                                    ;ecx -> dValue
   movzx eax, BYTE ptr [ecx]
-  mov eax, DWORD ptr HexCharTableW[4*eax]
-  m2z WORD ptr [edx + 16]                               ;Set zero marker
-  mov [edx + 12], eax
+  mov eax, DCHRW ptr HexCharTableW[sizeof(DCHRW)*eax]
+  m2z CHRW ptr [edx + 4*sizeof(DCHRW)]                  ;Set ZTC
+  mov DCHRW ptr [edx + 3*sizeof(DCHRW)], eax
   movzx eax, BYTE ptr [ecx + 1]
-  mov eax, DWORD ptr HexCharTableW[4*eax]
-  mov [edx + 8], eax
+  mov eax, DCHRW ptr HexCharTableW[sizeof(DCHRW)*eax]
+  mov DCHRW ptr [edx + 2*sizeof(DCHRW)], eax
   movzx eax, BYTE ptr [ecx + 2]
   movzx ecx, BYTE ptr [ecx + 3]
-  mov eax, DWORD ptr HexCharTableW[4*eax]
-  mov ecx, DWORD ptr HexCharTableW[4*ecx]
-  mov [edx + 4], eax
-  mov [edx], ecx
+  mov eax, DCHRW ptr HexCharTableW[sizeof(DCHRW)*eax]
+  mov ecx, DCHRW ptr HexCharTableW[sizeof(DCHRW)*ecx]
+  mov DCHRW ptr [edx + 1*sizeof(DCHRW)], eax
+  mov DCHRW ptr [edx + 0*sizeof(DCHRW)], ecx
   ret 8
 dword2hexW endp
 
-OPTION PROLOGUE:PrologueDef
-OPTION EPILOGUE:EpilogueDef
+OPTION PROC:DEFAULT
 
 end

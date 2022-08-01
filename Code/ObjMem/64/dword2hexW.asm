@@ -35,7 +35,7 @@ dword2hexW proc pBuffer:POINTER, dValue:DWORD
   mov r9d, DCHRW ptr [r10 + sizeof(DCHRW)*rax]
   shr edx, 8
   or r8, r9
-  mov [rcx + 8], r8
+  mov [rcx + 2*sizeof(DCHRW)], r8
 
   movzx rax, dl
   mov r8d, DCHRW ptr [r10 + sizeof(DCHRW)*rax]

@@ -1109,6 +1109,7 @@ endif
 ;                 SA ANSI string
 ;                 SW WIDE string
 ;                 ST ANSI/WIDE string
+;                 GD GUID
 ;
 ;             - Escape sequences:
 ;                 n  Carriage Return and Line Feed
@@ -1248,6 +1249,10 @@ PrintF macro DstReg:req, Format:req, Args:VARARG
           elseifidn $$PF_ReplType, <ST>
             invoke StrCopy, DstReg, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             lea DstReg, [DstReg + xax - sizeof(CHR)]
+            $$PF_ArgCount = $$PF_ArgCount + 1
+          elseifidn $$PF_ReplType, <GD>
+            invoke GUID2Str, DstReg, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
+            add DstReg, (GUID2STR_MAX_CHARS - 1)*sizeof(CHR)
             $$PF_ArgCount = $$PF_ArgCount + 1
           else                                          ;;No matching format specifiers found
             $$PF_Text CatStr $$PF_Text, <¦>, $$PF_ReplType  ;;Emit the format specifiers

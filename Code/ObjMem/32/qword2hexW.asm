@@ -31,7 +31,7 @@ qword2hexW proc pBuffer:POINTER, qValue:QWORD
   lea ecx,  [esp + 8]                                   ;ecx -> qValue
 
   movzx eax, BYTE ptr [ecx]
-  m2z WORD ptr [edx + 32]                               ;Set zero marker
+  m2z WORD ptr [edx + 32]                               ;Set ZTC
   mov eax, DWORD ptr HexCharTableW[4*eax]
   mov [edx + 28], eax
 

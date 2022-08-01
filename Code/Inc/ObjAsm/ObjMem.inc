@@ -690,6 +690,28 @@ else
 endif
 DWORD2BIN_MAX_CHARS equ 33
 
+word2hexA proto :POINTER, :WORD
+word2hexW proto :POINTER, :WORD
+if TARGET_STR_TYPE eq STR_TYPE_ANSI
+  word2hex textequ <word2hexA>
+elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+  word2hex textequ <word2hexW>
+else
+  echo Warning: incompatible TARGET_STR_TYPE
+endif
+WORD2HEX_MAX_CHARS equ 5
+
+byte2hexA proto :POINTER, :BYTE
+byte2hexW proto :POINTER, :BYTE
+if TARGET_STR_TYPE eq STR_TYPE_ANSI
+  byte2hex textequ <byte2hexA>
+elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+  byte2hex textequ <byte2hexW>
+else
+  echo Warning: incompatible TARGET_STR_TYPE
+endif
+BYTE2HEX_MAX_CHARS equ 3
+
 dword2hexA proto :POINTER, :DWORD
 dword2hexW proto :POINTER, :DWORD
 if TARGET_STR_TYPE eq STR_TYPE_ANSI

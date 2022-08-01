@@ -27,41 +27,41 @@ OPTION EPILOGUE:NONE
 
 align ALIGN_CODE
 qword2hexA proc pBuffer:POINTER, qValue:QWORD
-    mov edx, [esp + 4]                                  ;edx -> Buffer
-    lea ecx, [esp + 8]                                  ;ecx -> qValue
+  mov edx, [esp + 4]                                    ;edx -> Buffer
+  lea ecx, [esp + 8]                                    ;ecx -> qValue
 
-    movzx eax, BYTE ptr [ecx]
-    m2z BYTE ptr [edx + 16]                             ;Set zero marker
-    mov ax, WORD ptr HexCharTableA[2*eax]
-    mov [edx + 14], ax
+  movzx eax, BYTE ptr [ecx]
+  m2z BYTE ptr [edx + 16]                               ;Set ZTC
+  mov ax, WORD ptr HexCharTableA[2*eax]
+  mov [edx + 14], ax
 
-    movzx ax, BYTE ptr [ecx + 1]
-    mov ax, WORD ptr HexCharTableA[2*eax]
-    mov [edx + 12], ax
+  movzx ax, BYTE ptr [ecx + 1]
+  mov ax, WORD ptr HexCharTableA[2*eax]
+  mov [edx + 12], ax
 
-    movzx ax, BYTE ptr [ecx + 2]
-    mov ax, WORD ptr HexCharTableA[2*eax]
-    mov [edx + 10], ax
+  movzx ax, BYTE ptr [ecx + 2]
+  mov ax, WORD ptr HexCharTableA[2*eax]
+  mov [edx + 10], ax
 
-    movzx ax, BYTE ptr [ecx + 3]
-    mov ax, WORD ptr HexCharTableA[2*eax]
-    mov [edx + 08], ax
+  movzx ax, BYTE ptr [ecx + 3]
+  mov ax, WORD ptr HexCharTableA[2*eax]
+  mov [edx + 08], ax
 
-    movzx ax, BYTE ptr [ecx + 4]
-    mov ax, WORD ptr HexCharTableA[2*eax]
-    mov [edx + 06], ax
+  movzx ax, BYTE ptr [ecx + 4]
+  mov ax, WORD ptr HexCharTableA[2*eax]
+  mov [edx + 06], ax
 
-    movzx ax, BYTE ptr [ecx + 5]
-    mov ax, WORD ptr HexCharTableA[2*eax]
-    mov [edx + 04], ax
+  movzx ax, BYTE ptr [ecx + 5]
+  mov ax, WORD ptr HexCharTableA[2*eax]
+  mov [edx + 04], ax
 
-    movzx ax, BYTE ptr [ecx + 6]
-    movzx ecx, BYTE ptr [ecx + 7]
-    mov ax, WORD ptr HexCharTableA[2*eax]
-    mov cx, WORD ptr HexCharTableA[2*ecx]
-    mov [edx + 2], ax
-    mov [edx], cx
-    ret 12
+  movzx ax, BYTE ptr [ecx + 6]
+  movzx ecx, BYTE ptr [ecx + 7]
+  mov ax, WORD ptr HexCharTableA[2*eax]
+  mov cx, WORD ptr HexCharTableA[2*ecx]
+  mov [edx + 2], ax
+  mov [edx], cx
+  ret 12
 qword2hexA endp
 
 OPTION PROLOGUE:PrologueDef

@@ -27,7 +27,7 @@ GUID2StrW proc uses xdi xsi pBuffer:POINTER, pGUID:POINTER
   endif
   invoke dword2hexW, xdi, DWORD ptr [xsi]               ;Convert DWORD to hex
   mov CHRW ptr [xdi + 16], "-"                          ;Append "-"
-  add edi, 18
+  add xdi, 18
   invoke dword2hexW, xdi, DWORD ptr [xsi + 4]           ;Convert next DWORD to hex
   mov eax, DCHRW ptr [xdi + 08]                         ;Rearrange BYTEs
   mov ecx, DCHRW ptr [xdi + 12]
