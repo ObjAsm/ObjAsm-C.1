@@ -1,7 +1,7 @@
 ; ==================================================================================================
 ; Title:      Debug.inc
 ; Author:     G. Friedrich
-; Version:    C.1.2
+; Version:    C.1.3
 ; Purpose:    ObjAsm debug macros.
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
@@ -13,6 +13,8 @@
 ;               - DbgStr bug corrected.
 ;               - DbgTextF added.
 ;               - DbgClosexxx and DbgClearxxx do not open DbgCenter if closed.
+;             Version C.1.3, August 2022
+;               - DbgWrite & DbgWriteF added.
 ; ==================================================================================================
 
 ;Supported debugging macros:
@@ -20,6 +22,7 @@
 ;  - DbgCloseAll, DbgCloseTxt, DbgCloseBmp
 ;  - DbgClearAll, DbgClearTxt, DbgClearBmp
 ;  - DbgLine, DbgLine2, DbgText, DbgTextF, DbgWarning
+;  - DbgWrite, DbgWriteF 
 ;  - DbgARGB
 ;  - DbgStr, DbgStrA, DbgStrW, DbgStrCA, DbgStrCW
 ;  - DbgBin, DbgDec, DbgHex, DbgFloat, DbgGUID
@@ -542,13 +545,13 @@ endm
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      DbgTextF
 ; Purpose:    Output formated a text on the debug device.
-; Arguments:  Arg1: Optional destination Window name.
-;             Arg2: Optional text color.
-;             Arg3: Format text.
-;             Arg4: Text paramters.
+; Arguments:  Arg1: Optinal text color.
+;             Arg2: Optional destination Window name.
+;             Arg3: Quoted format string.
+;             Arg 4..n: optional arguments.
 ; Example:    DbgTextF "Output", $RGB(000,000,000), "Data = '%s'", xax
 
-DbgTextF macro Dest, Color:=<DBG_COLOR_TEXT>, Message:req, Args:vararg
+DbgTextF macro Color:=<DBG_COLOR_TEXT>, Dest, Message:req, Args:vararg
   local DebugTextBuffer
 
   if DEBUGGING
@@ -587,6 +590,115 @@ DbgWarning macro DispText, Dest
       invoke DbgOutTextA, $OfsCStrA($Esc(<DispText>)), \
                           DBG_COLOR_WARNING, DBG_EFFECT_NORMAL, ??DbgDstWnd
     endif
+    DbgShowSrcInfo ??DbgDstWnd
+    DbgLoadContext
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+
+if TARGET_STR_TYPE eq STR_TYPE_ANSI
+  DbgWrite textequ <DbgWriteA>
+else
+  DbgWrite textequ <DbgWriteW>
+endif
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgWriteA
+; Purpose:    Output a string on the debug device.
+; Arguments:  Arg1: -> ANSI String.
+;             Arg2: Optional destination Window name.
+
+DbgWriteA macro Var, Color:=<DBG_COLOR_TEXT>, Dest
+  if DEBUGGING
+    if type(Var) eq @WordSize                           ;;Check if Var is a POINTER or characters
+      DbgSaveContext FALSE, Var                         ;;Pass Var as a value
+    else
+      DbgSaveContext TRUE, Var                          ;;Pass Var as a reference
+    endif
+    DbgSetDestWnd Dest
+    invoke DbgOutTextA, ??VarXBX, Color, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    DbgShowSrcInfo ??DbgDstWnd
+    DbgLoadContext
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgWriteW
+; Purpose:    Output a string on the debug device.
+; Arguments:  Arg1: -> WIDE String.
+;             Arg2: Optional destination Window name.
+
+DbgWriteW macro Var, Color:=<DBG_COLOR_TEXT>, Dest
+  if DEBUGGING
+    if type(Var) eq @WordSize                           ;;Check if Var is a POINTER or characters
+      DbgSaveContext FALSE, Var                         ;;Pass Var as a value
+    else
+      DbgSaveContext TRUE, Var                          ;;Pass Var as a reference
+    endif
+    DbgSetDestWnd Dest
+    invoke DbgOutTextW, ??VarXBX, Color, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    DbgShowSrcInfo ??DbgDstWnd
+    DbgLoadContext
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+
+if TARGET_STR_TYPE eq STR_TYPE_ANSI
+  DbgWriteF textequ <DbgWriteFA>
+else
+  DbgWriteF textequ <DbgWriteFW>
+endif
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgWriteFA
+; Purpose:    Output a string on the debug device.
+; Arguments:  Arg1: Optinal text color.
+;             Arg2: Optional destination Window name.
+;             Arg3: Quoted format string.
+;             Arg 4..n: optional arguments.
+; Note:       Dont use xbx as argument register. it is used internally!
+
+DbgWriteFA macro Color:=<DBG_COLOR_TEXT>, Dest, Format, Args:vararg
+  local wBuffer
+ 
+  if DEBUGGING
+    S_DATA segment
+     bBuffer CHRA 1024 dup(?)
+    S_DATA ends
+
+    DbgSaveContext
+    DbgSetDestWnd Dest
+    lea xbx, bBuffer
+    WriteF xbx, Format, Args
+    invoke DbgOutTextA, xbx, Color, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    DbgShowSrcInfo ??DbgDstWnd
+    DbgLoadContext
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgWriteFW
+; Purpose:    Output a string on the debug device.
+; Arguments:  Arg1: Optinal text color.
+;             Arg2: Optional destination Window name.
+;             Arg3: Quoted format string.
+;             Arg 4..n: optional arguments.
+
+DbgWriteFW macro Color:=<DBG_COLOR_TEXT>, Dest, Format, Args:vararg
+  local wBuffer
+ 
+  if DEBUGGING
+    S_DATA segment
+     wBuffer CHRW 1024 dup(?)
+    S_DATA ends
+
+    DbgSaveContext
+    DbgSetDestWnd Dest
+    lea xdi, wBuffer
+    WriteF xdi, Format, Args
+    invoke DbgOutTextW, xdi, Color, DBG_EFFECT_NORMAL, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
     DbgLoadContext
   endif

@@ -1,10 +1,12 @@
 ; ==================================================================================================
 ; Title:      System.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Purpose:    ObjAsm collection of useful macros.
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
+;             Version C.1.1, August 2022
+;               - WriteF macro added.
 ; ==================================================================================================
 
 
@@ -1076,7 +1078,7 @@ else
 endif
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Macro:      PrintF
+; Macro:      WriteF
 ; Purpose:    Write a formated string to memory. If format includes format specifiers (subsequences
 ;             beginning with ¦), the additional arguments following format are formatted and inserted
 ;             in the resulting string replacing their respective specifiers.
@@ -1110,6 +1112,8 @@ endif
 ;                 SW WIDE string
 ;                 ST ANSI/WIDE string
 ;                 GD GUID
+;                 MT Move to character position
+;                 AT fill with spaces up to character position
 ;
 ;             - Escape sequences:
 ;                 n  Carriage Return and Line Feed
@@ -1125,14 +1129,22 @@ endif
 ;
 ;             - Format specifiers and escape sequences are case sensitive.
 ;
-; Example:    PrintF xdi, 'Memory at ¦H8h: ¦F3", rsi, REAL4 ptr [xsi]
+; Example:    WriteF xdi, 'Memory at ¦H8h: ¦F3", rsi, REAL4 ptr [xsi]
 ;
-PrintF macro DstReg:req, Format:req, Args:VARARG
+WriteF macro DstReg:req, Format:req, Args:VARARG
+  local pPos, pBegin
+  
+  .data
+    pBegin  POINTER   NULL
+    
+  .code
   $$Count = 0
   for Arg, <Args>
     @CatStr(<$$PF_Arg>, %$$Count) textequ <Arg>
     $$Count = $$Count + 1
   endm
+  
+  mov pBegin, DstReg
 
   $$PF_ArgCount = 0
   $$PF_Text textequ <>
@@ -1254,6 +1266,86 @@ PrintF macro DstReg:req, Format:req, Args:VARARG
             invoke GUID2Str, DstReg, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             add DstReg, (GUID2STR_MAX_CHARS - 1)*sizeof(CHR)
             $$PF_ArgCount = $$PF_ArgCount + 1
+          elseifidn $$PF_ReplType, <AT>
+            mov xax, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
+            mov xcx, DstReg
+            sub xcx, pBegin
+            if TARGET_STR_TYPE eq STR_TYPE_WIDE
+              shr xcx, 1
+            endif
+            sub xax, xcx
+            if TARGET_STR_TYPE eq STR_TYPE_WIDE
+              .while SDWORD ptr eax > 1               ;;Fill with spaces
+                mov DCHRW ptr [DstReg], " " shl 16 + " "
+                add DstReg, sizeof(DCHRW)
+                sub eax, 2
+              .endw
+              .if ZERO?
+                mov CHRW ptr [DstReg], " "
+                add DstReg, sizeof(CHRW)
+              .endif
+            else
+              .while SDWORD ptr eax > 3               ;;Fill with spaces
+                mov QCHRA ptr [DstReg], "    "
+                add DstReg, sizeof(QCHRA)
+                sub eax, 4
+              .endw
+              .if SDWORD ptr eax > 1
+                mov DCHRA ptr [DstReg], "  "
+                add DstReg, sizeof(DCHRA)
+                sub eax, 2
+              .endif
+              .if ZERO?
+                mov CHRA ptr [DstReg], " "
+                add DstReg, sizeof(CHRA)
+              .endif
+            endif
+            $$PF_ArgCount = $$PF_ArgCount + 1
+          elseifidn $$PF_ReplType, <MT>
+            mov xax, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
+            mov xcx, DstReg
+            sub xcx, pBegin
+            if TARGET_STR_TYPE eq STR_TYPE_WIDE
+              shr xcx, 1
+            endif
+            sub xax, xcx
+            .if SDWORD ptr eax < 0                      ;;If negative, move pointer
+              mov xdi, pBegin
+              mov xcx, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
+              if TARGET_STR_TYPE eq STR_TYPE_WIDE
+                shl xcx, 1
+              endif
+              add xdi, xcx
+              m2z CHR ptr [xdi]                         ;;Set ZTC
+            .else
+              if TARGET_STR_TYPE eq STR_TYPE_WIDE
+                .while SDWORD ptr eax > 1               ;;Fill with spaces
+                  mov DCHRW ptr [DstReg], " " shl 16 + " "
+                  add DstReg, sizeof(DCHRW)
+                  sub eax, 2
+                .endw
+                .if ZERO?
+                  mov CHRW ptr [DstReg], " "
+                  add DstReg, sizeof(CHRW)
+                .endif
+              else
+                .while SDWORD ptr eax > 3               ;;Fill with spaces
+                  mov QCHRA ptr [DstReg], "    "
+                  add DstReg, sizeof(QCHRA)
+                  sub eax, 4
+                .endw
+                .if SDWORD ptr eax > 1
+                  mov DCHRA ptr [DstReg], "  "
+                  add DstReg, sizeof(DCHRA)
+                  sub eax, 2
+                .endif
+                .if ZERO?
+                  mov CHRA ptr [DstReg], " "
+                  add DstReg, sizeof(CHRA)
+                .endif
+              endif
+            .endif
+            $$PF_ArgCount = $$PF_ArgCount + 1
           else                                          ;;No matching format specifiers found
             $$PF_Text CatStr $$PF_Text, <¦>, $$PF_ReplType  ;;Emit the format specifiers
           endif
@@ -1311,6 +1403,7 @@ PrintF macro DstReg:req, Format:req, Args:VARARG
   endm
 
   FillString [DstReg], %$$PF_Text
+  mov DstReg, pBegin
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
