@@ -1,10 +1,12 @@
 ; ==================================================================================================
 ; Title:      Strings.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Purpose:    ObjAsm support of zero terminated string handling macros.
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
+;             Version C.1.1 August 2022
+;               - $PCG_RndChr and $PCG_RndStr added.
 ; ==================================================================================================
 
 
@@ -309,3 +311,56 @@ $OfsJStr macro QuotedText:vararg
     exitm $OfsJStrA(<QuotedText>)
   endif
 endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      $PCG_RndChr
+; Purpose:    Return at assembly-time a randomly generated (PCG) character value.
+; Arguments:  None.
+; Returns:    Character value.
+
+;Initial state
+PCG32_STATE = @CatStr(@SubStr(%@Time, 1, 2), @SubStr(%@Time, 4, 2), @SubStr(%@Time, 7, 2), @SubStr(%@Date, 1, 2), @SubStr(%@Date, 4, 2))
+
+$PCG_RndChr macro
+  local r, t, x, a
+
+  a = 0
+  while a gt 'z' or a lt '0' or a ge ':' and a le '>' or \
+        a ge '[' and a le '`' and a ne '_'
+    PCG32_STATE = PCG32_STATE * 6364136223846793005 + 0xda3e39cb94b95bdb
+
+    t = PCG32_STATE
+    r = (((t shr 18) xor t) shr 27)
+    ;r = (((t sar 18) xor t) sar 27)
+    x = t shr 59
+    t = r shr x
+    r = r shl (-x and 31)
+    r = r or t
+    a = r and 0x7F
+  endm
+
+  exitm <a>
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      $PCG_RndStr
+; Purpose:    Return at assembly-time a randomly generated (PCG) string in const segment.
+;             On each run of the macro, a new string is generated
+; Arguments:  Arg1: String length in chars.
+; Returns:    String location.
+; Example:    DbgWriteF ,, "¦ST", offset $PCG_RndStr(64)
+
+$PCG_RndStr macro n
+  local ??StrLocation
+
+  S_CONST segment
+    align @WordSize
+    ??StrLocation = $
+    repeat n
+      CHR $PCG_RndChr()
+    endm
+    CHR 0
+  S_CONST ends
+  exitm <??StrLocation>
+endm
+

@@ -1310,13 +1310,13 @@ WriteF macro DstReg:req, Format:req, Args:VARARG
             endif
             sub xax, xcx
             .if SDWORD ptr eax < 0                      ;;If negative, move pointer
-              mov xdi, pBegin
+              mov DstReg, pBegin
               mov xcx, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
               if TARGET_STR_TYPE eq STR_TYPE_WIDE
                 shl xcx, 1
               endif
-              add xdi, xcx
-              m2z CHR ptr [xdi]                         ;;Set ZTC
+              add DstReg, xcx
+              m2z CHR ptr [DstReg]                         ;;Set ZTC
             .else
               if TARGET_STR_TYPE eq STR_TYPE_WIDE
                 .while SDWORD ptr eax > 1               ;;Fill with spaces
@@ -1358,32 +1358,32 @@ WriteF macro DstReg:req, Format:req, Args:VARARG
         $$PF_Text textequ <>
         add DstReg, $$i*sizeof(CHR)
         ifidn <$$PF_Character>, <n>
-          mov DCHR ptr [xdi], 10 shl (8*sizeof(CHR)) + 13
-          add xdi, 2*sizeof(CHR)
+          mov DCHR ptr [DstReg], 10 shl (8*sizeof(CHR)) + 13
+          add DstReg, 2*sizeof(CHR)
         elseifidn <$$PF_Character>, <r>
-          mov CHR ptr [xdi], 13
-          add xdi, sizeof(CHR)
+          mov CHR ptr [DstReg], 13
+          add DstReg, sizeof(CHR)
         elseifidn <$$PF_Character>, <l>
-          mov CHR ptr [xdi], 10
-          add xdi, sizeof(CHR)
+          mov CHR ptr [DstReg], 10
+          add DstReg, sizeof(CHR)
         elseifidn <$$PF_Character>, <0>
-          mov CHR ptr [xdi], 0
-          add xdi, sizeof(CHR)
+          mov CHR ptr [DstReg], 0
+          add DstReg, sizeof(CHR)
         elseifidn <$$PF_Character>, <t>
-          mov CHR ptr [xdi], 9
-          add xdi, sizeof(CHR)
+          mov CHR ptr [DstReg], 9
+          add DstReg, sizeof(CHR)
         elseifidn <$$PF_Character>, <[>
-          mov CHR ptr [xdi], '<'
-          add xdi, sizeof(CHR)
+          mov CHR ptr [DstReg], '<'
+          add DstReg, sizeof(CHR)
         elseifidn <$$PF_Character>, <]>
-          mov CHR ptr [xdi], '>'
-          add xdi, sizeof(CHR)
+          mov CHR ptr [DstReg], '>'
+          add DstReg, sizeof(CHR)
         elseifidn <$$PF_Character>, <:>
-          mov CHR ptr [xdi], '!'
-          add xdi, sizeof(CHR)
+          mov CHR ptr [DstReg], '!'
+          add DstReg, sizeof(CHR)
         elseifidn <$$PF_Character>, <´>
-          mov CHR ptr [xdi], "'"
-          add xdi, sizeof(CHR)
+          mov CHR ptr [DstReg], "'"
+          add DstReg, sizeof(CHR)
         elseifidn <$$PF_Character>, <\>
           $$PF_Text CatStr $$PF_Text, <\>
         else

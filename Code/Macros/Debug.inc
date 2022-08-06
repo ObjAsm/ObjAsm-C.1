@@ -661,11 +661,11 @@ endif
 ; Note:       Dont use xbx as argument register. it is used internally!
 
 DbgWriteFA macro Color:=<DBG_COLOR_TEXT>, Dest, Format, Args:vararg
-  local wBuffer
+  local bBuffer
  
   if DEBUGGING
     S_DATA segment
-     bBuffer CHRA 1024 dup(?)
+     bBuffer CHRA 4096 dup(?)
     S_DATA ends
 
     DbgSaveContext
@@ -691,14 +691,14 @@ DbgWriteFW macro Color:=<DBG_COLOR_TEXT>, Dest, Format, Args:vararg
  
   if DEBUGGING
     S_DATA segment
-     wBuffer CHRW 1024 dup(?)
+     wBuffer CHRW 4096 dup(?)
     S_DATA ends
 
     DbgSaveContext
     DbgSetDestWnd Dest
-    lea xdi, wBuffer
-    WriteF xdi, Format, Args
-    invoke DbgOutTextW, xdi, Color, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    lea xbx, wBuffer
+    WriteF xbx, Format, Args
+    invoke DbgOutTextW, xbx, Color, DBG_EFFECT_NORMAL, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
     DbgLoadContext
   endif
