@@ -439,6 +439,12 @@ GetOS
 ComEventsAdvice, pISrcAny, pISinkUnk, pIID, ppICP, pCookie
 ComEventsUnadvice, pICP, dPrvCookie
 ComPtrAssign, ppOldInterface, pNewInterface
+ComGetErrStrA, dErrorCode
+ComGetErrStrW, dErrorCode
+ComGetErrStr, dErrorCode
+UefiGetErrStrA, xErrorCode
+UefiGetErrStrW, xErrorCode
+UefiGetErrStr, xErrorCode
 CenterForm, dWindowSize, dScreenSize
 MoveWindowVisible, hWnd, sdXPos, sdYPos
 GetBottomWindow, hWnd

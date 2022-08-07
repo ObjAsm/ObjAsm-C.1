@@ -863,6 +863,16 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   ComEventsAdvice proto :POINTER, :POINTER, :POINTER, :POINTER, :POINTER
   ComEventsUnadvice proto :POINTER, :DWORD
   ComPtrAssign proto :POINTER, :POINTER
+  
+  ComGetErrStrA proto :DWORD
+  ComGetErrStrW proto :DWORD
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    ComGetErrStr textequ <ComGetErrStrA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    ComGetErrStr textequ <ComGetErrStrW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
 
 ; DebugCenter procedures contained in DebugProcs.asm
   DbgWndOpen proto
@@ -885,6 +895,16 @@ elseif TARGET_PLATFORM eq PLATFORM_UEFI
   MemAlloc_UEFI proto :DWORD, :DWORD
   MemReAlloc_UEFI proto :POINTER, :DWORD, :DWORD, :DWORD
   MemFree_UEFI proto :POINTER
+
+  UefiGetErrStrA proto :XWORD
+  UefiGetErrStrW proto :XWORD
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    UefiGetErrStr textequ <UefiGetErrStrA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    UefiGetErrStr textequ <UefiGetErrStrW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
 
   DbgOutTextA textequ <DbgOutTextA_UEFI>
   DbgOutTextW textequ <DbgOutTextW_UEFI>

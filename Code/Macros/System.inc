@@ -1112,6 +1112,9 @@ endif
 ;                 SW WIDE string
 ;                 ST ANSI/WIDE string
 ;                 GD GUID
+;                 WE Windows API Error as description string
+;                 CE COM Error as description string
+;                 UE UEFI Error as description string
 ;                 MT Move to character position
 ;                 AT fill with spaces up to character position
 ;
@@ -1171,57 +1174,70 @@ WriteF macro DstReg:req, Format:req, Args:VARARG
             invoke sdword2dec, DstReg, eax
             lea DstReg, [DstReg + xax - sizeof(CHR)]
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           elseifidn $$PF_ReplType, <SW>
             movsx eax, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             invoke sdword2dec, DstReg, eax
             lea DstReg, [DstReg + xax - sizeof(CHR)]
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           elseifidn $$PF_ReplType, <SD>
             invoke sdword2dec, DstReg, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             lea DstReg, [DstReg + xax - sizeof(CHR)]
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           elseifidn $$PF_ReplType, <SQ>
             invoke sqword2dec, DstReg, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             lea DstReg, [DstReg + xax - sizeof(CHR)]
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           elseifidn $$PF_ReplType, <SX>
             invoke sxword2dec, DstReg, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             lea DstReg, [DstReg + xax - sizeof(CHR)]
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           elseifidn $$PF_ReplType, <UB>
             movzx eax, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             invoke udword2dec, DstReg, eax
             lea DstReg, [DstReg + xax - sizeof(CHR)]
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           elseifidn $$PF_ReplType, <UW>
             movzx eax, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             invoke udword2dec, DstReg, eax
             lea DstReg, [DstReg + xax - sizeof(CHR)]
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           elseifidn $$PF_ReplType, <UD>
             invoke udword2dec, DstReg, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             lea DstReg, [DstReg + xax - sizeof(CHR)]
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           elseifidn $$PF_ReplType, <UQ>
             invoke uqword2dec, DstReg, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             lea DstReg, [DstReg + xax - sizeof(CHR)]
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           elseifidn $$PF_ReplType, <UX>
             invoke uxword2dec, DstReg, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             lea DstReg, [DstReg + xax - sizeof(CHR)]
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           elseifidn $$PF_ReplType, <H4>
             invoke dword2hex, DstReg, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             add DstReg, (DWORD2HEX_MAX_CHARS - 1)*sizeof(CHR)
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           elseifidn $$PF_ReplType, <H8>
             invoke qword2hex, DstReg, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             add DstReg, (QWORD2HEX_MAX_CHARS - 1)*sizeof(CHR)
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           elseifidn $$PF_ReplType, <HX>
             invoke xword2hex, DstReg, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             add DstReg, 2*@WordSize*sizeof(CHR)
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           elseifidn @SubStr(<%$$PF_ReplType>, 1, 1), <F>
             fld @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             invoke St0ToStr, DstReg, 0, @CatStr(<0>, @SubStr(<%$$PF_ReplType>, 2, 1), <h>), f_NOR
@@ -1229,6 +1245,7 @@ WriteF macro DstReg:req, Format:req, Args:VARARG
             invoke StrSize, DstReg
             lea DstReg, [DstReg + xax - sizeof(CHR)]
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           elseifidn @SubStr(<%$$PF_ReplType>, 1, 1), <E>
             fld @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             invoke St0ToStr, DstReg, 0, @CatStr(<0>, @SubStr(<%$$PF_ReplType>, 2, 1), <h>), f_SCI
@@ -1236,6 +1253,7 @@ WriteF macro DstReg:req, Format:req, Args:VARARG
             invoke StrSize, DstReg
             lea DstReg, [DstReg + xax - sizeof(CHR)]
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           elseifidn $$PF_ReplType, <SA>
             if TARGET_STR_TYPE eq STR_TYPE_WIDE
               invoke StrA2StrW, DstReg, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
@@ -1247,6 +1265,7 @@ WriteF macro DstReg:req, Format:req, Args:VARARG
               lea DstReg, [DstReg + xax - sizeof(CHRA)]
               $$PF_ArgCount = $$PF_ArgCount + 1
             endif
+
           elseifidn $$PF_ReplType, <SW>
             if TARGET_STR_TYPE eq STR_TYPE_WIDE
               invoke StrCopyW, DstReg, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
@@ -1258,14 +1277,50 @@ WriteF macro DstReg:req, Format:req, Args:VARARG
               lea DstReg, [DstReg + xax - sizeof(CHRA)]
               $$PF_ArgCount = $$PF_ArgCount + 1
             endif
+
           elseifidn $$PF_ReplType, <ST>
             invoke StrCopy, DstReg, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             lea DstReg, [DstReg + xax - sizeof(CHR)]
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           elseifidn $$PF_ReplType, <GD>
             invoke GUID2Str, DstReg, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             add DstReg, (GUID2STR_MAX_CHARS - 1)*sizeof(CHR)
             $$PF_ArgCount = $$PF_ArgCount + 1
+          
+          elseifidn $$PF_ReplType, <WE>
+            if TARGET_PLATFORM eq PLATFORM_WINDOWS
+              invoke FormatMessage, FORMAT_MESSAGE_FROM_SYSTEM, 0, @CatStr(<$$PF_Arg>, %$$PF_ArgCount), 0, DstReg, 256, 0
+              .if eax != 0
+                lea DstReg, [DstReg + xax*sizeof(CHR) - 2*sizeof(CHR)]
+                $$PF_ArgCount = $$PF_ArgCount + 1
+              .endif
+            else
+              .err <Invalid format specifier>
+            endif
+
+          elseifidn $$PF_ReplType, <CE>
+            if TARGET_PLATFORM eq PLATFORM_WINDOWS
+              invoke ComGetErrStr, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
+              .if xax != NULL
+                mov DstReg, $invoke(StrECopy, DstReg, xax)
+                $$PF_ArgCount = $$PF_ArgCount + 1
+              .endif
+            else
+              .err <Invalid format specifier>
+            endif
+
+          elseifidn $$PF_ReplType, <UE>
+            if TARGET_PLATFORM eq PLATFORM_UEFI
+              invoke UefiGetErrStr, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
+              .if xax != NULL
+                mov DstReg, $invoke(StrECopy, DstReg, xax)
+                $$PF_ArgCount = $$PF_ArgCount + 1
+              .endif
+            else
+              .err <Invalid format specifier>
+            endif
+
           elseifidn $$PF_ReplType, <AT>
             mov xax, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             mov xcx, DstReg
@@ -1301,6 +1356,7 @@ WriteF macro DstReg:req, Format:req, Args:VARARG
               .endif
             endif
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           elseifidn $$PF_ReplType, <MT>
             mov xax, @CatStr(<$$PF_Arg>, %$$PF_ArgCount)
             mov xcx, DstReg
@@ -1346,12 +1402,15 @@ WriteF macro DstReg:req, Format:req, Args:VARARG
               endif
             .endif
             $$PF_ArgCount = $$PF_ArgCount + 1
+
           else                                          ;;No matching format specifiers found
             $$PF_Text CatStr $$PF_Text, <¦>, $$PF_ReplType  ;;Emit the format specifiers
+
           endif
           $$PF_Replace = 0                              ;;Reset replace flag
           $$PF_ReplType textequ <>                      ;;Reset replace type
         endif
+
       elseif $$PF_Escape
         $$PF_Escape = 0
         FillWord [DstReg], <%$$PF_Text>

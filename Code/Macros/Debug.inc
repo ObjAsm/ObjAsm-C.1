@@ -366,9 +366,9 @@ endm
 
 OutHexAux macro
   if ??DbgDataSize ge 2*sizeof(QWORD)
-    invoke qword2hexA, xdi, [xbx + 8]
+    invoke qword2hexA, xdi, QWORD ptr [xbx + 8]
     add xdi, QWORD2HEX_MAX_CHARS - 1
-    invoke qword2hexA, xdi, [xbx]
+    invoke qword2hexA, xdi, QWORD ptr [xbx]
     H_Offset = QWORD2HEX_MAX_CHARS - 1
     if ??DbgDataSize ne 16
       add xdi, H_Offset
@@ -376,7 +376,7 @@ OutHexAux macro
       H_Offset = 3
     endif
   elseif ??DbgDataSize ge sizeof(QWORD)
-    invoke qword2hexA, xdi, [xbx]
+    invoke qword2hexA, xdi, QWORD ptr [xbx]
     H_Offset = QWORD2HEX_MAX_CHARS - 1
     if ??DbgDataSize ne 8
       add xdi, H_Offset
@@ -384,7 +384,7 @@ OutHexAux macro
       H_Offset = 3
     endif
   elseif ??DbgDataSize ge sizeof(DWORD)
-    invoke dword2hexA, xdi, [xbx]
+    invoke dword2hexA, xdi, DWORD ptr [xbx]
     H_Offset = DWORD2HEX_MAX_CHARS - 1
     if ??DbgDataSize ne 4
       add xdi, H_Offset
@@ -392,20 +392,16 @@ OutHexAux macro
       H_Offset = 3
     endif
   elseif ??DbgDataSize ge sizeof(WORD)
-    movzx edx, WORD ptr [xbx]
-    invoke dword2hexA, xdi, edx
-    add xsi, 4
-    H_Offset = DWORD2HEX_MAX_CHARS - 1
+    invoke word2hexA, xdi, WORD ptr [xbx]
+    H_Offset = WORD2HEX_MAX_CHARS - 1
     if ??DbgDataSize ne 2
       add xdi, H_Offset
       mov QCHRA ptr [xdi], "..."
       H_Offset = 3
     endif
   else
-    movzx edx, BYTE ptr [xbx]
-    invoke dword2hexA, xdi, edx
-    add xsi, 2
-    H_Offset = 2
+    invoke byte2hexA, xdi, BYTE ptr [xbx]
+    H_Offset = BYTE2HEX_MAX_CHARS - 1
   endif
   mov DCHRA ptr [xdi + H_Offset], "h"                   ;Include ZTC
 endm
