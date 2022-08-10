@@ -17,7 +17,7 @@
 ; Arguments:  Arg1: Messagebox parent window HANDLE.
 ;             Arg2: -> User ANSI string.
 ;             Arg3: Locale ID.
-;             Arg4: API error code. 
+;             Arg4: API error code.
 ; Return:     Nothing.
 
 align ALIGN_CODE
@@ -62,6 +62,6 @@ ErrorMessageBoxA proc uses ebx hWnd:HWND, pUserMsgA:POINTER, wLangID:WORD, dErro
                           MB_ICONERROR + MB_OK + MB_APPLMODAL + MB_TOPMOST + MB_SETFOREGROUND
   .endif
   ret
-ErrorMessageBoxA endp 
+ErrorMessageBoxA endp
 
 end

@@ -12,7 +12,7 @@
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  StrLengthA
+; Procedure:  BStrLength
 ; Purpose:    Determine the length of a BStr not including the ZTC.
 ; Arguments:  Arg1: -> Source BStr.
 ; Return:     eax = Length of the string in characters.

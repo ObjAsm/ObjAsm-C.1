@@ -3811,3 +3811,14 @@ endif
   @RandSeed = ((@RandSeed*0A126CDF1h) + 0CA379C13h) mod 024DC5A39h
   exitm %@CatStr(%(@RandSeed mod (Range)))
 endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      @Err
+; Purpose:    Compile-time error generation.
+; Arguments:  Arg1: Message
+; Return:     Nothing.
+
+@Err macro Text:=<>
+  %echo Text
+endm
+

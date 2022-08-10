@@ -12,7 +12,7 @@
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  StrCScanA
+; Procedure:  StrCPosA
 ; Purpose:    Scan for ANSI string2 into ANSI string1 with length limitation.
 ; Arguments:  Arg1: -> Source ANSI string.
 ;             Arg2: -> ANSI string to search for.

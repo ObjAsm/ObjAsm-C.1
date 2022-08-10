@@ -12,7 +12,7 @@
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgClose
+; Procedure:  DbgShowTraceMethod
 ; Purpose:    Output trace information about a method.
 ; Arguments:  Arg1: -> Method Name.
 ;             Arg2: Method count.

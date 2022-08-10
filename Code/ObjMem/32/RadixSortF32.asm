@@ -15,7 +15,7 @@
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  RadixSortF32
-; Purpose:    Ascending sort of an array of single precision floats (REAL4) using a modified 
+; Purpose:    Ascending sort of an array of single precision floats (REAL4) using a modified
 ;             "4 passes radix sort" algorithm.
 ; Arguments:  Arg1: -> Array of single precision floats.
 ;             Arg2: Number of single precision floats contained in the array.

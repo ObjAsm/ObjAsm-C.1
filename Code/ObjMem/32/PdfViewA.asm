@@ -23,7 +23,7 @@ ProcName equ <PdfViewA>
 ; Arguments:  Arg1: Parent HANDLE.
 ;             Arg2: -> PDF document.
 ;             Arg3: -> Destination.
-; Return:     eax = HINSTANCE. See ShellExecute return values. 
+; Return:     eax = HINSTANCE. See ShellExecute return values.
 ;             A value greater than 32 indicates success.
 
 % include &ObjMemPath&Common\PdfView_TX.inc

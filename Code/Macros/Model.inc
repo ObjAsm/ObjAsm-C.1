@@ -52,7 +52,7 @@
 ;        - ??: hidden symbols, but shared between macros
 
 ;  3. Macro parameters are usually InsName, ObjName, MtdMame, VarName, IfcName, Args, ...
-;  4. Stucture alingnement are usually 1.
+;  4. Stucture alingnement are usually 1, 4, 8.
 ;  5. Object is a synonym for class.
 ;  6. The following prefixes are used:
 ;       TPL_ : object template from which an instance is created.
@@ -102,7 +102,7 @@
 ;     beginning of the sorece. ANSI_STRING switches the ANSI string support on.
 ; 24. The "CHR", "PCHR" and "PSTRING" types change their meaning according the string compilation
 ;     target (ANSI_STRING or WIDE_STRING).
-; 25. Debugging macros are enabled when DEBUG() is added to the SysSetuo macro. The destination
+; 25. Debugging macros are enabled when DEBUG() is added to the SysSetup macro. The destination
 ;     of the debug information is directed using the Debug auguments WND, CON, LOG or PRN.
 ; 26. If a string procedure name contain one of the following characters, it behaves as follows:
 ;       - A: ANSI procedure

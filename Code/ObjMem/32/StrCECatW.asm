@@ -14,7 +14,7 @@
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrCECatW
 ; Purpose:    Concatenate 2 WIDE strings with length limitation and return the ending zero character
-;             address. The destination string buffer should have at least enough room for the 
+;             address. The destination string buffer should have at least enough room for the
 ;             maximum number of characters + 1.
 ; Arguments:  Arg1: -> Destination WIDE character buffer.
 ;             Arg2: -> Source WIDE string.

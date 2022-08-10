@@ -15,7 +15,7 @@ ProcName textequ <StrCNewA>
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  StrCNewW
+; Procedure:  StrCNewA
 ; Purpose:    Allocate a new copy of the source ANSI string with length limitation.
 ;             If the pointer to the source string is NULL or points to an empty string, StrCNewA
 ;             returns NULL and doesn't allocate any heap space. Otherwise, StrCNewA makes a

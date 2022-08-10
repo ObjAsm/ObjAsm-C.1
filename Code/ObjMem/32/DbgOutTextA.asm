@@ -19,7 +19,7 @@ ProcName textequ <DbgOutTextA>
 ; Purpose:    Sends an ANSI string to the debug output device.
 ; Arguments:  Arg1: -> Zero terminated ANSI string.
 ;             Arg2: Color value.
-;             Arg3: Effect value (DBG_EFFECT_XXX)
+;             Arg3: Effect value (DBG_EFFECT_XXX).
 ;             Arg4: -> Destination window WIDE name.
 ; Return:     Nothing.
 

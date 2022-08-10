@@ -12,7 +12,7 @@
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  SendChildMessage
+; Procedure:  SendChildrenMessage
 ; Purpose:    Callback procedure for EnumChildWindows that sends a message to a child window.
 ; Arguments:  Arg1: Child window HANDLE.
 ;             Arg2: -> CHILD_MSG structure.

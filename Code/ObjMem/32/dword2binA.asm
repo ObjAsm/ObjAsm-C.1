@@ -38,7 +38,7 @@ endm
 ; Arguments:  Arg1: -> Destination buffer.
 ;             Arg2: DWORD value.
 ; Return:     Nothing.
-; Note:       The destination buffer must be at least 33 BYTEs large to allocate the output string 
+; Note:       The destination buffer must be at least 33 BYTEs large to allocate the output string
 ;             (32 character BYTEs + ZTC = 33 BYTEs).
 
 OPTION PROLOGUE:NONE

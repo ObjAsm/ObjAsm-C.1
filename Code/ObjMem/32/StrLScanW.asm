@@ -13,7 +13,7 @@
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrLScanW
-; Purpose:    Scan for a character from the beginning of a WIDE string. 
+; Purpose:    Scan for a character from the beginning of a WIDE string.
 ; Arguments:  Arg1: -> Source WIDE string.
 ;             Arg2: Character to search for.
 ; Return:     eax -> Character address or NULL if not found.

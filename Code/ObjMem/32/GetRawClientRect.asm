@@ -14,7 +14,7 @@
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  GetRawClientRect
 ; Purpose:    Calculate the window client RECT including scrollbars, but without the room needed
-;             for the menubar 
+;             for the menubar.
 ; Arguments:  Arg1: Window HANDLE
 ;             Arg2: -> RECT.
 ; Return:     Nothing.

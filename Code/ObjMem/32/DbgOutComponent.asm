@@ -12,7 +12,7 @@
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgOutComponent 
+; Procedure:  DbgOutComponent
 ; Purpose:    Identify a COM-Component.
 ; Arguments:  Arg1: -> CSLID.
 ;             Arg2: Foreground color.

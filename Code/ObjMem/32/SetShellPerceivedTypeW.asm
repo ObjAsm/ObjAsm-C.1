@@ -19,7 +19,7 @@ ProcName equ <SetShellPerceivedTypeW>
 ; Purpose:    Set shell perception of a file type.
 ; Arguments:  Arg1: TRUE = system wide perseption, FALSE = user account only.
 ;             Arg2: -> File extension (without dot).
-;             Arg3: -> Type (Folder, Text, Image, Audio, Video, Compressed, Document, System, 
+;             Arg3: -> Type (Folder, Text, Image, Audio, Video, Compressed, Document, System,
 ;                            Application, Gamemedia, Contacts)
 ; Return:     eax = HRESULT.
 ; Note:       To retrieve the perceived type use the AssocGetPerceivedType API.

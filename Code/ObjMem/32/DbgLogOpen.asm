@@ -12,7 +12,7 @@
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgLogOpen 
+; Procedure:  DbgLogOpen
 ; Purpose:    Open a Log-File.
 ; Arguments:  None.
 ; Return:     eax = TRUE if it was opened, otherwise FALSE.

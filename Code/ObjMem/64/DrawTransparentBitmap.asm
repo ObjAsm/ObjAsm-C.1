@@ -23,7 +23,7 @@ TBM_FIRSTPIXEL equ  80000000h
 ;             Arg5: RGB transparent color. Use TBM_FIRSTPIXEL to indicate that the pixel in the
 ;                   upper left corner contains the transparent color.
 ; Return:     Nothing.
-; Notes:      Original source by microsoft.
+; Notes:      Original source by Microsoft.
 ;             "HOWTO: Drawing Transparent Bitmaps (Q79212)"
 ;             (http://support.microsoft.com/default.aspx?scid=kb;EN-US;q79212)
 ;             Transcribed by Ernest Murphy.

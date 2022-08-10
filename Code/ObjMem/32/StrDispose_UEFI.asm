@@ -13,7 +13,7 @@
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrDispose_UEFI
-; Purpose:    Free the memory allocated for the string using StrNew_UEFI, StrCNew_UEFI, 
+; Purpose:    Free the memory allocated for the string using StrNew_UEFI, StrCNew_UEFI,
 ;             StrLENew_UEFI or StrAlloc_UEFI.
 ;             If the pointer to the string is NULL, StrDispose_UEFI does nothing.
 ; Arguments:  Arg1: -> String.

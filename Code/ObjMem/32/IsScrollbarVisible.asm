@@ -13,7 +13,7 @@
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  IsScrollBarVisible
-; Purpose:    Determine if a Scrollbar is currently visible. 
+; Purpose:    Determine if a Scrollbar is currently visible.
 ; Arguments:  Arg1: Main window handle that the scrollbar belongs to.
 ;             Arg2: Scrollbar type [SB_HORZ or SB_VERT].
 ; Return:     eax = TRUE if the scrollbar is visible, otherwise FALSE.

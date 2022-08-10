@@ -14,7 +14,7 @@ ProcName textequ <DbgOutFPU>
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgOutFPU 
+; Procedure:  DbgOutFPU
 ; Purpose:    Display the content of the FPU.
 ; Arguments:  Arg1: -> Destination Window WIDE name.
 ;             Arg2: Text RGB color.

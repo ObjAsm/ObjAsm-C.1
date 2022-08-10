@@ -12,12 +12,12 @@
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgClose
+; Procedure:  DbgOutTextCW
 ; Purpose:    Send a counted WIDE string to the debug output device
 ; Arguments:  Arg1: -> Null terminated WIDE string.
 ;             Arg2: Character count.
 ;             Arg3: Color value.
-;             Arg4: Effect value (DBG_EFFECT_XXX)
+;             Arg4: Effect value (DBG_EFFECT_XXX).
 ;             Arg5: -> Destination Window WIDE name.
 ; Return:     Nothing.
 

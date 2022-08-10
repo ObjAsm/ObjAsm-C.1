@@ -12,10 +12,10 @@
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgOutInterface 
+; Procedure:  DbgOutInterface
 ; Purpose:    Identify a COM-Interface.
 ; Arguments:  Arg1: -> CSLID.
-;             Arg2: Foreground color
+;             Arg2: Foreground color.
 ;             Arg2: -> Destination Window WIDE name.
 
 align ALIGN_CODE

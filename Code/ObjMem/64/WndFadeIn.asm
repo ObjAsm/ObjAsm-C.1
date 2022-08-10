@@ -23,7 +23,7 @@ LMA_COLORKEY    equ   1
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  WndFadeIn
 ; Purpose:    Fade in a window when WS_EX_LAYERED is set.
-; Arguments:  Arg1: Window handle
+; Arguments:  Arg1: Window HANDLE.
 ;             Arg2: Transparency start value.
 ;             Arg3: Transparency end value.
 ;             Arg4: Transparency increment value.

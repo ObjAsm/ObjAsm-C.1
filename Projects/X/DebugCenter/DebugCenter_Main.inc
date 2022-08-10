@@ -1028,7 +1028,7 @@ Method DebugCenter.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   ; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
   .elseif ax == IDM_HELP_HELP
-    invoke ExpandEnvironmentStrings, $OfsCStr("%OBJASM_PATH%\Help\ObjAsm.pdf"), \
+    invoke ExpandEnvironmentStrings, $OfsCStr("%OBJASM_PATH%\Help\ObjAsm_Vol-I.pdf"), \
                                      addr cFileName, lengthof(cFileName)
     invoke PdfView, [xsi].hWnd, addr cFileName, $OfsCStr("Debugging")
     xor eax, eax

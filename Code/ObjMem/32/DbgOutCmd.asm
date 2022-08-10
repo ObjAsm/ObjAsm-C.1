@@ -14,7 +14,7 @@ externdef DbgCritSect:CRITICAL_SECTION
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgOutCmd 
+; Procedure:  DbgOutCmd
 ; Purpose:    Send a command to a specific Debug window.
 ; Arguments:  Arg1: Command ID [BYTE].
 ;             Arg2: Target Debug Window WIDE name.
@@ -58,7 +58,7 @@ DbgOutCmd proc bCommand:BYTE, pTargetWnd:POINTER
       mov [edx].DBG_CMD_INFO.dBlockLen, sizeof DBG_CMD_INFO
       invoke SendMessageTimeoutW, hDbgDev, WM_COPYDATA, -1, addr CDS, \
                                   SMTO_BLOCK, SMTO_TIMEOUT, addr dResult
-      mov esp, dESP                                     ;Restore stack                              
+      mov esp, dESP                                     ;Restore stack
     .endif
   .endif
   invoke LeaveCriticalSection, offset DbgCritSect

@@ -12,7 +12,7 @@
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgOutComErr 
+; Procedure:  DbgOutComErr
 ; Purpose:    Identify a COM error with a string.
 ; Arguments:  Arg1: COM error ID.
 ;             Arg2: -> Destination Window WIDE name.

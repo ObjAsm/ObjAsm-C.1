@@ -14,7 +14,7 @@ ProcName equ <NewObjInst>
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  NewObjInst 
+; Procedure:  NewObjInst
 ; Purpose:    Create an object instance from an object ID.
 ; Arguments:  Arg1: Object ID.
 ; Return:     eax -> New object instance or NULL if failed.

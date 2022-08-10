@@ -13,7 +13,7 @@
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrLScanA
-; Purpose:    Scan for a character from the beginning of an ANSI string. 
+; Purpose:    Scan for a character from the beginning of an ANSI string.
 ; Arguments:  Arg1: -> Source ANSI string.
 ;             Arg2: Character to search.
 ; Return:     eax -> Character address or NULL if not found.

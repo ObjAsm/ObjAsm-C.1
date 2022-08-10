@@ -12,7 +12,7 @@
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgOutBitmap 
+; Procedure:  DbgOutBitmap
 ; Purpose:    Send a bitmap to the Debug Center Window.
 ; Arguments:  Arg1: Bitamp HANDLE.
 ;             Arg2: -> Destination window WIDE name.

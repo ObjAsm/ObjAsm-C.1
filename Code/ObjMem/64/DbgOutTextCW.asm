@@ -17,7 +17,7 @@
 ; Arguments:  Arg1: -> Null terminated WIDE string.
 ;             Arg2: Maximal character count.
 ;             Arg3: Color value.
-;             Arg4: Effect value (DBG_EFFECT_XXX)
+;             Arg4: Effect value (DBG_EFFECT_XXX).
 ;             Arg5: -> Destination Window WIDE name.
 ; Return:     Nothing.
 

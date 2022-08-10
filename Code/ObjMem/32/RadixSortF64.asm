@@ -15,7 +15,7 @@
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  RadixSortF64
-; Purpose:    Ascending sort of an array of double precision floats (REAL8) using a modified 
+; Purpose:    Ascending sort of an array of double precision floats (REAL8) using a modified
 ;             "8 passes radix sort" algorithm.
 ; Arguments:  Arg1: -> Array of double precision floats (REAL8).
 ;             Arg2: Number of double precision floats contained in the array.

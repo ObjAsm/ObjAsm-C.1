@@ -1,6 +1,6 @@
 ; ==================================================================================================
 ; Title:      UefiGetErrStr_TX.inc
-; Author:     G. Friedrich
+; Author:     G. Friedrich / HSE
 ; Version:    C.1.0
 ; Notes:      Version C.1.0, August 2022
 ;               - First release.
@@ -17,21 +17,15 @@
 ; Arguments:  Arg1: COM error code.
 ; Return:     xax -> Error string.
 
-align ALIGN_CODE
 ProcName proc xErrCode:XWORD
   ?mov ecx, xErrCode
-  mov eax, UefiErrTableCount
   mov xdx, offset UefiErrTable
-  test eax, eax
-  .while !ZERO?                                         ;This search can be smarter!
-    .break .if xcx == [xdx].DOM.xCode
-    add xdx, sizeof(DOM)
-    dec eax
-  .endw
-  .if eax == 0
+  mov xax, not(1 shl (8*@WordSize - 1))
+  and xcx, xax
+  .if xcx > UefiErrTableCount
     mov xax, $OfsCStr("Unknown error")
-  .else
-    mov xax, [xdx].DOM.pString
+  .else 
+    mov xax, POINTER ptr [xdx + sizeof(POINTER)*xcx]
   .endif
   ret
 ProcName endp

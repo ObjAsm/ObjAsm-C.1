@@ -17,7 +17,7 @@
 ; Arguments:  Arg1: Error code.
 ;             Arg2: -> WIDE character buffer.
 ;             Arg3: Buffer size in characters, inclusive ZTC.
-;             Arg4: -> DLL wide name.
+;             Arg4: -> DLL WIDE name.
 ; Return:     Nothing.
 
 OPTION PROLOGUE:NONE

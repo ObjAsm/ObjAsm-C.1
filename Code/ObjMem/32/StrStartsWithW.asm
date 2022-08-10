@@ -15,7 +15,7 @@ ProcName equ <StrStartsWithW>
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  StrStartsWithW 
+; Procedure:  StrStartsWithW
 ; Purpose:    Compare the beginning of a string.
 ; Arguments:  Arg1: -> Analized string.
 ;             Arg2: -> Prefix string.

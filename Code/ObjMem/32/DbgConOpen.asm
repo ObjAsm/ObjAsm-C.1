@@ -12,7 +12,7 @@
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgConOpen 
+; Procedure:  DbgConOpen
 ; Purpose:    Open a new console for the calling process.
 ; Arguments:  None.
 ; Return:     eax = TRUE if it was opened, otherwise FALSE.

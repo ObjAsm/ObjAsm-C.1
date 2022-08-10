@@ -12,7 +12,7 @@
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgOutInterfaceName 
+; Procedure:  DbgOutInterfaceName
 ; Purpose:    Identify a COM-Interface.
 ; Arguments:  Arg1: -> CSLID.
 ;             Arg2: Foreground color.

@@ -16,7 +16,7 @@
 ; Purpose:    Convert a REAL4 to an HALF.
 ; Arguments:  Arg1: REAL4 value.
 ; Return:     ax = HALF.
-; Note:       alternative code using VCVTPS2PH: 
+; Note:       alternative code using VCVTPS2PH:
 ;                movss xmm0, r4Value
 ;                VCVTPS2PH xmm1, xmm0, 0
 ;                movd eax, xmm1

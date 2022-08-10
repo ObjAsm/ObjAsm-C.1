@@ -56,7 +56,7 @@ externdef wSysStandby_SeShutdownPrivilege:WORD
 ; Procedure:  SysShutdown
 ; Purpose:    Shut down the system.
 ; Arguments:  Arg1: Shutdown type.
-;             Arg2: 
+;             Arg2: Shutdown reason (see System Shutdown Reason Codes).
 ; Return:     Nothing.
 
 align ALIGN_CODE

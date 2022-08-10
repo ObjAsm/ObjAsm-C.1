@@ -12,7 +12,7 @@
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgOutMsg 
+; Procedure:  DbgOutMsg
 ; Purpose:    Identifies a windows message with a string.
 ; Arguments:  Arg1: Windows message ID.
 ;             Arg2: Foreground color.

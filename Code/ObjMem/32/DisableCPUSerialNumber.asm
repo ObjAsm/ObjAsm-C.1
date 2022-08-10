@@ -13,7 +13,7 @@
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DisableCPUSerialNumber
-; Purpose:    Disable the reading of the CPU serial number. 
+; Purpose:    Disable the reading of the CPU serial number.
 ; Arguments:  None.
 ; Return:     Nothing.
 

@@ -13,7 +13,7 @@
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrCECopyW
-; Purpose:    Copy the the source WIDE string with length limitation and return the last zero 
+; Purpose:    Copy the the source WIDE string with length limitation and return the last zero
 ;             character address.
 ;             The destination buffer should hold the maximum number of characters + 1.
 ;             Source and destination strings may overlap.

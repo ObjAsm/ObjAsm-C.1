@@ -12,7 +12,7 @@
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  Err2StrW
+; Procedure:  NetErr2StrW
 ; Purpose:    Translate a network error code to a WIDE string.
 ; Arguments:  Arg1: Error code.
 ;             Arg2: -> WIDE string buffer.

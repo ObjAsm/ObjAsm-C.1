@@ -22,10 +22,10 @@ endm
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure: bin2qwordA
-; Purpose:   Load an ANSI string binary representation of a QWORD.
-; Arguments: Arg1: -> ANSI binary string.
-; Return:    edx::eax = QWORD.
+; Procedure:  bin2qwordA
+; Purpose:    Load an ANSI string binary representation of a QWORD.
+; Arguments:  Arg1: -> ANSI binary string.
+; Return:     edx::eax = QWORD.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

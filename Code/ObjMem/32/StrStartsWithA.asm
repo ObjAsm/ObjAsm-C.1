@@ -15,7 +15,7 @@ ProcName equ <StrStartsWithA>
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  StrStartsWithA 
+; Procedure:  StrStartsWithA
 ; Purpose:    Compare the beginning of a string.
 ; Arguments:  Arg1: -> Analized string.
 ;             Arg2: -> Prefix string.
