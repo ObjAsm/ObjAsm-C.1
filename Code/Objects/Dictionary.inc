@@ -5,6 +5,7 @@
 ; Purpose:    ObjAsm support of Dictionary objects.
 ; Notes:      Version C.1.0, January 2022
 ;             - First release.
+; Links:      - https://hg.python.org/cpython/file/52f68c95e025/Objects/dictobject.c#l296
 ; ==================================================================================================
 
 
@@ -142,7 +143,6 @@ Method Dictionary.Hash, uses xbx, pKey:PSTRING
     else
 ;      invoke StrSize, pKey
 
-      int 3
       mov xax, pKey
       mov xcx, xax
       mov xbx, xax

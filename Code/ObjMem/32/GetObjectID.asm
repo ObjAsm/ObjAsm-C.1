@@ -8,13 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  GetObjectID
-; Purpose:    Retrieves the type ID of an object instance.
+; Purpose:    Retrieve the type ID of an object instance.
 ; Arguments:  Arg1: -> Object instance.
 ; Return:     eax = Object class ID.
 

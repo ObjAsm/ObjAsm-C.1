@@ -8,6 +8,16 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&X\SendChildrenMessage.asm
+% include &ObjMemPath&ObjMemWin.cop
+
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  SendChildrenMessage
+; Purpose:    Callback procedure for EnumChildWindows that sends a message to a child window.
+; Arguments:  Arg1: Child window HANDLE.
+;             Arg2: -> CHILD_MSG structure.
+; Return:     eax = always TRUE (continue the enumeration).
+
+% include &ObjMemPath&Common\SendChildrenMessage_X.inc
 
 end

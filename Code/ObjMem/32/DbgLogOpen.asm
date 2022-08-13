@@ -8,12 +8,11 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgLogOpen 
+; Procedure:  DbgLogOpen
 ; Purpose:    Open a Log-File.
 ; Arguments:  None.
 ; Return:     eax = TRUE if it was opened, otherwise FALSE.

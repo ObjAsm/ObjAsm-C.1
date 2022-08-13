@@ -8,13 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  dec2dwordA
-; Purpose:    Converts a decimal ANSI string to a DWORD.
+; Purpose:    Convert a decimal ANSI string to a DWORD.
 ; Arguments:  Arg1: -> Source ANSI string. Possible leading characters are " ", tab, "+" and "-",
 ;                   followed by a sequence of chars between "0".."9" and finalized by a ZTC.
 ;                   Other characters terminate the convertion returning zero.

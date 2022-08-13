@@ -1,27 +1,28 @@
 ; ==================================================================================================
 ; Title:      MemShift.asm
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
+;             Version C.1.1, July 2022
+;               - Return value added.
 ; ==================================================================================================
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure: MemShift
-; Purpose:   Copies a memory block from a source to a destination buffer.
-;            Source and destination may overlap.
-;            Destination buffer must be at least as large as number of bytes to copy, otherwise a
-;            fault may be triggered.
-; Arguments: Arg1: -> Destination buffer.
-;            Arg2: -> Source buffer.
-;            Arg3: Number of bytes to be copied.
-; Return:    Nothing.
+; Procedure:  MemShift
+; Purpose:    Copy a memory block from a source to a destination buffer.
+;             Source and destination may overlap.
+;             Destination buffer must be at least as large as number of BYTEs to shift, otherwise a
+;             fault may be triggered.
+; Arguments:  Arg1: -> Destination buffer.
+;             Arg2: -> Source buffer.
+;             Arg3: Number of BYTEs to shift.
+; Return:     eax = Number of BYTEs shifted.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE
@@ -41,6 +42,7 @@ MemShift proc pDstMem:POINTER, pSrcMem:POINTER, dByteCount:DWORD
   shr ecx, 2
   rep movsd
   mov ecx, [esp + 20]                                   ;ecx = dByteCount
+  mov eax, ecx                                          ;Return value: eax = dByteCount 
   and ecx, 3
   add edi, 3
   add esi, 3
@@ -55,6 +57,7 @@ align ALIGN_CODE
   shr ecx, 2
   rep movsd
   mov ecx, [esp + 20]                                   ;ecx = dByteCount
+  mov eax, ecx                                          ;Return value: eax = dByteCount 
   and ecx, 3
   rep movsb
   pop esi

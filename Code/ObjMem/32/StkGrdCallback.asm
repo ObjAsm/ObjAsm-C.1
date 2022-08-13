@@ -8,7 +8,7 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 CStr StkGrdTitle,   "Stack overrun detected !!"
 CStr StkGrdMessage, "The application may be unstable.", 10, 13,\
@@ -17,7 +17,6 @@ CStr StkGrdMessage, "The application may be unstable.", 10, 13,\
                     "'Cancel' to abort the application."
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StkGrdCallback
 ; Purpose:    StackGuard notification callback procedure.
@@ -25,7 +24,7 @@ CStr StkGrdMessage, "The application may be unstable.", 10, 13,\
 ;             It displays a MessageBox asking to abort. If yes, then Exitprocess is called
 ;             immediately.
 ; Arguments:  None.
-; Returns:    ZERO flag set if NO was pressed
+; Return:     ZERO flag set if NO was pressed
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

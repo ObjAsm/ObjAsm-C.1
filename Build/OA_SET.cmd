@@ -25,11 +25,12 @@ set Inc2RC="%OBJASM_PATH%\Build\Tools\Inc2RC.cmd"
 set MidlCompiler="%ToolPath:"=%\Windows Kits\10\bin\10.0.18362.0\x64\midl.exe"
 set UICCompiler="%WINKIT_PATH%\x86\UICC.exe"
 set ResourceCompiler="%ToolPath:"=%\Windows Kits\10\bin\10.0.18362.0\x64\RC.EXE"
+set EfiImageConverter="D:\EFI_Toolkit_2.0\build\tools\bin\fwimage"
 
 if %SYSTEM_BITNESS%==32 (
   set Assembler="!OBJASM_PATH!\Build\Tools\UASM32.EXE"
 ) else (
-  set Assembler="!OBJASM_PATH!\Build\Tools\UASM64_2.49.EXE"
+  set Assembler="!OBJASM_PATH!\Build\Tools\UASM64.EXE"
 )
 
 set Debugger="%ToolPath:"=%\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.exe"

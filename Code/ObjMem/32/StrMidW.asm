@@ -8,10 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrMidW
 ; Purpose:    Extract a substring from a WIDE source string.
@@ -19,7 +18,7 @@
 ;             Arg2: -> Source WIDE string.
 ;             Arg3: Start character index. Index ranges [1 .. String length].
 ;             Arg3: Character count.
-; Return:     eax = number of copied characters.
+; Return:     eax = Number of copied characters.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

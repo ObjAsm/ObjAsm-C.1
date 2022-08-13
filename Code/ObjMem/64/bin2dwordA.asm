@@ -8,7 +8,7 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 NextCharA macro
   movzx rdx, BYTE ptr [rcx]
@@ -20,7 +20,6 @@ NextCharA macro
 endm
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  bin2dwordA
 ; Purpose:    Load an ANSI string binary representation of a DWORD.

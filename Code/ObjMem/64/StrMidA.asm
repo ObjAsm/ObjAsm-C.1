@@ -8,10 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrMidA
 ; Purpose:    Extract a substring from an ANSI source string.
@@ -19,7 +18,7 @@
 ;             Arg2: -> Source ANSI string.
 ;             Arg3: Start character index. Index ranges [0 .. length-1].
 ;             Arg3: Character count.
-; Return:     eax = number of copied characters.
+; Return:     eax = Number of copied characters.
 
 align ALIGN_CODE
 StrMidA proc pBuffer:POINTER, pSrcStringA:POINTER, dStartChar:DWORD, dCharCount:DWORD

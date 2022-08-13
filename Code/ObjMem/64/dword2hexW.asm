@@ -8,20 +8,19 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 externdef HexCharTableW:CHRW
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  dword2hexW
-; Purpose:    Converts a DWORD to its hexadecimal WIDE string representation.
+; Purpose:    Convert a DWORD to its hexadecimal WIDE string representation.
 ; Arguments:  Arg1: -> Destination WIDE string buffer.
 ;             Arg2: DWORD value.
 ; Return:     Nothing.
-; Notes:      The destination buffer must be at least 18 bytes large to allocate the output string
-;             (8 character words + ZTC = 18 bytes).
+; Notes:      The destination buffer must be at least 18 BYTEs large to allocate the output string
+;             (8 character WORDs + ZTC = 18 BYTEs).
 
 OPTION PROC:NONE
 align ALIGN_CODE
@@ -36,7 +35,7 @@ dword2hexW proc pBuffer:POINTER, dValue:DWORD
   mov r9d, DCHRW ptr [r10 + sizeof(DCHRW)*rax]
   shr edx, 8
   or r8, r9
-  mov [rcx + 8], r8
+  mov [rcx + 2*sizeof(DCHRW)], r8
 
   movzx rax, dl
   mov r8d, DCHRW ptr [r10 + sizeof(DCHRW)*rax]

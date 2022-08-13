@@ -8,14 +8,14 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
+
 % include &IncPath&Windows\CommCtrl.inc
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  LoadCommonControls
-; Purpose:    Invokes InitCommonControls with a correctly filled input structure.
+; Purpose:    Invoke InitCommonControls with a correctly filled input structure.
 ; Arguments:  Arg1: ICC_COOL_CLASSES, ICC_BAR_CLASSES, ICC_LISTVIEW_CLASSES, ICC_TAB_CLASSES,
 ;                   ICC_USEREX_CLASSES, etc.
 ; Return:     Nothing.

@@ -2,9 +2,9 @@ REM This file is only used to check changes in individual files before building 
 
 REM Change the targets according the intended check
 @echo off
-set TARGET_BITNESS=32
+set TARGET_BITNESS=64
 set TARGET_MODE=RLS
-set FileName=FindFileA.asm
+set FileName=GetComErrStrA.asm
 
 setlocal ENABLEEXTENSIONS ENABLEDELAYEDEXPANSION
 

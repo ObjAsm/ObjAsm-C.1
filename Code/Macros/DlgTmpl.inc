@@ -13,7 +13,7 @@
 ; Purpose:    Check the Arg parameter to determine if it is blank, contains NULL, a quoted text or
 ;             an ordinal value to generate a proper segment memory allocation.
 ; Arguments:  Arg1: Input.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 FlexArg macro Arg
   local WStr
@@ -38,7 +38,7 @@ endm
 ; Macro:      DIALOGEX
 ; Purpose:    Create a DIALOGEX template structure.
 ; Arguments:  Structure arguments.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 DIALOGEX macro sName:req, wXPos:=<0>, wYPos:=<0>, wWidth:=<1>, wHeight:=<1>, \
                dHelpID:=<0>, wItems:=<0>, dStyle:=<0>, dExStyle:=<0>, \
@@ -70,7 +70,7 @@ endm
 ; Macro:      CONTROL
 ; Purpose:    Create a control template structure.
 ; Arguments:  Structure arguments.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 CONTROL macro sTitle, dCtlID:req, sWndClass:req, dStyle:req, \
               wXPos:=<0>, wYPos:=<0>, wWidth:=<1>, wHeight:=<1>, \
@@ -93,7 +93,7 @@ endm
 ; Macro:      PUSHBUTTON
 ; Purpose:    Create a PUSHBUTTON control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 PUSHBUTTON macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb <dStyle>
@@ -107,7 +107,7 @@ endm
 ; Macro:      DEFPUSHBUTTON
 ; Purpose:    Create a DEFPUSHBUTTON control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 DEFPUSHBUTTON macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb <dStyle>
@@ -121,7 +121,7 @@ endm
 ; Macro:      PUSHBOX
 ; Purpose:    Create a PUSHBOX control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 PUSHBOX macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb <dStyle>
@@ -135,7 +135,7 @@ endm
 ; Macro:      AUTO3STATE
 ; Purpose:    Create a AUTO3STATE control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 AUTO3STATE macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb <dStyle>
@@ -149,7 +149,7 @@ endm
 ; Macro:      STATE3
 ; Purpose:    Create a STATE3 control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 STATE3 macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb   <dStyle>
@@ -163,7 +163,7 @@ endm
 ; Macro:      AUTOCHECKBOX
 ; Purpose:    Create a AUTOCHECKBOX control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 AUTOCHECKBOX macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb <dStyle>
@@ -177,7 +177,7 @@ endm
 ; Macro:      CHECKBOX
 ; Purpose:    Create a CHECKBOX control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 CHECKBOX macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb   <dStyle>
@@ -191,7 +191,7 @@ endm
 ; Macro:      RADIOBUTTON
 ; Purpose:    Create a RADIOBUTTON control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 RADIOBUTTON macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb <dStyle>
@@ -205,7 +205,7 @@ endm
 ; Macro:      AUTORADIOBUTTON
 ; Purpose:    Create a AUTORADIOBUTTON control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 AUTORADIOBUTTON macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb <dStyle>
@@ -219,7 +219,7 @@ endm
 ; Macro:      GROUPBOX
 ; Purpose:    Create a GROUPBOX control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 GROUPBOX macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb <dStyle>
@@ -233,7 +233,7 @@ endm
 ; Macro:      LTEXT
 ; Purpose:    Create a LTEXT control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 LTEXT macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb <dStyle>
@@ -247,7 +247,7 @@ endm
 ; Macro:      RTEXT
 ; Purpose:    Create a RTEXT control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 RTEXT macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb <dStyle>
@@ -261,7 +261,7 @@ endm
 ; Macro:      CTEXT
 ; Purpose:    Create a CTEXT control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 CTEXT macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb <dStyle>
@@ -275,7 +275,7 @@ endm
 ; Macro:      COMBOBOX
 ; Purpose:    Create a COMBOBOX control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 COMBOBOX macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb <dStyle>
@@ -289,7 +289,7 @@ endm
 ; Macro:      LISTBOX
 ; Purpose:    Create a LISTBOX control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 LISTBOX macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb <dStyle>
@@ -303,7 +303,7 @@ endm
 ; Macro:      EDITTEXT
 ; Purpose:    Create a EDITTEXT control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 EDITTEXT macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb <dStyle>
@@ -317,7 +317,7 @@ endm
 ; Macro:      SCROLLBAR
 ; Purpose:    Create a SCROLLBAR control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 SCROLLBAR macro dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb <dStyle>
@@ -331,7 +331,7 @@ endm
 ; Macro:      ICON
 ; Purpose:    Create a ICON control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 ICON macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   ifb <dStyle>
@@ -345,7 +345,7 @@ endm
 ; Macro:      TREEVIEW
 ; Purpose:    Create a TREEVIEW control template structure.
 ; Arguments:  dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 TREEVIEW macro dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   CONTROL NULL, dCtlID, "SysTreeView32", dStyle, wXPos, wYPos, wWidth, wHeight, dExStyle, dHelpID, wExtra
@@ -355,7 +355,7 @@ endm
 ; Macro:      LISTVIEW
 ; Purpose:    Create a LISTVIEW control template structure.
 ; Arguments:  dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 LISTVIEW macro dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   CONTROL NULL, dCtlID, "SysListView32", dStyle, wXPos, wYPos, wWidth, wHeight, dExStyle, dHelpID, wExtra
@@ -365,7 +365,7 @@ endm
 ; Macro:      HYPERLINK
 ; Purpose:    Create a HYPERLINK control template structure.
 ; Arguments:  sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
-; Returns:    Nothing.
+; Return:     Nothing.
 
 HYPERLINK macro sTitle, dCtlID, wXPos, wYPos, wWidth, wHeight, dStyle, dExStyle, dHelpID, wExtra
   CONTROL sTitle, dCtlID, "Hyperlink", dStyle, wXPos, wYPos, wWidth, wHeight, dExStyle, dHelpID, wExtra

@@ -8,17 +8,16 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DllErr2StrW
 ; Purpose:    Translate an error code to a WIDE string stored in a DLL.
 ; Arguments:  Arg1: Error code.
 ;             Arg2: -> WIDE character buffer.
 ;             Arg3: Buffer size in characters, inclusive ZTC.
-;             Arg4: -> DLL wide name.
+;             Arg4: -> DLL WIDE name.
 ; Return:     Nothing.
 
 OPTION PROLOGUE:NONE

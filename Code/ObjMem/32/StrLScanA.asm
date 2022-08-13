@@ -8,13 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrLScanA
-; Purpose:    Scan for a character from the beginning of an ANSI string. 
+; Purpose:    Scan for a character from the beginning of an ANSI string.
 ; Arguments:  Arg1: -> Source ANSI string.
 ;             Arg2: Character to search.
 ; Return:     eax -> Character address or NULL if not found.

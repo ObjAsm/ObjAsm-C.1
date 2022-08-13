@@ -8,11 +8,19 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-
 TARGET_STR_TYPE = STR_TYPE_ANSI
-TARGET_STR_AFFIX textequ <A>
+% include &ObjMemPath&ObjMemWin.cop
+
 ProcName equ <StrEndsWithA>
 
-% include &ObjMemPath&X\StrEndsWith.asm
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  StrEndsWithA
+; Purpose:    Compare the ending of a string.
+; Arguments:  Arg1: -> Analized string.
+;             Arg2: -> Suffix string.
+; Return:     eax = TRUE of the ending matches, otherwise FALSE.
+
+% include &ObjMemPath&Common\StrEndsWith_TXP.inc
 
 end

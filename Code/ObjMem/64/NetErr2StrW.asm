@@ -8,17 +8,16 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  Err2StrW
+; Procedure:  NetErr2StrW
 ; Purpose:    Translate a network error code to a WIDE string.
 ; Arguments:  Arg1: Error code.
 ;             Arg2: -> WIDE string buffer.
 ;             Arg3: Buffer size in characters, inclusive ZTC.
-; Return:     eax = number CHRW stored in the output buffer, excluding the ZTC.
+; Return:     eax = Number CHRW stored in the output buffer, excluding the ZTC.
 
 align ALIGN_CODE
 NetErr2StrW proc uses rbx rdi dError:DWORD, pBuffer:POINTER, dMaxChars:DWORD

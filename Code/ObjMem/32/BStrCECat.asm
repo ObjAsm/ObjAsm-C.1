@@ -8,10 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  BStrCECat
 ; Purpose:    Concatenate 2 BStrs with length limitation and return the ending zero character
@@ -21,7 +20,7 @@
 ;             Arg2: -> Source BStr.
 ;             Arg3: Maximal number of charachters that the destination string can hold including
 ;                   the zero terminating character.
-; Return:     eax -> Ending zero character.
+; Return:     eax -> ZTC.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE
@@ -32,12 +31,12 @@ BStrCECat proc pDstBStr:POINTER, pSrcBStr:POINTER, dMaxChars:DWORD
   mov eax, [esp + 4]                                    ;eax -> DstBStr
   sub ecx, 4
   sub eax, 4
-  shl DWORD ptr [esp + 12], 1                           ;Convert dMaxChars to bytes
+  shl DWORD ptr [esp + 12], 1                           ;Convert dMaxChars to BYTEs
   mov edx, DWORD ptr [eax]
   cmp edx, [esp + 12]                                   ;dMaxChars
   jb @F
   mov eax, [esp + 4]                                    ;pDstBStr
-  add eax, [esp + 12]                                   ;Destination is longer/equal than Max bytes
+  add eax, [esp + 12]                                   ;Destination is longer/equal than Max BYTEs
   ret 12
 @@:
   add edx, DWORD ptr [ecx]

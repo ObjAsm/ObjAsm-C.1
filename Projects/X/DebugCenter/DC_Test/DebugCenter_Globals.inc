@@ -49,7 +49,7 @@ CStr szCalcClass,       "SciCalc"
 CStr szEditClass,       "Edit"
 CStr szCalcPath,        "\Calc.exe"
 
-CStr szHelpPath,        "\Help\ObjAsm.pdf"
+CStr szHelpPath,        "\Help\ObjAsm_Vol-I.pdf"
 
 CStr szState,           "State"
 CStr szLeftPos,         "Left"

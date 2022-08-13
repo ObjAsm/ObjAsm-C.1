@@ -8,6 +8,16 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&X\GetDlgBaseUnits.asm
+% include &ObjMemPath&ObjMemWin.cop
+
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  GetDlgBaseUnits
+; Purpose:    Returns the Dialog Base Units.
+; Arguments:  Arg1: Dialog DC.
+; Return:     eax = X DBU.
+;             ecx = Y DBU.
+
+% include &ObjMemPath&Common\GetDlgBaseUnits_X.inc
 
 end

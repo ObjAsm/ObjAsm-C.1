@@ -8,10 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrECatA
 ; Purpose:    Append an ANSI string to another and return the address of the ending zero character.
@@ -19,7 +18,7 @@
 ;             for at least StrLengthA(Destination) + StrLengthA(Source) + 1 characters.
 ; Arguments:  Arg1: -> Destination ANSI character buffer.
 ;             Arg2: -> Source ANSI string.
-; Return:     eax -> Ending zero character.
+; Return:     eax -> ZTC.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

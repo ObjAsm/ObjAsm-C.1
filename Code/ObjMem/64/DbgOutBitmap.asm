@@ -8,22 +8,21 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutBitmap
-; Purpose:    Sends a bitmap to the Debug Center Window.
+; Purpose:    Send a bitmap to the Debug Center Window.
 ; Arguments:  Arg1: Bitamp HANDLE.
-;             Arg2: -> Destination Window name.
+;             Arg2: -> Destination Window WIDE name.
 ; Return:     Nothing.
 
 align ALIGN_CODE
 DbgOutBitmap proc uses rbx rdi rsi r12 hBmp:HANDLE, pDest:POINTER
   local CDS:COPYDATASTRUCT, hDC:HDC, BMI:BITMAPINFO, dResult:DWORD
 
-  .if dDbgDev == DBG_DEV_WND
+  .if dDbgDev == DBG_DEV_WIN_DC
     .if $invoke(DbgWndOpen)
       mov CDS.dwData, DGB_MSG_ID                        ;Set DebugCenter identifier
       mov hDC, $invoke(GetDC, 0)

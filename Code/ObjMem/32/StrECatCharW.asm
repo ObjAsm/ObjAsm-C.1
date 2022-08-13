@@ -8,10 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrECatCharW
 ; Purpose:    Append a character to a WIDE string and return the address of the ending zero.
@@ -19,7 +18,7 @@
 ;             enough room for at least StrLengthW(Destination) + 1 + 1 characters.
 ; Arguments:  Arg1: -> Destination WIDE string buffer.
 ;             Arg2: -> Wide character.
-; Return:     eax -> Ending zero character.
+; Return:     eax -> ZTC.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

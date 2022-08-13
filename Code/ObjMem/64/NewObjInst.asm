@@ -8,30 +8,17 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
+
+ProcName equ <NewObjInst>
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  NewObjInst
-; Purpose:    Creates an object instance from an object ID.
+; Purpose:    Create an object instance from an object ID.
 ; Arguments:  Arg1: Object ID.
-; Return:     rax -> new object instance or NULL if failed.
+; Return:     rax -> New object instance or NULL if failed.
 
-align ALIGN_CODE
-NewObjInst proc uses rbx rdi rsi dObjectID:DWORD
-  invoke GetObjectTemplate, ecx                         ;rax -> Template, ecx = Template size
-  .if rax != NULL
-    mov rsi, rax
-    mov ebx, ecx
-    MemAlloc ebx
-    .if rax != NULL
-      mov rdi, rax
-      invoke MemClone, rax, rsi, ebx
-      mov rax, rdi                                      ;rax -> new instance
-    .endif
-  .endif
-  ret
-NewObjInst endp
+% include &ObjMemPath&Common\NewObjInst_XP.inc
 
 end

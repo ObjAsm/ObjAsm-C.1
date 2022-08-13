@@ -77,7 +77,7 @@ SEG_EXCEP_DATA ends
 ; Macro:      .try
 ; Purpose:    Initialize a protected area.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 .try macro
   .code                                                 ;;Required to generate correct addresses
@@ -88,7 +88,7 @@ endm
 ; Macro:      .catch
 ; Purpose:    Finalizes a protected area. The following code is executed in case of an exception.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       This macro can be ommited.
 
 .catch macro
@@ -103,7 +103,7 @@ endm
 ; Macro:      .endcatch
 ; Purpose:    32 bit compatibility macro.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       This macro can be ommited.
 
 .endcatch macro
@@ -113,7 +113,7 @@ endm
 ; Macro:      .finally
 ; Purpose:    The following code is always executed.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       This macro must always be present!
 
 .finally macro
@@ -138,7 +138,7 @@ endm
 ; Macro:      .finally
 ; Purpose:    32 bit compatibility macro.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       This macro can be ommited.
 
 .endfinally macro

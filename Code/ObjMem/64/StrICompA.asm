@@ -8,18 +8,17 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrICompA
 ; Purpose:    Compare 2 ANSI strings without case sensitivity.
 ; Arguments:  Arg1: -> ANSI string 1.
 ;             Arg2: -> ANSI string 2.
 ; Return:     If string 1 < string 2, then eax < 0.
-;            If string 1 = string 2, then eax = 0.
-;            If string 1 > string 2, then eax > 0.
+;             If string 1 = string 2, then eax = 0.
+;             If string 1 > string 2, then eax > 0.
 
 OPTION PROC:NONE
 align ALIGN_CODE

@@ -8,7 +8,7 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 CStr StkGrdTitle,   "Stack overrun detected !!"
 CStr StkGrdMessage, "The application may be unstable.", 10, 13,\
@@ -17,7 +17,6 @@ CStr StkGrdMessage, "The application may be unstable.", 10, 13,\
                     "'Cancel' to abort the application."
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StkGrdCallback
 ; Purpose:    StackGuard notification callback procedure.

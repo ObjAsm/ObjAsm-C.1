@@ -8,6 +8,19 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&X\Real4ToHalf.asm
+% include &ObjMemPath&ObjMemWin.cop
+
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  Real4ToHalf
+; Purpose:    Convert a REAL4 to an HALF.
+; Arguments:  Arg1: REAL4 value.
+; Return:     ax = HALF.
+; Note:       alternative code using VCVTPS2PH:
+;                movss xmm0, r4Value
+;                VCVTPS2PH xmm1, xmm0, 0
+;                movd eax, xmm1
+
+% include &ObjMemPath&Common\Real4ToHalf_XP.inc
 
 end

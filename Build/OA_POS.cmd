@@ -9,6 +9,9 @@ if !TARGET_MODE! == RLS (
   if exist *.tmp del *.tmp
   if exist RC??????. del RC??????.
   if exist !LogFile! del !LogFile!
+  if !TARGET_PLATFORM! == UEFI (
+    if exist !ProjectName!.dll del !ProjectName!.dll
+  )
 ) else (
   echo Ready^^!>> !LogFile!
 )

@@ -8,13 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgClose
-; Purpose:    Closes the connection to the output device.
+; Purpose:    Close the connection to the output device.
 ; Arguments:  None.
 ; Return:     Nothing.
 

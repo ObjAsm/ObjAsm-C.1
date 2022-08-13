@@ -8,14 +8,14 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
-% include &ObjMemPath&32\RadixSort.inc                  ;Helper macros
+% include &ObjMemPath&ObjMemWin.cop
+
+% include &ObjMemPath&Common\RadixSort32.inc            ;Helper macros
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  RadixSortF32
-; Purpose:    Ascending sort of an array of single precision floats (REAL4) using a modified 
+; Purpose:    Ascending sort of an array of single precision floats (REAL4) using a modified
 ;             "4 passes radix sort" algorithm.
 ; Arguments:  Arg1: -> Array of single precision floats.
 ;             Arg2: Number of single precision floats contained in the array.
@@ -35,7 +35,7 @@ align ALIGN_CODE
 RadixSortF32 proc pArray:POINTER, dCount:DWORD, pWorkArea:POINTER
   push ebx
   mov ebx, [esp + 12]                                   ;dCount
-  shl ebx, 2                                            ;ebx = Array size in bytes
+  shl ebx, 2                                            ;ebx = Array size in BYTEs
   .if ZERO?
     mov eax, TRUE
   .else

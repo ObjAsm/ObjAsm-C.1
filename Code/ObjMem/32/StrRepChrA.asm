@@ -8,11 +8,19 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-
 TARGET_STR_TYPE = STR_TYPE_ANSI
-TARGET_STR_AFFIX textequ <A>
+% include &ObjMemPath&ObjMemWin.cop
+
 ProcName equ <StrRepChrA>
 
-% include &ObjMemPath&X\StrRepChr.asm
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  StrRepChrA
+; Purpose:    Create a new string filled with a given char.
+; Arguments:  Arg1: Used character.
+;             Arg2: Repetition count.
+; Return:     eax -> New string or NULL if failed.
+
+% include &ObjMemPath&Common\StrRepChr_TXP.inc
 
 end

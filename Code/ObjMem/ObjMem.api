@@ -9,21 +9,29 @@ MemZero, pMem, dSize
 StrAlloc, dChars
 StrAllocA, dChars
 StrAllocW, dChars
+StrAllocA_UEFI, dChars
+StrAllocW_UEFI, dChars
 BStrAlloc, dChars
 
 StrNew, pString
 StrNewA, pStringW
 StrNewW, pStringA
+StrNewA_UEFI, pStringW
+StrNewW_UEFI, pStringA
 BStrNew, pBStr
 
 StrCNew, pString, dChars
 StrCNewA, pStringA, dChars
 StrCNewW, pStringW, dChars
+StrCNewA_UEFI, pStringA, dChars
+StrCNewW_UEFI, pStringW, dChars
 BStrCNew, pBStr, dChars
 
 StrDispose, pString
 StrDisposeA, pStringA
 StrDisposeW, pStringW
+StrDisposeA_UEFI, pStringA
+StrDisposeW_UEFI, pStringW
 BStrDispose, pBStr
 
 StrLength, pString
@@ -269,6 +277,14 @@ sdword2dec, pDecString, sdword
 sdword2decA, pDecStringA, sdword
 sdword2decW, pDecStringW, sdword
 
+byte2hex, pHexString, byte
+byte2hexA, pHexStringA, byte
+byte2hexW, pHexStringW, byte
+
+word2hex, pHexString, word
+word2hexA, pHexStringA, word
+word2hexW, pHexStringW, word
+
 dword2hex, pHexString, dword
 dword2hexA, pHexStringA, dword
 dword2hexW, pHexStringW, dword
@@ -340,6 +356,8 @@ bin2xwordW, pStringW
 xword2binW, pStringW, xword
 sxword2decW, pStringW, sxword
 uxword2decW, pStringW, uxword
+xword2decA, pStringA, uxword
+xword2decW, pStringW, uxword
 
 ActivatePrevInstance, pStringID, pClassName
 ActivatePrevInstanceA, pStringIDA, pClassNameA
@@ -399,6 +417,7 @@ Mem2HexW, pHexStringW, pMemory, dCount
 
 GetFileLines, hFile
 GetFileLinesA, hFile
+GetFileLinesW, hFile
 
 SetPrivilegeToken, hProcess, pPrivilegeName, dEnable
 SetPrivilegeTokenA, hProcess, pPrivilegeNameA, dEnable
@@ -420,6 +439,12 @@ GetOS
 ComEventsAdvice, pISrcAny, pISinkUnk, pIID, ppICP, pCookie
 ComEventsUnadvice, pICP, dPrvCookie
 ComPtrAssign, ppOldInterface, pNewInterface
+ComGetErrStrA, dErrorCode
+ComGetErrStrW, dErrorCode
+ComGetErrStr, dErrorCode
+UefiGetErrStrA, xErrorCode
+UefiGetErrStrW, xErrorCode
+UefiGetErrStr, xErrorCode
 CenterForm, dWindowSize, dScreenSize
 MoveWindowVisible, hWnd, sdXPos, sdYPos
 GetBottomWindow, hWnd
@@ -487,21 +512,51 @@ DbgConOpen
 DbgLogOpen
 DbgClose
 DbgOutCmd, bCommand, pData
-DbgOutText, pString
-DbgOutTextA, pStringA
-DbgOutTextW, pStringW
-DbgOutTextC, pString, dCount
-DbgOutTextCA, pStringA, dCount
-DbgOutTextCW, pStringW, dCount
+DbgOutText, pString, dColor, dEffects, pDestWndName
+DbgOutTextA, pStringA, dColor, dEffects, pDestWndName
+DbgOutTextW, pStringW, dColor, dEffects, pDestWndName
+DbgOutText_UEFI, pString, dColor, dEffects, pDestWndName
+DbgOutTextA_UEFI, pStringA, dColor, dEffects, pDestWndName
+DbgOutTextW_UEFI, pStringW, dColor, dEffects, pDestWndName
+DbgOutTextC, pString, dCount, dColor, dEffects, pDestWndName
+DbgOutTextCA, pStringA, dCount, dColor, dEffects, pDestWndName
+DbgOutTextCW, pStringW, dCount, dColor, dEffects, pDestWndName
+DbgOutTextC_UEFI, pString, dCount, dColor, dEffects, pDestWndName
+DbgOutTextCA_UEFI, pStringA, dCount, dColor, dEffects, pDestWndName
+DbgOutTextCW_UEFI, pStringW, dCount, dColor, dEffects, pDestWndName
 DbgOutBitmap, hBitmap, pDestWndName
-DbgOutMem, pMemory, dCount, dType, pDestWndName
-DbgOutFPU, pDestWndName
+DbgOutMem, pMemory, dCount, dType, dMemColor, dRepColor, pDestWndName
+DbgOutMem_UEFI, pMemory, dCount, dType, dColor, pDestWndName
 DbgOutMsg, dMsgID, dColor, pDestWndName
 DbgOutApiErr, dError, pDestWndName
 DbgOutComErr, dError, pDestWndName
-DbgOutInterface, pGUID, dCplor, pDestWndName
-DbgOutInterfaceName, pGUID, dCplor, pDestWndName
-DbgOutComponent, pGUID, dCplor, pDestWndName
-DbgOutComponentName, pGUID, dCplor, pDestWndName
-DbgShowObjectHeader, pObjectName, pInstance, pDestWndName
+DbgOutInterface, pGUID, dColor, pDestWndName
+DbgOutInterfaceName, pGUID, dColor, pDestWndName
+DbgOutComponent, pGUID, dColor, pDestWndName
+DbgOutComponentName, pGUID, dColor, pDestWndName
+DbgShowObjectHeader, pObjectName, pInstance, dColor, pDestWndName
+DbgShowObjectHeader_UEFI, pObjectName, pInstance, dColor, pDestWndName
 DbgShowTraceMethod, pMName, dCount, pTicks, pDestWndName
+DbgOutFPU, pDestWndName, dColor
+DbgOutFPU_UEFI, pDestWndName, dColor
+
+RGB24To16ColorIndex, dColor
+
+MemAlloc_UEFI, dMemSize
+MemReAlloc_UEFI, pBuffer, dMemSize, dNewMemSize, dAttributes
+MemFree_UEFI, pBuffer
+
+SLR_Init, PSRL_DATA
+SLR_Calc_AB_DW, PSRL_DATA
+SLR_Calc_AB_QW, PSRL_DATA
+SLR_Calc_AB_R4, PSRL_DATA
+SLR_Calc_AB_R8, PSRL_DATA
+SLR_Calc_AB_MSE_DW, PSRL_DATA
+SLR_Calc_AB_MSE_QW, PSRL_DATA
+SLR_Calc_AB_MSE_R4, PSRL_DATA
+SLR_Calc_AB_MSE_R8, PSRL_DATA
+
+CalcVarianceDW, pArray, xCount, pVariance
+CalcVarianceQW, pArray, xCount, pVariance
+CalcVarianceR4, pArray, xCount, pVariance
+CalcVarianceR8, pArray, xCount, pVariance

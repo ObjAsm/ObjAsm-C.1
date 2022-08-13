@@ -23,7 +23,7 @@
 ; Purpose:    Place an ANSI string in the .const, .data or .code segment.
 ; Arguments:  Arg1: Reference name (optional).
 ;             Arg2: Quoted string text.
-; Returns:    Nothing / Reference to the string.
+; Return:     Nothing / Reference to the string.
 
 StringA macro StrName, QuotedText:vararg
   $$StrStart = $
@@ -118,7 +118,7 @@ endm
 ; Macro:      $Ofs(C/T/D/J)StrA
 ; Purpose:    Place an ANSI string in the S_CONST, S_DATA or S_TEXT segment.
 ; Arguments:  Arg1: Quoted string text.
-; Returns:    String offset.
+; Return:     String offset.
 
 $OfsCStrA macro QuotedText:vararg
   local ??StrLocation

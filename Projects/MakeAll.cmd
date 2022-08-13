@@ -8,16 +8,18 @@ set FailCounter=0
 
 set BaseDir=%CD%
 if exist ~List~.txt del ~List~.txt
-dir /B /S /AD> ~List~.txt
+for /d %%a in ("%OBJASM_PATH%\Projects\32\*") do echo %%~fa>> ~List~.txt
+for /d %%a in ("%OBJASM_PATH%\Projects\64\*") do echo %%~fa>> ~List~.txt
+for /d %%a in ("%OBJASM_PATH%\Projects\x\*") do echo %%~fa>> ~List~.txt
 
 for /F "delims=¬" %%a in (~List~.txt) do (
-    cd "%%a"
-    if exist Make.cmd (
-      call Make.cmd
-      @echo.
-    ) else (
-      @echo "%%a" has no Make.cmd
-    )
+  cd "%%a"
+  if exist Make.cmd (
+    call Make.cmd
+    @echo.
+  ) else (
+    @echo "%%a" has no Make.cmd
+  )
 )
 
 cd %BaseDir%

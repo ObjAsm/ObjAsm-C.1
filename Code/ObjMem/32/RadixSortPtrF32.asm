@@ -8,11 +8,11 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
-% include &ObjMemPath&32\RadixSort.inc                  ;Helper macros
+% include &ObjMemPath&ObjMemWin.cop
+
+% include &ObjMemPath&Common\RadixSort32.inc            ;Helper macros
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  RadixSortPtrF32
 ; Purpose:    Ascending sort of an array of POINTERs to structures containing a
@@ -28,27 +28,27 @@
 ;               must be modified and stack probing must be included.
 ; Links:      - http://www.codercorner.com/RadixSortRevisited.htm
 ;             - http://en.wikipedia.org/wiki/Radix_sort
-;
-;
-;                array                          structures
-;
-;           ———————————————
-;          | addr Struc 1  | ———————————————————————————————————> —————————————  ——
-;          |———————————————|                                     |      ...    |   | Offset
-;          | addr Struc 2  | ————————————————————> ————————————— |—————————————| <—
-;          |———————————————|                      |      ...    || REAL4 Key 1 |
-;          |    ...        |                      |—————————————||—————————————|
-;          |———————————————|          ...         | REAL4 Key 2 ||      ...    |
-;          |               |                      |—————————————| —————————————
-;          |———————————————|                      |      ...    |
-;          | addr Struc N  | —————> —————————————  —————————————
-;           ———————————————        |      ...    |
-;                                  |—————————————|
-;                                  | REAL4 Key N |
-;                                  |—————————————|
-;                                  |      ...    |
-;                                   —————————————
-;
+;.
+;.
+;.               array                          structures
+;.
+;.          ———————————————
+;.         | addr Struc 1  | ———————————————————————————————————> —————————————  ——
+;.         |———————————————|                                     |      ...    |   | Offset
+;.         | addr Struc 2  | ————————————————————> ————————————— |—————————————| <—
+;.         |———————————————|                      |      ...    || REAL4 Key 1 |
+;.         |    ...        |                      |—————————————||—————————————|
+;.         |———————————————|          ...         | REAL4 Key 2 ||      ...    |
+;.         |               |                      |—————————————| —————————————
+;.         |———————————————|                      |      ...    |
+;.         | addr Struc N  | —————> —————————————  —————————————
+;.          ———————————————        |      ...    |
+;.                                 |—————————————|
+;.                                 | REAL4 Key N |
+;.                                 |—————————————|
+;.                                 |      ...    |
+;.                                  —————————————
+;.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE
@@ -57,7 +57,7 @@ align ALIGN_CODE
 RadixSortPtrF32 proc pArray:POINTER, dCount:DWORD, dOffset:DWORD, pWorkArea:POINTER
   push ebx
   mov ebx, [esp + 12]                                   ;dCount
-  shl ebx, 2                                            ;ebx = Array size in bytes
+  shl ebx, 2                                            ;ebx = Array size in BYTEs
   .if ZERO?
     mov eax, TRUE
   .else

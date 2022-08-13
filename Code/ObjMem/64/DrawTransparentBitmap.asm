@@ -8,15 +8,14 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 TBM_FIRSTPIXEL equ  80000000h
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DrawTransparentBitmap
-; Purpose:    Draws a bitmap with transparency on a device context.
+; Purpose:    Draw a bitmap with transparency on a device context.
 ; Arguments:  Arg1: DC HANDLE.
 ;             Arg2: Bitmap HANDLE to draw.
 ;             Arg3; X start position on DC.
@@ -24,7 +23,7 @@ TBM_FIRSTPIXEL equ  80000000h
 ;             Arg5: RGB transparent color. Use TBM_FIRSTPIXEL to indicate that the pixel in the
 ;                   upper left corner contains the transparent color.
 ; Return:     Nothing.
-; Notes:      Original source by microsoft.
+; Notes:      Original source by Microsoft.
 ;             "HOWTO: Drawing Transparent Bitmaps (Q79212)"
 ;             (http://support.microsoft.com/default.aspx?scid=kb;EN-US;q79212)
 ;             Transcribed by Ernest Murphy.

@@ -8,13 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 externdef h2dw_Tbl1:BYTE
 externdef h2dw_Tbl2:BYTE
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  hex2dwordW
 ; Purpose:    Load a WIDE string hexadecimal representation of a DWORD.

@@ -8,10 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure: BStrCCatChar
 ; Purpose:   Append a WIDE character to a BStr with length limitation.
@@ -25,7 +24,7 @@ OPTION EPILOGUE:NONE
 align ALIGN_CODE
 BStrCCatChar proc pDstBStr:POINTER, wChar:WORD, dMaxChars:DWORD
   mov ecx, [esp + 4]                                    ;ecx -> DstBStr
-  shl DWORD ptr [esp + 12], 1                           ;dMaxChars => bytes
+  shl DWORD ptr [esp + 12], 1                           ;dMaxChars => BYTEs
   mov edx, [ecx - 4]
   cmp edx, [esp + 12]                                   ;dMaxChars
   jae @F                                                ;Destination is full

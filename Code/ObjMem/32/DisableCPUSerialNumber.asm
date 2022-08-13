@@ -8,13 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DisableCPUSerialNumber
-; Purpose:    Disable the reading of the CPU serial number. 
+; Purpose:    Disable the reading of the CPU serial number.
 ; Arguments:  None.
 ; Return:     Nothing.
 

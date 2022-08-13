@@ -93,47 +93,49 @@ Method Primer.ErrorSet, uses xbx xdi xsi, dErrorCode:DWORD
 
   SetObject xsi
   m2m [xsi].dErrorCode, dErrorCode, eax
-  lea xbx, Msg
-  invoke GetObjectID, xsi
-  mov edi, eax
+  if TARGET_PLATFORM eq PLATFORM_WINDOWS
+    lea xbx, Msg
+    invoke GetObjectID, xsi
+    mov edi, eax
 
-  ;Output Object ID
-  invoke wsprintfA, xbx, $OfsCStrA("Object ID = %I32ut"), eax
-  invoke DbgOutTextA, xbx, DBG_COLOR_ERROR, DBG_EFFECT_NORMAL, offset(szDbgObjErr)
-  mov eax, edi
-
-  ;Search the object name using the object ID (rax) and if found, output it
-  mov xdi, pObjIDTableStart
-  xor ecx, ecx
-  .while ecx < dObjIDTableCount
-    .if [xdi] == eax
-      invoke wsprintfA, xbx, $OfsCStrA(" (%s)"), POINTER ptr [xdi + sizeof(DWORD)]
-      invoke DbgOutTextA, xbx, DBG_COLOR_COMMENT, DBG_EFFECT_NORMAL, offset(szDbgObjErr)
-      .break
-    .endif
-    add xdi, sizeof(DWORD) + sizeof(POINTER)            ;Object type ID + PSTRING
-    inc ecx
-  .endw
-
-  ;Output the error code
-  invoke wsprintfA, xbx, $OfsCStrA(", Error Code = %I32ut"), [xsi].dErrorCode
-  invoke DbgOutTextA, xbx, DBG_COLOR_ERROR, DBG_EFFECT_NORMAL, offset(szDbgObjErr)
-
-  ;Search the error code description and if found, output it
-  mov xdi, pObjErrTableStart
-  xor ecx, ecx
-  mov eax, [xsi].dErrorCode
-  .while ecx < dObjErrTableCount
-    .if [xdi] == eax
-      invoke wsprintfA, xbx, $OfsCStrA(" (%s)"), POINTER ptr [xdi + sizeof(DWORD)]
-      invoke DbgOutTextA, xbx, DBG_COLOR_COMMENT, DBG_EFFECT_NORMAL, offset(szDbgObjErr)
-      .break
-    .endif
-    add xdi, sizeof(DWORD) + sizeof(POINTER)            ;Object error ID + PSTRING
-    inc ecx
-  .endw
-
-  invoke DbgOutTextA, offset(bCRLF), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, offset(szDbgObjErr)
+    ;Output Object ID
+    invoke wsprintfA, xbx, $OfsCStrA("Object ID = %I32ut"), eax
+    invoke DbgOutTextA, xbx, DBG_COLOR_ERROR, DBG_EFFECT_NORMAL, offset(szDbgObjErr)
+    mov eax, edi
+  
+    ;Search the object name using the object ID (xax) and if found, output it
+    mov xdi, pObjIDTableStart
+    xor ecx, ecx
+    .while ecx < dObjIDTableCount
+      .if [xdi] == eax
+        invoke wsprintfA, xbx, $OfsCStrA(" (%s)"), POINTER ptr [xdi + sizeof(DWORD)]
+        invoke DbgOutTextA, xbx, DBG_COLOR_COMMENT, DBG_EFFECT_NORMAL, offset(szDbgObjErr)
+        .break
+      .endif
+      add xdi, sizeof(DWORD) + sizeof(POINTER)          ;Object type ID + PSTRING
+      inc ecx
+    .endw
+  
+    ;Output the error code
+    invoke wsprintfA, xbx, $OfsCStrA(", Error Code = %I32ut"), [xsi].dErrorCode
+    invoke DbgOutTextA, xbx, DBG_COLOR_ERROR, DBG_EFFECT_NORMAL, offset(szDbgObjErr)
+  
+    ;Search the error code description and if found, output it
+    mov xdi, pObjErrTableStart
+    xor ecx, ecx
+    mov eax, [xsi].dErrorCode
+    .while ecx < dObjErrTableCount
+      .if [xdi] == eax
+        invoke wsprintfA, xbx, $OfsCStrA(" (%s)"), POINTER ptr [xdi + sizeof(DWORD)]
+        invoke DbgOutTextA, xbx, DBG_COLOR_COMMENT, DBG_EFFECT_NORMAL, offset(szDbgObjErr)
+        .break
+      .endif
+      add xdi, sizeof(DWORD) + sizeof(POINTER)          ;Object error ID + PSTRING
+      inc ecx
+    .endw
+  
+    invoke DbgOutTextA, offset(bCRLF), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, offset(szDbgObjErr)
+  endif
 MethodEnd
 
 else

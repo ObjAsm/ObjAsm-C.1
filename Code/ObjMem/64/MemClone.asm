@@ -8,20 +8,19 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  MemClone
-; Purpose:    Copies a memory block from a source to a destination buffer.
+; Purpose:    Copy a memory block from a source to a destination buffer.
 ;             Source and destination must NOT overlap.
-;             Destination buffer must be at least as large as number of bytes to copy, otherwise a
+;             Destination buffer must be at least as large as number of BYTEs to copy, otherwise a
 ;             fault may be triggered.
 ; Arguments:  Arg1: -> Destination buffer.
 ;             Arg2: -> Source buffer.
-;             Arg3: Number of bytes to be copied.
-; Return:     eax = copied bytes.
+;             Arg3: Number of BYTEs to copy.
+; Return:     eax = Number of copied BYTEs.
 
 OPTION PROC:NONE
 align ALIGN_CODE

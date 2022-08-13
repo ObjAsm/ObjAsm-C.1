@@ -8,6 +8,18 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&X\GUID2StrA.asm
+TARGET_STR_TYPE = STR_TYPE_ANSI
+% include &ObjMemPath&ObjMemWin.cop
+
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  GUID2StrA
+; Purpose:    Convert a GUID to an ANSI string.
+; Arguments:  Arg1: -> Destination ANSI string buffer.
+;                   It must hold at least 36 characters plus a ZTC (= 37 BYTEs).
+;             Arg2: -> GUID.
+; Return:     Nothing.
+
+% include &ObjMemPath&Common\GUID2Str_AXP.inc
 
 end

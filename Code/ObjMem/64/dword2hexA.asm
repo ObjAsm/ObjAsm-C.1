@@ -8,20 +8,19 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 externdef HexCharTableA:CHRA
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  dword2hexA
-; Purpose:    Converts a DWORD to its hexadecimal ANSI string representation.
+; Purpose:    Convert a DWORD to its hexadecimal ANSI string representation.
 ; Arguments:  Arg1: -> Destination ANSI string buffer.
 ;             Arg2: DWORD value.
 ; Return:     Nothing.
-; Notes:      The destination buffer must be at least 9 bytes large to allocate the output string
-;             (8 character bytes + ZTC = 9 bytes).
+; Notes:      The destination buffer must be at least 9 BYTEs large to allocate the output string
+;             (8 character BYTEs + ZTC = 9 BYTEs).
 
 OPTION PROC:NONE
 align ALIGN_CODE

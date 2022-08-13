@@ -8,9 +8,8 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
-.code
 
 SetQword macro z
   mov rax, 0030003000300030h
@@ -30,14 +29,15 @@ SetQword macro z
   mov [rcx + z*sizeof(QWORD)], rax
 endm
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  qword2binW
-; Purpose:    Converts a QWORD to its binary WIDE string representation.
+; Purpose:    Convert a QWORD to its binary WIDE string representation.
 ; Arguments:  Arg1: -> Destination buffer.
 ;             Arg2: QWORD value.
 ; Return:     Nothing.
-; Notes:      The destination buffer must be at least 130 bytes large to allocate the output string
-;             (64 character words + ZTC = 130 bytes).
+; Notes:      The destination buffer must be at least 130 BYTEs large to allocate the output string
+;             (64 character WORDs + ZTC = 130 BYTEs).
 
 OPTION PROC:NONE
 align ALIGN_CODE

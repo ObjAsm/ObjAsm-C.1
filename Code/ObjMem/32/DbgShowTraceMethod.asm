@@ -8,17 +8,16 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgClose
-; Purpose:    Outputs trace information about a method.
+; Procedure:  DbgShowTraceMethod
+; Purpose:    Output trace information about a method.
 ; Arguments:  Arg1: -> Method Name.
 ;             Arg2: Method count.
 ;             Arg3: Method ticks.
-;             Arg4: -> Destination Window name.
+;             Arg4: -> Destination Window WIDE name.
 ; Return:     Nothing.
 
 align ALIGN_CODE

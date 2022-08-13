@@ -8,17 +8,16 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutTextCW
-; Purpose:    Sends a counted WIDE string to the debug output device.
+; Purpose:    Send a counted WIDE string to the debug output device.
 ; Arguments:  Arg1: -> Null terminated WIDE string.
 ;             Arg2: Maximal character count.
 ;             Arg3: Color value.
-;             Arg4: Effect value (DBG_EFFECT_XXX)
+;             Arg4: Effect value (DBG_EFFECT_XXX).
 ;             Arg5: -> Destination Window WIDE name.
 ; Return:     Nothing.
 
@@ -39,7 +38,7 @@ DbgOutTextCW proc pStringW:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD,
   .endif
 
   mov eax, dDbgDev
-  .if eax == DBG_DEV_LOG
+  .if eax == DBG_DEV_WIN_LOG
     invoke DbgLogOpen
     .if $invoke(DbgLogOpen)
       mov eax, dLength
@@ -50,7 +49,7 @@ DbgOutTextCW proc pStringW:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD,
       invoke WriteFile, hDbgDev, offset wCRLF, 4, NULL, NULL
     .endif
 
-  .elseif eax == DBG_DEV_CON
+  .elseif eax == DBG_DEV_WIN_CON
     .if $invoke(DbgConOpen)
       m2z wAttrib
       mov eax, dColor
@@ -86,7 +85,7 @@ DbgOutTextCW proc pStringW:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD,
       .endif
     .endif
 
-  .else                                                 ;DBG_DEV_WND
+  .else                                                 ;DBG_DEV_WIN_DC
     .if $invoke(DbgWndOpen)
       mov CDS.dwData, DGB_MSG_ID                        ;Set DebugCenter identifier
       mov eax, dLength                                  ;String length

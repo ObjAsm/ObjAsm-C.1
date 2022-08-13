@@ -166,7 +166,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=14
+MilestoneOnDateDate=8
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -202,7 +202,7 @@ ProductVer4Range=0
 
 [Size]
 2=1045,608,1045,304,233
-1=1045,304,1045,304,115
+1=1045,304,1045,304,576
 6=0,0,1456,414,66847
 4=0,0,0,0,229
 31=0,0,1213,691,1416
@@ -259,16 +259,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="cErrMsg"
-2="int 3"
-3="IsDelimiterChar"
-4="DbgDec [xsi].DrawExtent.x"
-5="GetSingleTVStyleName"
-6="IsBlankChar"
-7="IsStyleNameChar"
-8="BMP_BACKGROUND"
-9=".ifBitSet eax, TVIF_EXTENT_Y_SET"
-10=".Show"
+1="C:\_MySoftware_\ObjAsm\Code\Lib\64\ObjAsm\\ObjMem64.lib"
+2="cErrMsg"
+3="int 3"
+4="IsDelimiterChar"
+5="DbgDec [xsi].DrawExtent.x"
+6="GetSingleTVStyleName"
+7="IsBlankChar"
+8="IsStyleNameChar"
+9="BMP_BACKGROUND"
+10=".ifBitSet eax, TVIF_EXTENT_Y_SET"
 [Collapse]
 1=
 2=40973
@@ -386,7 +386,7 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,2,3,4,11
 [PTimer]
-PTimer=2117157251
+PTimer=2117240814
 [GroupExpand]
 GroupExpand=1,1,1,0,0,1,1,0
 [RADebugBP]

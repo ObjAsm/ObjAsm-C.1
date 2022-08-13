@@ -8,12 +8,11 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  StrCScanA
+; Procedure:  StrCPosA
 ; Purpose:    Scan for ANSI string2 into ANSI string1 with length limitation.
 ; Arguments:  Arg1: -> Source ANSI string.
 ;             Arg2: -> ANSI string to search for.
