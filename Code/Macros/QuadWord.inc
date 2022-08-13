@@ -20,7 +20,7 @@
 ; Purpose:    Transform 2 DoubleWords into a QuadWord.
 ; Arguments:  Arg1: High order DoubleWord.
 ;             Arg2: Low order DoubleWord.
-; Returns:    QUADWORD in edx::eax.
+; Return:     QUADWORD in edx::eax.
 
 
 $Quad macro dWrd1:req, dWrd2:req

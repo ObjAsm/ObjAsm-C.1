@@ -15,7 +15,7 @@
 ; Purpose:    Search for a specified EventID in the "Event Translation Table". If found,
 ;             the matching method is called, otherwise the default proc is invoked.
 ; Arguments:  Default procedure name and common parameters.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       - uses xsi -> object instance.
 ;             - the event handler receives the event ID (WM_XXX, ...) in eax.
 

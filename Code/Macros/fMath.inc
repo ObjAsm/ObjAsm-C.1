@@ -143,7 +143,7 @@ r10_NAN equ <07FF80000000000000000h>                    ;07FF80000000000000000h
 ; Macro:      fildReg
 ; Purpose:    Load a CPU register containing an integer onto the FPU stack.
 ; Arguments:  Arg1: Register name.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fildReg macro RegName:req
@@ -173,7 +173,7 @@ endm
 ; Macro:      fistReg
 ; Purpose:    Store the integer part of the FPU st(0) register to a CPU register.
 ; Arguments:  Arg1: Register name.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fistReg macro RegName:req
   if (opattr RegName) and OAT_REGISTER    ;;is RegName a register?
@@ -202,7 +202,7 @@ endm
 ; Macro:      fistpReg
 ; Purpose:    Store the integer part of the FPU st(0) register to a CPU register & pops it.
 ; Arguments:  Arg1: Register name.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fistpReg macro RegName:req
   if (opattr RegName) and OAT_REGISTER    ;;is RegName a register?
@@ -231,7 +231,7 @@ endm
 ; Macro:      fldReg
 ; Purpose:    Load a CPU register containing a REAL4 onto the FPU stack.
 ; Arguments:  Arg1: Register name.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fldReg macro RegName:req
@@ -261,7 +261,7 @@ endm
 ; Macro:      fstReg
 ; Purpose:    Store the FPU st(0) register to a CPU register in REAL4 format.
 ; Arguments:  Arg1: Register name.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fstReg macro RegName:req
   if (opattr RegName) and OAT_REGISTER                  ;;is RegName a register?
@@ -290,7 +290,7 @@ endm
 ; Macro:      fstpReg
 ; Purpose:    Store and pops the FPU st(0) register to a CPU register in REAL4 format.
 ; Arguments:  Arg1: Register name.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fstpReg macro RegName:req
   if (opattr RegName) and OAT_REGISTER                  ;;is RegName a register?
@@ -319,7 +319,7 @@ endm
 ; Macro:      fSgn
 ; Purpose:    Compute the signum function of the content os st0.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 ;             Requires .586 option for the fcomip instruction.
 ;             Uses rax register.
@@ -341,7 +341,7 @@ endm
 ; Macro:      fCheckStatus
 ; Purpose:    Check the status word of the FPU to detect fp computation errors.
 ; Arguments:  Arg1: Status bit(s) to be checked.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       The result affects the zero flag, that can be used to decide.
 
 fCheckStatus macro StatusBits:req
@@ -355,7 +355,7 @@ endm
 ; Macro:      fGetFlags
 ; Purpose:    Set EFlags with FPU StatusWord flags.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       Uses ax.
 
 fGetFlags macro
@@ -385,7 +385,7 @@ endm
 ; Macro:      fSetPrecision
 ; Purpose:    Set the precision bits in the control register.
 ; Arguments:  Arg1: Precision (REAL4, REAL8, REAL10).
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Notes:      00 = 24 bits (REAL4)
 ;             01 = Not used
 ;             10 = 53 bits (REAL8)
@@ -411,7 +411,7 @@ endm
 ; Purpose:    Compare two floats, returns the smaller value on the FPU.
 ; Arguments:  Arg1: first value.
 ;             Arg2: Second value.
-; Returns:    Smallest value in st(0).
+; Return:     Smallest value in st(0).
 ; Note:       Uses ax.
 ;             st7 must be empty.
 
@@ -433,7 +433,7 @@ endm
 ; Purpose:    Compare two floats, returns the larger on the FPU stack.
 ; Arguments:  Arg1: first value.
 ;             Arg2: Second value.
-; Returns:    Largest value in st(0).
+; Return:     Largest value in st(0).
 ; Note:       Uses ax.
 ;             st7 must be empty.
 
@@ -455,7 +455,7 @@ endm
 ; Purpose:    Compare two floats, returns the absolute smaller value on the FPU stack.
 ; Arguments:  Arg1: first value.
 ;             Arg2: Second value.
-; Returns:    Smallest absolute value in st(0).
+; Return:     Smallest absolute value in st(0).
 ; Note:       Uses ax.
 ;             st6 and st7 must be empty.
 
@@ -480,7 +480,7 @@ endm
 ; Purpose:    Compare two floats, returns the absolute larger value on the FPU.
 ; Arguments:  Arg1: first value.
 ;             Arg2: Second value.
-; Returns:    Largest absolute value in st(0).
+; Return:     Largest absolute value in st(0).
 ; Note:       Uses ax.
 ;             st6 and st7 must be empty.
 
@@ -504,7 +504,7 @@ endm
 ; Macro:      fRnd
 ; Purpose:    Round the content of st0.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fRnd macro
   sub xsp, @WordSize                                    ;;Reserve stack place
@@ -522,7 +522,7 @@ endm
 ; Macro:      fRndUp
 ; Purpose:    Round up the content of st0.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fRndUp macro
   sub xsp, @WordSize                                    ;;Reserve stack place
@@ -540,7 +540,7 @@ endm
 ; Macro:      fRndDn
 ; Purpose:    Round down the content of st0.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fRndDn macro
   sub xsp, @WordSize                                    ;;Reserve stack place for one word
@@ -558,7 +558,7 @@ endm
 ; Macro:      fInt
 ; Purpose:    Calculate the integer part of the content of st0.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fInt macro
   sub xsp, @WordSize                                    ;;Reserve stack place for one word
@@ -575,7 +575,7 @@ endm
 ; Macro:      fFrac
 ; Purpose:    Calculate the fractional part of the content of st0.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fFrac macro
@@ -588,7 +588,7 @@ endm
 ; Macro:      fRound
 ; Purpose:    Round the content of st0 to x decimals.
 ; Arguments:  Arg1: Decimals.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st5, st6 and st7 must be empty.
 
 fRound macro Decimals:=<0>
@@ -607,7 +607,7 @@ endm
 ; Macro:      fExp2
 ; Purpose:    Compute 2^x = 2^st0.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st5, st6 and st7 must be empty.
 
 fExp2 macro                     ;;st0      st1      st2
@@ -640,7 +640,7 @@ endm
 ; Macro:      fExpN
 ; Purpose:    Compute st(0) = e^st0.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st5, st6 and st7 must be empty.
 
 fExpN macro
@@ -653,7 +653,7 @@ endm
 ; Macro:      fLogN
 ; Purpose:    Calculate the neperian logarithm of st0 and store it in st0.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fLogN macro
@@ -666,7 +666,7 @@ endm
 ; Macro:      fExpT
 ; Purpose:    Compute st0 = 10^st0.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st5, st6 and st7 must be empty.
 
 fExpT macro
@@ -679,7 +679,7 @@ endm
 ; Macro:      fLogT
 ; Purpose:    Calculate the logarithm base 10 of st0 and sotres it in st0.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fLogT macro
@@ -692,7 +692,7 @@ endm
 ; Macro:      fPower
 ; Purpose:    Compute st0 = st0^st1 (x^y).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st5, st6 and st7 must be empty.
 
 fPower macro
@@ -707,7 +707,7 @@ endm
 ; Macro:      fLog
 ; Purpose:    Calculate the logarithm base st1 of st0 and store the result in st0.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st6 and st7 must be empty.
 ;             Log[st1](st0) = Log2(st0) / Log2(st1).
 
@@ -726,7 +726,7 @@ endm
 ; Macro:      fFitTrigRange
 ; Purpose:    Reduce the value in st0 to fit in the range of trig. functions: |x| < 2^63.
 ; Arguments:  st0.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st6 and st7 must be empty.
 ;             The result of fprem1 depends on the state of the FPU rounding bits.
 
@@ -748,7 +748,7 @@ endm
 ; Macro:      fTan
 ; Purpose:    Calculate st0 = tan(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fTan macro
@@ -760,7 +760,7 @@ endm
 ; Macro:      fSec
 ; Purpose:    Calculate st0 = Sec(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fSec macro
   fcos
@@ -771,7 +771,7 @@ endm
 ; Macro:      fCsc
 ; Purpose:    Calculate st0 = Csc(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fCsc macro
   fsin
@@ -782,7 +782,7 @@ endm
 ; Macro:      fCot
 ; Purpose:    Calculate st0 = Cot(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fCot macro
@@ -794,7 +794,7 @@ endm
 ; Macro:      fArcSin
 ; Purpose:    Calculate st0 = ArcSin(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fArcSin macro
@@ -809,7 +809,7 @@ endm
 ; Macro:      fArcCos
 ; Purpose:    Calculate st0 = ArcCos(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fArcCos macro
@@ -825,7 +825,7 @@ endm
 ; Macro:      fArcTan
 ; Purpose:    Calculate st0 = ArcTan(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fArcTan macro
@@ -837,7 +837,7 @@ endm
 ; Macro:      fArcSec
 ; Purpose:    Calculate st0 = ArcSec(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fArcSec macro
@@ -852,7 +852,7 @@ endm
 ; Macro:      fArcCsc
 ; Purpose:    Calculate st0 = ArcCsc(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fArcCsc macro
@@ -868,7 +868,7 @@ endm
 ; Macro:      fArcCot
 ; Purpose:    Calculate st0 = ArcCot(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fArcCot macro
@@ -881,7 +881,7 @@ endm
 ; Macro:      fSinh
 ; Purpose:    Calculate st0 = Sinh(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st5, st6 and st7 must be empty.
 
 fSinh macro
@@ -896,7 +896,7 @@ endm
 ; Macro:      fCosh
 ; Purpose:    Calculate st0 = Cosh(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st5, st6 and st7 must be empty.
 
 fCosh macro
@@ -911,7 +911,7 @@ endm
 ; Macro:      fTanh
 ; Purpose:    Calculate st0 = Tanh(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st5, st6 and st7 must be empty.
 
 fTanh macro
@@ -928,7 +928,7 @@ endm
 ; Macro:      fSech
 ; Purpose:    Calculate st0 = Sech(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st5, st6 and st7 must be empty.
 
 fSech macro
@@ -943,7 +943,7 @@ endm
 ; Macro:      fCsch
 ; Purpose:    Calculate st0 = Csch(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st5, st6 and st7 must be empty.
 
 fCsch macro
@@ -958,7 +958,7 @@ endm
 ; Macro:      fCoth
 ; Purpose:    Calculate st0 = Coth(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st5, st6 and st7 must be empty.
 
 fCoth macro
@@ -975,7 +975,7 @@ endm
 ; Macro:      fArcSinh
 ; Purpose:    Calculate st0 = ArcSinh(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fArcSinh macro
@@ -991,7 +991,7 @@ endm
 ; Macro:      fArcCosh
 ; Purpose:    Calculate st0 = ArcCosh(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fArcCosh macro
@@ -1007,7 +1007,7 @@ endm
 ; Macro:      fArcTanh
 ; Purpose:    Calculate st0 = ArcTanh(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fArcTanh macro
@@ -1023,7 +1023,7 @@ endm
 ; Macro:      fArcSech
 ; Purpose:    Calculate st0 = ArcSech(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fArcSech macro
@@ -1040,7 +1040,7 @@ endm
 ; Macro:      fArcCsch
 ; Purpose:    Calculate st0 = ArcCsch(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fArcCsch macro
@@ -1057,7 +1057,7 @@ endm
 ; Macro:      fArcCoth
 ; Purpose:    Calculate st0 = ArcCoth(st0).
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       st7 must be empty.
 
 fArcCoth macro
@@ -1073,7 +1073,7 @@ endm
 ; Macro:      fUnload
 ; Purpose:    Unload several stack registers
 ; Arguments:  Number of FPU registers.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fUnload macro NoRegs:=<1>
   repeat NoRegs
@@ -1088,7 +1088,7 @@ endm
 ;             Arg2: Number of padding bytes.
 ;             Arg3: Number of decimal places.
 ;             Arg4: Format flag (f_NOR or f_SCI)
-; Returns:    Operation code.
+; Return:     Operation code.
 ; Note:       st4, st5, st6 and st7 must be empty.
 ;             Destination buffer should have at least 20 bytes (add padding bytes)!
 
@@ -1101,7 +1101,7 @@ endm
 ; Purpose:    Load a string representation of a floating point number into
 ;             the st0 FPU register.
 ; Arguments:  Arg1: -> string.
-; Returns:    Operation code.
+; Return:     Operation code.
 ; Note:       st4, st5, st6 and st7 must be empty.
 
 fldStr macro pSource:req
@@ -1112,7 +1112,7 @@ endm
 ; Macro:      fjg
 ; Purpose:    Jump to label if the result of the previous fcom instruction indicates greater.
 ; Arguments:  Arg1: Destination label.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fjg macro DestinationLabel:req
   fGetFlags
@@ -1123,7 +1123,7 @@ endm
 ; Macro:      fjl
 ; Purpose:    Jump to label if the result of the previous fcom instruction indicates less.
 ; Arguments:  Arg1: Destination label.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fjl macro DestinationLabel:req
   fGetFlags
@@ -1134,7 +1134,7 @@ endm
 ; Macro:      fje
 ; Purpose:    Jump to label if the result of the previous fcom instruction indicates equal.
 ; Arguments:  Arg1: Destination label.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fje macro DestinationLabel:req
   fGetFlags
@@ -1145,7 +1145,7 @@ endm
 ; Macro:      fjne
 ; Purpose:    Jump to label if the result of the previous fcom instruction indicates not equal.
 ; Arguments:  Arg1: Destination label.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fjne macro DestinationLabel:req
   fGetFlags
@@ -1157,7 +1157,7 @@ endm
 ; Purpose:    Jump to label if the result of the previous fcom instruction indicates greater
 ;             or equal.
 ; Arguments:  Arg1: Destination label.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fjge macro DestinationLabel:req
   fGetFlags
@@ -1169,7 +1169,7 @@ endm
 ; Purpose:    Jump to label if the result of the previous fcom instruction indicates less
 ;             or equal.
 ; Arguments:  Arg1: Destination label.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fjle macro DestinationLabel:req
   fGetFlags
@@ -1181,7 +1181,7 @@ endm
 ; Purpose:    Jump to label if the result of the previous fcom instruction indicates that the
 ;             arguments are non-comparable.
 ; Arguments:  Arg1: Destination label.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 fjnc macro DestinationLabel:req
   fGetFlags
@@ -1193,7 +1193,7 @@ endm
 ; Purpose:    Fast way to compare REAL4 floats with sign using the CPU.
 ; Arguments:  Arg1: first comparand.
 ;             Arg2: Second comparand.
-; Returns:    Modified flags.
+; Return:     Modified flags.
 ; Note:       This macro distinguishes between -0.0 and +0.0!
 
 fcmp macro var1:req, var2:req

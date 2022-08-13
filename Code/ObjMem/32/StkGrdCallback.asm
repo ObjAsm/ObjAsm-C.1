@@ -24,7 +24,7 @@ CStr StkGrdMessage, "The application may be unstable.", 10, 13,\
 ;             It displays a MessageBox asking to abort. If yes, then Exitprocess is called
 ;             immediately.
 ; Arguments:  None.
-; Returns:    ZERO flag set if NO was pressed
+; Return:     ZERO flag set if NO was pressed
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

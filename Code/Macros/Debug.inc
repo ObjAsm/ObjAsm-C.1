@@ -171,7 +171,7 @@ endif
 ;             Critacal Section is passed to avoid racing conditions.
 ; Arguments:  Arg1: Handle the passed argument as a Value (FALSE) or a reference (TRUE).
 ;             Arg2: Var to be saved in rbx/ebx/bx/bl or the address of Var in xbx.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       On entry, the stack doesn't need to be aligned!
 
 DbgSaveContext macro VarIsRef:=<FALSE>, Var
@@ -269,7 +269,7 @@ endm
 ; Macro:      DbgLoadContext
 ; Purpose:    Load CPU & FPU registers & flags from stack and restores the original stack alignment.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 DbgLoadContext macro
   if TARGET_BITNESS eq 32
@@ -297,7 +297,7 @@ endm
 ; Purpose:    Set the global symbol ??DbgDstWnd.
 ; Arguments:  Arg1: Name of the child window of the Debug Center MDI target to which the information
 ;                   is directed.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 DbgSetDestWnd macro DestWnd
   local ??DestWnd                                       ;;Must be local
@@ -318,7 +318,7 @@ endm
 ; Macro:      DbgShowSrcInfo
 ; Purpose:    Output source line info on the debug device.
 ; Arguments:  Arg1: Optional destination Window name.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 DbgShowSrcInfo macro Dest:req
   ??DbgIndex = 0
@@ -344,7 +344,7 @@ endm
 ; Purpose:    Output additional text info on the debug device.
 ; Arguments:  Arg1: Text.
 ;             Arg2: Optional destination Window name.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 DbgShowTxtInfo macro Text, Dest
   ifnb <&Text>

@@ -62,7 +62,7 @@ CRLF  equ <13,10>
 ; Macro:      $Esc
 ; Purpose:    Convert escape sequences to the corresponding character codes.
 ; Arguments:  Arg1: Text.
-; Returns:    Processed text.
+; Return:     Processed text.
 ; Notes:      esc. seq.      code           symbol
 ;             --------------------------------------------------
 ;                 \:         21h            '!'
@@ -184,7 +184,7 @@ endm
 ; Purpose:    Repeat a character N times.
 ; Arguments:  Arg1: Character to repeat
 ;             Arg2: Character count.
-; Returns:    Quoted text.
+; Return:     Quoted text.
 ; Example:    CStrW wBlanks, $RepChr(< >, 15)
 
 $RepChr macro Char:req, Count:req
@@ -278,7 +278,7 @@ endm
 ; Macro:      $Ofs(C/T/D/J)Str
 ; Purpose:    Place an ANSI or UNICODE string in the CONST, _DATA or _TEXT Segment.
 ; Arguments:  Arg1: Quoted string text.
-; Returns:    String offset.
+; Return:     String offset.
 
 $OfsCStr macro QuotedText:vararg
   if TARGET_STR_TYPE eq STR_TYPE_WIDE
@@ -316,7 +316,7 @@ endm
 ; Macro:      $PCG_RndChr
 ; Purpose:    Return at assembly-time a randomly generated (PCG) character value.
 ; Arguments:  None.
-; Returns:    Character value.
+; Return:     Character value.
 
 ;Initial state
 PCG32_STATE = @CatStr(@SubStr(%@Time, 1, 2), @SubStr(%@Time, 4, 2), @SubStr(%@Time, 7, 2), @SubStr(%@Date, 1, 2), @SubStr(%@Date, 4, 2))
@@ -347,7 +347,7 @@ endm
 ; Purpose:    Return at assembly-time a randomly generated (PCG) string in const segment.
 ;             On each run of the macro, a new string is generated
 ; Arguments:  Arg1: String length in chars.
-; Returns:    String location.
+; Return:     String location.
 ; Example:    DbgWriteF ,, "¦ST", offset $PCG_RndStr(64)
 
 $PCG_RndStr macro n

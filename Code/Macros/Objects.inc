@@ -2953,7 +2953,7 @@ endm
 ;                         |          |       |
 ;                      ??Pos1     ??Pos2  ??Pos3
 ; Arguments:  Arg1: Expression of the form: "InsName::NameSpace:ObjName.MtdName"
-; Returns:    ??Pos1, ??Pos2 & ??Pos3.
+; Return:     ??Pos1, ??Pos2 & ??Pos3.
 
 PreParseExpr macro Expression:req
   ??InsExpr textequ <>
@@ -2991,7 +2991,7 @@ endm
 ; Macro:      $ParseMtdExpr
 ; Purpose:    Parse an input expression for address macros.
 ; Arguments:  Arg1: Expression of the form: "InsName::NameSpace:ObjName.MtdName"
-; Returns:    TRUE if the parsing was successful, otherwise FALSE.
+; Return:     TRUE if the parsing was successful, otherwise FALSE.
 ;             ??InsExpr, ??ObjExpr, ??MtdExpr. (??ObjExpr and ??MtdExpr are mangled).
 ; Notes:      The challange from this macro is to avoid symbol expansion. E.g. GetObject is the name
 ;             of a well known api. When we use it as the name of a method, it will get expanded to
@@ -3063,7 +3063,7 @@ endm
 ; Macro:      $ParseCallExpr
 ; Purpose:    Parse an input expression for ?Call macros.
 ; Arguments:  Arg1: Expression of the form: "InsName::NameSpace:ObjName.MtdName"
-; Returns:    TRUE if the parsing was successful, otherwise FALSE.
+; Return:     TRUE if the parsing was successful, otherwise FALSE.
 ;             ??InsExpr, ??ObjExpr, ??MtdExpr. (??ObjExpr and ??MtdExpr are mangled).
 ; Notes:      The challange from this macro is to avoid symbol expansion. E.g. GetObject is the name
 ;             of a well known api. When we use it as the name of a method, it will get expanded to
@@ -3165,7 +3165,7 @@ endm
 ; Macro:      $ParseInstExpr
 ; Purpose:    Parse an input expression for some Debug macros.
 ; Arguments:  Arg1: Expression of the form: "InsName::NameSpace:ObjName.MtdName"
-; Returns:    TRUE if the parsing was successful, otherwise FALSE.
+; Return:     TRUE if the parsing was successful, otherwise FALSE.
 ;             ??InsExpr, ??ObjExpr, ??MtdExpr. (??ObjExpr and ??MtdExpr are mangled).
 ; Notes:      Possible syntax combinations:
 ;               - Ins::Nsp:Obj
@@ -3207,7 +3207,7 @@ endm
 ; Macro:      $ParseObjExpr
 ; Purpose:    Parse an input expression for Object macro.
 ; Arguments:  Arg1: Expression of the form: "NameSpace:ObjName"
-; Returns:    TRUE if the parsing was successful, otherwise FALSE.
+; Return:     TRUE if the parsing was successful, otherwise FALSE.
 ;             ??ObjExpr (mangled).
 ; Notes:      The challange from this macro is to avoid symbol expansion. E.g. GetObject is the name
 ;             of a well known api. When we use it as the name of a method, it will get expanded to

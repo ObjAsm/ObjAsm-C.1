@@ -63,7 +63,7 @@ endm
 ;             Arg4: Method type.
 ;             Arg5: Return value type.
 ;             Arg6: Method argument types.
-; Returns:    Nothing
+; Return:     Nothing
 
 DEFINE_COM_MTD_DSP macro IName, MName:req, DispID:req, MtdType:req, RetType, Args:vararg
   $$ArgTypes textequ <>
@@ -92,7 +92,7 @@ endm
 ;             automatically onto stack.
 ; Arguments:  Arg1: pInterface::Interface.Method
 ;             Arg2: Method arguments
-; Returns:    eax = Method return value.
+; Return:     eax = Method return value.
 ;             ecx = Argument index if an error happened.
 
 COM_AutoDispatch macro Cast:req, Args:vararg
@@ -123,7 +123,7 @@ endm
 ; Arguments:  Arg1: pInterface::Interface.Method
 ;             Arg2: -> Method last variant argument.
 ;             Arg3: -> Return Variant.
-; Returns:    eax = Method return value.
+; Return:     eax = Method return value.
 ;             ecx = Argument index if an error happened.
 
 COM_Dispatch macro Cast:req, pVarArgs:=<NULL>, pVarRet:=<NULL>

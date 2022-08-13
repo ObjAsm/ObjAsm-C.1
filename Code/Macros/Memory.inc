@@ -127,7 +127,7 @@ POCTOWORD typedef OCTOWORD
 ; Arguments:  Arg1: Name.
 ;             Arg2: Type.
 ;             Arg3: Initial value.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 Static macro VarName:req, VarType:req, VarIni:=<?>
   .data
@@ -141,7 +141,7 @@ endm
 ; Arguments:  Arg1: Memory block size. For Windows muust be less than 7FFF8h.
 ;             Arg2: Optional memory allocation flags:
 ;                   MEM_DEFAULT, MEM_INIT_ZERO, MEM_GENERATE_EXEPTION, MEM_NO_SERIALIZE.
-; Returns:    xax -> allocated memory block. NULL or exception if failed.
+; Return:     xax -> allocated memory block. NULL or exception if failed.
 ;             UEFI returns an mem block aligned to 8.
 
 MEM_DEFAULT             equ   0
@@ -186,7 +186,7 @@ endm
 ;             Arg2: New memory block size.
 ;             Arg3: Optional memory allocation flags:
 ;                   MEM_INIT_ZERO, MEM_GENERATE_EXEPTION, MEM_NO_SERIALIZE, MEM_NO_MOVE
-; Returns:    rax -> allocated memory block. NULL or exception if failed.
+; Return:     rax -> allocated memory block. NULL or exception if failed.
 
 MemReAlloc macro MemPtr:req, MemSize:req, Flags:=<0>
   if TARGET_PLATFORM eq PLATFORM_WINDOWS
@@ -224,7 +224,7 @@ endm
 ; Purpose:    Free a memory block previously allocated with MemAlloc or MemReAlloc.
 ; Arguments:  Arg1: -> allocated memory block.
 ;             Arg2: Optional memory allocation flags: MEM_NO_SERIALIZE, MEM_SAFE_FREE
-; Returns:    eax = TRUE if succeeded, otherwise FALSE.
+; Return:     eax = TRUE if succeeded, otherwise FALSE.
 
 MemFree macro MemPtr:req, Flags:=<0>
   if TARGET_PLATFORM eq PLATFORM_WINDOWS
@@ -274,7 +274,7 @@ endm
 ; Macro:      MemCheck
 ; Purpose:    Validates a memory block on the process heap.  
 ; Arguments:  Arg1: -> allocated memory block. If NULL, the whole heap is checked.
-; Returns:    eax = non FALSE if succeeded, otherwise FALSE.
+; Return:     eax = non FALSE if succeeded, otherwise FALSE.
 
 MemCheck macro MemPtr:=<NULL>
   if DEBUGGING
@@ -290,7 +290,7 @@ endm
 ; Purpose:    Reset a bit in a value.
 ; Arguments:  Arg1: Destination.
 ;             Arg2: Bit to be reset (ie: BIT12)
-; Returns:    Nothing.
+; Return:     Nothing.
 
 BitClear macro Val:req, Bit:req
   and Val, not (Bit)
@@ -308,7 +308,7 @@ xBitClr equ <xBitClear>
 ; Purpose:    AND a bit in a value.
 ; Arguments:  Arg1: Destination.
 ;             Arg2: Bit to be masked (ie: BIT12)
-; Returns:    Nothing.
+; Return:     Nothing.
 
 BitMask macro Val:req, Bit:req
   and Val, (Bit)
@@ -326,7 +326,7 @@ xBitMsk equ <xBitMask>
 ; Purpose:    Set a bit in a value.
 ; Arguments:  Arg1: Destination.
 ;             Arg2: Bit to be set (ie: BIT15)
-; Returns:    Nothing.
+; Return:     Nothing.
 
 BitSet macro Val:req, Bit:req
   or Val, (Bit)
@@ -341,7 +341,7 @@ endm
 ; Purpose:    Toggle a bit in a value.
 ; Arguments:  Arg1: Destination.
 ;             Arg2: Bit to be toggled (ie: BIT15)
-; Returns:    Nothing.
+; Return:     Nothing.
 
 BitToggle macro Val:req, Bit:req
   xor Val, (Bit)
@@ -360,7 +360,7 @@ xBitTog equ <xBitToggle>
 ;             Examine if any of the indicated bits are set.
 ; Arguments:  Arg1: Bit holding variable.
 ;             Arg2: Bit to be tested for (ie: BIT12)
-; Returns:    Nothing.
+; Return:     Nothing.
 
 .ifBitSet macro Var:req, Bit:req
   .if (Var & (Bit))
@@ -374,7 +374,7 @@ endm
 ;             Examine if any of the indicated bits are set.
 ; Arguments:  Arg1: Bit holding variable.
 ;             Arg2: Bit to be tested for (ie: BIT12)
-; Returns:    Nothing.
+; Return:     Nothing.
 
 .elseIfBitSet macro Var:req, Bit:req
   .elseif (Var & (Bit))
@@ -388,7 +388,7 @@ endm
 ;             Examine if all of the indicated bits are not set.
 ; Arguments:  Arg1: Bit holding variable.
 ;             Arg2: Bit to be tested for (ie: BIT12)
-; Returns:    Nothing.
+; Return:     Nothing.
 
 .ifBitClr macro Var:req, Bit:req
   .if !(Var & (Bit))
@@ -402,7 +402,7 @@ endm
 ;             Examine if all of the indicated bits are not set.
 ; Arguments:  Arg1: Bit holding variable.
 ;             Arg2: Bit to be tested for (ie: BIT12)
-; Returns:    Nothing.
+; Return:     Nothing.
 
 .elseIfBitClr macro Var:req, Bit:req
   .elseif !(Var & (Bit))
@@ -415,7 +415,7 @@ endm
 ; Purpose:    Jump if a bit is set.
 ; Arguments:  Arg1: Bit holding variable.
 ;             Arg2: Bit to be tested for (ie: BIT12)
-; Returns:    Nothing.
+; Return:     Nothing.
 
 JmpIfBitSet macro Var:req, Bit:req, Location:req
   test Var, (Bit)
@@ -427,7 +427,7 @@ endm
 ; Purpose:    Jump if a bit is not set.
 ; Arguments:  Arg1: Bit holding variable.
 ;             Arg2: Bit to be tested for (ie: BIT12)
-; Returns:    Nothing.
+; Return:     Nothing.
 
 JmpIfBitClr macro Var:req, Bit:req, Location:req
   test Var, (Bit)
@@ -440,7 +440,7 @@ endm
 ; Arguments:  Arg1: Destination GUID.
 ;             Arg2: Source GUID.
 ;             Arg3: optional register to be used.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 if TARGET_BITNESS eq 32
   CloneGUID macro DstGUID:req, SrcGUID:req, AuxReg:=<>
@@ -460,7 +460,7 @@ endif
 ; Macro:      ($)StackAlloc
 ; Purpose:    Reserve a chunk of memory from stack.
 ; Arguments:  Arg1: Requested memory size in bytes.
-; Returns:    rax -> Buffer begin.
+; Return:     rax -> Buffer begin.
 ; Notes:      StackAlloc and StackFree must always be paired and no values ought remain in the stack
 ;             between these macros.
 ;             Stack probing is performed automatically.
@@ -546,7 +546,7 @@ endm
 ; Macro:      StackFree
 ; Purpose:    Release the reserved stack space with StackAlloc.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 StackFree macro
   pop xax

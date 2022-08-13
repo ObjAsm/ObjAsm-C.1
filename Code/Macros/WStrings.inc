@@ -39,7 +39,7 @@
 ; Purpose:    Place an WIDE string in the .const, .text, .data or .code segment.
 ; Arguments:  Arg1: Reference name (optional).
 ;             Arg2: Quoted string text.
-; Returns:    Nothing / Reference to the string.
+; Return:     Nothing / Reference to the string.
 ; Notes:      - Quotation marks can be used as usual. See example.
 ;             - Partial input strings can be separated by commas.
 ;             - Break input lines with "\".
@@ -240,7 +240,7 @@ endm
 ; Macro:      $Ofs(C/T/D/J)WStr
 ; Purpose:    Place an WIDE string in the S_CONST, S_TEXT, S_DATA segment.
 ; Arguments:  Arg1: Quoted string text.
-; Returns:    String offset.
+; Return:     String offset.
 
 $OfsCStrW macro QuotedText:vararg
   local ??StrLocation
@@ -298,7 +298,7 @@ UTF16LE_BOM     textequ <0FFh,0FEh>                     ;Little Endian  (used by
 ; Macro:      IsSurrogateHigh
 ; Purpose:    Check if the WIDE char is a high surrogate.
 ; Arguments:  Arg1: Wide character.
-; Returns:    ZERO? if character is a high surrogate.
+; Return:     ZERO? if character is a high surrogate.
 
 IsSurrogateHigh macro CharReg:req
   and CharReg, SURROGATE_MASK
@@ -309,7 +309,7 @@ endm
 ; Macro:      IsSurrogateLow
 ; Purpose:    Check if the WIDE char is a low surrogate.
 ; Arguments:  Arg1: Wide character.
-; Returns:    ZERO? if character is a low surrogate.
+; Return:     ZERO? if character is a low surrogate.
 
 IsSurrogateLow macro CharReg:req
   and CharReg, SURROGATE_MASK

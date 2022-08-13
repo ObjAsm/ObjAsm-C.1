@@ -162,7 +162,7 @@ xsp equ XSP
 ; Macro:      $ArgRev
 ; Purpose:    Return a reversed order version of a symbol list.
 ; Arguments:  Arg1: Symbol list.
-; Returns:    Reversed symbol list.
+; Return:     Reversed symbol list.
 
 $ArgRev macro ArgList:vararg
   $$RevList textequ <>
@@ -181,7 +181,7 @@ endm
 ; Macro:      PushAll
 ; Purpose:    Push recursively all arguments on stack.
 ; Arguments:  Arg1: List of arguments.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 PushAll macro ArgList:vararg
   $$EaxUsed = FALSE
@@ -281,7 +281,7 @@ endm
 ; Macro:      PopAll
 ; Purpose:    Pop a list of arguments of the stack.
 ; Arguments:  Arg1: List of arguments.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 PopAll macro ArgList:vararg
   %for $$Arg, <ArgList>
@@ -293,7 +293,7 @@ endm
 ; Macro:      PushAllRev
 ; Purpose:    Push all arguments on stack in reverse order.
 ; Arguments:  Arg1: List of arguments.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 PushAllRev macro ArgList:vararg
   PushAll $ArgRev(ArgList)
@@ -303,7 +303,7 @@ endm
 ; Macro:      PopAllRev
 ; Purpose:    Pop recursively all arguments on stack in reverse order.
 ; Arguments:  Arg1: List of arguments.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 PopAllRev macro ArgList:vararg
   $$ArgList textequ $ArgRev(ArgList)
@@ -318,7 +318,7 @@ endm
 ; Arguments:  Arg1: destination memory symbol.
 ;             Arg2: source constant value.
 ;             Arg3: register used to move the memory content. If not specified, r13 is used.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 c2m macro DstMem:req, SrcCst:req, AuxReg
   $$DstSize = type(DstMem)
@@ -353,7 +353,7 @@ endm
 ;             Arg2: Source memory symbol.
 ;             Arg3: Auxiliary register used to move the memory content.
 ;                   If not specified, the stack may be used.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 m2m macro DstMem:req, SrcMem:req, AuxReg
   $$DstSize = type(DstMem)
@@ -450,7 +450,7 @@ endm
 ; Arguments:  Arg1: destination memory symbol.
 ;             Arg2: source memory symbol.
 ;             Arg3: register used to move the memory content.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 mrm macro DstMem:req, SrcMem:req, AuxReg:req
   $$DstSize = type(DstMem)
@@ -516,7 +516,7 @@ endm
 ; Macro:      m2z
 ; Purpose:    Zero the content of a memory location.
 ; Arguments:  Arg1: Memory location.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       On older CPUs, like a PIII, "and DstMem, 0" is faster than "mov DstMem, 0".
 
 m2z macro DstMem:req
@@ -645,7 +645,7 @@ endm
 ;             register.
 ; Arguments:  Arg1: Case register.
 ;             Arg2: Jump labels.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Example:    JumpOn eax, @@10, @@20, @@30
 
 JumpOn macro RegName:req, Labels:vararg
@@ -681,7 +681,7 @@ endm
 ;             It doesn't work with QWORDs.
 ; Arguments:  Arg1: String to be filled.
 ;             Arg2: Text.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Example:    FillStringA myString, <Hello>
 
 FillStringA macro StrVar:req, Text:req
@@ -714,7 +714,7 @@ endm
 ;             It doesn't work with QWORDs.
 ; Arguments:  Arg1: String to be filled.
 ;             Arg2: Text.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Example:    FillStringB myString, <Hello>
 
 FillStringB macro StrVar:req, Text:req
@@ -744,7 +744,7 @@ endm
 ;             instructions.
 ; Arguments:  Arg1: String to be filled.
 ;             Arg2: Text.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Example:    FillStringW myString, <Hello>
 
 FillStringW macro StrVar:req, Text:req
@@ -782,7 +782,7 @@ endif
 ;             It doesn't work with QWORDs.
 ; Arguments:  Arg1: String to be filled.
 ;             Arg2: Text.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Example:    FillWordA myBuffer, <Hello>
 
 FillWordA macro StrVar:req, Text:req
@@ -813,7 +813,7 @@ endm
 ;             It doesn't work with QWORDs.
 ; Arguments:  Arg1: String to be filled.
 ;             Arg2: Text.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Example:    FillWordW myBuffer, <Hello>
 
 FillWordW macro StrVar:req, Text:req
@@ -849,7 +849,7 @@ endif
 ;             cmp DWORD/WORD/BYTE instructions.
 ; Arguments:  Arg1: Location containing the word to be compared.
 ;             Arg2: Text.
-; Returns:    In case that NoMatchLabel is not specified use the flags.
+; Return:     In case that NoMatchLabel is not specified use the flags.
 ;             ZERO? indicates that the word matches.
 ; Example:    DoesWordMatchA? myWord, <Hello>
 ;             DoesWordMatchA? myWord, !<  >
@@ -907,7 +907,7 @@ endm
 ;             cmp DWORD/WORD instructions.
 ; Arguments:  Arg1: Location containing the word to be compared.
 ;             Arg2: Text.
-; Returns:    In case that NoMatchLabel is not specified use the flags.
+; Return:     In case that NoMatchLabel is not specified use the flags.
 ;             ZERO? indicates that the word matches.
 ; Example:    DoesWordMatchW? myWord, <Hello>
 ;             DoesWordMatchW? myWord, !<  >
@@ -967,7 +967,7 @@ endif
 ;             cmp DWORD/WORD/BYTE instructions. The ZTC is included in the comparison.
 ; Arguments:  Arg1: Location containing the string to be compared.
 ;             Arg2: Text.
-; Returns:    In case that NoMatchLabel is not specified use the flags.
+; Return:     In case that NoMatchLabel is not specified use the flags.
 ;             Zero indicates that the word matches.
 ; Example:    DoesStringMatchA? myString, <Hello>
 
@@ -1025,7 +1025,7 @@ endm
 ;             cmp DWORD/WORD instructions. The ZTC is included in the comparison.
 ; Arguments:  Arg1: Location containing the string to be compared.
 ;             Arg2: Text.
-; Returns:    In case that NoMatchLabel is not specified use the flags.
+; Return:     In case that NoMatchLabel is not specified use the flags.
 ;             Zero indicates that the word matches.
 ; Example:    DoesStringMatchW? myString, <Hello>
 
@@ -1471,7 +1471,7 @@ endm
 ; Arguments:  Arg1: Character to be evaluated.
 ;             Arg2: Character type.
 ;             Arg3: (optional) Character table
-; Returns:    Flags. Zero indicates that the character is NOT of the char type.
+; Return:     Flags. Zero indicates that the character is NOT of the char type.
 ;             On return, al contains the tested character.
 ; Example:    IsCharTypeA? [myString+5], CharTypeText
 ;             .if $IsCharTypeA?([myString+5], CharTypeText)
@@ -1534,7 +1534,7 @@ endm
 ; Arguments:  Arg1: Index.
 ;             Arg2: First choise.
 ;             Arg3: Rest of choices.
-; Returns:    Choosen value.
+; Return:     Choosen value.
 
 Choose macro Index:req, Choise1:req, Choises:vararg
   local ChoiseCount, Choise
@@ -1668,7 +1668,7 @@ endm
 ; Macro:      $CReal??
 ; Purpose:    Create in memory a REAL4 constant. Repeated declarations use the same memory location.
 ; Arguments:  Arg1: Value of the floating point variable.
-; Returns:    Symbol of the declared REAL4 value.
+; Return:     Symbol of the declared REAL4 value.
 ; Note:       The $CReal?? macro are intended to avoid the creation of multiple instances of the same
 ;             floating point constant.
 
@@ -1869,7 +1869,7 @@ endm
 ; Macro:      $DReal??
 ; Purpose:    Declare a floating point variable as a vaiable.
 ; Arguments:  Arg1: Value of the floating point variable.
-; Returns:    Symbol of the floting point value.
+; Return:     Symbol of the floting point value.
 
 $DReal4 macro Value
   local Name
@@ -1898,7 +1898,7 @@ endm
 ; Arguments:  Arg1: First signed word.
 ;             Arg2: Second signed word.
 ;             Arg3: Optional destiantion register. Default is xax.
-; Returns:    DstReg/rax/eax/ax/al = Biggest signed value.
+; Return:     DstReg/rax/eax/ax/al = Biggest signed value.
 
 sMax macro Var1:req, Var2:req, DstReg:=<xax>
   $$Attribute = type(Var1)
@@ -1930,7 +1930,7 @@ endm
 ; Arguments:  Arg1: First signed word.
 ;             Arg2: Second signed word.
 ;             Arg3: Optional destiantion register. Default is xax.
-; Returns:    DstReg/rax/eax/ax/al = Smallest signed value.
+; Return:     DstReg/rax/eax/ax/al = Smallest signed value.
 
 sMin macro Var1:req, Var2:req, DstReg:=<xax>
   $$Attribute = type(Var1)
@@ -1962,7 +1962,7 @@ endm
 ; Arguments:  Arg1: First word.
 ;             Arg2: Second word.
 ;             Arg3: Optional destiantion register. Default is xax.
-; Returns:    DstReg/rax/eax/ax/al = Biggest value.
+; Return:     DstReg/rax/eax/ax/al = Biggest value.
 
 uMax macro Var1:req, Var2:req, DstReg:=<xax>
   $$Attribute = type(Var1)
@@ -1994,7 +1994,7 @@ endm
 ; Arguments:  Arg1: First value.
 ;             Arg2: Second value.
 ;             Arg3: Optional destiantion register. Default is xax.
-; Returns:    DstReg/rax/eax/ax/al = Smallest value.
+; Return:     DstReg/rax/eax/ax/al = Smallest value.
 
 uMin macro Var1:req, Var2:req, DstReg:=<xax>
   $$Attribute = type(Var1)
@@ -2024,7 +2024,7 @@ endm
 ; Macro:      $uMini / uMini
 ; Purpose:    Return the smallest of 2 values.
 ; Arguments:  Arg1: Default rax = a, rcx = b
-; Returns:    Reg1/rax/eax/ax/al = $uMini(a,b)
+; Return:     Reg1/rax/eax/ax/al = $uMini(a,b)
 ; Uses:       Default are rax, rcx, rdx (Reg2 and AuxReg are trashed).
 
 uMini macro Reg1:=<xax>, Reg2:=<xcx>, AuxReg:=<xdx>
@@ -2048,7 +2048,7 @@ endm
 ; Macro:      $uMaxi / uMaxi
 ; Purpose:    Return the maximum of 2 values.
 ; Arguments:  Arg1: Default rax = a, rcx = b
-; Returns:    Reg1/rax/eax/ax/al = $uMaxi(a,b)
+; Return:     Reg1/rax/eax/ax/al = $uMaxi(a,b)
 ; Uses:       Default are rax, rcx, rdx (Reg2 and AuxReg are trashed).
 
 uMaxi macro Reg1:=<xax>, Reg2:=<xcx>, AuxReg:=<xdx>
@@ -2072,7 +2072,7 @@ endm
 ; Macro:      $sMaxi / sMaxi
 ; Purpose:    Return the maximum of 2 signed values.
 ; Arguments:  rax = a, rdx = b
-; Returns:    rax/eax/ax/al = min(a,b), rdx/edx/dx/dl = max(a,b)
+; Return:     rax/eax/ax/al = min(a,b), rdx/edx/dx/dl = max(a,b)
 ; Uses:       rax, rdx.
 
 sMaxi macro Var1:req, Var2:req
@@ -2099,7 +2099,7 @@ endm
 ; Macro:      uMiniMaxi
 ; Purpose:    Return the minimum and maximun of 2 values.
 ; Arguments:  Reg1, Reg2
-; Returns:    Reg1 = min(Reg1, Reg2), Reg2 = max(Reg1, Reg2)
+; Return:     Reg1 = min(Reg1, Reg2), Reg2 = max(Reg1, Reg2)
 ; Uses:       Reg1, Reg2, AuxReg1, AuxReg2
 
 uMiniMaxi macro Reg1:=<xax>, Reg2:=<xbx>, AuxReg1:=<xcx>, AuxReg2:=<xdx>
@@ -2117,7 +2117,7 @@ endm
 ; Arguments:  Arg1: Reg1.
 ;             Arg2: Reg2.
 ;             Arg3: AuxReg.
-; Returns:    rax/eax/ax/al = (Reg1 + Reg2)/2.
+; Return:     rax/eax/ax/al = (Reg1 + Reg2)/2.
 ; Uses:       Default rax, rcx, rdx (AuxReg is trashed).
 ; Note:       This algorithm can not overflow!
 
@@ -2150,7 +2150,7 @@ endm
 ;             Arg3: Then value or register.
 ;             Arg4: Otherwise value or register.
 ;             Arg5: [optional] auxiliar register. Default edx.
-; Returns:    Register.
+; Return:     Register.
 
 LoadRegIfLessThan macro Reg:req, Than:req, Then:req, Otherwise:req, AuxReg:=<xdx>
   sub Reg, Than
@@ -2181,7 +2181,7 @@ endm
 ; Macro:      HiWord / $HiWord
 ; Purpose:    Retrieve the high WORD from a DWORD.
 ; Arguments:  Arg1: DWORD.
-; Returns:    eax = High WORD.
+; Return:     eax = High WORD.
 
 HiWord macro Value, Reg:=<xax>
   ifdifi <Value>, <Reg>
@@ -2202,7 +2202,7 @@ endm
 ; Macro:      LoWord / $LoWord
 ; Purpose:    Retrieve the low WORD from a DWORD.
 ; Arguments:  Arg1: DWORD.
-; Returns:    eax = Low WORD.
+; Return:     eax = Low WORD.
 
 LoWord macro Value, Reg:=<xax>
   ifdifi <Value>, <Reg>
@@ -2221,7 +2221,7 @@ endm
 ; Purpose:    Get the runtime address of the operand. Used in those cases where "addr" is not
 ;             allowed.
 ; Arguments:  Arg1: Operand.
-; Returns:    Memory address of operand.
+; Return:     Memory address of operand.
 
 $addr macro Operand:req
   lea xax, [Operand]
@@ -2233,7 +2233,7 @@ endm
 ; Purpose:    Push all arguments on stack in reverse order.
 ; Arguments:  Arg1: API name.
 ;             Arg2: List of arguments.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 PushArgsFor macro ProcName:req, ArgList:vararg
   $$Arg = (opattr ProcName) and OAT_LANGUAGE            ;;$$Arg = Calling convention
@@ -2448,7 +2448,7 @@ endm
 ; Purpose:    Accelerator macro that calls a procedure and returns its return value in eax.
 ; Arguments:  Arg1: Procedure name to be called.
 ;             Arg2: Procedure arguments.
-; Returns:    Return value of the procedure in eax.
+; Return:     Return value of the procedure in eax.
 
 $invoke macro Func:req, Args:vararg
   ifnb <Args>
@@ -2472,7 +2472,7 @@ endm
 ; Macro:      $call
 ; Purpose:    Call invocation that returns eax.
 ; Arguments:  Arg1: Procedure name.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 $call macro Func:req
   call Func
@@ -2484,7 +2484,7 @@ endm
 ; Purpose:    Compute a WORD value.
 ; Arguments:  Arg1: High order BYTE.
 ;             Arg2: Low order BYTE.
-; Returns:    DWORD value.
+; Return:     DWORD value.
 
 $MakeWord macro bHigh:=<0>, bLow:=<0>
   exitm <((bHigh shl 8) or bLow)>
@@ -2495,7 +2495,7 @@ endm
 ; Purpose:    Compute a DWORD value.
 ; Arguments:  Arg1: High order WORD.
 ;             Arg2: Low order WORD.
-; Returns:    DWORD value.
+; Return:     DWORD value.
 
 $MakeDWord macro wHigh:=<0>, wLow:=<0>
   exitm <((wHigh shl 16) or wLow)>
@@ -2505,7 +2505,7 @@ endm
 ; Macro:      IsPositive
 ; Purpose:    Return TRUE if the signed integer argument is >= 0, otherwise FALSE.
 ; Arguments:  Arg1: SDWORD
-; Returns:    TRUE or FALSE.
+; Return:     TRUE or FALSE.
 
 IsPositive macro Arg:req
   neg Arg
@@ -2516,7 +2516,7 @@ endm
 ; Macro:      IsNegative
 ; Purpose:    Return TRUE if the signed integer argument is < 0, otherwise FALSE.
 ; Arguments:  Arg1: SDWORD
-; Returns:    TRUE or FALSE.
+; Return:     TRUE or FALSE.
 
 IsNegative macro Arg:req
   shr Arg, 8*@WordSize - 1
@@ -2527,7 +2527,7 @@ endm
 ; Purpose:    Compute the most significant "1" bit in a DWORD.
 ; Arguments:  Arg1: Argument value in a register.
 ;             Arg2: (optional) Auxiliar register.
-; Returns:    Result in input register.
+; Return:     Result in input register.
 
 MSB32 macro Reg32:req, AuxReg:=<edx>
   ifidni <Reg32>, <AuxReg>
@@ -2552,7 +2552,7 @@ endm
 ; Purpose:    Compute the least significant "1" bit in a DWORD.
 ; Arguments:  Arg1: Argument value in a register.
 ;             Arg2: (optional) Auxiliar register.
-; Returns:    Result in input register.
+; Return:     Result in input register.
 
 LSB32 macro Reg32:req, AuxReg:=<edx>
   ifidni <Reg>, <AuxReg>
@@ -2569,7 +2569,7 @@ endm
 ; Purpose:    Compute the Next Largest Power of 2 of a DWORD.
 ; Arguments:  Arg1: Argument value in a register.
 ;             Arg2: (optional) Auxiliar register.
-; Returns:    Result in input register.
+; Return:     Result in input register.
 
 NLPo2 macro Reg32:req, AuxReg:=<edx>
   ifidni <Reg>, <AuxReg>
@@ -2591,7 +2591,7 @@ endm
 ; Purpose:    Count the number of "1"s in a DWORD.
 ; Arguments:  Arg1: Argument value in a register.
 ;             Arg2: (optional) Auxiliar register.
-; Returns:    Result in input register.
+; Return:     Result in input register.
 
 PopulationCount32 macro Reg32:req, AuxReg:=<edx>
   ifidni <Reg32>, <AuxReg>
@@ -2625,7 +2625,7 @@ endm
 ; Purpose:    Count the number of trailing "0"s in a DWORD.
 ; Arguments:  Arg1: Argument value in a register.
 ;             Arg2: (optional) Auxiliar register.
-; Returns:    Result in input register.
+; Return:     Result in input register.
 
 TZC32 macro Reg32:req, AuxReg:=<edx>
   ifidni <Reg32>, <AuxReg>
@@ -2642,7 +2642,7 @@ endm
 ; Purpose:    Reverse the bits in a DWORD.
 ; Arguments:  Arg1: Argument value in a register.
 ;             Arg2: (optional) Auxiliar register.
-; Returns:    Result in input register.
+; Return:     Result in input register.
 
 ReverseBits32 macro Reg32:req, AuxReg:=<edx>
   ifidni <Reg32>, <AuxReg>
@@ -2688,7 +2688,7 @@ endm
 ; Purpose:    Reverse the bits in a DWORD.
 ; Arguments:  Arg1: Input register value.
 ;             Arg2: Output regiter value.
-; Returns:    Result in input register.
+; Return:     Result in input register.
 ; Note:       Uses ecx.
 
 ReverseBitsShort32 macro Reg32In:req, Reg32Out:req
@@ -2708,7 +2708,7 @@ endm
 ;             Arg2: Bottom.
 ;             Arg3: Top.
 ;             Arg4: (optional) Auxiliar register.
-; Returns:    Value (Arg) is 0 if it is in range, otherwise -1.
+; Return:     Value (Arg) is 0 if it is in range, otherwise -1.
 ; Note:       Add an inc to Arg to the end of the macro to return TRUE or FALSE.
 
 IsInRange? macro Arg:req, Bot:req, Top:req, AuxReg:=<xdx>
@@ -2740,7 +2740,7 @@ endm
 ;             Arg2: Bottom
 ;             Arg3: Top
 ;             Arg4: (optional) Auxiliar register
-; Returns:    Value (Arg) is 0 if it is in range, otherwise -1.
+; Return:     Value (Arg) is 0 if it is in range, otherwise -1.
 ; Note:       Add an inc to Arg to the end of the macro to return TRUE or FALSE.
 
 IsNotBetween? macro Arg:req, Bot:req, Top:req, AuxReg:=<xdx>
@@ -3020,7 +3020,7 @@ endm
 ; Purpose:    Fill a memory range with zeros.
 ; Arguments:  Arg1: Mem to be filled.
 ;             Arg2: Mem size.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Example:    FillMemZero myString, 5
 
 FillMemZero macro Var:req, ByteCount:req
@@ -3049,7 +3049,7 @@ endm
 ; Arguments:  Arg1: Mem to be filled.
 ;             Arg2: Mem size.
 ;             Arg3: BYTE value.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 FillMemByte macro Var:req, ByteSize:req, ByteVal:req
   $$i = 0
@@ -3074,7 +3074,7 @@ endm
 ; Arguments:  Arg1: Mem to be filled.
 ;             Arg2: Mem size.
 ;             Arg3: WORD value.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 FillMemWord macro Var:req, ByteSize:req, WordVal:req
   $$i = 0
@@ -3092,7 +3092,7 @@ endm
 ; Macro:      SaveFpuContext
 ; Purpose:    Save the FPU context that can be restored using LoadFpuContext. FPU is reinitialized.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 SaveFpuContext macro FpuContext:= <>
   ifb <FpuContext>
@@ -3107,7 +3107,7 @@ endm
 ; Macro:      LoadFpuContext
 ; Purpose:    Reload the FPU context that was stored using SaveFpuContext.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 LoadFpuContext macro FpuContext:=<>
   ifb <FpuContext>
@@ -3123,7 +3123,7 @@ endm
 ; Purpose:    Return a subword according to the requested size.
 ; Arguments:  Arg1: Word type (signed or unsigned).
 ;             Arg2: Required size [1, 2, 4, 8].
-; Returns:    Word.
+; Return:     Word.
 
 $SubWord macro WordType:req, WordSize:req
   SubWord textequ <-|-QWORD-DWORD-WORD-BYTE-|-SQWORD-SDWORD-SWORD-SBYTE-|->
@@ -3177,7 +3177,7 @@ endm
 ; Purpose:    Return a subregister according to the requested size.
 ; Arguments:  Arg1: Register name.
 ;             Arg2: Required register size [1, 2, 4, 8] in bytes.
-; Returns:    Register.
+; Return:     Register.
 
 $SubReg macro Reg:req, RegSize:req
   SubRegs textequ <-|-RAX-EAX-AX-AL-|-RBX-EBX-BX-BL-|-RCX-ECX-CX-CL-|-RDX-EDX-DX-DL-|-RDI-EDI-DI-DIL-|-RSI-ESI-SI-SIL-|-RBP-EBP-BP-BPL-|-RSP-ESP-SP-SPL-|-R8-R8D-R8W-R8B-|-R9-R9D-R9W-R9B-|-R10-R10D-R10W-R10B-|-R11-R11D-R11W-R11B-|-R12-R12D-R12W-R12B-|-R13-R13D-R13W-R13B-|-R14-R14D-R14W-R14B-|-R15-R15D-R15W-R15B-|->
@@ -3231,7 +3231,7 @@ endm
 ; Purpose:    Return a mm subregister according to the requested size.
 ; Arguments:  Arg1: Register name.
 ;             Arg2: Required register size [16, 32, 64] (xmm, ymm, zmm) in bytes.
-; Returns:    Register.
+; Return:     Register.
 
 $SubRegMM macro Reg:req, RegSize:req
   $$RegMM textequ $Upper(Reg)
@@ -3256,7 +3256,7 @@ endm
 ; Macro:      $ChrReg
 ; Purpose:    Return a subregister according to the CHR size.
 ; Arguments:  Arg1: Register name.
-; Returns:    Register.
+; Return:     Register.
 
 $ChrReg macro Reg:req
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -3270,7 +3270,7 @@ endm
 ; Macro:      $64, $32, $16, $8
 ; Purpose:    Return a subregister according to the destination size.
 ; Arguments:  Arg1: Register name.
-; Returns:    Register.
+; Return:     Register.
 
 $64 macro Reg:req
   %exitm <$SubReg(Reg, 8)>
@@ -3295,7 +3295,7 @@ endm
 ;             The count is gattered from a system shared memory area known as KUSER_SHARED_DATA,
 ;             which is always at the same location (7FFE0000h) on Windows systems since NT.
 ; Arguments:  Arg1: (optional) Destination memory where the count should be stored (QWORD).
-; Returns:    rax = tick count.
+; Return:     rax = tick count.
 
 if TARGET_BITNESS eq 32
   GetInterruptTicks macro Dest
@@ -3324,7 +3324,7 @@ endif
 ; Macro:      $Log2
 ; Purpose:    Return the Log2 of a value at compile time.
 ; Arguments:  Arg1: Input value.
-; Returns:    Log value.
+; Return:     Log value.
 
 $Log2 macro Number:req
   $$Text textequ <>
