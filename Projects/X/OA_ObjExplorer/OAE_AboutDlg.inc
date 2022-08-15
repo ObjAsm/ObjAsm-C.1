@@ -197,7 +197,7 @@ Method DialogAbout.OnNotify, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
                              $OfsCStr("mailto:objasm@gmx.net"), \
                              NULL, NULL, SW_SHOW
       .elseif [xdi].TVNM_APP.dID == APP_HELP
-        invoke ExpandEnvironmentStrings, $OfsCStr("%OBJASM_PATH%\Help\ObjAsm_Vol-I.pdf"), \
+        invoke ExpandEnvironmentStrings, $OfsCStr("%OBJASM_PATH%\Help\ObjAsm_Reference_Volume-I.pdf"), \
                                          addr cFileName, lengthof(cFileName)
         invoke PdfView, [xsi].hWnd, addr cFileName, $OfsCStr("Debugging")
       .endif

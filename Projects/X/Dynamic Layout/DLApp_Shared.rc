@@ -1,4 +1,4 @@
-//RC-file created by Inc2RC from DLApp_Shared.inc on 2022-08-11, 23:45:49,51
+//RC-file created by Inc2RC from DLApp_Shared.inc on 2022-08-15, 23:31:02,22
 
 #define APP_TITLE "Dynamic Layout Application"
 #define ABOUT_TEXT "Dynamic Layout Application"
@@ -7,8 +7,8 @@
 #define VER_FILEVERSION_STR "1.0"
 #define VER_PRODUCTVERSION 1,0,0,0
 #define VER_PRODUCTVERSION_STR "1.0"
-#define BUILD_NUMBER 7
-#define BUILD_DATE_STR "2022-08-11"
+#define BUILD_NUMBER 8
+#define BUILD_DATE_STR "2022-08-15"
 #define BUILD_BITNESS 64
 #define BUILD_MODE RLS
 #define IDM_EXIT 1000

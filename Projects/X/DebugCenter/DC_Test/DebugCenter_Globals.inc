@@ -52,7 +52,7 @@ CStr szCalcPath,        "\Calc.exe"
 <<<<<<< HEAD
 CStr szHelpPath,        "\Help\ObjAsm.pdf"
 =======
-CStr szHelpPath,        "\Help\ObjAsm_Vol-I.pdf"
+CStr szHelpPath,        "\Help\ObjAsm_Reference_Volume-I.pdf"
 >>>>>>> 8d2d38cd8bdb1efa33cde2e2c978d5419f2baa29
 
 CStr szState,           "State"

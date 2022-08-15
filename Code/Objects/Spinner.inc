@@ -18,10 +18,11 @@ PSPINNER_STEP_DATA typedef ptr SPINNER_STEP_DATA
 ; Purpose: Implement an animated control, known as a spinner.
 
 Object Spinner, SpinnerID, WinPrimer
-;  RedefineMethod    Init,           POINTER, HWND
   VirtualMethod     AddBmpFromRes,      PSTRING
   VirtualMethod     AddBmpStripFromRes, PSTRING, DWORD
+  VirtualMethod     AddImageFromRes,    PSTRING
   VirtualMethod     Dispatch,           HWND, DWORD, WPARAM, LPARAM
+  RedefineMethod    Done
   VirtualMethod     Start,              DWORD
   StaticMethod      Startup
   VirtualMethod     Stop
@@ -38,6 +39,7 @@ Object Spinner, SpinnerID, WinPrimer
   DefineVariable    dTotalSteps,  DWORD,    0
   DefineVariable    dCurrentStep, DWORD,    0
   DefineVariable    pStepData,    PSPINNER_STEP_DATA, NULL
+  
 ObjectEnd
 
 
@@ -52,7 +54,8 @@ SPN_WND_SELF_INST equ BIT00
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Spinner.AddBmpFromRes
-; Purpose:    Arg1: Resource name.
+; Purpose:    Load a bitmap from the resource section and add it to the spinner resources.
+; Arguments   Arg1: -> Bitmap resource name.
 ; Return:     Nothing.
 
 Method Spinner.AddBmpFromRes, uses xbx xsi, pBmpName:PSTRING
@@ -100,9 +103,74 @@ Method Spinner.AddBmpFromRes, uses xbx xsi, pBmpName:PSTRING
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     Spinner.AddImageFromRes
+; Purpose:    Load a Image from the resource section and add it to the spinner resources.
+; Arguments   Arg1: -> Image resource name. Must be of type IMAGE = 2110.
+; Return:     Nothing.
+
+Method Spinner.AddImageFromRes, uses xbx xsi, pImageName:PSTRING
+  local hDC:HDC, Img:$Obj(Image)
+
+  SetObject xsi
+;  mov xbx, $invoke(LoadImage, hInstance, pImageName, IMAGE_BITMAP, 0, 0, 0)
+  New Img::Image
+  OCall Img::Image.Init, xsi
+  OCall Img::Image.LoadFromResW, pImageName
+  mov hDC, $invoke(GetDC, [xsi].hWnd)
+  OCall Img::Image.GetCompatibleBmp, hDC
+  invoke CopyImage, xax, IMAGE_BITMAP, 0, 0, LR_DEFAULTSIZE
+  mov xbx, xax
+  OCall Img::Image.Done
+  DbgBmp xbx
+  invoke ReleaseDC, [xsi].hWnd, hDC
+  mov edx, [xsi].dTotalSteps
+  .if edx == 0
+    mov eax, [xsi].dAllocIncr
+    mov ecx, sizeof(SPINNER_STEP_DATA)
+    mul ecx
+    MemAlloc eax
+    .if xax != NULL
+      mov [xsi].pStepData, xax
+      m2m [xsi].dAllocSteps, [xsi].dAllocIncr, ecx
+      mov [xax].SPINNER_STEP_DATA.hBmp, xbx
+      inc [xsi].dTotalSteps
+    .endif
+  .else
+    mov eax, [xsi].dAllocSteps
+    .if eax == edx
+      add eax, [xsi].dAllocIncr
+      mov ecx, sizeof(SPINNER_STEP_DATA)
+      mul ecx
+      MemReAlloc [xsi].pStepData, eax
+      .if xax != NULL
+        mov [xsi].pStepData, xax
+        mov eax, [xsi].dTotalSteps
+        mov ecx, sizeof(SPINNER_STEP_DATA)
+        mul ecx
+        add xax, [xsi].pStepData
+        mov [xax].SPINNER_STEP_DATA.hBmp, xbx
+        inc [xsi].dTotalSteps
+        mov edx, [xsi].dAllocIncr
+        add [xsi].dAllocSteps, edx
+      .endif
+    .else
+      mov eax, [xsi].dTotalSteps
+      mov ecx, sizeof(SPINNER_STEP_DATA)
+      mul ecx
+      add xax, [xsi].pStepData
+      mov [xax].SPINNER_STEP_DATA.hBmp, xbx
+      inc [xsi].dTotalSteps
+    .endif
+  .endif
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Spinner.AddBmpStripFromRes
-; Purpose:    .
-; Return:     eax = .
+; Purpose:    Load a bitmap strip from the resource section, split it into individual bitmaps and
+;             add them to the spinner resources.
+; Arguments   Arg1: -> Bitmap strip resource name.
+;             Arg2: Bitmap count in the strip.
+; Return:     Nothing.
 
 Method Spinner.AddBmpStripFromRes, uses xbx xsi, pBmpName:PSTRING, dCount:DWORD
   SetObject xsi
@@ -129,7 +197,9 @@ MethodEnd
 ; Return:     Nothing.
 
 Method Spinner.Done, uses xbx xdi xsi
+  DbgText "Spinner.Done"
   SetObject xsi
+  OCall xsi.Stop
   mov ebx, [xsi].dTotalSteps
   mov xdi, [xsi].pStepData
   test ebx, ebx
@@ -150,6 +220,7 @@ MethodEnd
 ; Return:     eax = Zero if handled.
 
 Method Spinner.OnTimer, uses xsi, wParam:WPARAM, lParam:LPARAM
+  DbgText "Spinner.OnTimer"
   SetObject xsi
   inc [xsi].dCurrentStep
   mov eax, [xsi].dCurrentStep
