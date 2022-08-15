@@ -8,11 +8,11 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
-% include &ObjMemPath&64\RadixSort.inc                  ;Helper macros
+% include &ObjMemPath&ObjMemWin.cop
+
+% include &ObjMemPath&Common\RadixSort64.inc            ;Helper macros
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  RadixSortPtrI32
 ; Purpose:    Ascending sort of an array of POINTERs to structures containing a SDWORD key using a
@@ -30,33 +30,33 @@
 ;               must be modified and stack probing must be included.
 ; Links:      - http://www.codercorner.com/RadixSortRevisited.htm
 ;             - http://en.wikipedia.org/wiki/Radix_sort
-;
-;
-;                array                          structures
-;
-;           ———————————————
-;          | addr Struc 1  | —————————————————————————————————————> ——————————————  ——
-;          |———————————————|                                       |      ...     |   | Offset
-;          | addr Struc 2  | —————————————————————> —————————————— |——————————————| <—
-;          |———————————————|                       |      ...     || SDWORD Key 1 |
-;          |    ...        |                       |——————————————||——————————————|
-;          |———————————————|          ...          | SDWORD Key 2 ||      ...     |
-;          |               |                       |——————————————| ——————————————
-;          |———————————————|                       |      ...     |
-;          | addr Struc N  | —————> ——————————————  ——————————————
-;           ———————————————        |      ...     |
-;                                  |——————————————|
-;                                  | SDWORD Key N |
-;                                  |——————————————|
-;                                  |      ...     |
-;                                   ——————————————
-;
+;.
+;.
+;.               array                          structures
+;.
+;.          ———————————————
+;.         | addr Struc 1  | —————————————————————————————————————> ——————————————  ——
+;.         |———————————————|                                       |      ...     |   | Offset
+;.         | addr Struc 2  | —————————————————————> —————————————— |——————————————| <—
+;.         |———————————————|                       |      ...     || SDWORD Key 1 |
+;.         |    ...        |                       |——————————————||——————————————|
+;.         |———————————————|          ...          | SDWORD Key 2 ||      ...     |
+;.         |               |                       |——————————————| ——————————————
+;.         |———————————————|                       |      ...     |
+;.         | addr Struc N  | —————> ——————————————  ——————————————
+;.          ———————————————        |      ...     |
+;.                                 |——————————————|
+;.                                 | SDWORD Key N |
+;.                                 |——————————————|
+;.                                 |      ...     |
+;.                                  ——————————————
+;.
 
 align ALIGN_CODE
 RadixSortPtrI32 proc uses rbx rdi rsi pArray:POINTER, dCount:DWORD, dOffset:DWORD, pWorkArea:POINTER
   ;rcx -> Array, edx = dCount, r8 = dOffset, r9 -> WorkArea
   mov ebx, edx                                          ;dCount
-  shl ebx, $Log2(@WordSize)                             ;ebx = Array size in bytes
+  shl ebx, $Log2(@WordSize)                             ;ebx = Array size in BYTEs
   .if ZERO?
     mov eax, TRUE
   .else

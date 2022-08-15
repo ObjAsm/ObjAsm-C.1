@@ -8,9 +8,7 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
-
-.code
+% include &ObjMemPath&ObjMemWin.cop
 
 NextCharW macro
   movzx edx, WORD ptr [ecx]
@@ -21,6 +19,7 @@ NextCharW macro
   rcl eax, 1
 endm
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  bin2dwordW
 ; Purpose:    Load an WIDE string binary representation of a DWORD.

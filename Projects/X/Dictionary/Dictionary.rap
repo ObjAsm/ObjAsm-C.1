@@ -19,7 +19,7 @@ Debug=0
 8=..\..\..\Code\Objects\ObjErrs.inc
 9=..\..\..\Code\Macros\System.inc
 10=Dictionary.rc
-11=..\..\..\Code\Objects\HashTable.inc
+11=..\..\..\Code\Objects\HashMap.inc
 12=..\..\..\Code\Objects\StopWatch.inc
 13=WordList.inc
 14=..\..\..\Code\Objects\SortedStrCollectionW.inc
@@ -78,7 +78,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Objects,Macros
 13=1
 14=6
 15=6
-16=7
+16=6
 17=6
 
 [VerInf]
@@ -110,7 +110,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=20
+MilestoneOnDateDate=22
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -147,7 +147,7 @@ ProductVer4Range=0
 [Size]
 2=0,0,1783,588,251
 3=0,0,0,0,63877
-1=0,0,0,0,900
+1=0,0,0,0,1855
 4=0,0,562,490,13453
 5=0,0,694,587,125600
 6=0,0,0,0,17768
@@ -155,9 +155,9 @@ ProductVer4Range=0
 7=0,0,0,0,1563
 9=0,0,0,0,70359
 10=0,0,0,0,125
-11=0,0,0,0,6135
+11=0,0,0,0,0
 12=
-16=0,0,0,0,432
+16=0,0,0,0,5148
 15=0,0,0,0,2524
 14=0,0,0,0,542
 13=0,0,0,0,885
@@ -180,16 +180,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="dBucketCount"
-2="NLPo2"
-3="xHash"
-4="popcnt"
-5="popcou"
-6="popco"
-7="popc"
-8="PHTL_ITEM"
-9="HTL_ITEM"
-10="SortedStrCollection"
+1="int 3"
+2="dBucketCount"
+3="NLPo2"
+4="xHash"
+5="popcnt"
+6="popcou"
+7="popco"
+8="popc"
+9="PHTL_ITEM"
+10="HTL_ITEM"
 [Collapse]
 1=
 4=
@@ -209,9 +209,9 @@ ProductVer4Range=0
 8=
 17=
 [AutoLoad]
-AutoLoad=1,11,16
+AutoLoad=1,16,11
 [PTimer]
-PTimer=973781809
+PTimer=990109949
 [GroupExpand]
 GroupExpand=1,1,1,0,0,1,1,0
 [RADebugBP]

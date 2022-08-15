@@ -8,10 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrLengthW
 ; Purpose:    Determine the length of a WIDE string not including the zero terminating character.
@@ -28,7 +27,7 @@ StrLengthW proc pStringW:POINTER
   and eax, 0FFFFFFFCh                                   ;Remove the last 2 bits to align the addr
   sub edx, eax                                          ;edx = 0..3
   mov ecx, DWORD ptr [eax]
-  jmp @@JmpTableW[sizeof(POINTER)*edx]                  ;Jump forward to skip non string bytes
+  jmp @@JmpTableW[sizeof(POINTER)*edx]                  ;Jump forward to skip non string BYTEs
 
   align ALIGN_CODE
 @@JmpTableW:

@@ -8,11 +8,20 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-
 TARGET_STR_TYPE = STR_TYPE_WIDE
-TARGET_STR_AFFIX textequ <W>
+% include &ObjMemPath&ObjMemWin.cop
+
 ProcName equ <StrFillChrW>
 
-% include &ObjMemPath&X\StrFillChrT.asm
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  StrFillChrW
+; Purpose:    Fill a preallocated String with a character.
+; Arguments:  Arg1: -> String.
+;             Arg2: Character.
+;             Arg3: Character Count.
+; Return:     Nothing.
+
+% include &ObjMemPath&Common\StrFillChr_TXP.inc
 
 end

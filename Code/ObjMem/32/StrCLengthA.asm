@@ -8,16 +8,15 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrCLengthA
 ; Purpose:    Get the character count of the source ANSI string with length limitation.
 ; Arguments:  Arg1: -> Source ANSI string.
 ;             Arg3: Maximal character count.
-; Return:     eax = limited character count.
+; Return:     eax = Limited character count.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

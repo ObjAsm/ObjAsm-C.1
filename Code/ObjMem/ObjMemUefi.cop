@@ -1,0 +1,21 @@
+TARGET_PLATFORM = PLATFORM_UEFI
+
+% include &ObjMemPath&ObjMem.cop
+
+% include &MacPath\UefiMac.inc
+% include &IncPath&UEFI\UefiBase.inc
+% include &MacPath&System.inc
+% include &MacPath&Memory.inc
+% include &MacPath&Strings.inc
+% include &MacPath&fMath.inc
+% include &MacPath&Debug.inc
+% include &MacPath&DebugShare.inc
+% include &ObjMemPath&ObjMem.inc         ;Use this file before installation
+
+externdef pBootServices:POINTER
+externdef hImage:EFI_HANDLE
+externdef pSystemTable:POINTER
+externdef pBootServices:P_BOOT_SERVICES
+externdef pRuntimeServices:P_RUNTIME_SERVICES
+externdef pConsoleOut:PCONOUT
+externdef pConsoleIn:PCONIN

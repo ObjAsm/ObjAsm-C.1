@@ -8,12 +8,11 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 CStrW wSysStandby_SeShutdownPrivilege, "SeShutdownPrivilege"
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  SysStandby
 ; Purpose:    Set the system in standby modus.

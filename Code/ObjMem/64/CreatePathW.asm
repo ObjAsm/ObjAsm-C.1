@@ -8,13 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  CreatePathW
-; Purpose:    Creates a path on the destination drive.
+; Purpose:    Create a path on the destination drive.
 ; Arguments:  Arg1: -> WIDE path string.
 ; Return:     Nothing.
 

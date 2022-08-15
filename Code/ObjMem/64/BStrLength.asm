@@ -8,12 +8,11 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  StrLengthA
+; Procedure:  BStrLength
 ; Purpose:    Determine the length of a BStr not including the ZTC.
 ; Arguments:  Arg1: -> Source BStr.
 ; Return:     rax = Length of the string in characters.

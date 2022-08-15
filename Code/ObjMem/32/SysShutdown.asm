@@ -8,7 +8,7 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 SHTDN_REASON_FLAG_COMMENT_REQUIRED          equ 01000000h
 SHTDN_REASON_FLAG_DIRTY_PROBLEM_ID_REQUIRED equ 02000000h
@@ -52,12 +52,11 @@ SHTDN_REASON_VALID_BIT_MASK                 equ 0C0FFFFFFh
 externdef wSysStandby_SeShutdownPrivilege:WORD
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  SysShutdown
 ; Purpose:    Shut down the system.
 ; Arguments:  Arg1: Shutdown type.
-;             Arg2: 
+;             Arg2: Shutdown reason (see System Shutdown Reason Codes).
 ; Return:     Nothing.
 
 align ALIGN_CODE

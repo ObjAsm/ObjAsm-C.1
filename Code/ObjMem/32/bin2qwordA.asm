@@ -8,9 +8,7 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
-
-.code
+% include &ObjMemPath&ObjMemWin.cop
 
 NextCharA macro
   movzx ecx, BYTE ptr [ebx]
@@ -22,11 +20,12 @@ NextCharA macro
   rcl edx, 1
 endm
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure: bin2qwordA
-; Purpose:   Load an ANSI string binary representation of a QWORD.
-; Arguments: Arg1: -> ANSI binary string.
-; Return:    edx::eax = QWORD.
+; Procedure:  bin2qwordA
+; Purpose:    Load an ANSI string binary representation of a QWORD.
+; Arguments:  Arg1: -> ANSI binary string.
+; Return:     edx::eax = QWORD.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

@@ -8,16 +8,15 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrRScanW
 ; Purpose:    Scan from the end of a WIDE string for a character.
 ; Arguments:  Arg1: -> Source WIDE string.
 ;             Arg2: Character to search for.
-; Return:     eax -> Character adress or NULL if not found.
+; Return:     eax -> Character address or NULL if not found.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

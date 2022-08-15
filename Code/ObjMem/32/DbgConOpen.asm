@@ -8,12 +8,11 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgConOpen 
+; Procedure:  DbgConOpen
 ; Purpose:    Open a new console for the calling process.
 ; Arguments:  None.
 ; Return:     eax = TRUE if it was opened, otherwise FALSE.

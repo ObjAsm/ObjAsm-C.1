@@ -8,20 +8,19 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 externdef TwoDecDigitTableA:BYTE
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  udword2decA
-; Purpose:    Converts an unsigned DWORD to its decimal ANSI string representation.
+; Purpose:    Convert an unsigned DWORD to its decimal ANSI string representation.
 ; Arguments:  Arg1: -> Destination ANSI string buffer.
 ;             Arg2: DWORD value.
-; Return:     eax = Number of bytes copied to the destination buffer, including the ZTC.
-; Note:       The destination buffer must be at least 11 bytes large to allocate the output string
-;             (10 ANSI characters + ZTC = 11 bytes).
+; Return:     eax = Number of BYTEs copied to the destination buffer, including the ZTC.
+; Note:       The destination buffer must be at least 11 BYTEs large to allocate the output string
+;             (10 ANSI characters + ZTC = 11 BYTEs).
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE

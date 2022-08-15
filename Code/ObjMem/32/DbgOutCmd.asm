@@ -8,17 +8,16 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 externdef DbgCritSect:CRITICAL_SECTION
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgOutCmd 
+; Procedure:  DbgOutCmd
 ; Purpose:    Send a command to a specific Debug window.
 ; Arguments:  Arg1: Command ID [BYTE].
-;             Arg2: Target Debug Window name.
+;             Arg2: Target Debug Window WIDE name.
 ; Return:     Nothing.
 
 align ALIGN_CODE
@@ -27,9 +26,9 @@ DbgOutCmd proc bCommand:BYTE, pTargetWnd:POINTER
 
   invoke EnterCriticalSection, offset DbgCritSect
   mov eax, dDbgDev
-  .if eax == DBG_DEV_LOG
-  .elseif eax == DBG_DEV_CON
-  .else                                                 ;DBG_DEV_WND
+  .if eax == DBG_DEV_WIN_LOG
+  .elseif eax == DBG_DEV_WIN_CON
+  .else                                                 ;DBG_DEV_WIN_DC
     .if $invoke(DbgWndOpen)
       mov CDS.dwData, DGB_MSG_ID                        ;Identify this message source
       .if pTargetWnd != NULL
@@ -59,7 +58,7 @@ DbgOutCmd proc bCommand:BYTE, pTargetWnd:POINTER
       mov [edx].DBG_CMD_INFO.dBlockLen, sizeof DBG_CMD_INFO
       invoke SendMessageTimeoutW, hDbgDev, WM_COPYDATA, -1, addr CDS, \
                                   SMTO_BLOCK, SMTO_TIMEOUT, addr dResult
-      mov esp, dESP                                     ;Restore stack                              
+      mov esp, dESP                                     ;Restore stack
     .endif
   .endif
   invoke LeaveCriticalSection, offset DbgCritSect

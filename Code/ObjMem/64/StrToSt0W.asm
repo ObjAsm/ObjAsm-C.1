@@ -8,14 +8,13 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrToSt0W
 ; Purpose:    Load a WIDE string representation of a floating point number into the st(0)
-;            FPU register.
+;             FPU register.
 ; Arguments:  Arg1: -> WIDE string floating point number.
 ; Return:     eax = Result code f_OK or f_ERROR.
 ; Note:      - Based on the work of Raymond Filiatreault (FpuLib).

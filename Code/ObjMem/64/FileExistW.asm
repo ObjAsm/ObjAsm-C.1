@@ -1,5 +1,5 @@
 ; ==================================================================================================
-; Title:      FileExistA.asm
+; Title:      FileExistW.asm
 ; Author:     G. Friedrich
 ; Version:    C.1.0
 ; Notes:      Version C.1.0, October 2017
@@ -8,12 +8,11 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  FileExistA
+; Procedure:  FileExistW
 ; Purpose:    Check the existence of a file.
 ; Arguments:  Arg1: -> WIDE file name.
 ; Return:     rax = TRUE if the file exists, otherwise FALSE.

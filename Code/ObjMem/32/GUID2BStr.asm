@@ -8,15 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
-OPTION PROLOGUE:NONE
-OPTION EPILOGUE:NONE
-
-align ALIGN_CODE
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  GUID2BStr
 ; Purpose:    Convert a GUID to a BStr.
@@ -24,6 +18,11 @@ align ALIGN_CODE
 ;                   36 characters plus a ZTC.
 ;             Arg2: -> GUID.
 ; Return:     Nothing.
+
+OPTION PROLOGUE:NONE
+OPTION EPILOGUE:NONE
+
+align ALIGN_CODE
 
 GUID2BStr proc pStr:POINTER, pGUID:POINTER
   push edi
@@ -35,7 +34,7 @@ GUID2BStr proc pStr:POINTER, pGUID:POINTER
   mov WORD ptr [edi + 16], "-"                          ;Append "-"
   add edi, 18
   invoke dword2hexW, edi, [esi + 4]                     ;Convert next DWORD to hex
-  push DWORD ptr [edi + 00]                             ;Rearrange words
+  push DWORD ptr [edi + 00]                             ;Rearrange WORDs
   push DWORD ptr [edi + 04]
   push DWORD ptr [edi + 08]
   push DWORD ptr [edi + 12]
@@ -47,7 +46,7 @@ GUID2BStr proc pStr:POINTER, pGUID:POINTER
   mov WORD ptr [edi + 18], "-"                          ;Append "-"
   add edi, 20
   invoke dword2hexW, edi, [esi + 8]                     ;Convert next DWORD to hex
-  push DWORD ptr [edi + 00]                             ;Rearrange bytes
+  push DWORD ptr [edi + 00]                             ;Rearrange BYTEs
   push DWORD ptr [edi + 04]
   push DWORD ptr [edi + 08]
   push DWORD ptr [edi + 12]
@@ -58,7 +57,7 @@ GUID2BStr proc pStr:POINTER, pGUID:POINTER
   mov WORD ptr [edi + 08], "-"                          ;Insert "-"
   add edi, 18
   invoke dword2hexW, edi, [esi + 12]                    ;Convert next DWORD to hex
-  push DWORD ptr [edi + 00]                             ;Rearrange bytes
+  push DWORD ptr [edi + 00]                             ;Rearrange BYTEs
   push DWORD ptr [edi + 04]
   push DWORD ptr [edi + 08]
   push DWORD ptr [edi + 12]

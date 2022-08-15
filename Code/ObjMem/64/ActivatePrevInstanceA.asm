@@ -8,13 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  ActivatePrevInstanceA
-; Purpose:    Activates a previously existing instance of an application.
+; Purpose:    Activate a previously existing instance of an application.
 ; Arguments:  Arg1: -> ANSI application name.
 ;             Arg2: -> ANSI class name.
 ; Return:     rax = TRUE if activated, otherwise FALSE.

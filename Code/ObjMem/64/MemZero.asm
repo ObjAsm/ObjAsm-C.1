@@ -8,17 +8,16 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  MemZero
 ; Purpose:    Fill a memory block with zeros. A bit faster than MemFillB.
-;             The memory buffer must be at least as large as number of bytes to zero, otherwise a
+;             The memory buffer must be at least as large as number of BYTEs to zero, otherwise a
 ;             fault may be triggered.
 ; Arguments:  Arg1: -> Memory buffer.
-;             Arg2: Number of bytes to zero.
+;             Arg2: Number of BYTEs to zero.
 ; Return:     Nothing.
 
 OPTION PROC:NONE

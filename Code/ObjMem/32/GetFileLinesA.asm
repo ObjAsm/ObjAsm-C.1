@@ -8,10 +8,21 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-
 TARGET_STR_TYPE = STR_TYPE_ANSI
-TARGET_STR_AFFIX textequ <A>
+% include &ObjMemPath&ObjMemWin.cop
 
-% include &ObjMemPath&X\GetFileLinesA.asm
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  GetFileLinesA
+; Purpose:    Return an array of line ending offsets of an ANSI text file.
+; Arguments:  Arg1: File HANDLE.
+; Return:     eax = Number of lines.
+;             ecx -> Mem block containing an array of DWORD offsets.
+;                    The user must dispose it using MemFree.
+;
+; Notes:     - Lines must be terminated with the ANSI char sequence 13, 10 (CRLF).
+;            - The last line may not terminate with a CRLF.
+
+% include &ObjMemPath&Common\GetFileLines_AX.inc
 
 end

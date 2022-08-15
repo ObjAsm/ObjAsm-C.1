@@ -8,15 +8,14 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrSizeA
 ; Purpose:    Determine the size of an ANSI string including the zero terminating character (ZTC).
 ; Arguments:  Arg1: -> ANSI string.
-; Return:     eax = Size of the string in bytes.
+; Return:     eax = Size of the string in BYTEs.
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE
@@ -28,7 +27,7 @@ StrSizeA proc pStringA:POINTER
   and eax, 0FFFFFFFCh                                   ;Remove the last 2 bits to align the addr
   sub edx, eax                                          ;edx = 0..3
   mov ecx, DWORD ptr [eax]
-  lea edx, [offset @@0 + 8*edx]                         ;Jump forward to skip non string bytes
+  lea edx, [offset @@0 + 8*edx]                         ;Jump forward to skip non string BYTEs
   jmp edx
 
   align ALIGN_CODE

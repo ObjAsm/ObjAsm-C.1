@@ -8,11 +8,11 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
+
 % include &MacPath&Strings.inc
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  Err2StrW
 ; Purpose:    Translate a system error code to a WIDE string.

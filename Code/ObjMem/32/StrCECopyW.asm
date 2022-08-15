@@ -8,13 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrCECopyW
-; Purpose:    Copy the the source WIDE string with length limitation and return the last zero 
+; Purpose:    Copy the the source WIDE string with length limitation and return the last zero
 ;             character address.
 ;             The destination buffer should hold the maximum number of characters + 1.
 ;             Source and destination strings may overlap.

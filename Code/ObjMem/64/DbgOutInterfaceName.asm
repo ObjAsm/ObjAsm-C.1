@@ -8,16 +8,15 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgOutInterfaceName 
-; Purpose:    Identifies a COM-Interface.
+; Procedure:  DbgOutInterfaceName
+; Purpose:    Identify a COM-Interface.
 ; Arguments:  Arg1: -> CSLID.
 ;             Arg2: Foreground color.
-;             Arg2: Destination window name.
+;             Arg2: -> Destination window WIDE name.
 ; Return:     Nothing.
 
 align ALIGN_CODE

@@ -175,7 +175,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=16
+MilestoneOnDateDate=12
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -210,7 +210,7 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,806,424,49153
+2=0,0,806,424,49790
 3=0,0,2127,589,1905
 1=0,0,694,487,995
 4=0,0,706,573,12300
@@ -222,8 +222,8 @@ ProductVer4Range=0
 11=0,0,706,600,0
 10=0,0,0,0,10132
 9=0,0,0,0,2776
-12=0,0,848,586,305
-13=0,0,738,582,3757
+12=0,0,848,586,1757
+13=0,0,738,582,1983
 14=
 15=0,0,0,0,4702
 16=0,0,0,0,30
@@ -283,16 +283,16 @@ ProductVer4Range=0
 0=724,30,
 
 [Find]
-1="OnMdiActivate"
-2="OnCopyData"
-3="ZoomIn"
-4="WM_MOUSEWHEEL"
-5="wheel"
-6="ES_EX_ZOOMABLE"
-7=".Erase"
-8="DbgMdiChild.Erase"
-9="DbgMdiChildTxt.Erase"
-10="Erase"
+1="DBG_CHARTYPE_WIDE"
+2="OnMdiActivate"
+3="OnCopyData"
+4="ZoomIn"
+5="WM_MOUSEWHEEL"
+6="wheel"
+7="ES_EX_ZOOMABLE"
+8=".Erase"
+9="DbgMdiChild.Erase"
+10="DbgMdiChildTxt.Erase"
 "
 [Collapse]
 7=,,
@@ -349,9 +349,9 @@ ProductVer4Range=0
 53=
 54=
 [AutoLoad]
-AutoLoad=1,5,18,2,11
+AutoLoad=5,18,2,11,1,12,13
 [PTimer]
-PTimer=2019884264
+PTimer=2020114030
 [RADebugBP]
 5=
 2=

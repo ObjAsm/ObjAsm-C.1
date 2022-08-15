@@ -8,20 +8,19 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 externdef HexCharTableW:WORD
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  qword2hexW
-; Purpose:    Converts a QWORD to its hexadecimal WIDE string representation.
+; Purpose:    Convert a QWORD to its hexadecimal WIDE string representation.
 ; Arguments:  Arg1: -> Destination buffer.
 ;             Arg2: QWORD value.
 ; Return:     Nothing.
-; Note:       The destination buffer must be at least 34 bytes large to allocate the output string
-;             (16 character words + ZTC = 34 bytes).
+; Note:       The destination buffer must be at least 34 BYTEs large to allocate the output string
+;             (16 character WORDs + ZTC = 34 BYTEs).
 
 OPTION PROLOGUE:NONE
 OPTION EPILOGUE:NONE
@@ -32,7 +31,7 @@ qword2hexW proc pBuffer:POINTER, qValue:QWORD
   lea ecx,  [esp + 8]                                   ;ecx -> qValue
 
   movzx eax, BYTE ptr [ecx]
-  m2z WORD ptr [edx + 32]                               ;Set zero marker
+  m2z WORD ptr [edx + 32]                               ;Set ZTC
   mov eax, DWORD ptr HexCharTableW[4*eax]
   mov [edx + 28], eax
 

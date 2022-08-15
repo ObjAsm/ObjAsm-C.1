@@ -8,10 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrLengthW
 ; Purpose:    Determine the length of a WIDE string not including the ZTC.
@@ -23,12 +22,12 @@ align ALIGN_CODE
 StrLengthW proc pStringW:POINTER
   push rdi
   mov rdi, rcx
-  mov rcx, -1
+  mov ecx, -1
   xor ax, ax
   repne scasw
-  not rcx
-  mov rax, rcx
-  dec rax
+  not ecx
+  mov eax, ecx
+  dec eax
   pop rdi
   ret
 StrLengthW endp

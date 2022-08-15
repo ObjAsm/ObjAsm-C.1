@@ -1,0 +1,4 @@
+Building ... object ...
+Error A2106: Cannot open file: "....asm" [ENOENT]
+LINK : fatal error LNK1181: Eingabedatei "....obj" kann nicht ge”ffnet werden.
+Failed building library library ....lib

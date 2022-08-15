@@ -1,0 +1,12 @@
+TARGET_PLATFORM = PLATFORM_WINDOWS
+
+% include &ObjMemPath&ObjMem.cop
+
+% include &IncPath&Windows\Windows.inc
+% include &MacPath&System.inc
+% include &MacPath&Memory.inc
+% include &MacPath&Strings.inc
+% include &MacPath&fMath.inc
+% include &MacPath&Debug.inc
+% include &MacPath&DebugShare.inc
+% include &ObjMemPath&ObjMem.inc         ;Use this file before installation

@@ -8,6 +8,19 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&X\ComPtrAssign.asm
+% include &ObjMemPath&ObjMemWin.cop
+
+% include &MacPath&Objects.inc
+% include &COMPath&COM.inc
+
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  ComPtrAssign
+; Purpose:    First increments the reference count of the new interface and then releases any
+;             existing interface pointer.
+; Arguments:  Arg1: -> Old Interface pointer.
+;             Arg2: New Interface pointer.
+
+% include &ObjMemPath&Common\ComPtrAssign_X.inc
 
 end

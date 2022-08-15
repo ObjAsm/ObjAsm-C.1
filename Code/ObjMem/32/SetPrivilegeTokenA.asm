@@ -8,17 +8,16 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 TypeOpenProcessToken      typedef proto :HANDLE, :DWORD, :POINTER
 TypeLookupPrivilegeValueA typedef proto :POINTER, :POINTER, :POINTER
 TypeAdjustTokenPrivileges typedef proto :HANDLE, :DWORD, :POINTER, :DWORD, :POINTER, :POINTER
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  SetPrivilegeTokenA
-; Purpose:    Enabling of provilege tokens.
+; Purpose:    Enable privilege tokens.
 ; Arguments:  Arg1: Process handle.
 ;             Arg2: -> Privilege name (ANSI string).
 ;             Arg3: Eanble = TRUE, disable = FALSE

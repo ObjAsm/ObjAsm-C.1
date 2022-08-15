@@ -8,11 +8,24 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-
 TARGET_STR_TYPE = STR_TYPE_WIDE
-TARGET_STR_AFFIX textequ <W>
+% include &ObjMemPath&ObjMemWin.cop
+
+% include &IncPath&Windows\shlwapi.inc
+% include &IncPath&Windows\shellapi.inc
+
 ProcName equ <PdfViewW>
 
-% include &ObjMemPath&X\PdfView.asm
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  PdfViewW
+; Purpose:    Display a PDF document on a named destination.
+; Arguments:  Arg1: Parent HANDLE.
+;             Arg2: -> PDF document.
+;             Arg3: -> Destination.
+; Return:     eax = HINSTANCE. See ShellExecute return values.
+;             A value greater than 32 indicates success.
+
+% include &ObjMemPath&Common\PdfView_TX.inc
 
 end

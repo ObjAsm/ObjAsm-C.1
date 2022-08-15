@@ -8,16 +8,15 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrPosW
 ; Purpose:    Find the occurence of string 2 into string1.
 ; Arguments:  Arg1: -> Source WIDE string.
 ;             Arg2: -> Searched WIDE string.
-; Return:     rax -> string occurence or NULL if not found.
+; Return:     rax -> String occurence or NULL if not found.
 
 align ALIGN_CODE
 StrPosW proc uses rbx rdi rsi pString1W:POINTER, pString2W:POINTER

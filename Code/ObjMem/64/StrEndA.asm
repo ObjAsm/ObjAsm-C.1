@@ -8,10 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrEndA
 ; Purpose:    Get the address of the zero character that terminates the string.
@@ -27,8 +26,8 @@ StrEndA proc pStringA:POINTER
   sub rdx, rax                                          ;edx = 0..3
   mov ecx, DWORD ptr [rax]
   lea r9, @@0
-  lea r10, [r9 + 8*rdx]                                 ;code size (test + jz) = 8 bytes
-  jmp r10                                               ;Jump forward to skip non string bytes
+  lea r10, [r9 + 8*rdx]                                 ;code size (test + jz) = 8 BYTEs
+  jmp r10                                               ;Jump forward to skip non string BYTEs
 
 @@0:
   test ecx, 0000000FFh

@@ -8,10 +8,9 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  BStrCNew
 ; Purpose:    Allocate a new copy of the source BStr with length limitation.
@@ -38,7 +37,7 @@ BStrCNew proc pBStr:POINTER, dMaxChars:DWORD
   xor eax, eax
   ret 8
 @@2:
-  shl DWORD ptr [esp + 8], 1                            ;dMaxChars => bytes
+  shl DWORD ptr [esp + 8], 1                            ;dMaxChars => BYTEs
   .if eax > [esp + 8]                                   ;dMaxChars
     mov eax, [esp + 8]                                  ;dMaxChars
   .endif

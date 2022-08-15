@@ -13,7 +13,7 @@ SysSetup OOP, NUI64, WIDE_STRING, DEBUG(WND)
 
 % include &MacPath&fMath.inc
 
-MakeObjects Primer, Stream, HashTable, Dictionary,
+MakeObjects Primer, Stream, HashMap, Dictionary
 MakeObjects Collection, SortedCollection, SortedStrCollectionW
 MakeObjects StopWatch
 
@@ -69,7 +69,7 @@ start proc uses xbx xdi xsi
   xor ebx, ebx
   xor esi, esi
   .while ebx < DIC_SIZE
-    .if POINTER ptr [xdi] != HTL_BUCKET_EMPTY && POINTER ptr [xdi] != HTL_BUCKET_TOMBSTONE
+    .if POINTER ptr [xdi] != HMP_BUCKET_EMPTY && POINTER ptr [xdi] != HMP_BUCKET_TOMBSTONE
       inc esi
     .endif
     add xdi, sizeof(POINTER)

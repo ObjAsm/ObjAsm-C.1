@@ -8,6 +8,20 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&X\ComEventsUnadvice.asm
+% include &ObjMemPath&ObjMemWin.cop
+
+% include &MacPath&Objects.inc
+% include &COMPath&COM.inc
+% include &IncPath&Windows\ocidl.inc
+
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  ComEventsUnadvice
+; Purpose:    Notificate the Event source that pISource will NOT recieve Events any more.
+; Arguments:  Arg1: -> Previous ConnectionPoint interface.
+;             Arg2: DWORD Cookie received from previous ComEventsAdvice call.
+; Return:     eax = HRESULT.
+
+% include &ObjMemPath&Common\ComEventsUnadvice_X.inc
 
 end

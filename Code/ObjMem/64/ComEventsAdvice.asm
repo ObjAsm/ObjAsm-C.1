@@ -8,6 +8,26 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&X\ComEventsAdvice.asm
+% include &ObjMemPath&ObjMemWin.cop
+
+% include &MacPath&Objects.inc
+% include &COMPath&COM.inc
+% include &IncPath&Windows\ocidl.inc
+
+externdef IID_IConnectionPointContainer:GUID
+
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  ComEventsAdvice
+; Purpose:    Notificate the Event source that pISink will recieve Events.
+; Arguments:  Arg1: -> Any Source Object Interface.
+;             Arg2: -> Sink IUnknown Interface.
+;             Arg3: -> IID of the outgoing interface whose connection point object is being
+;                   requested (defined by the Source to communicate and implemented by the Sink).
+;             Arg4: -> ConnectionPoint interface pointer.
+;             Arg5: -> DWORD Cookie.
+; Return:     eax = HRESULT.
+
+% include &ObjMemPath&Common\ComEventsAdvice_X.inc
 
 end

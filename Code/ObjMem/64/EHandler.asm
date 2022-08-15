@@ -8,7 +8,7 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 externdef OriginalExceptContext:CONTEXT
 externdef ExceptContext:CONTEXT
@@ -60,7 +60,6 @@ LSH_RetValue          QWORD ?                   ;Language Specific Handler, retu
 
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  EHandler
 ; Purpose:    ASM exception handler

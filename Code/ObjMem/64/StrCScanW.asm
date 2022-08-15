@@ -8,13 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  StrCScanW
-; Purpose:    Scans from the beginning of a WIDE string for a character with length limitation.
+; Purpose:    Scan from the beginning of a WIDE string for a character with length limitation.
 ; Arguments:  Arg1: -> Source WIDE string.
 ;             Arg2: Maximal character count.
 ;             Arg3: WIDE character to search for.

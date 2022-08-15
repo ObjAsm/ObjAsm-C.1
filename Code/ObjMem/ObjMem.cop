@@ -18,17 +18,8 @@ endif
 
 if @WordSize eq 4
   TARGET_BITNESS equ 32
+  TARGET_SUFFIX CatStr <32>, TARGET_STR_AFFIX
 else
   TARGET_BITNESS equ 64
+  TARGET_SUFFIX CatStr <64>, TARGET_STR_AFFIX
 endif
-
-% include &IncPath&Windows\Windows.inc
-% include &MacPath&System.inc
-% include &MacPath&Memory.inc
-% include &MacPath&Strings.inc
-% include &MacPath&fMath.inc
-% include &MacPath&Debug.inc
-% include &MacPath&DebugShare.inc
-% include &ObjMemPath&ObjMem.inc         ;Use this file before installation
-
-TARGET_SUFFIX CatStr $ToStr(%TARGET_BITNESS), TARGET_STR_AFFIX

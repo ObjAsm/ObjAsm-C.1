@@ -8,17 +8,16 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  MemFillB
 ; Purpose:    Fill a memory block with a given byte value.
-;             Destination buffer must be at least as large as number of bytes to fill, otherwise a
+;             Destination buffer must be at least as large as number of BYTEs to fill, otherwise a
 ;             fault may be triggered.
 ; Arguments:  Arg1: -> Destination memory block.
-;             Arg2: Memory block size in bytes.
+;             Arg2: Memory block size in BYTEs.
 ;             Arg3: Byte value to fill.
 ; Return:     Nothing.
 

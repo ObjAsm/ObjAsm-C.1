@@ -8,7 +8,7 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 externdef wUser32Dll:WORD
 externdef bSLWA:BYTE
@@ -20,11 +20,10 @@ LMA_ALPHA       equ   2
 LMA_COLORKEY    equ   1
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  WndFadeOut
 ; Purpose:    Fade out a window when WS_EX_LAYERED is set.
-; Arguments:  Arg1: Window handle
+; Arguments:  Arg1: Window HANDLE.
 ;             Arg2: Transparency start value.
 ;             Arg3: Transparency end value.
 ;             Arg4: Transparency decrement value.

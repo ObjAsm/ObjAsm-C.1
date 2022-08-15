@@ -8,13 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 IsThemeActive proto stdcall
 IsAppThemed proto stdcall
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  AreVisualStylesEnabled
 ; Purpose:    Determine if there is an activated theme for the running application

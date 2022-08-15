@@ -8,7 +8,7 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 
 NextCharA macro
@@ -21,7 +21,6 @@ NextCharA macro
 endm
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  bin2qwordA
 ; Purpose:    Load an ANSI string binary representation of a QWORD.

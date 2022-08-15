@@ -8,45 +8,42 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 externdef HexCharTableA:BYTE
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  dword2hexA
-; Purpose:    Converts a DWORD to its hexadecimal ANSI string representation.
+; Purpose:    Convert a DWORD to its hexadecimal ANSI string representation.
 ; Arguments:  Arg1: -> Destination buffer.
 ;             Arg2: DWORD value.
 ; Return:     Nothing.
-; Note:       The destination buffer must be at least 9 bytes large to allocate the output string
-;             (8 character bytes + ZTC = 9 bytes).
+; Note:       The destination buffer must be at least 9 BYTEs large to allocate the output string
+;             (8 character BYTEs + ZTC = 9 BYTEs).
 
-OPTION PROLOGUE:NONE
-OPTION EPILOGUE:NONE
+OPTION PROC:NONE
 
 align ALIGN_CODE
 dword2hexA proc pBuffer:POINTER, dValue:DWORD
   mov edx, [esp + 4]                                    ;edx -> Buffer
   lea ecx, [esp + 8]                                    ;ecx -> dValue
   movzx eax, BYTE ptr [ecx]
-  mov ax, WORD ptr HexCharTableA[2*eax]
-  m2z BYTE ptr [edx + 8]                                ;Set zero marker
-  mov [edx + 6], ax
+  mov ax, DCHRA ptr HexCharTableA[sizeof(DCHRA)*eax]
+  m2z DCHRA ptr [edx + 4*sizeof(DCHRA)]                 ;Set ZTC
+  mov DCHRA ptr [edx + 3*sizeof(DCHRA)], ax
   movzx eax, BYTE ptr [ecx + 1]
-  mov ax, WORD ptr HexCharTableA[2*eax]
-  mov [edx + 4], ax
+  mov ax, DCHRA ptr HexCharTableA[sizeof(DCHRA)*eax]
+  mov DCHRA ptr [edx + 2*sizeof(DCHRA)], ax
   movzx eax, BYTE ptr [ecx + 2]
   movzx ecx, BYTE ptr [ecx + 3]
-  mov ax, WORD ptr HexCharTableA[2*eax]
-  mov cx, WORD ptr HexCharTableA[2*ecx]
-  mov [edx + 2], ax
-  mov [edx], cx
+  mov ax, DCHRA ptr HexCharTableA[sizeof(DCHRA)*eax]
+  mov cx, DCHRA ptr HexCharTableA[sizeof(DCHRA)*ecx]
+  mov DCHRA ptr [edx + 1*sizeof(DCHRA)], ax
+  mov DCHRA ptr [edx + 0*sizeof(DCHRA)], cx
   ret 8
 dword2hexA endp
 
-OPTION PROLOGUE:PrologueDef
-OPTION EPILOGUE:EpilogueDef
+OPTION PROC:DEFAULT
 
 end

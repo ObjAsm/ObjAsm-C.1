@@ -8,6 +8,17 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&X\Random32.asm
+% include &ObjMemPath&ObjMemWin.cop
+
+.code
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Procedure:  Random32
+; Purpose:    Generate a random 32 bit number in a given range [0..Limit-1].
+;             Park Miller random number algorithm. Written by Jaymeson Trudgen (NaN) and optimized
+;             by Rickey Bowers Jr. (bitRAKE).
+; Arguments:  Arg1: Range limit (max. = 07FFFFFFFh).
+; Return:     eax = Random number in the range [0..Limit-1].
+
+% include &ObjMemPath&Common\Random32_X.inc
 
 end

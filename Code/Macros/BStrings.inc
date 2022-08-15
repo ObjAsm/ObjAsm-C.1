@@ -35,7 +35,7 @@
 ; Purpose:    Place an BSTR string in the S_CONST, S_DATA or S_TEXT segment.
 ; Arguments:  Arg1: Reference name (optional).
 ;             Arg2: Quoted string text.
-; Returns:    Nothing / Reference to the string.
+; Return:     Nothing / Reference to the string.
 ; Notes:      - Quotation marks can be used as usual. See example.
 ;             - Partial input strings can be separated by commas.
 ;             - Break input lines with "\".
@@ -195,7 +195,7 @@ endm
 ; Macro:      $Ofs(C/T/D/J)BStr
 ; Purpose:    Place an BSTR string in the S_CONST, S_TEXT, S_DATA segment.
 ; Arguments:  Arg1: Quoted string text.
-; Returns:    String offset.
+; Return:     String offset.
 
 $OfsCBStr macro QuotedText:vararg
   local ??StrLocation

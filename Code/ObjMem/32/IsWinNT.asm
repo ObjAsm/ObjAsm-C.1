@@ -8,13 +8,12 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  IsWinNT
-; Purpose:    Detects if the OS is Windows NT based.
+; Purpose:    Detect if the OS is Windows NT based.
 ; Arguments:  None.
 ; Return:     eax = TRUE if OS is Windows NT based, otherwise FALSE.
 

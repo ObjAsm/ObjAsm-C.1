@@ -8,28 +8,20 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
+
+ProcName textequ <DbgShowObjectHeader>
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgClose
-; Purpose:    Outputs heading object information.
+; Procedure:  DbgShowObjectHeader
+; Purpose:    Output heading object information.
 ; Arguments:  Arg1: -> Object Name.
 ;             Arg2: -> Instance.
-;             Arg3: -> Destination Window name.
+;             Arg3: Text RGB color.
+;             Arg3: -> Destination Window WIDE name.
 ; Return:     Nothing.
 
-align ALIGN_CODE
-DbgShowObjectHeader proc pObjectName:POINTER, pInstance:POINTER, pDest:POINTER
-  local cNum[20]:CHRA
-
-  invoke DbgOutTextA, $OfsCStrA("Object "), $RGB(64,64,255), DBG_EFFECT_BOLD, pDest
-  invoke qword2hexA, addr cNum, pInstance
-  invoke DbgOutTextA, addr cNum, $RGB(64,64,255), DBG_EFFECT_BOLD, pDest
-  invoke DbgOutTextA, $OfsCStrA("h::"), $RGB(64,64,255), DBG_EFFECT_BOLD, pDest
-  invoke DbgOutTextA, pObjectName, $RGB(64,64,255), DBG_EFFECT_BOLD, pDest
-  ret
-DbgShowObjectHeader endp
+% include &ObjMemPath&Common\\DbgShowObjectHeader_XP.inc
 
 end

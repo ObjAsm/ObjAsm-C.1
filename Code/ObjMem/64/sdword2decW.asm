@@ -8,24 +8,22 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-
 TARGET_STR_TYPE = STR_TYPE_WIDE
-TARGET_STR_AFFIX textequ <W>
+% include &ObjMemPath&ObjMemWin.cop
 
 externdef TwoDecDigitTableW:WORD
 ProcName textequ <sdword2decW>
 
-% include &ObjMemPath&ObjMem.cop
-
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  sdword2decW
-; Purpose:    Converts a signed DWORD to its decimal WIDE string representation.
+; Purpose:    Convert a signed DWORD to its decimal WIDE string representation.
 ; Arguments:  Arg1: -> Destination WIDE string buffer.
 ;             Arg2: SDWORD value.
-; Return:     eax = Number of bytes copied to the destination buffer, including the ZTC.
-; Note:       The destination buffer must be at least 24 bytes large to allocate the output string
-;             (Sign + 10 WIDE characters + ZTC = 24 bytes).
+; Return:     eax = Number of BYTEs copied to the destination buffer, including the ZTC.
+; Note:       The destination buffer must be at least 24 BYTEs large to allocate the output string
+;             (Sign + 10 WIDE characters + ZTC = 24 BYTEs).
 
-% include &ObjMemPath&64\sdword2decT.inc
+% include &ObjMemPath&Common\sdword2decT64.inc
 
 end

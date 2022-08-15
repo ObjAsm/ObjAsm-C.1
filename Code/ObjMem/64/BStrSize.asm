@@ -8,15 +8,14 @@
 
 
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
-% include &ObjMemPath&ObjMem.cop
+% include &ObjMemPath&ObjMemWin.cop
 
 .code
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  BStrSize
 ; Purpose:    Determine the size of a BStr including the ZTC + leading DWORD.
 ; Arguments:  Arg1: -> Source BStr.
-; Return:     rax = String size including the length field and ZTC in bytes.
+; Return:     rax = String size including the length field and ZTC in BYTEs.
 
 OPTION PROC:NONE
 align ALIGN_CODE

@@ -64,7 +64,7 @@ MethodEnd
 ; Purpose:    Write some data to the file
 ; Args:       Arg1: -> User's data to be written.
 ;             Arg2: Bytes to write.
-; Returns:    Nothing.
+; Return:     Nothing.
 ; Note:       Be sure to call SetFilePointer at least once prior to this call!
 ;             Its safe to destroy the input buffer as soon as your call completes.
 ;             The data will be written to the file in the background.
@@ -104,7 +104,7 @@ MethodEnd
 ; Method:     NetComFile.Done
 ; Purpose:    Notify application that the object is redundant & release resources.
 ; Arguments:  None.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 Method NetComFile.Done, uses xsi
   SetObject xsi
@@ -122,7 +122,7 @@ MethodEnd
 ; Method:     NetComFile.DoRead
 ; Purpose:    Perform call to initiate Overlapped FileRead request.
 ; Arguments:  Arg1: -> IO_FILEJOB.
-; Returns:    eax = TRUE/FALSE.
+; Return:     eax = TRUE/FALSE.
 ; Note:       Assumes the IOSockJob has been initialized with valid values.
 
 Method NetComFile.DoRead, uses xbx xsi, pIOFileJob:PIO_FILEJOB
@@ -156,7 +156,7 @@ MethodEnd
 ; Method:     NetComFile.DoWrite
 ; Purpose:    Perform call to initiate Overlapped FileWrite request
 ; Arguments:  Arg1: -> IO_FILEJOB.
-; Returns:    eax = TRUE/FALSE.
+; Return:     eax = TRUE/FALSE.
 ; Note:       Assumes the IOSockJob has been initialized with valid values.
 
 Method NetComFile.DoWrite, uses xbx xsi, pIOFileJob:PIO_FILEJOB
@@ -183,7 +183,7 @@ MethodEnd
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     NetComFile.GetProgress_Percentage
 ; Purpose:    Convert Progress QUADWORD into Percentage DWORD.
-; Returns:    eax = File transfer progress (integer percentage).
+; Return:     eax = File transfer progress (integer percentage).
 
 Method NetComFile.GetProgress_Percent, uses xbx xsi
   SetObject xsi
@@ -204,7 +204,7 @@ MethodEnd
 ;             Arg3: Any combination of FILE_SHARE_READ, FILE_SHARE_WRITE.
 ;             Arg4: Any combination of GENERIC_READ, GENERIC_WRITE.
 ;             Arg5: -> EventSink interface derived from NetComFileEvent.
-; Returns:    eax = 0 if succeeded otherwise an error code.
+; Return:     eax = 0 if succeeded otherwise an error code.
 ; Note:       Failure can be due to bad SHARE access, etc.
 
 Method NetComFile.Init, uses xsi, pOwner:POINTER, pstrPathName:POINTER, \
@@ -260,7 +260,7 @@ MethodEnd
 ; Method:     NetComFile.OnRead
 ; Purpose:    Sink 'READ IO completion' events.
 ; Arguments:  Arg1: -> IO_FILEJOB.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 Method NetComFile.OnRead, uses xsi, pIOFileJob:PIO_FILEJOB
   local q:QUADWORD
@@ -291,7 +291,7 @@ MethodEnd
 ; Method:     NetComFile.OnWrite
 ; Purpose:    Sink 'WRITE IO completion' events.
 ; Arguments:  Arg1: -> IO_FILEJOB.
-; Returns:    Nothing.
+; Return:     Nothing.
 
 Method NetComFile.OnWrite,uses xsi, pIOFileJob:PIO_FILEJOB
   SetObject xsi

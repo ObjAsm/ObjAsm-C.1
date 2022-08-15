@@ -263,7 +263,7 @@ Method DesLUT.Insert, uses xsi, xOldItem:XWORD, xNewItem:XWORD
     shl xdx, $Log2(sizeof(DLT_ENTRY))
     lea xcx, [xax + xdx]
     m2m [xcx].DLT_ENTRY.xOldItem, xOldItem, xdx
-    mrm [xcx].DLT_ENTRY.xNewItem, xNewItem, xax         ;xax -> Item (return value)
+    m2m [xcx].DLT_ENTRY.xNewItem, xNewItem, xax         ;xax -> Item (return value)
   .else
     OCall xsi.ErrorReport, NULL, eax
     xor eax, eax                                        ;Return NULL
@@ -441,7 +441,11 @@ Method Stream.StrRead, uses xbx xsi
   OCall xsi.BinRead32                                   ;Total string size, including ZTC
   .if eax != 0
     mov ebx, eax                                        ;Save string size in ebx
-    invoke GlobalAlloc, 0, eax                          ;Strings use global memory
+    if TARGET_PLATFORM eq PLATFORM_WINDOWS
+      invoke GlobalAlloc, 0, eax                        ;Strings use global memory
+    elseif TARGET_PLATFORM eq PLATFORM_UEFI
+      MemAlloc eax
+    endif
     .if xax != NULL
       mov xdx, xax
       xchg xbx, xax                                      ;xax -> allocated block
