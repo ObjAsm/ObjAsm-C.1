@@ -5,3 +5,4 @@
 -nomlib
 -FwNUL
 -DISABLE_DEBUG
+-W1

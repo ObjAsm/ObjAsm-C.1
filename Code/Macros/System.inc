@@ -2108,7 +2108,7 @@ uMiniMaxi macro Reg1:=<xax>, Reg2:=<xbx>, AuxReg1:=<xcx>, AuxReg2:=<xdx>
   sbb AuxReg1, AuxReg1
   and AuxReg1, AuxReg2
   add Reg1, AuxReg1                                     ;;Reg1 = min(Reg1, Reg2)
-  sub Reg2, AuxReg1                                     ;;Reg1 = max(Reg1, Reg2)
+  sub Reg2, AuxReg1                                     ;;Reg2 = max(Reg1, Reg2)
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

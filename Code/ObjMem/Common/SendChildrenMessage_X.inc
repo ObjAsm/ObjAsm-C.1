@@ -8,8 +8,6 @@
 ; ==================================================================================================
 
 
-% include &ObjMemPath&ObjMemWin.cop
-
 CHILD_MSG struc
   dMsgID  DWORD   ?
   wParam  WPARAM  ?

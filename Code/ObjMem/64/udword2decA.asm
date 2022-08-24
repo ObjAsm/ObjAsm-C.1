@@ -14,8 +14,6 @@ TARGET_STR_TYPE = STR_TYPE_ANSI
 externdef TwoDecDigitTableA:BYTE
 ProcName textequ <udword2decA>
 
-% include &ObjMemPath&ObjMemWin.cop
-
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  udword2decA

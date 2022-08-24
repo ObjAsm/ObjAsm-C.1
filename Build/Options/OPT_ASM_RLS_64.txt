@@ -6,3 +6,4 @@
 -FwNUL
 -DISABLE_DEBUG
 -Zp8
+-W1

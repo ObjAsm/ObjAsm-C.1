@@ -14,8 +14,6 @@ TARGET_STR_TYPE = STR_TYPE_WIDE
 externdef TwoDecDigitTableW:WORD
 ProcName textequ <udword2decW>
 
-% include &ObjMemPath&ObjMemWin.cop
-
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  udword2decW

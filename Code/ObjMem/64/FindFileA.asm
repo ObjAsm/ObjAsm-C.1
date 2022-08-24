@@ -15,8 +15,6 @@ ProcName textequ <FindFileA>
 ??SearchInDir textequ <??SearchInDirA>
 FIND_FILE_PARAMS textequ <FIND_FILE_PARAMSA>
 
-% include &ObjMemPath&ObjMemWin.cop
-
 FIND_FILE_PARAMSA struct
   pFileName   POINTER    ?
   pRetBuffer  POINTER    ?

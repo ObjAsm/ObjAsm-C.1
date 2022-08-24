@@ -133,8 +133,8 @@ endif
 
 
 DBG_FLOAT_RESOLUTION      equ   12
-DBG_FLOAT_BUFFERSIZE      equ   24        ;(DBG_FLOAT_RESOLUTION + 9) roundup to the next 4 boundary
-
+DBG_FLOAT_BUFFERSIZE      equ   32        ;(DBG_FLOAT_RESOLUTION + 9) roundup to the next 16 boundary
+                                          ;to keep the stack aligned to 16.
 if DEBUGGING
   CStrW szDbgErr,         "Debug Error"
   CStrW szDbgObjErr,      "Object Error"
@@ -1080,9 +1080,14 @@ DbgBmp macro hBmp:req, Dest
     DbgSaveContext FALSE, hBmp
     DbgSetDestWnd Dest
     ifidn DBG_DEVICE, <WND>
-      invoke DbgOutBitmap, ??VarXBX, ??DbgDstWnd
+      .if ??VarXBX != 0
+        invoke DbgOutBitmap, ??VarXBX, ??DbgDstWnd
+      .else
+        invoke DbgOutTextA, $OfsCStrA("Invalid bitmap HANDLE"), \
+                            DBG_COLOR_ERROR, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+      .endif
     else
-      invoke DbgOutTextA, $OfsCStrA("Bitmap can not be shown on this device..."), \
+      invoke DbgOutTextA, $OfsCStrA("Bitmap can not be shown on this device"), \
                           DBG_COLOR_ERROR, DBG_EFFECT_NEWLINE, ??DbgDstWnd
     endif
     DbgLoadContext

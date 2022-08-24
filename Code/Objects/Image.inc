@@ -51,7 +51,7 @@
 ;             - ImgCtx can only load an image once.
 
 
-ImgDim struct
+IMAGE_SIZE struct
   Union
     Rect RECT  {}
     struct
@@ -63,7 +63,7 @@ ImgDim struct
       ends
     ends
   ends
-ImgDim ends
+IMAGE_SIZE ends
 
 Object Image, ImageID, Primer
   RedefineMethod  Done                                  ;Must be first virtual method!
@@ -83,7 +83,7 @@ Object Image, ImageID, Primer
 
   DefineVariable  pIImgCtx,         POINTER,    NULL    ;-> IImgCtx interface
   DefineVariable  dState,           DWORD,      0
-  DefineVariable  Dim,              ImgDim,     {}
+  DefineVariable  ImgSize,          IMAGE_SIZE, {}
 ObjectEnd
 
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
@@ -122,9 +122,9 @@ Method Image.AlphaDraw, uses xsi, hDC:HDC, dSrcAlpha:DWORD, pDstRect:PRECT
   mov dReturn, -1
   .ifBitSet [xsi].dState, IMGLOAD_COMPLETE
     mov hTmpDC, $invoke(CreateCompatibleDC, hDC)
-    mov hTmpBmp, $invoke(CreateCompatibleBitmap, hDC, [xsi].Dim.x, [xsi].Dim.y)
+    mov hTmpBmp, $invoke(CreateCompatibleBitmap, hDC, [xsi].ImgSize.x, [xsi].ImgSize.y)
     mov hPrvBmp, $invoke(SelectObject, hTmpDC, hTmpBmp)
-    ICall [xsi].pIImgCtx::IImgCtx.Draw, hTmpDC, addr [xsi].Dim.Rect
+    ICall [xsi].pIImgCtx::IImgCtx.Draw, hTmpDC, addr [xsi].ImgSize.Rect
     .if SUCCEEDED(eax)
       mov bfn.BlendOp, AC_SRC_OVER
       mov bfn.BlendFlags, 0
@@ -134,7 +134,7 @@ Method Image.AlphaDraw, uses xsi, hDC:HDC, dSrcAlpha:DWORD, pDstRect:PRECT
       mov xax, pDstRect
       invoke AlphaBlend, hDC, [xax].RECT.left, [xax].RECT.top, \
                               [xax].RECT.right, [xax].RECT.bottom, \
-                         hTmpDC, 0, 0, [xsi].Dim.x, [xsi].Dim.y, bfn
+                         hTmpDC, 0, 0, [xsi].ImgSize.x, [xsi].ImgSize.y, bfn
       .if eax != FALSE
         mov dReturn, 0
       .endif
@@ -162,9 +162,9 @@ Method Image.AlphaStretch, uses xbx xsi, hDC:HDC, dSrcAlpha:DWORD, pDstRect:PREC
   mov dReturn, -1
   .ifBitSet [xsi].dState, IMGLOAD_COMPLETE
     mov hTmpDC, $invoke(CreateCompatibleDC, hDC)
-    mov hTmpBmp, $invoke(CreateCompatibleBitmap, hDC, [xsi].Dim.x, [xsi].Dim.y)
+    mov hTmpBmp, $invoke(CreateCompatibleBitmap, hDC, [xsi].ImgSize.x, [xsi].ImgSize.y)
     mov hPrvBmp, $invoke(SelectObject, hTmpDC, hTmpBmp)
-    ICall [xsi].pIImgCtx::IImgCtx.Draw, hTmpDC, addr [xsi].Dim.Rect
+    ICall [xsi].pIImgCtx::IImgCtx.Draw, hTmpDC, addr [xsi].ImgSize.Rect
     .if SUCCEEDED(eax)
       mov bfn.BlendOp, AC_SRC_OVER
       mov bfn.BlendFlags, 0
@@ -295,9 +295,9 @@ Method Image.GetCompatibleBmp, uses xsi, hDC:HDC
   SetObject xsi
   .ifBitSet [xsi].dState, IMGLOAD_COMPLETE
     mov hTmpDC, $invoke(CreateCompatibleDC, hDC)
-    mov hBmp, $invoke(CreateCompatibleBitmap, hDC, [xsi].Dim.x, [xsi].Dim.y)
+    mov hBmp, $invoke(CreateCompatibleBitmap, hDC, [xsi].ImgSize.x, [xsi].ImgSize.y)
     mov hPrvBmp, $invoke(SelectObject, hTmpDC, hBmp)
-    ICall [xsi].pIImgCtx::IImgCtx.Draw, hTmpDC, addr [xsi].Dim.Rect
+    ICall [xsi].pIImgCtx::IImgCtx.Draw, hTmpDC, addr [xsi].ImgSize.Rect
     .if !SUCCEEDED(eax)
       invoke DeleteObject, hBmp
       mov hBmp, 0
@@ -363,7 +363,7 @@ Method Image.LoadFromFileA, uses xsi, pFileNameA:PSTRINGA
     ICall [xsi].pIImgCtx::IImgCtx.Load, pFullfileNameW, DWN_COLORMODE
     .if SUCCEEDED(eax)
       .repeat
-        ICall [xsi].pIImgCtx::IImgCtx.GetStateInfo, addr [xsi].dState, addr [xsi].Dim.x, FALSE
+        ICall [xsi].pIImgCtx::IImgCtx.GetStateInfo, addr [xsi].dState, addr [xsi].ImgSize.x, FALSE
         mov ecx, [xsi].dState
         .ifBitClr ecx, IMGLOAD_LOADING
           .ifBitClr ecx, IMGLOAD_NOTLOADED or IMGLOAD_STOPPED or IMGLOAD_ERROR
@@ -399,7 +399,7 @@ Method Image.LoadFromFileW, uses xsi, pFileNameW:PSTRINGW
     ICall [xsi].pIImgCtx::IImgCtx.Load, pFullfileNameW, DWN_COLORMODE
     .if SUCCEEDED(eax)
       .repeat
-        ICall [xsi].pIImgCtx::IImgCtx.GetStateInfo, addr [xsi].dState, addr [xsi].Dim.x, FALSE
+        ICall [xsi].pIImgCtx::IImgCtx.GetStateInfo, addr [xsi].dState, addr [xsi].ImgSize.x, FALSE
         mov ecx, [xsi].dState
         .ifBitClr ecx, IMGLOAD_LOADING
           .ifBitClr ecx, IMGLOAD_NOTLOADED or IMGLOAD_STOPPED or IMGLOAD_ERROR
@@ -442,7 +442,7 @@ Method Image.LoadFromResA, uses xbx xsi, pResNameA:PSTRINGA
       ICall [xsi].pIImgCtx::IImgCtx.Load, xbx, DWN_COLORMODE
       .if SUCCEEDED(eax)
         .repeat
-          ICall [xsi].pIImgCtx::IImgCtx.GetStateInfo, addr [xsi].dState, addr [xsi].Dim.x, FALSE
+          ICall [xsi].pIImgCtx::IImgCtx.GetStateInfo, addr [xsi].dState, addr [xsi].ImgSize.x, FALSE
           mov ecx, [xsi].dState
           .ifBitClr ecx, IMGLOAD_LOADING
             .ifBitClr ecx, IMGLOAD_NOTLOADED or IMGLOAD_STOPPED or IMGLOAD_ERROR
@@ -484,7 +484,7 @@ Method Image.LoadFromResW, uses xbx xsi, pResNameW:PSTRINGW
       ICall [xsi].pIImgCtx::IImgCtx.Load, xbx, DWN_COLORMODE
       .if SUCCEEDED(eax)
         .repeat
-          ICall [xsi].pIImgCtx::IImgCtx.GetStateInfo, addr [xsi].dState, addr [xsi].Dim.x, FALSE
+          ICall [xsi].pIImgCtx::IImgCtx.GetStateInfo, addr [xsi].dState, addr [xsi].ImgSize.x, FALSE
           mov ecx, [xsi].dState
           .ifBitClr ecx, IMGLOAD_LOADING
             .ifBitClr ecx, IMGLOAD_NOTLOADED or IMGLOAD_STOPPED or IMGLOAD_ERROR
@@ -515,9 +515,9 @@ Method Image.Stretch, uses xbx xsi, hDC:HDC, pDstRect:PRECT, pSrcRect:PRECT
   mov dReturn, -1
   .ifBitSet [xsi].dState, IMGLOAD_COMPLETE
     mov hTmpDC, $invoke(CreateCompatibleDC, hDC)
-    mov hTmpBmp, $invoke(CreateCompatibleBitmap, hDC, [xsi].Dim.x, [xsi].Dim.y)
+    mov hTmpBmp, $invoke(CreateCompatibleBitmap, hDC, [xsi].ImgSize.x, [xsi].ImgSize.y)
     mov hPrvBmp, $invoke(SelectObject, hTmpDC, hTmpBmp)
-    ICall [xsi].pIImgCtx::IImgCtx.Draw, hTmpDC, addr [xsi].Dim.Rect
+    ICall [xsi].pIImgCtx::IImgCtx.Draw, hTmpDC, addr [xsi].ImgSize.Rect
     .if SUCCEEDED(eax)
       mov dPrvStretchMode, $32($invoke(SetStretchBltMode, hDC, STRETCH_HALFTONE))
 

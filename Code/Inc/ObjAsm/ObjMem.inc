@@ -891,6 +891,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   DbgOutComponent proto :ptr GUID, :DWORD, :POINTER
 
   DbgOutMsg proto :DWORD, :DWORD, :POINTER
+
 elseif TARGET_PLATFORM eq PLATFORM_UEFI
   MemAlloc_UEFI proto :DWORD, :DWORD
   MemReAlloc_UEFI proto :POINTER, :DWORD, :DWORD, :DWORD
@@ -1102,8 +1103,8 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
     echo Warning: incompatible TARGET_STR_TYPE
   endif
 
-  DllErr2StrW proto :DWORD, :POINTER, :DWORD, :POINTER
   DllErr2StrA proto :DWORD, :POINTER, :DWORD, :POINTER
+  DllErr2StrW proto :DWORD, :POINTER, :DWORD, :POINTER
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
     DllErr2Str textequ <DllErr2StrA>
   elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
@@ -1112,8 +1113,8 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
     echo Warning: incompatible TARGET_STR_TYPE
   endif
 
-  Err2StrW proto :DWORD, :POINTER, :DWORD
   Err2StrA proto :DWORD, :POINTER, :DWORD
+  Err2StrW proto :DWORD, :POINTER, :DWORD
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
     Err2Str textequ <Err2StrA>
   elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
@@ -1122,8 +1123,8 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
     echo Warning: incompatible TARGET_STR_TYPE
   endif
 
-  GetExceptionStrW proto :DWORD
   GetExceptionStrA proto :DWORD
+  GetExceptionStrW proto :DWORD
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
     GetExceptionStr textequ <GetExceptionStrA>
   elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
@@ -1132,8 +1133,18 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
     echo Warning: incompatible TARGET_STR_TYPE
   endif
 
-  MsgBoxW proto :HANDLE, :POINTER, :POINTER, :DWORD
+  LoadPngFromResourceA proto :PSTRING
+  LoadPngFromResourceW proto :PSTRING
+  if TARGET_STR_TYPE eq STR_TYPE_ANSI
+    LoadPngFromResource textequ <LoadPngFromResourceA>
+  elseif TARGET_STR_TYPE eq STR_TYPE_WIDE
+    LoadPngFromResource textequ <LoadPngFromResourceW>
+  else
+    echo Warning: incompatible TARGET_STR_TYPE
+  endif
+
   MsgBoxA proto :HANDLE, :POINTER, :POINTER, :DWORD
+  MsgBoxW proto :HANDLE, :POINTER, :POINTER, :DWORD
   if TARGET_STR_TYPE eq STR_TYPE_ANSI
     MsgBox textequ <MsgBoxA>
   elseif TARGET_STR_TYPE eq STR_TYPE_WIDE

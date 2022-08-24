@@ -68,9 +68,9 @@ DrawTransparentBitmap proc hDC:HDC, hBitmap:HBITMAP, xStart:DWORD, yStart:DWORD,
   mov hPrevMemBmp,  $invoke(SelectObject, hMemDC, hAndMemBmp)
   mov hPrevSaveBmp, $invoke(SelectObject, hSaveDC, hSaveBmp)
 
-  ; Set proper mapping mode. Of the DC holding the 'Bitmap'
+  ; Set proper mapping mode of the DC holding the 'Bitmap'
   invoke GetMapMode, hDC
-  invoke SetMapMode, hTempDC, eax 
+  invoke SetMapMode, hTempDC, eax
 
   ; Save the bitmap sent here, because it will be overwritten.
   invoke BitBlt, hSaveDC, 0, 0, PntSize.x, PntSize.y, hTempDC, 0, 0, SRCCOPY
@@ -78,7 +78,7 @@ DrawTransparentBitmap proc hDC:HDC, hBitmap:HBITMAP, xStart:DWORD, yStart:DWORD,
   ; Set the background color of the source DC to the color.
   ; contained in the parts of the bitmap that should be transparent
   .if (cTransparentColor == TBM_FIRSTPIXEL)
-    invoke GetPixel, hTempDC, 0 , 0
+    invoke GetPixel, hTempDC, 0, 0
     mov cTransparentColor, eax
   .endif
   invoke SetBkColor, hTempDC, cTransparentColor

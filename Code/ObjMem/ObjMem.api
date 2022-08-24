@@ -496,6 +496,9 @@ SetShellAssociationW, dGlobal, pExtensionW, pVerbW, pApplicationW, pArgumentsW
 SetShellPerceivedType, dGlobal, pExtension, pPerceivedType
 SetShellPerceivedTypeA, dGlobal, pExtensionA, pPerceivedTypeA
 SetShellPerceivedTypeW, dGlobal, pExtensionW, pPerceivedTypeW
+LoadPngFromResource, pName
+LoadPngFromResourceA, pNameA
+LoadPngFromResourceW, pNameW
 MsgBox, hParent, pText, pCaption, dOptions
 MsgBoxA, hParent, pTextA, pCaptionA, dOptions
 MsgBoxW, hParent, pTextW, pCaptionW, dOptions
