@@ -455,6 +455,7 @@ ParseA, pDstStringA, pSrcStringA, dArgumentIndex
 ParseW, pDstStringW, pSrcStringW, dArgumentIndex
 IsWinNT
 IsAdmin
+GetWinVersion, pMajorVarsion, pMinorVersion, pBuildNumber
 LoadCommonControls, dFlags
 DrawTransparentBitmap, hDC, hBitmap, dXStart, dYStart, dTransparentColor
 Bmp2Rgn, hDC, hRegion, dCombineMode, dTransparentColor

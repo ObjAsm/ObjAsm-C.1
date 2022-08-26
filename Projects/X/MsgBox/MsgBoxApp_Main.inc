@@ -201,7 +201,6 @@ Method Application.OnHelp, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   mov xax, lParam
   mov xcx, [xax].HELPINFO.hItemHandle
-  DbgHex xcx
   invoke MsgBox, xcx, offset cHlpMsg, offset cAppHlp, MB_OK
 MethodEnd
 

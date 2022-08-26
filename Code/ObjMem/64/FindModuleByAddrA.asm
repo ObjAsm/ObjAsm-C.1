@@ -34,7 +34,7 @@ FindModuleByAddrA proc uses rdi rsi rbx pAddress:POINTER, pModuleNameA:POINTER
   local cModName[MAX_PATH]:CHRA
 
   invoke GetModuleHandle, 0                             ;Important to ensure that
-  invoke LoadLibraryA, $OfsCStr("psapi.dll")            ;  LoadLibrary works well
+  invoke LoadLibraryA, $OfsCStrA("psapi.dll")           ;  LoadLibrary works well
   test rax, rax
   jnz @F
   ret

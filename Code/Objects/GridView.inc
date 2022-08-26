@@ -177,7 +177,7 @@ MethodEnd
 ; Return:     Nothing.
 
 Method GridView.Init, uses xbx xsi, pOwner:POINTER, hParent:HWND, pDefStruc:PDEF_GRIDVIEW
-  DbgText "GridView.Init"
+;  DbgText "GridView.Init"
   SetObject xsi
   m2m [xsi].hParent, hParent, xax
   mov xbx, pDefStruc

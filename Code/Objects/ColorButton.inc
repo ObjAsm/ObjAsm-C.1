@@ -197,8 +197,7 @@ Method ColorButton.OnPaint, uses xdi xsi, wParam:WPARAM, lParam:LPARAM
     mov dPrevBackMode, $32($invoke(SetBkMode, [xsi].hMemDC, TRANSPARENT))
     .ifBitClr [xsi].dFlags, BTF_DISABLED
       ;Enabled
-      ;invoke GetSysColor, COLOR_WINDOWTEXT
-      mov eax, $RGB(000,000,000)
+      invoke GetSysColor, COLOR_WINDOWTEXT
       mov dPrevColor, $32($invoke(SetTextColor, [xsi].hMemDC, eax))
       invoke DrawTextEx, [xsi].hMemDC, [xsi].pTextBuffer, -1, \
                          addr [xsi].TextRect, DT_LEFT or DT_VCENTER or DT_SINGLELINE, NULL

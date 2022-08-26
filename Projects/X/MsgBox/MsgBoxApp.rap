@@ -49,8 +49,8 @@ Debug=1
 38=..\..\..\Code\Objects\Button.inc
 39=..\..\..\Code\Objects\Image.inc
 40=..\..\..\Code\Objects\SortedCollection.inc
-41=
-42=..\..\..\Code\ObjMem\X\MsgBoxT.asm
+41=..\..\..\Code\ObjMem\Common\MsgBox_TX.inc
+42=
 
 
 [MakeFiles]
@@ -134,8 +134,8 @@ Group=Added files,Assembly,Resources,Misc,Modules,Objects,Macros
 38=6
 39=6
 40=6
-41=2
-42=1
+41=1
+42=
 
 [VerInf]
 FV=1.0.0.0
@@ -166,7 +166,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=8
+MilestoneOnDateDate=26
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -201,8 +201,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=1045,608,1045,304,233
-1=1045,304,1045,304,576
+2=1045,608,1045,304,7784
+1=1045,304,1045,304,658
 6=0,0,1456,414,66847
 4=0,0,0,0,229
 31=0,0,1213,691,1416
@@ -211,7 +211,7 @@ ProductVer4Range=0
 9=0,0,0,0,108577
 10=0,0,0,0,8243
 5=0,0,0,0,34320
-3=1045,0,1045,304,236
+3=1045,0,1045,304,1002
 11=0,0,1783,588,1066
 15=0,0,0,0,3609
 14=0,0,0,0,814
@@ -237,10 +237,11 @@ ProductVer4Range=0
 38=0,0,0,0,4007
 39=0,0,0,0,4706
 40=0,0,0,0,2476
-35=0,0,0,0,421
+35=0,0,0,0,771
 30=0,0,0,0,0
-41=
-42=0,0,0,0,10146
+41=0,0,0,0,0
+42=
+36=0,0,0,0,0
 
 [BookMark]
 0=
@@ -259,16 +260,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="C:\_MySoftware_\ObjAsm\Code\Lib\64\ObjAsm\\ObjMem64.lib"
-2="cErrMsg"
-3="int 3"
-4="IsDelimiterChar"
-5="DbgDec [xsi].DrawExtent.x"
-6="GetSingleTVStyleName"
-7="IsBlankChar"
-8="IsStyleNameChar"
-9="BMP_BACKGROUND"
-10=".ifBitSet eax, TVIF_EXTENT_Y_SET"
+1="cHlpMsg"
+2="C:\_MySoftware_\ObjAsm\Code\Lib\64\ObjAsm\\ObjMem64.lib"
+3="cErrMsg"
+4="int 3"
+5="IsDelimiterChar"
+6="DbgDec [xsi].DrawExtent.x"
+7="GetSingleTVStyleName"
+8="IsBlankChar"
+9="IsStyleNameChar"
+10="BMP_BACKGROUND"
 [Collapse]
 1=
 2=40973
@@ -355,7 +356,7 @@ ProductVer4Range=0
 56=
 51=,
 48=
-41=524288
+41=
 40=
 36=
 35=
@@ -384,9 +385,9 @@ ProductVer4Range=0
 37=
 38=,
 [AutoLoad]
-AutoLoad=1,2,3,4,11
+AutoLoad=1,2,3,4,11,36,35
 [PTimer]
-PTimer=2117240814
+PTimer=2117905485
 [GroupExpand]
 GroupExpand=1,1,1,0,0,1,1,0
 [RADebugBP]

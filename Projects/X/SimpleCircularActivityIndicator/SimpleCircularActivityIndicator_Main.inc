@@ -3,7 +3,7 @@
 ; Author:     G. Friedrich
 ; Version:    C.1.0
 ; Purpose:    ObjAsm Simple Circular Activity Indicator.
-; Notes:      Version C.1.0, October 2017
+; Notes:      Version C.1.0, August 2022
 ;               - First release.
 ; ==================================================================================================
 
@@ -121,16 +121,24 @@ Method Application.OnCommand, uses xsi, wParam:WPARAM, lParam:LPARAM
     xor eax, eax
 
   .elseif ax == IDM_START_1
-    OCall [xsi].pSCAI1::SimpleCircularActivityIndicator.Start
+    .if [xsi].pSCAI1 != NULL
+      OCall [xsi].pSCAI1::SimpleCircularActivityIndicator.Start
+    .endif
 
   .elseif ax == IDM_START_2
-    OCall [xsi].pSCAI2::SimpleCircularActivityIndicator.Start
+    .if [xsi].pSCAI2 != NULL
+      OCall [xsi].pSCAI2::SimpleCircularActivityIndicator.Start
+    .endif
 
   .elseif ax == IDM_STOP_1
-    OCall [xsi].pSCAI1::SimpleCircularActivityIndicator.Stop
+    .if [xsi].pSCAI1 != NULL
+      OCall [xsi].pSCAI1::SimpleCircularActivityIndicator.Stop
+    .endif
 
   .elseif ax == IDM_STOP_2
-    OCall [xsi].pSCAI2::SimpleCircularActivityIndicator.Stop
+    .if [xsi].pSCAI2 != NULL
+      OCall [xsi].pSCAI2::SimpleCircularActivityIndicator.Stop
+    .endif
 
   .elseif ax == IDM_ABOUT
     New Dlg::DialogAbout

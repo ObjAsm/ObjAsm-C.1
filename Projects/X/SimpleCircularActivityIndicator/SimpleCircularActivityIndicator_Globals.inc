@@ -3,7 +3,7 @@
 ; Author:     G. Friedrich
 ; Version:    C.1.0
 ; Purpose:    ObjAsm Simple Circular Activity Indicator.
-; Notes:      Version C.1.0, October 2017
+; Notes:      Version C.1.0, August 2022
 ;               - First release.
 ; ==================================================================================================
 
@@ -19,3 +19,15 @@ CStr szIcoName,   "ICON_APP"
                   @CatStr(<!">, %BUILD_DATE_STR, \
                           <  -  Build: >, %BUILD_NUMBER, <->, %ASSEMBLER, <->, \
                           %TARGET_MODE_STR, <->, %TARGET_BITNESS, <!">)
+
+CStr cWarningMsg, "{PA15}", \
+                  "[B,H+5,C#FF0000]Warning:  [~]", \
+                  "[B,H+2]Unsupported Operating System[~]{P}", \
+                  "[U]Description:[~]{P}", \ 
+                  "[FI25]", \
+                    "This Demo Application requires at least Windows 8.0{B}", \
+                    "This operating system does not meet this requirement.{B}{B}", \
+                  "[~]"
+
+CStr cAppWarning, "Application Warning"
+

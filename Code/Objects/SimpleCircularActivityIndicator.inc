@@ -17,6 +17,25 @@ SCAI_STATUS_STARTING  equ 1
 SCAI_STATUS_RUNNING   equ 2
 SCAI_STATUS_STOPPING  equ 3
 
+DEF_SCAI struc
+  xCtlID        XWORD     ?         ;Contol ID
+  dStyle        DWORD     ?         ;Style
+  dExStyle      DWORD     ?         ;Extended style
+  pTitle        PSTRING   ?         ;-> Window text
+  union
+    rect        RECT      {}
+    struct
+      sdPosX    SDWORD    ?         ;X position
+      sdPosY    SDWORD    ?         ;Y position
+      dWidth    DWORD     ?         ;Width
+      dHeight   DWORD     ?         ;Height
+    ends
+  ends
+  dInterval     DWORD     ?
+DEF_SCAI ends
+PDEF_SCAI typedef ptr DEF_SCAI
+
+
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Object:  SimpleCircularActivityIndicator
 ; Purpose: Implement an animated control that rotates a loaded image to show activity.
@@ -32,7 +51,8 @@ Object SimpleCircularActivityIndicator, CircularActivityIndicatorID, WinPrimer
   VirtualMethod     AddPngFromRes,      PSTRING
   VirtualMethod     Dispatch,           HWND, DWORD, WPARAM, LPARAM
   RedefineMethod    Done
-  RedefineMethod    Init,               POINTER, HWND, DWORD
+  RedefineMethod    Init,               POINTER, HWND, PDEF_SCAI
+  VirtualMethod     InitRes,            POINTER, HWND, DWORD
   VirtualMethod     Start
   StaticMethod      Startup
   VirtualMethod     Stop
@@ -156,15 +176,36 @@ MethodEnd
 ; Method:     SimpleCircularActivityIndicator.Init
 ; Purpose:    Initialize the SimpleCircularActivityIndicator object.
 ; Arguments:  Arg1: -> Owner object.
+;             Arg2: Parent Window HANDLE.
+;             Arg3: -> Definition structure.
+; Return:     Nothing.
+
+Method SimpleCircularActivityIndicator.Init, uses xbx xsi, pOwner:POINTER, hParent:HWND, pDefStruc:PDEF_SCAI
+  SetObject xsi
+  mov xbx, pDefStruc
+  assume xbx:PDEF_SCAI
+  mov ecx, [xbx].dExStyle
+  or ecx, WS_EX_LAYERED
+  invoke CreateWindowEx, ecx, offset(szCircularActivityIndicatorClass), [xbx].pTitle, \
+                         [xbx].dStyle, [xbx].sdPosX, [xbx].sdPosY, [xbx].dWidth, [xbx].dHeight, \
+                         hParent, [xbx].xCtlID, hInstance, pSelf
+  ACall xsi.Init, pOwner, xax
+  mov [xsi].hTimer, $invoke(SetTimer, [xsi].hWnd, 0, [xbx].dInterval, NULL)
+  assume xbx:NOTHING
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     SimpleCircularActivityIndicator.InitRes
+; Purpose:    Initialize the SimpleCircularActivityIndicator object.
+; Arguments:  Arg1: -> Owner object.
 ;             Arg2: Window HANDLE.
 ;             Arg3: Frame presentation interval.
 ; Return:     Nothing.
 
-Method SimpleCircularActivityIndicator.Init, uses xsi, pOwner:POINTER, hWnd:HWND, dInterval:DWORD
+Method SimpleCircularActivityIndicator.InitRes, uses xsi, pOwner:POINTER, hWnd:HWND, dInterval:DWORD
   SetObject xsi
   ACall xsi.Init, pOwner, hWnd
-  invoke SetTimer, [xsi].hWnd, 0, dInterval, NULL
-  mov [xsi].hTimer, xax
+  mov [xsi].hTimer, $invoke(SetTimer, [xsi].hWnd, 0, dInterval, NULL)
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -369,7 +410,7 @@ Method SimpleCircularActivityIndicator.WndProc, uses xsi, uMsg:DWORD, wParam:WPA
       .if xax != 0
         invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0 ;Get instance POINTER of the parent object
       .endif
-      OCall xsi::SimpleCircularActivityIndicator.Init, xax, pSelf, 50
+      OCall xsi::SimpleCircularActivityIndicator.InitRes, xax, pSelf, 50
       BitSet [xsi].$Obj(SimpleCircularActivityIndicator).dFlags, SCAI_SELF_INST
     .else
       ;Code call

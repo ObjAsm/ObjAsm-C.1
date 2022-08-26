@@ -941,6 +941,7 @@ GetObjectTemplate proto :DWORD
 
 ;General purpose procedures
 if TARGET_PLATFORM eq PLATFORM_WINDOWS
+  GetWinVersion proto :POINTER, :POINTER, :POINTER
   LoadCommonControls proto :DWORD
   CenterForm proto :DWORD, :DWORD
   GetRawClientRect proto :HANDLE, :PRECT

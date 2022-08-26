@@ -39,7 +39,7 @@ Debug=0
 28=..\..\..\Code\Objects\SimpleCircularActivityIndicator.inc
 29=..\..\..\Code\Objects\Image.inc
 30=..\..\..\Code\ObjMem\64\DrawTransparentBitmap.asm
-31=SimpleCircularActivityIndicator.inc
+31=
 32=Manifest.xml
 33=..\..\..\Code\Macros\fMath.inc
 
@@ -115,7 +115,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Objects,Macros
 28=6
 29=6
 30=2
-31=1
+31=
 32=3
 33=7
 
@@ -148,7 +148,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=24
+MilestoneOnDateDate=26
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -183,27 +183,27 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,1449,575,3422
-1=0,0,0,0,1037
-6=0,0,1456,414,63901
-4=0,0,1449,575,1109
-31=0,0,1449,575,10110
-8=0,0,777,591,20469
-7=0,0,0,0,2289
-9=0,0,0,0,35586
-10=0,0,0,0,8243
-5=0,0,0,0,996
-3=0,0,0,0,252
-11=0,0,1783,588,1147
-15=0,0,0,0,5891
-14=0,0,0,0,0
-13=0,0,0,0,11178
-12=0,0,0,0,1128
-16=0,0,0,0,6554
-17=0,0,0,0,456
+2=0,0,1449,575,283
+1=0,0,0,0,1664
+6=0,0,1456,414,295
+4=0,0,1449,575,262
+31=
+8=0,0,777,591,241
+7=0,0,0,0,256
+9=0,0,0,0,252
+10=0,0,0,0,1137
+5=0,0,0,0,236
+3=0,0,0,0,490
+11=0,0,1783,588,282
+15=0,0,0,0,250
+14=0,0,0,0,363
+13=0,0,0,0,253
+12=0,0,0,0,414
+16=0,0,0,0,448
+17=0,0,0,0,267
 20=0,0,0,0,924
-18=0,0,0,0,1317
-19=0,0,0,0,2360
+18=0,0,0,0,250
+19=0,0,0,0,261
 23=0,0,0,0,5451
 24=0,0,0,0,0
 25=0,0,0,0,1955
@@ -211,10 +211,10 @@ ProductVer4Range=0
 22=0,0,0,0,14104
 26=0,0,0,0,5576
 27=0,0,0,0,51736
-28=0,0,1449,575,11444
+28=0,0,1449,575,14772
 29=0,0,0,0,8977
 30=0,0,0,0,1048
-32=0,0,0,0,289
+32=0,0,0,0,224
 33=0,0,0,0,39836
 
 [BookMark]
@@ -234,16 +234,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="IDM_START"
-2="WriteF"
-3=".Stop"
-4="dAlphaIncr"
-5="dSpeed"
-6="SPINNER_"
-7="SPN_SELF_INST"
-8="pCircularActivityIndicator2"
-9="pCircularActivityIndicator1"
-10="hModBmp"
+1="October 2017"
+2="IDM_START"
+3="WriteF"
+4=".Stop"
+5="dAlphaIncr"
+6="dSpeed"
+7="SPINNER_"
+8="SPN_SELF_INST"
+9="pCircularActivityIndicator2"
+10="pCircularActivityIndicator1"
 [Collapse]
 1=
 2=
@@ -337,7 +337,7 @@ ProductVer4Range=0
 34=
 33=,,
 29=,
-28=537395200,
+28=1048576,
 26=,
 24=
 22=
@@ -357,9 +357,9 @@ ProductVer4Range=0
 27=,,,,,,,
 32=
 [AutoLoad]
-AutoLoad=1,2,4
+AutoLoad=1,3
 [PTimer]
-PTimer=1318064528
+PTimer=1322419918
 [GroupExpand]
 GroupExpand=1,1,1,0,0,1,1,0
 [RADebugBP]
