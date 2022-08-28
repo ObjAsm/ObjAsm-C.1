@@ -29,10 +29,12 @@ SysSetup OOP, WIN32, ANSI_STRING;, DEBUG(WND)
 % includelib &LibPath&Windows\httpapi.lib
 
 % include &IncPath&Windows\WinSock2.inc
+% include &IncPath&Windows\Shellapi.inc
 % include &IncPath&Windows\http.inc
 
 ;Load or build the following objects
 MakeObjects Primer, Stream, WinPrimer
+MakeObjects Button, Hyperlink
 MakeObjects Window, Dialog, DialogModal, DialogAbout
 MakeObjects Collection, XWCollection
 MakeObjects WinApp, SdiApp

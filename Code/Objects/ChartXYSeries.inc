@@ -387,7 +387,7 @@ Method ChartXYSeries.Draw, uses xbx xdi xsi, hDC:HDC
   local fX0:CHT_FLOAT, fY0:CHT_FLOAT, fX1:CHT_FLOAT, fY1:CHT_FLOAT
   local Pnt0:POINT, Pnt1:POINT, PrvPnt0:POINT, PrvPnt1:POINT
 
-  DbgText "ChartXYSeries.Draw"
+;  DbgText "ChartXYSeries.Draw"
   SetObject xsi
   mov xcx, [xsi].pOwner
   mov xdi, [xcx].$Obj(Collection).pOwner                ;xdi -> ChartWnd

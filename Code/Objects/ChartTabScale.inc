@@ -261,7 +261,7 @@ MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     ChartTabScale.Done
-; Purpose:    Finalize the ChartTabSeries object.
+; Purpose:    Finalize the ChartTabScale object.
 ; Arguments:  None.
 ; Return:     Nothing.
 
@@ -329,7 +329,7 @@ MethodEnd
 
 Method ChartTabScale.OnCtlColorDlg,, wParam:WPARAM, lParam:LPARAM
   local HC:HIGHCONTRAST
-  
+
   mov HC.cbSize, sizeof HIGHCONTRAST
   invoke SystemParametersInfo, SPI_GETHIGHCONTRAST, sizeof(HIGHCONTRAST), addr HC, 0
   .ifBitSet HC.dwFlags, HCF_HIGHCONTRASTON

@@ -9,14 +9,14 @@
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc   ;Include & initialize standard modules
-SysSetup OOP, WIN64, WIDE_STRING, DEBUG(WND)            ;Load OOP files and OS related objects
+SysSetup OOP, WIN64, WIDE_STRING;, DEBUG(WND)            ;Load OOP files and OS related objects
 
 % includelib &LibPath&Windows\shell32.lib
 % includelib &LibPath&Windows\shlwapi.lib
 
 ;Load or build the following objects
 MakeObjects Primer, Stream, WinPrimer
-MakeObjects Window, Dialog, DialogModal, DialogAbout
+MakeObjects Window, Button, Hyperlink, Dialog, DialogModal, DialogAbout
 MakeObjects WinApp, SdiApp
 
 include Demo02_Globals.inc                              ;Application globals

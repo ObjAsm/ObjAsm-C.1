@@ -38,7 +38,7 @@ CStr  cOpen,          "open"
 
 ;Markup Texts
 MTXT_NAME           CHR "{PA 20,Z}", \
-                        "[H+2,HI 20,C#000000,N#FFFFFF]", \
+                        "[H+2,HI 20]", \
                           "[H+3][B][U]Object Name[~]:[~]     "
 MTXT_END            CHR   "[~]{P}{P}", \
                         "[~]", 0
@@ -56,7 +56,6 @@ MTXT_OUTDATED       CHR "[C#FF0000,I]Outdated[~]"
 MTXT_INHER          CHR "{P}[H+1,B][U]Inheritance Path[~]:[~]     "
 MTXT_ARROW          CHR " [F'Wingdings']{#00E8}[~] "
 MTXT_LINK_BEG       CHR "[APP "
-MTXT_LINK_END       CHR ",C#0066D5]"
 MTXT_CHECKBOX_BEG   CHR "[APP "
 MTXT_CHECKBOX_END   CHR "]"
 MTXT_ICON_BEG       CHR "{C "
@@ -81,9 +80,6 @@ MTXT_VARS_HEADER    CHR "{P}{TABCLR}{TL 30}{TC 550}{TC 750}{TC 950}[B]{T}Name{T}
 MTXT_NO_INFO        CHR "[I]No information available[~]"
 MTXT_TPL_DEFAULTS   CHR "[I]Template Defaults[~]"
 
-MTXT_COLOR_BLACK    CHR "[C#000000]"
-MTXT_COLOR_GRAY     CHR "[C#7F7F7F]"
-MTXT_COLOR_RED      CHR "[C#FF0000]"
 MTXT_STYLE_ITALIC   CHR "[I]"
 MTXT_STYLE_BOLD     CHR "[B]"
 MTXT_STYLE_NONE     CHR "[H+0]"
@@ -117,6 +113,11 @@ VARIABLETYPE_REGULAR        equ   1
 VARIABLETYPE_REDEFINED      equ   2
 VARIABLETYPE_OBJECT         equ   3
 
+.data
+MTXT_COLOR_REGULAR  CHR "[C@8]"           ;COLOR_WINDOWTEXT
+MTXT_COLOR_DISABLED CHR "[C@17]"          ;COLOR_GRAYTEXT
+MTXT_COLOR_ERROR    CHR "[C#FF0000]"
+MTXT_LINK_END       CHR ",C@26]"          ;COLOR_HOTLIGHT
 
 .const
 ;Lookup tables

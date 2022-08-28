@@ -17,13 +17,17 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 // Icons ------------------------------------------------------------------------------------------
 ICON_APP  ICON DISCARDABLE "ICO\OA.ico"
 
+// DialogAboutEx icons
+ICON_LINK             ICON DISCARDABLE "ICO\Link_16x16_04.ico"
+ICON_MAIL             ICON DISCARDABLE "ICO\Mail_16x16_04.ico"
+
 
 // Bitmaps ----------------------------------------------------------------------------------------
 BMP_BACKGROUND  BITMAP "BMP\WndBkgnd.bmp"
 
 
 // Dialogs ----------------------------------------------------------------------------------------
-#include "DLG\DialogAbout.rc"
+#include "DLG\DialogAboutEx.rc"
 #include "Res\DynLayDlgDlg.rc"
 
 

@@ -13,6 +13,7 @@
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
+
 // Icons -------------------------------------------------------------------------------------------
 ICON_APP              ICON DISCARDABLE "Res\OAE.ico"
 

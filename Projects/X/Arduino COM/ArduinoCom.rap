@@ -156,7 +156,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=14
+MilestoneOnDateDate=28
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -192,7 +192,7 @@ ProductVer4Range=0
 
 [Size]
 2=0,0,0,0,238
-1=0,0,0,0,220
+1=0,0,0,0,1341
 6=0,0,1456,414,587
 4=0,0,0,0,225
 31=0,0,1213,691,11371
@@ -202,7 +202,7 @@ ProductVer4Range=0
 10=0,0,0,0,1075
 5=0,0,0,0,14093
 3=0,0,0,0,241
-11=0,0,1783,588,240
+11=0,0,1783,588,1143
 15=0,0,0,0,3436
 14=0,0,0,0,814
 13=0,0,0,0,18129
@@ -245,16 +245,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="OnCommand"
-2="GetComPortNames"
-3="DialogComPortSelection"
-4="echo"
-5="$PushMethodArgs"
-6="MethodInvoke m"
-7="MethodInvoke"
-8="OCall"
-9="IDD_DLG_COMPORT_SELECTION"
-10="COM_FLOWCTRL_NONE"
+1="IDC_TEXT_ABOUT"
+2="OnCommand"
+3="GetComPortNames"
+4="DialogComPortSelection"
+5="echo"
+6="$PushMethodArgs"
+7="MethodInvoke m"
+8="MethodInvoke"
+9="OCall"
+10="IDD_DLG_COMPORT_SELECTION"
 [Collapse]
 1=
 2=
@@ -369,9 +369,9 @@ ProductVer4Range=0
 32=
 37=
 [AutoLoad]
-AutoLoad=1,2,37,4,3,11
+AutoLoad=1,2
 [PTimer]
-PTimer=1198434730
+PTimer=1198766996
 [GroupExpand]
 GroupExpand=1,1,1,1,0,1,1,0
 [RADebugBP]

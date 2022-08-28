@@ -34,6 +34,7 @@ GUID_DEVINTERFACE_COMPORT GUID sGUID_DEVINTERFACE_COMPORT
 
 ;Load or build the following objects
 MakeObjects Primer, Stream, WinPrimer
+MakeObjects Button, Hyperlink
 MakeObjects Window, Dialog, DialogModal, DialogAbout
 MakeObjects WinApp, SdiApp
 MakeObjects .\DialogComPortSelection

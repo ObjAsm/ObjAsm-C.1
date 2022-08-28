@@ -83,7 +83,7 @@ ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-CStr cIntPropClass, "IntPropWndClass"
+CStr cIntPropClass, "IntPropWndClass"                   ;Interface Property Window
 
 Object IntPropWnd, OAE_IntPropWndID, PropWnd
 ;  RedefineMethod    CreateMarkupText
@@ -101,7 +101,7 @@ ObjectEnd
 
 CStr cObjPropClass, "ObjPropWndClass"
 
-Object ObjPropWnd, OAE_ObjPropWndID, PropWnd
+Object ObjPropWnd, OAE_ObjPropWndID, PropWnd            ;Object property Window
   RedefineMethod    CreateMarkupText
   RedefineMethod    Done
   RedefineMethod    Init,               $ObjPtr(ClientWnd), PSTRING, POBJECTINFORMATION

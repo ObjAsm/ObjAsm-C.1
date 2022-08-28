@@ -26,7 +26,7 @@ CUdeviceptr typedef POINTER
 
 ;Load or build the following objects
 MakeObjects Primer, Stream, WinPrimer, Window
-MakeObjects Dialog, DialogModal, DialogAbout
+MakeObjects Button, Hyperlink, Dialog, DialogModal, DialogAbout
 MakeObjects WinApp, DlgApp
 
 

@@ -18,8 +18,8 @@ VER_PRODUCTVERSION            equ       2,0,0,0
 VER_PRODUCTVERSION_STR        equ       <2.0>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       257
-BUILD_DATE_STR                textequ   <2022-08-25>
+BUILD_NUMBER                  equ       264
+BUILD_DATE_STR                textequ   <2022-08-28>
 BUILD_BITNESS                 equ       64
 BUILD_MODE                    equ       RLS
 
@@ -55,6 +55,12 @@ IDB_WINDOW_CLOSEALL           equ       009
 IDC_TOOLBARFILE               equ       100
 IDC_TOOLBARWINDOW             equ       101
 IDC_STATUSBAR                 equ       102
+
+;Dialog About Control IDs
+IDC_DAB_ICON                  equ       100
+IDC_DAB_TEXT                  equ       101
+IDC_DAB_MAIL                  equ       102
+IDC_DAB_LINK                  equ       103
 
 ;Language IDs
 IDLANG_ENGLISH                equ       000

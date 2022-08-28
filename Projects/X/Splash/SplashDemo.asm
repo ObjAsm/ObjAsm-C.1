@@ -14,7 +14,7 @@ SysSetup OOP, WIN64, WIDE_STRING, DEBUG(WND)            ;Load OOP files and OS r
 % includelib &LibPath&Windows\shell32.lib
 
 MakeObjects Primer, Stream                              ;Load or build the following objects
-MakeObjects WinPrimer, Window, Dialog, DialogModal, DialogAbout
+MakeObjects WinPrimer, Window, Button, Hyperlink, Dialog, DialogModal, DialogAbout
 MakeObjects WinApp, SdiApp
 MakeObjects Splash
 

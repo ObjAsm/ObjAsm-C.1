@@ -548,20 +548,24 @@ Method DB_StructEditorLine.CheckChanges, uses xbx xsi
     BitSet [xsi].dFlags, SEL_FLAG_CHANGE_TYPE
   .endif
 
-  invoke GetWindowText, [xsi].hEdtFieldLength, xbx, lengthof(cBuffer)
-  invoke dec2dword, xbx
-  .if al == [xsi].MutationInfo.bPrvLength
-    BitClr [xsi].dFlags, SEL_FLAG_CHANGE_LENGTH
-  .else
-    BitSet [xsi].dFlags, SEL_FLAG_CHANGE_LENGTH
+  .if $invoke(IsWindowEnabled, [xsi].hEdtFieldLength)
+    invoke GetWindowText, [xsi].hEdtFieldLength, xbx, lengthof(cBuffer)
+    invoke dec2dword, xbx
+    .if al == [xsi].MutationInfo.bPrvLength
+      BitClr [xsi].dFlags, SEL_FLAG_CHANGE_LENGTH
+    .else
+      BitSet [xsi].dFlags, SEL_FLAG_CHANGE_LENGTH
+    .endif
   .endif
 
-  invoke GetWindowText, [xsi].hEdtFieldParam, xbx, lengthof(cBuffer)
-  invoke dec2dword, xbx
-  .if eax == [xsi].MutationInfo.dPrvParam
-    BitClr [xsi].dFlags, SEL_FLAG_CHANGE_PARAM
-  .else
-    BitSet [xsi].dFlags, SEL_FLAG_CHANGE_PARAM
+  .if $invoke(IsWindowEnabled, [xsi].hEdtFieldParam)
+    invoke GetWindowText, [xsi].hEdtFieldParam, xbx, lengthof(cBuffer)
+    invoke dec2dword, xbx
+    .if eax == [xsi].MutationInfo.dPrvParam
+      BitClr [xsi].dFlags, SEL_FLAG_CHANGE_PARAM
+    .else
+      BitSet [xsi].dFlags, SEL_FLAG_CHANGE_PARAM
+    .endif
   .endif
 
   invoke GetWindowText, [xsi].hEdtFieldIndex, xbx, lengthof(cBuffer)

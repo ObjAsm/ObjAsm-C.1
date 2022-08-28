@@ -27,7 +27,7 @@ SysSetup OOP, WIN64, WIDE_STRING, DEBUG(WND)            ;Load OOP files and OS r
 
 ;Load or build the following objects
 MakeObjects Primer, Stream, Collection, XWCollection
-MakeObjects WinPrimer, Window, Dialog, DialogModal, DialogAbout
+MakeObjects WinPrimer, Button, Hyperlink, Window, Dialog, DialogModal, DialogAbout
 MakeObjects WinApp, SdiApp
 MakeObjects DataPool
 MakeObjects WinControl, XTreeView

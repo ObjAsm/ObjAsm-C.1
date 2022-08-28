@@ -29,7 +29,7 @@ Debug=1
 18=Send.dlg
 19=..\..\..\..\..\ObjAsm\Code\Macros\Memory.inc
 20=NetComClient_Protocol.inc
-21=
+21=..\..\..\..\Code\Objects\Button.inc
 22=..\..\..\..\Code\Objects\DialogModal.inc
 23=..\Server\NetComServer.exe
 24=..\..\..\..\..\ObjAsm\Code\Macros\Model.inc
@@ -44,7 +44,7 @@ Debug=1
 33=..\..\..\..\Code\Objects\DataCollection.inc
 34=..\..\..\..\Code\Inc\Windows\ioapiset.inc
 35=..\..\..\..\Code\Macros\SDLL.inc
-36=
+36=..\..\..\..\Code\Objects\Hyperlink.inc
 
 [MakeFiles]
 0=NetComClient.rap
@@ -102,7 +102,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Objects,Macros,Dialogs
 18=8
 19=7
 20=6
-21=
+21=6
 22=6
 23=2
 24=7
@@ -117,7 +117,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Objects,Macros,Dialogs
 33=6
 34=1
 35=7
-36=
+36=6
 
 [VerInf]
 FV=1.0.0.0
@@ -148,7 +148,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=14
+MilestoneOnDateDate=28
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -183,9 +183,9 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,1202,620,235
-1=0,0,0,0,220
-6=0,0,0,0,90797
+2=0,0,1202,620,7511
+1=0,0,0,0,1033
+6=0,0,0,0,14667
 4=0,0,0,0,1125
 31=0,0,1213,691,2401
 8=0,0,0,0,1911
@@ -193,7 +193,7 @@ ProductVer4Range=0
 9=0,0,1838,628,27941
 7=0,0,1262,635,13475
 14=0,0,1297,620,8942
-13=0,0,894,619,1189
+13=0,0,894,619,964
 12=0,0,0,0,1927
 11=0,0,1251,559,48747
 15=0,0,670,591,3197
@@ -218,23 +218,23 @@ ProductVer4Range=0
 35=0,0,0,0,0
 36=
 [Find]
-1="getaddrinfo"
-2="GetHostName"
-3="gethostbyname"
-4="RemoteHostAddr"
-5="QueueConnect"
-6="timeval"
-7="wsaconnectbyname"
-8="wsaconnect"
-9="connect"
-10="hSupervisor"
+1="#Worker"
+2="IDC_TEXT_ABOUT"
+3="getaddrinfo"
+4="GetHostName"
+5="gethostbyname"
+6="RemoteHostAddr"
+7="QueueConnect"
+8="timeval"
+9="wsaconnectbyname"
+10="wsaconnect"
 [Collapse]
 17=,
 14=,
 13=
 2=
 1=
-6=,,
+6=,,,
 3=
 7=
 9=,12288,
@@ -275,9 +275,9 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,2,3,20,13
+AutoLoad=1
 [PTimer]
-PTimer=540002057
+PTimer=544182870
 [GroupExpand]
 GroupExpand=1,1,1,1,0,0,1,1,0
 [RADebugBP]

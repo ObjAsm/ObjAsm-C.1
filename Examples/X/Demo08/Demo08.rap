@@ -136,7 +136,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=1
+MilestoneOnDateDate=28
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -171,8 +171,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,0,0,773
-1=0,0,0,0,494
+2=0,0,0,0,2483
+1=0,0,0,0,820
 6=0,0,1456,414,59484
 4=0,0,0,0,724
 31=0,0,1213,691,1416
@@ -182,7 +182,7 @@ ProductVer4Range=0
 10=0,0,0,0,18138
 5=0,0,0,0,54462
 3=0,0,0,0,428
-11=0,0,1783,588,1128
+11=0,0,1783,588,1331
 15=0,0,0,0,5891
 14=0,0,0,0
 13=0,0,0,0,4641
@@ -217,15 +217,15 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="WINAPI_FAMILY_PARTITION"
-2="CtlsSet"
-3="OnInitWindow"
-4="DestroyDialog"
-5="EndDialog"
-6="OnCommand"
-7="CudaApp"
-8="xIdleCount"
-9="Demo08"
+1="Message"
+2="WINAPI_FAMILY_PARTITION"
+3="CtlsSet"
+4="OnInitWindow"
+5="DestroyDialog"
+6="EndDialog"
+7="OnCommand"
+8="CudaApp"
+9="xIdleCount"
 10="Demo08"
 [Collapse]
 1=
@@ -339,9 +339,9 @@ ProductVer4Range=0
 25=
 27=
 [AutoLoad]
-AutoLoad=
+AutoLoad=1,11,2
 [PTimer]
-PTimer=1136017589
+PTimer=1136393510
 [GroupExpand]
 GroupExpand=1,1,1,1,0,1,1,0
 [RADebugBP]

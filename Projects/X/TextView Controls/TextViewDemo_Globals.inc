@@ -23,13 +23,13 @@ APP_CHECK     equ   5
 
 String szMarkupText,  "{Padding 20, AutoLineBreak, Zoomable}", \
                       "[H +3]", \
-                      "[H+2,Canvas#FFFFFF]", \
+                      "[H+2]", \
                         "[H+1]Settings:[~]{P}", \
                         "[FI20,HI20,C#0000F0]", \
                           "[C#0000F0,App0][TXT0,F'Lucida Sans Unicode']?[~] Option 1[~]   [TIP0,F'Webdings',H-2]{#69}[~]{B}", \
                           "[C#F00000,App1][TXT1,F'Lucida Sans Unicode']?[~] Option 2[~]{P}", \
                           "[C#007000,App2][TXT2,F'Wingdings 2']?[~] Option 3[~]{B}", \
-                          "[C#000000,App3][TXT3,F'Wingdings 2']?[~] Option 4[~]{B}{B}", \
+                          "[C#7F7F7F,App3][TXT3,F'Wingdings 2']?[~] Option 4[~]{B}{B}", \
                         "[~]", \
                       "[~]"
 

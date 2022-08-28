@@ -787,8 +787,7 @@ Method XMenu.DrawMenuBarText, uses xbx xdi xsi, pDIS:PDRAWITEMSTRUCT
         mov eax, COLOR_MENUTEXT
       .endif
       invoke GetSysColor, eax
-      invoke SetTextColor, [xdi].DRAWITEMSTRUCT.hDC, eax
-      mov dPrevColor, eax
+      mov dPrevColor, $32($invoke(SetTextColor, [xdi].DRAWITEMSTRUCT.hDC, eax))
 
       mov xdx, [xbx].$Obj(XMenuItem).pMenuStr 
       .if xdx != NULL
@@ -797,21 +796,10 @@ Method XMenu.DrawMenuBarText, uses xbx xdi xsi, pDIS:PDRAWITEMSTRUCT
       .endif
     .else
       ;Item is disabled
-      invoke GetSysColor, COLOR_BTNHILIGHT
-      invoke SetTextColor, [xdi].DRAWITEMSTRUCT.hDC, eax
-      mov dPrevColor, eax
+      invoke GetSysColor, COLOR_GRAYTEXT
+      mov dPrevColor, $32($invoke(SetTextColor, [xdi].DRAWITEMSTRUCT.hDC, eax))
       mov xdx, [xbx].$Obj(XMenuItem).pMenuStr 
       .if xdx != NULL
-        .ifBitClr [xdi].DRAWITEMSTRUCT.itemState, ODS_SELECTED
-          inc Rect.left
-          inc Rect.top
-          invoke DrawText, [xdi].DRAWITEMSTRUCT.hDC, xdx, -1, \
-                           addr Rect, DT_CENTER or DT_VCENTER or DT_SINGLELINE
-          dec Rect.left
-          dec Rect.top
-        .endif
-        invoke GetSysColor, COLOR_BTNSHADOW
-        invoke SetTextColor, [xdi].DRAWITEMSTRUCT.hDC, eax
         invoke DrawText, [xdi].DRAWITEMSTRUCT.hDC, [xbx].$Obj(XMenuItem).pMenuStr, -1, \
                          addr Rect, DT_CENTER or DT_VCENTER or DT_SINGLELINE
       .endif
@@ -1210,21 +1198,10 @@ Method XMenu.DrawPopupText, uses xbx xdi xsi, pDIS:PDRAWITEMSTRUCT
     .endif
   .else
     ;Item is disabled
-    invoke GetSysColor, COLOR_BTNHILIGHT
-    invoke SetTextColor, [xdi].DRAWITEMSTRUCT.hDC, eax
-    mov dPrevColor, eax
+    invoke GetSysColor, COLOR_GRAYTEXT
+    mov dPrevColor, $32($invoke(SetTextColor, [xdi].DRAWITEMSTRUCT.hDC, eax))
     .if [xbx].$Obj(XMenuItem).pMenuStr != NULL
       ;Menu text
-      .ifBitClr [xdi].DRAWITEMSTRUCT.itemState, ODS_SELECTED
-        inc Rect.left
-        inc Rect.top
-        invoke DrawText, [xdi].DRAWITEMSTRUCT.hDC, [xbx].$Obj(XMenuItem).pMenuStr, -1, \
-                         addr Rect, DT_LEFT or DT_VCENTER or DT_SINGLELINE
-        dec Rect.left
-        dec Rect.top
-      .endif
-      invoke GetSysColor, COLOR_BTNSHADOW
-      invoke SetTextColor, [xdi].DRAWITEMSTRUCT.hDC, eax
       invoke DrawText, [xdi].DRAWITEMSTRUCT.hDC, [xbx].$Obj(XMenuItem).pMenuStr, -1, \
                        addr Rect, DT_LEFT or DT_VCENTER or DT_SINGLELINE
     .endif
@@ -1235,17 +1212,7 @@ Method XMenu.DrawPopupText, uses xbx xdi xsi, pDIS:PDRAWITEMSTRUCT
       add Rect.left, MENU_CX_SCUT
       sub Rect.right, MENU_POPUP_RIGHT_MARGIN
 
-      .ifBitClr [xdi].DRAWITEMSTRUCT.itemState, ODS_SELECTED
-        invoke GetSysColor, COLOR_BTNHILIGHT
-        invoke SetTextColor, [xdi].DRAWITEMSTRUCT.hDC, eax
-        inc Rect.left
-        inc Rect.top
-        invoke DrawText, [xdi].DRAWITEMSTRUCT.hDC, [xbx].$Obj(XMenuItem).pSCutStr, -1, \
-                         addr Rect, DT_RIGHT or DT_VCENTER or DT_SINGLELINE
-        dec Rect.left
-        dec Rect.top
-      .endif
-      invoke GetSysColor, COLOR_BTNSHADOW
+      invoke GetSysColor, COLOR_GRAYTEXT
       invoke SetTextColor, [xdi].DRAWITEMSTRUCT.hDC, eax
       invoke DrawText, [xdi].DRAWITEMSTRUCT.hDC, [xbx].$Obj(XMenuItem).pSCutStr, -1, \
                        addr Rect, DT_RIGHT or DT_VCENTER or DT_SINGLELINE

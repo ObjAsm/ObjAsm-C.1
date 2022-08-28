@@ -23,7 +23,8 @@ SysSetup OOP, WIN64, ANSI_STRING, DEBUG(WND)            ;Load OOP files and OS r
 % include &IncPath&Windows\ws2ipdef.inc
 % include &IncPath&Windows\ws2tcpip.inc
 
-% include &IncPath&Windows\CommCtrl.inc 
+% include &IncPath&Windows\ShellApi.inc
+% include &IncPath&Windows\CommCtrl.inc
 
 % includelib &LibPath&Windows\Ws2_32.lib
 % includelib &LibPath&Windows\Mswsock.lib
@@ -43,7 +44,8 @@ endif
 ;Load or build the following objects
 MakeObjects Primer, Stream, DiskStream, Collection, DataPool, StopWatch
 MakeObjects DataCollection, XWCollection, SortedCollection, SortedDataCollection
-MakeObjects WinPrimer, Window, Dialog, DialogModal, DialogAbout
+MakeObjects WinPrimer, Window, Button, Hyperlink
+MakeObjects Dialog, DialogModal, DialogAbout
 MakeObjects WinApp, SdiApp
 MakeObjects NetCom
 

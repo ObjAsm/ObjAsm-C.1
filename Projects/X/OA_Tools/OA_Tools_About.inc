@@ -50,7 +50,7 @@ Method OAT_About.OnInitDialog, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   local cBuffer[MAX_PATH]:CHR, LogFnt:LOGFONT
 
   SetObject xsi
-  
+
   mov [xsi].hStcImage,       $invoke(GetDlgItem, [xsi].hWnd, IDC_STC_IMAGE)
   mov [xsi].hStcApplication, $invoke(GetDlgItem, [xsi].hWnd, IDC_STC_APPLICATION)
   mov [xsi].hStcVersion,     $invoke(GetDlgItem, [xsi].hWnd, IDC_STC_VERSION)
@@ -74,7 +74,7 @@ Method OAT_About.OnInitDialog, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   mov [xsi].hFontVersion, $invoke(CreateFontIndirect, addr LogFnt)
   invoke SendMessage, [xsi].hStcVersion, WM_SETFONT, xax, TRUE
 
-  ;Set sttrings in the selected language
+  ;Set strings in the selected language
   mov xcx, [xsi].pOwner                                 ;xcx -> OAT_App
   mov edi, [xcx].$Obj(OAT_App).dLanguage
   lea xbx, cBuffer
@@ -108,7 +108,7 @@ Method OAT_About.OnInitDialog, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   invoke LoadString, hInstance, edx, xbx, lengthof cBuffer
   invoke SendMessage, [xsi].hLinkHomePage, WM_SETTEXT, 0, xbx
 
-  invoke LoadImage, hInstance, $OfsCStr("BMP_APPLICATION"), IMAGE_BITMAP, 0, 0, LR_DEFAULTSIZE
+  invoke LoadPngFromResource, $OfsCStr("PNG_APPLICATION")
   mov [xsi].hBmpApplication, xax
   invoke SendMessage, [xsi].hStcImage, STM_SETIMAGE, IMAGE_BITMAP, xax
 MethodEnd
@@ -143,14 +143,29 @@ MethodEnd
 ; Purpose:    Event procedure for WM_CTLCOLORSTATIC message.
 ; Arguments:  Arg1: First message parameter.
 ;             Arg2: Second message parameter.
-; Return:     eax = Brush HANDLE fo draw the control background.
+; Return:     eax = 0.
 
 Method OAT_About.OnCtlColorStatic, uses xsi, wParam:WPARAM, lParam:LPARAM
+  local HC:HIGHCONTRAST, dColor1:DWORD, dColor2:DWORD
+
   SetObject xsi
   mov xax, lParam
-  .if xax != [xsi].hLinkEmail && xax != [xsi].hLinkHomePage
-    invoke GetStockObject, HOLLOW_BRUSH
-  .else
-    xor eax, eax
+  .if xax == [xsi].hLinkEmail || xax == [xsi].hLinkHomePage
+    mov HC.cbSize, sizeof HIGHCONTRAST
+    invoke SystemParametersInfo, SPI_GETHIGHCONTRAST, 0, addr HC, FALSE
+    .ifBitSet HC.dwFlags, HCF_HIGHCONTRASTON
+      invoke GetSysColor, COLOR_HOTLIGHT
+      mov dColor1, eax
+      mov dColor2, eax
+    .else
+      mov dColor1, $RGB(000,000,255)
+      mov dColor2, $RGB(128,000,128)
+    .endif
+    invoke SendMessage, lParam, WM_GETOBJECTINSTANCE, 0, 0
+    .if xax != 0
+      m2m [xax].$Obj(Hyperlink).dColor1, dColor1, ecx 
+      m2m [xax].$Obj(Hyperlink).dColor2, dColor2, ecx 
+    .endif
   .endif
+  xor eax, eax
 MethodEnd

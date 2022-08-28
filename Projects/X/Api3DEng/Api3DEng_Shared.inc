@@ -16,8 +16,8 @@ VER_PRODUCTVERSION            equ       2,0,0,0
 VER_PRODUCTVERSION_STR        textequ   <2.0>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       10
-BUILD_DATE_STR                textequ   <2022-08-15>
+BUILD_NUMBER                  equ       12
+BUILD_DATE_STR                textequ   <2022-08-28>
 BUILD_BITNESS                 equ       64
 BUILD_MODE                    equ       DBG
 
@@ -54,8 +54,13 @@ IDB_HELP_ABOUT                equ       008
 
 ;Control IDs
 IDC_TEXT_ABOUT                equ       100
-
 IDC_STATUSBAR                 equ       102
+
+IDC_DAB_ICON                  equ       100
+IDC_DAB_TEXT                  equ       101
+IDC_DAB_MAIL                  equ       102
+IDC_DAB_LINK                  equ       103
 
 ;Language IDs
 IDLANG_ENGLISH                equ       000
+

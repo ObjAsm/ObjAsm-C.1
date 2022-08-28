@@ -194,7 +194,7 @@ MethodEnd
 ; Return:     eax = FALSE.
 
 .const
-String szHelp,  "[H+2,C#00000,N#FFFFFF]", \
+String szHelp,  "[H+2,C#%s,N#%s]", \
                   "General Information{P}", \
                   "[H-2,C#7F7F7F,I]", \
                   "  This setup dialog allows you to{B}", \
@@ -214,10 +214,26 @@ ExtendString      "  On the bottom of this dialog box {B}", \
 
 .code
 Method ChartTabGeneral.OnInitDialog, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
+  local cBuffer[1024]:CHR, HC:HIGHCONTRAST
+  local cForeColor[DWORD2HEX_MAX_CHARS]:CHR, cBackColor[DWORD2HEX_MAX_CHARS]:CHR
+  
   SetObject xsi
+  mov HC.cbSize, sizeof HIGHCONTRAST
+  invoke SystemParametersInfo, SPI_GETHIGHCONTRAST, sizeof(HIGHCONTRAST), addr HC, 0
+  .ifBitSet HC.dwFlags, HCF_HIGHCONTRASTON
+    invoke GetSysColor, COLOR_WINDOW
+  .else
+    mov eax, -1                                         ;White (Tabdialog background ccolor)
+  .endif
+  invoke dword2hex, addr cBackColor, eax
+  invoke GetSysColor, COLOR_WINDOWTEXT
+  invoke dword2hex, addr cForeColor, eax
+  
+  invoke wsprintf, addr cBuffer, addr szHelp, \
+                   addr [cForeColor + 2*sizeof(CHR)], addr [cBackColor + 2*sizeof(CHR)]
 
   mov xbx, $invoke(GetDlgItem, [xsi].hWnd, IDC_CHT_GRL_HELP_TVC)
-  invoke SendMessage, xbx, WM_SETTEXT, 0, offset szHelp
+  invoke SendMessage, xbx, WM_SETTEXT, 0, addr cBuffer
 
   ACall xsi.OnInitDialog, wParam, lParam
 MethodEnd

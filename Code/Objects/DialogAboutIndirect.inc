@@ -1,8 +1,10 @@
 ; ==================================================================================================
 ; Title:      DialogAboutIndirect.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Purpose:    ObjAsm support of about dialog objects.
+; Notes:      Version C.1.1, August 2022
+;               - High Contrast support added for the link controls. 
 ;             Version C.1.0, October 2017
 ;               - First release.
 ; ==================================================================================================
@@ -25,6 +27,8 @@
 Object DialogAboutIndirect, DialogAboutIndirectID, DialogModalIndirect
   RedefineMethod    CtlsSet
   RedefineMethod    Init,       POINTER, HWND, HICON, PSTRING
+
+  VirtualEvent      OnCtlColorStatic,   WM_CTLCOLORSTATIC
 
   DefineVariable    hIcon,      HICON,    0
   DefineVariable    pText,      POINTER,  NULL
@@ -87,6 +91,45 @@ Method DialogAboutIndirect.Init,, pOwner:POINTER, hParent:HWND, hAppIcon:HICON, 
   m2m [xcx].hIcon, hAppIcon, xax
   m2m [xcx].pText, pAboutText, xdx
   ACall xcx.Init, pOwner, hParent, offset DIALOGABOUTINDIRECT
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     DialogAboutIndirect.OnCtlColorStatic
+; Purpose:    Event procedure for WM_CTLCOLORSTATIC message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = 0.
+
+Method DialogAboutIndirect.OnCtlColorStatic, uses xsi, wParam:WPARAM, lParam:LPARAM
+  local HC:HIGHCONTRAST, dColor1:DWORD, dColor2:DWORD
+
+  SetObject xsi
+  mov xax, lParam
+  invoke GetDlgItem, [xsi].hWnd, IDC_DAB_MAIL
+  .if lParam != xax 
+    invoke GetDlgItem, [xsi].hWnd, IDC_DAB_LINK
+    .if lParam != xax
+      jmp @F
+    .endif
+  .endif   
+
+  mov HC.cbSize, sizeof HIGHCONTRAST
+  invoke SystemParametersInfo, SPI_GETHIGHCONTRAST, 0, addr HC, FALSE
+  .ifBitSet HC.dwFlags, HCF_HIGHCONTRASTON
+    invoke GetSysColor, COLOR_HOTLIGHT
+    mov dColor1, eax
+    mov dColor2, eax
+  .else
+    mov dColor1, $RGB(000,000,255)
+    mov dColor2, $RGB(128,000,128)
+  .endif
+  invoke SendMessage, lParam, WM_GETOBJECTINSTANCE, 0, 0
+  .if xax != 0
+    m2m [xax].$Obj(Hyperlink).dColor1, dColor1, ecx 
+    m2m [xax].$Obj(Hyperlink).dColor2, dColor2, ecx 
+  .endif
+@@:
+  xor eax, eax
 MethodEnd
 
 endif

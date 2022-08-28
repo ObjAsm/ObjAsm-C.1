@@ -355,6 +355,8 @@ Method Application.OnCreate, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
     stosb                                               ;Store alpha = 0
     sub edx, 4352                                       ;int(255 * 256 / 15)
   .until SIGN?
+  
+  
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

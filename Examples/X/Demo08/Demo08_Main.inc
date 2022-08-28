@@ -64,7 +64,15 @@ MethodEnd
 ; Return:     xax = handle to a brush that the system uses to paint the background.
 
 Method Application.OnCtlColorStatic,, wParam:WPARAM, lParam:LPARAM
-  invoke GetStockObject, WHITE_BRUSH
+  local HC:HIGHCONTRAST
+
+  mov HC.cbSize, sizeof HIGHCONTRAST
+  invoke SystemParametersInfo, SPI_GETHIGHCONTRAST, 0, addr HC, FALSE
+  .ifBitSet HC.dwFlags, HCF_HIGHCONTRASTON
+    xor eax, eax
+  .else
+    invoke GetStockObject, WHITE_BRUSH
+  .endif
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

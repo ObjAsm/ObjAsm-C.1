@@ -36,7 +36,7 @@ include MSChartDemo_Globals.inc
 
 
 MakeObjects Primer, Stream, Collection, DataCollection
-MakeObjects WinPrimer, Window, Dialog, DialogModal, DialogAbout
+MakeObjects WinPrimer, Window, Button, Hyperlink, Dialog, DialogModal, DialogAbout
 MakeObjects WinApp, SdiApp
 MakeObjects COM_Primers, IDispatch, ConnectionPoint, IConnectionPointContainer
 MakeObjects MSChart

@@ -1,11 +1,14 @@
 ; ==================================================================================================
 ; Title:      TextView.inc
 ; Author:     G. Friedrich
-; Version:    C.1.3
+; Version:    C.1.4
 ; Purpose:    ObjAsm support of TextView objects.
 ;             It displays formatted text using styles like font, color, background, etc. and
 ;             control commands using a MASM friendly markup string.
-; Notes:      Version C.1.3, March 2021
+; Notes:      Version C.1.4, August 2022
+;               - @x introduced to select system color x. This solves the color changes when 
+;                 the UI is switched to "High Contrast".
+;             Version C.1.3, March 2021
 ;               - Code refactored for better performance. The code is divided into 3 stages:
 ;                 Parse, Calc and Draw. The code flow can brach into these stages as needed.
 ;               - Internal strings are always Wide, regardles of the compilation target.
@@ -60,14 +63,21 @@
 ;
 ;
 ;     Example: [FONT 'Segoe UI', SIZE 12, COLOR #7F7F7F, BGCOLOR #000000]
+;          or: [FONT 'Segoe UI', SIZE 12, COLOR @6, BGCOLOR @5]
 ;
+;     Notes: - the "#" character denotes a hex value.
+;            - the "@" character denotes a system value like a system color.
+;              E.g C@8 = Color COLOR_WINDOWTEXT, C@26 = COLOR_HOTLIGHT (links), ...
+;              Check valid values for the current OS at 
+;              https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsyscolor
+;            - a character in the range 0..9 denotes a decimal value.
 ;
 ; Commands: a single markup identifier enclosed in curly brackets {}.
 ;           Command markup identifiers are not case sensitive.
 ;
 ;     Command identifier:
 ;         Verbose           Short   Description
-;         #00                       Insert a (unicode) character indicated by the hex.
+;         #00                       Insert a (Unicode) character specified by the hex value.
 ;                                   E.g.: {#5B} displays a [.
 ;         BREAK               B     Line break.
 ;         COVER               C     Perfom a drawing action by the parent at the end of the
@@ -183,6 +193,7 @@ Object TextView, TextViewID, Window
   VirtualEvent      OnSetFont,          WM_SETFONT
   VirtualEvent      OnSetText,          WM_SETTEXT
   VirtualEvent      OnSetZoom,          EM_SETZOOM
+  VirtualEvent      OnThemeChanged,     WM_THEMECHANGED
   VirtualEvent      OnVScroll,          WM_VSCROLL
 
   DefineVariable    pMarkupText,        PSTRING,    NULL
@@ -2532,6 +2543,26 @@ Method TextView.OnSize, uses xsi, wParam:WPARAM, lParam:LPARAM
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     TextView.OnThemeChanged
+; Purpose:    Event procedure for WM_THEMECHANGED message.
+; Arguments:  Arg1: First message parameter.
+;             Arg2: Second message parameter.
+; Return:     eax = Zero if handled.
+
+Method TextView.OnThemeChanged, uses xsi, wParam:WPARAM, lParam:LPARAM
+;  DbgText "TextView.OnThemeChanged"
+  SetObject xsi
+  OCall xsi.Reset
+  OCall xsi.Parse
+  OCall xsi.SetExtent
+  OCall xsi.Calc
+  Pnt2Reg32 eax, ([xsi].ClientRect.right).POINT
+  invoke SendMessage, [xsi].hWnd, WM_SIZE, SIZE_RESTORED, eax
+  invoke RedrawWindow, [xsi].hWnd, NULL, 0, RDW_INVALIDATE or RDW_UPDATENOW
+  xor eax, eax
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     TextView.OnVScroll
 ; Purpose:    Event procedure for WM_VSCROLL message.
 ; Arguments:  Arg1: First message parameter.
@@ -2641,6 +2672,7 @@ MethodEnd
 
 ; 06  07    == "#"           Markup hex value
 ; 06  08    == "0..9"        Markup decimal value
+; 06  09    == "@"           Markup system color value
 ; 06  10    == "'"           Markup single quoted string value
 ; 06  11    == '"'           Markup double quoted string value
 ; 06  01    == "]"           Markup close
@@ -2809,7 +2841,8 @@ IsBlankChar     textequ <(cCurChr == " " || cCurChr == 9)>
 IsDelimiterChar textequ <(cCurChr == " " || cCurChr == 9 || \
                           cCurChr == "'" || cCurChr == '"' || \
                           cCurChr == "+" || cCurChr == '-' || \
-                          cCurChr == "#" || cCurChr == ',' || \
+                          cCurChr == "#" || cCurChr == '@' || \
+                          cCurChr == ',' || \
                           (cCurChr !>= "0" && cCurChr !<= "9"))>
 
 .code
@@ -2836,11 +2869,12 @@ Method TextView.Parse, uses xdi xsi
   DefineTextViewState STYLE_NAME_END                    ;TVStateID = 06
   DefineTextViewState STYLE_HEX                         ;TVStateID = 07
   DefineTextViewState STYLE_DEC                         ;TVStateID = 08
-  DefineTextViewState STYLE_VAL_END                     ;TVStateID = 09
-  DefineTextViewState STYLE_STR1                        ;TVStateID = 10
-  DefineTextViewState STYLE_STR2                        ;TVStateID = 11
-  DefineTextViewState STYLE_POP                         ;TVStateID = 12
-  DefineTextViewState CMD                               ;TVStateID = 13
+  DefineTextViewState STYLE_SYSCOLOR                    ;TVStateID = 09
+  DefineTextViewState STYLE_VAL_END                     ;TVStateID = 10
+  DefineTextViewState STYLE_STR1                        ;TVStateID = 11
+  DefineTextViewState STYLE_STR2                        ;TVStateID = 12
+  DefineTextViewState STYLE_POP                         ;TVStateID = 13
+  DefineTextViewState CMD                               ;TVStateID = 14
   DefineTextViewState CMD_ANALIZE                       ;TVStateID = 15
   DefineTextViewState CMD_END                           ;TVStateID = 16
   DefineTextViewState CMD_NAME                          ;TVStateID = 17
@@ -2864,8 +2898,8 @@ Method TextView.Parse, uses xdi xsi
 
   ;Get default colors
   invoke SendMessage, [xsi].hParent, WM_CTLCOLORSTATIC, [xsi].hMemDC, [xsi].hWnd
-  mov [xsi].DefaultTextColor, $32($invoke(GetTextColor, [xsi].hMemDC))
-  mov [xsi].DefaultBackColor, $32($invoke(GetBkColor, [xsi].hMemDC))
+  mov [xsi].DefaultTextColor, $32($invoke(GetSysColor, COLOR_WINDOWTEXT))
+  mov [xsi].DefaultBackColor, $32($invoke(GetSysColor, COLOR_WINDOW))
   mov [xsi].CanvasColor, eax
 
   mov xdx, [xsi].pMarkupText
@@ -3110,6 +3144,13 @@ Method TextView.Parse, uses xdi xsi
         mov pBlockBeg, xcx
         mov pBlockEnd, xcx
 
+      .elseif cCurChr == "@"
+        mov dTVStateID, TVSID_STYLE_SYSCOLOR
+        mov xcx, pBlockEnd
+        add xcx, sizeof(CHR)
+        mov pBlockBeg, xcx
+        mov pBlockEnd, xcx
+
       .elseif IsDecChar
         mov dTVStateID, TVSID_STYLE_DEC
         mrm pBlockBeg, pBlockEnd, xcx
@@ -3211,6 +3252,37 @@ Method TextView.Parse, uses xdi xsi
       .elseif !IsDecChar                                ;Bad characters
         mov dTVStateID, TVSID_ERROR
         DbgWarning "Parsing error in TVSTATE_STYLE_DEC"
+      .endif
+      add pBlockEnd, sizeof(CHR)
+      .continue
+
+    TVSTATE_STYLE_SYSCOLOR:
+      .if IsBlankChar || cCurChr == "," || cCurChr == TVTAG_STYLE_CLOSE
+        mov xax, pBlockEnd
+        sub xax, pBlockBeg
+        lea xcx, cBuffer
+        m2z CHR ptr [xcx + xax]                         ;ZTC
+        invoke MemClone, xcx, pBlockBeg, eax
+        invoke dec2dword, addr cBuffer
+        invoke GetSysColor, eax
+        BGR2RGB eax
+        mov DWORD ptr cBuffer, eax
+        m2z CHR ptr [cBuffer + sizeof(DWORD)]           ;Just in case
+        invoke pTVStyleHandler, addr cBuffer
+        or dStyleChange, eax
+
+        .if IsBlankChar
+          mov dTVStateID, TVSID_STYLE_VAL_END
+        .elseif cCurChr == ","
+          mov dTVStateID, TVSID_STYLE
+        .else                                           ;"]"
+          CreateTVSytleResources
+          mov dTVStateID, TVSID_INIT
+        .endif
+
+      .elseif !IsDecChar                                ;Bad characters
+        mov dTVStateID, TVSID_ERROR
+        DbgWarning "Parsing error in TVSTATE_STYLE_SYSCOLOR"
       .endif
       add pBlockEnd, sizeof(CHR)
       .continue

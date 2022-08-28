@@ -16,7 +16,7 @@ SysSetup OOP, WIN64, WIDE_STRING, DEBUG(WND)            ;Load OOP files and OS r
 
 ;Load or build the following objects
 MakeObjects Primer, Stream, WinPrimer, Window
-MakeObjects Dialog, DialogModal, DialogAbout
+MakeObjects Button, Hyperlink, Dialog, DialogModal, DialogAbout
 MakeObjects WinApp, SdiApp
 
 ; The following code demonstartes how an object can be type customized from an object definition
@@ -42,9 +42,9 @@ include Demo04_Main.inc                                 ;Application object
 start proc                                              ;Program entry point
   SysInit                                               ;Runtime initialization of OOP model
 
-  OCall $ObjTmpl(Application)::Application.Init             ;Initialize application
-  OCall $ObjTmpl(Application)::Application.Run              ;Execute application
-  OCall $ObjTmpl(Application)::Application.Done             ;Finalize application
+  OCall $ObjTmpl(Application)::Application.Init         ;Initialize application
+  OCall $ObjTmpl(Application)::Application.Run          ;Execute application
+  OCall $ObjTmpl(Application)::Application.Done         ;Finalize application
 
   SysDone                                               ;Runtime finalization of the OOP model
   invoke ExitProcess, 0                                 ;Exit program returning 0 to the OS

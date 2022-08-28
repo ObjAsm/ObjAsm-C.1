@@ -12,6 +12,7 @@
 SysSetup OOP, WIN64, WIDE_STRING;, DEBUG(WND)            ;Load OOP files and OS related objects
 
 % include &COMPath&COM.inc                              ;COM basic support
+% include &IncPath&Windows\ShellApi.inc
 % include &IncPath&Windows\IImgCtx.inc
 
 % includelib &LibPath&Windows\Shell32.lib
@@ -22,6 +23,7 @@ SysSetup OOP, WIN64, WIDE_STRING;, DEBUG(WND)            ;Load OOP files and OS 
 
 ;Load or build the following objects
 MakeObjects Primer, Stream, WinPrimer, Window
+MakeObjects Button, Hyperlink
 MakeObjects Dialog, DialogModal, DialogAbout, Image
 MakeObjects WinApp, SdiApp
 

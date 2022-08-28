@@ -158,5 +158,13 @@ MethodEnd                                               ;  setting the default k
 ; Return:     eax = Brush to paint the background.
 
 Method Tab2.OnCtlColorDlg,, wParam:WPARAM, lParam:LPARAM
-  invoke GetStockObject, WHITE_BRUSH
+  local HC:HIGHCONTRAST
+  
+  mov HC.cbSize, sizeof HIGHCONTRAST
+  invoke SystemParametersInfo, SPI_GETHIGHCONTRAST, sizeof(HIGHCONTRAST), addr HC, 0
+  .ifBitSet HC.dwFlags, HCF_HIGHCONTRASTON
+    xor eax, eax
+  .else
+    invoke GetStockObject, WHITE_BRUSH
+  .endif
 MethodEnd

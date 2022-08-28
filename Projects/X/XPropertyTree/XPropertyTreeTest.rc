@@ -15,7 +15,7 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
 
 // Icons ------------------------------------------------------------------------------------------
-ICON_APP_32     ICON DISCARDABLE "ICO\OA.ico"
+ICON_APP        ICON DISCARDABLE "ICO\OA.ico"
 ICON_STR_MAIN   ICON DISCARDABLE "ICO\Var_16x16_04.ico"
 ICON_STR_ITEM   ICON DISCARDABLE "ICO\Var_Redef_16x16_04.ico"
 

@@ -17,6 +17,7 @@ SysSetup OOP, WIN64, WIDE_STRING, DEBUG(WND)
 
 ;Load or build the following objects
 MakeObjects Primer, Stream, DiskStream, WinPrimer
+MakeObjects Button, Hyperlink
 MakeObjects Window, Dialog, DialogModal, DialogAbout
 MakeObjects WinApp, SdiApp
 MakeObjects Json

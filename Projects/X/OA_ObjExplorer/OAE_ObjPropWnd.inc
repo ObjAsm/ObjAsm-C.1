@@ -14,7 +14,7 @@
 
 Method ObjPropWnd.CreateMarkupText, uses xbx xdi xsi
   local LastWriteTimeDef:FILETIME, LastWriteTimeAsm:FILETIME, LastWriteTime:FILETIME
-  local cNumBuffer[20]:CHR, cAsmFile[MAX_PATH]:CHR, cLibFile[MAX_PATH]:CHR
+  local cMarkup[200]:CHR, cNumBuffer[20]:CHR, cAsmFile[MAX_PATH]:CHR, cLibFile[MAX_PATH]:CHR
 
   SetObject xsi
 
@@ -23,10 +23,8 @@ Method ObjPropWnd.CreateMarkupText, uses xbx xdi xsi
 
   ;Reset LinkInfos
   OCall [xsi].LinkInfos::DataCollection.DisposeAll
-
-  ;Write header information to the stream
-  mov xbx, [xsi].pInfo
   OCall [xsi].MarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_NAME)
+  mov xbx, [xsi].pInfo
   OCall xsi.WriteString, [xbx].OBJECTINFORMATION.pName
   OCall [xsi].MarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_PARA)
   OCall [xsi].MarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_STYLE_CLOSE)
@@ -257,9 +255,9 @@ ShowObjMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropW
     OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_TAB)
     .if pImpMtdInfo == NULL
       .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
-        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_BLACK)
+        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_REGULAR)
       .else
-        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_GRAY)
+        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_DISABLED)
       .endif
     .else
       ;Show the link
@@ -296,12 +294,12 @@ ShowObjMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropW
     OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_TAB)
     mov eax, [xbx].OBJMTDINFORMATION.dFlags
     .if eax == METHODTYPE_REDEFINED && [xsi].MEMBERDATA.pDefinition == NULL
-      OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_RED)
+      OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_ERROR)
     .else
       .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
-        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_BLACK)
+        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_REGULAR)
       .else
-        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_GRAY)
+        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_DISABLED)
       .endif
     .endif
     mov eax, [xbx].OBJMTDINFORMATION.dFlags
@@ -328,12 +326,12 @@ ShowObjMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropW
     .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
       .if pImpMtdInfo == NULL
         ;Draw in red also if it is abstract and final!
-        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_RED)
+        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_ERROR)
       .else
-        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_BLACK)
+        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_REGULAR)
       .endif
     .else
-      OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_GRAY)
+      OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_DISABLED)
     .endif
     mov ecx, [xbx].OBJMTDINFORMATION.dFlags
     .if ecx ==  METHODTYPE_VIRTUAL_ABSTRACT || ecx == METHODTYPE_DYNAMIC_ABSTRACT
@@ -348,10 +346,10 @@ ShowObjMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropW
     ;Display method status
     OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_TAB)
     .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
-      OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_BLACK)
+      OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_REGULAR)
       OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_FINAL)
     .else
-      OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_GRAY)
+      OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_DISABLED)
       OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_REDEFINED)
     .endif
     OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_STYLE_CLOSE)
@@ -363,9 +361,9 @@ ShowObjMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropW
     .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_SHOWDETAIL
       OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_BREAK)
       .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
-        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_BLACK)
+        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_REGULAR)
       .else
-        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_GRAY)
+        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_DISABLED)
       .endif
       mov xax, pImpMtdInfo
       .if xax != NULL
@@ -463,12 +461,12 @@ ShowObjVar proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropW
     OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_TAB)
     .if [xbx].OBJMTDINFORMATION.dFlags == VARIABLETYPE_REDEFINED && \
         [xsi].MEMBERDATA.pDefinition == NULL
-        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_RED)
+        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_ERROR)
     .else
       .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
-        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_BLACK)
+        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_REGULAR)
       .else
-        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_GRAY)
+        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_DISABLED)
       .endif
     .endif
 
@@ -536,9 +534,9 @@ ShowObjVar proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropW
       OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_TAB)
       ;Show the type
       .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
-        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_BLACK)
+        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_REGULAR)
       .else
-        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_GRAY)
+        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_DISABLED)
       .endif
       OCall pMarkupStream::MemoryStream.BinWrite, addr cBuffer2, dLength2
       OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_STYLE_CLOSE)
@@ -549,9 +547,9 @@ ShowObjVar proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropW
       OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_TAB)
       ;Show the type
       .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
-        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_BLACK)
+        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_REGULAR)
       .else
-        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_GRAY)
+        OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_DISABLED)
       .endif
       OCall pMarkupStream::MemoryStream.BinWrite, addr cBuffer2, dLength2
       OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_STYLE_CLOSE)
@@ -577,7 +575,7 @@ ShowObjVar proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropW
         OCall pMarkupStream::MemoryStream.BinWrite, [xbx].OBJVARINFORMATION.pArgType, dLength
       .endif
       OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_TAB)
-      OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_BLACK)
+      OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_REGULAR)
       OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_TPL_DEFAULTS)
       OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_STYLE_CLOSE)
     .else
@@ -590,10 +588,10 @@ ShowObjVar proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(ObjPropW
     ;Display Variable status
     OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_TAB)
     .ifBitSet [xsi].MEMBERDATA.dFlags, MDT_FINAL
-      OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_BLACK)
+      OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_REGULAR)
       OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_FINAL)
     .else
-      OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_GRAY)
+      OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_COLOR_DISABLED)
       OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_REDEFINED)
     .endif
     OCall pMarkupStream::MemoryStream.BinWrite, $OfsSze(MTXT_STYLE_CLOSE)
@@ -860,9 +858,9 @@ Method ObjPropWnd.OnNotify, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
       .endif
       m2m DstRect.left, [xdi].TVNM_DRAW.Position.x, eax
       m2m DstRect.top, [xdi].TVNM_DRAW.Position.y, ecx
-      invoke MulDiv, Img.$Obj(Image).Dim.x, [xdi].TVNM_DRAW.dZoomFactor, TVZOOM_BASE
+      invoke MulDiv, Img.$Obj(Image).ImgSize.x, [xdi].TVNM_DRAW.dZoomFactor, TVZOOM_BASE
       mov DstRect.right, eax
-      invoke MulDiv, Img.$Obj(Image).Dim.y, [xdi].TVNM_DRAW.dZoomFactor, TVZOOM_BASE
+      invoke MulDiv, Img.$Obj(Image).ImgSize.y, [xdi].TVNM_DRAW.dZoomFactor, TVZOOM_BASE
       mov DstRect.bottom, eax
       OCall Img::Image.AlphaDraw, [xdi].TVNM_DRAW.hDC, 255, addr DstRect
       OCall Img::Image.Done

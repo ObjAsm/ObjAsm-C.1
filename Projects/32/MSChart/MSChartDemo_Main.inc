@@ -325,13 +325,13 @@ MethodEnd
 ; Return:     eax = nonzero if the background was erased, otherwise zero.
 
 Method MSChartDemoApp.OnEraseBkgnd,, wParam:WPARAM, lParam:LPARAM
-  local CR:RECT
+  local CRect:RECT
 
   SetObject xcx
   .if [xcx].Chart.dErrorCode != OBJ_OK
-    invoke GetClientRect, [xcx].hWnd, addr CR
+    invoke GetClientRect, [xcx].hWnd, addr CRect
     invoke GetStockObject, GRAY_BRUSH
-    invoke FillRect, wParam, addr CR, xax
+    invoke FillRect, wParam, addr CRect, xax
   .endif
   mov eax, TRUE
 MethodEnd

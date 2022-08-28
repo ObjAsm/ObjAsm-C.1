@@ -25,7 +25,7 @@ SysSetup OOP, WIN64, ANSI_STRING;, DEBUG(WND)
 ;Load or build the following objects
 MakeObjects Primer, Stream, WinPrimer
 MakeObjects Collection, DataCollection, SortedCollection, SortedDataCollection, XWCollection
-MakeObjects Window, Dialog, DialogModal, DialogAbout, Image
+MakeObjects Window, Button, Hyperlink, Dialog, DialogModal, DialogAbout, Image
 MakeObjects WinApp, SdiApp
 MakeObjects TextView
 

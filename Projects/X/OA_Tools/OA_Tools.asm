@@ -11,7 +11,7 @@
 %include @Environ(OBJASM_PATH)\\Code\\Macros\\Model.inc ;Include & initialize standard modules
 
 ;ANSI_STRING will not work on languages that use UNICODE characters, like chinese or russian.
-SysSetup OOP, WIN64, WIDE_STRING;, DEBUG(WND, STKGUARD)
+SysSetup OOP, WIN64, WIDE_STRING, DEBUG(WND)
 
 % include &COMPath&COM.inc                              ;COM basic support
 % include &IncPath&Windows\sGUID.inc

@@ -142,6 +142,8 @@ Object XPropertyTree, XPropertyTreeID, XTreeView
   RedefineVariable  dDispInfoSize,      sizeof XPTN_DISP_INFO         ;Extended structure
   RedefineVariable  dFlags,             XPT_FLAGS
   RedefineVariable  dNodeIndent,        12                            ;Pixel
+;  RedefineVariable  dColorBackground,               $RGB(128,128,128)
+;  DefineVariable    dColorBackgroundDark, DWORD,    $RGB(255,255,255)
   RedefineVariable  dColorBackground,               $RGB(245,245,245)
   DefineVariable    dColorBackgroundDark, DWORD,    $RGB(220,220,220)
   DefineVariable    hPenAux,            HPEN,       0
@@ -1796,7 +1798,7 @@ Method XPropertyTree.OnDrawItem, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   local RRect:RECT, hRegion:HANDLE, Rct:RECT, AuxRect:RECT
   local pTableEnd:POINTER
 
-;  DbgText "XPropertyTree.OnDrawItem"
+  DbgText "XPropertyTree.OnDrawItem"
   SetObject xsi
   mov xdi, lParam
   .if wParam == XPT_CONTROL_ID_COMBOBOX

@@ -41,19 +41,19 @@ String szMarkupText,  "{Padding 20}", \
                               @CatStr(<!">, %BUILD_DATE_STR, \
                                       <  -  Build: >, %BUILD_NUMBER, <->, %ASSEMBLER, <->, \
                                       %TARGET_MODE_STR, <->, %TARGET_BITNESS, <    !">), \
-                              "[TIP ", @CatStr(<!">, %INFO_BUILD, <!">), ", Font 'Webdings', Height +1]{#F069}[~]", \
+                              "[TIP ", @CatStr(<!">, %INFO_BUILD, <!">), ", Font 'Webdings', Height +1, Color @26]{#F069}[~]", \
                             "[~]{B}{B}", \
                           "[~]", \
                         "[~]"
 ExtendString            "[Indent 0, Align.Center]", \
                           "[Font 'Webdings', Color #FF5F5F, Height +7]{#F07E}[~]", \
                           "  Visit us at  ", \
-                          "[APP ", @CatStr(<!">, %APP_VISIT, <!">), ", Color #0000FF, U]www.objasm.x10host.com[~]{B}", \
+                          "[APP ", @CatStr(<!">, %APP_VISIT, <!">), ", Color @26, U]www.objasm.x10host.com[~]{B}", \
                           "[Font 'Wingdings', Color #408090, Height +1]{#F02A}[~]", \
                           "   Email us to  ", \
-                          "[APP ", @CatStr(<!">, %APP_EMAIL, <!">), ", Color #0000FF, U]objasm@gmx.net[~]{P}", \
-                          "[APP ", @CatStr(<!">, %APP_CHECK, <!">), ", Color #0000FF, U]Check for updates[~]", \
-                          "[TIP ", @CatStr(<!">, %INFO_UPDATE, <!">), ", Font 'Webdings', Height +1, Color #5F5FFF]  {#F069}[~]", \
+                          "[APP ", @CatStr(<!">, %APP_EMAIL, <!">), ", Color @26, U]objasm@gmx.net[~]{P}", \
+                          "[APP ", @CatStr(<!">, %APP_CHECK, <!">), ", Color @26, U]Check for updates[~]", \
+                          "[TIP ", @CatStr(<!">, %INFO_UPDATE, <!">), ", Font 'Webdings', Height +1, Color @26]  {#F069}[~]", \
                         "[~]", \
                       "[~]"
 

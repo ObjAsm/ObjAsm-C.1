@@ -16,7 +16,7 @@ SysSetup OOP, WIN64, WIDE_STRING;, DEBUG(WND)            ;Load OOP files and OS 
 
 ;Load or build the following objects
 MakeObjects Primer, Stream, WinPrimer, Collection, GifDecoder, GifPlayer
-MakeObjects Window, Dialog, DialogModal, DialogAbout, DialogPassword
+MakeObjects Window, Button, Hyperlink, Dialog, DialogModal, DialogAbout, DialogPassword
 MakeObjects WinApp, SdiApp
 
 include Demo09_Globals.inc                              ;Application globals

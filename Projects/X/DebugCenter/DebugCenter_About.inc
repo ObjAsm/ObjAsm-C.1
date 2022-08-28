@@ -37,7 +37,7 @@ INFO_BUILD        equ   0
 INFO_UPDATE       equ   1
 
 LOGO_COLOR equ  <C#107CBE>
-LINK_COLOR equ  <C#0000EE>
+LINK_COLOR equ  <C@26>
 INFO_COLOR equ  LOGO_COLOR
 
 $Quoted macro Args:vararg
@@ -74,7 +74,7 @@ String szAboutMarkup, \
     "[FI 190]", \
       "[H+3,B]&ABOUT_TEXT{B}[~]", \
       "[I]Version &VER_PRODUCTVERSION_STR{P}[~]", \
-      "[C#3F3F3F]", \
+      "[C@17]", \
         "%s{B}", \
         "© &COPYRIGHT{P}", \
           $Quoted(BUILD_DATE_STR, <<  -  Build: >>, %BUILD_NUMBER, <->, \

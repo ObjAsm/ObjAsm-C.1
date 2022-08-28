@@ -20,7 +20,7 @@ NOMSACM   equ 1
 % includelib &LibPath&Windows\vfw32.lib
 
 ;Load or build the following objects
-MakeObjects Primer, Stream, WinPrimer, Window
+MakeObjects Primer, Stream, WinPrimer, Window, Button, Hyperlink
 MakeObjects Dialog, DialogModal, DialogAbout
 MakeObjects WinApp, SdiApp
 

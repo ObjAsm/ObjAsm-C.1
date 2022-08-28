@@ -26,6 +26,7 @@ XTVF_COLLAPSE_ON_DRAG         equ   BIT04
 XTVF_EXPAND_PARENT_ON_DROP    equ   BIT05
 XTVF_KEEP_COLLAPSED_ON_DRAG   equ   BIT06
 XTVF_DISABLE_DEL_KEY          equ   BIT07
+XTVF_USE_USER_BKGND_COLOR     equ   BIT08
 
 
 XTV_FLAGS                     equ   XTVF_SHOW_LINES or XTVF_SHOW_TOGGLER or \
@@ -3470,7 +3471,12 @@ MethodEnd
 
 Method XTreeView.RenderBackground, uses xbx xsi, pRect:PRECT
   SetObject xsi
-  invoke CreateSolidBrush, [xsi].dColorBackground
+  .ifBitSet [xsi].dFlags, XTVF_USE_USER_BKGND_COLOR
+    mov eax, [xsi].dColorBackground
+  .else
+    invoke GetSysColor, COLOR_WINDOW
+  .endif
+  invoke CreateSolidBrush, eax
   mov xbx, xax
   invoke FillRect, [xsi].hMemDC, pRect, xax
   invoke DeleteObject, xbx

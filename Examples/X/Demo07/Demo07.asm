@@ -35,9 +35,9 @@ SysSetup OOP, WIN64, WIDE_STRING;, DEBUG(WND)
 MakeObjects Primer, Stream
 MakeObjects Collection, DataCollection, SortedCollection, SortedDataCollection, XWCollection
 MakeObjects WinPrimer, Window, GifDecoder, GifPlayer
-MakeObjects Dialog, DialogModal, DialogModeless, DialogAbout, DialogPassword
+MakeObjects Button, Hyperlink, Dialog, DialogModal, DialogModeless, DialogAbout, DialogPassword
 MakeObjects SimpleImageList, MaskedImageList
-MakeObjects Button, IconButton, ColorButton, Hyperlink
+MakeObjects IconButton, ColorButton
 MakeObjects MsgInterceptor, DialogModalIndirect, XMenu
 MakeObjects WinControl, Toolbar, Rebar, Statusbar, TabCtrl, TextView
 MakeObjects WinApp, MdiApp
