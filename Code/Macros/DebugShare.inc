@@ -59,6 +59,7 @@ DBG_CMD_CLOSE_BMP     equ   4               ;Currently not implemented!
 DBG_CMD_CLOSE_ALL     equ   5               ;Currently not implemented!
 DBG_CMD_SINGLE_LINE   equ   6               ;char 2500 or 2014
 DBG_CMD_DOUBLE_LINE   equ   7               ;Char 2550
+Dbg_CMD_SET_BKGND     equ   8               ;Color in Param
 
 
 SMTO_TIMEOUT          equ   5000            ;Timeout of a WM_COPYDATA message
@@ -90,6 +91,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
     bBlockID    BYTE    DBG_MSG_CMD
     bInfo       BYTE    ?                   ;Used for single byte commands
     dBlockLen   DWORD   ?                   ;Size of this structure + size of the data (may be zero)
+    dParam      DWORD   ?
   DBG_CMD_INFO ends
   ;Data bytes may follow this structure
 

@@ -346,7 +346,7 @@ DbgOnError macro WarningText:req, Error:req, InfoText, Dest
   if DEBUGGING
     DbgSaveContext FALSE, Error
     DbgSetDestWnd Dest
-    invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, ??DbgDstWnd
+    invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, 0, ??DbgDstWnd
     invoke DbgOutTextA, $OfsCStrA($Esc(<WarningText>)), DBG_COLOR_WARNING, DBG_EFFECT_NORMAL, \
                         ??DbgDstWnd
     $$Buffersize = 1024
@@ -362,7 +362,7 @@ DbgOnError macro WarningText:req, Error:req, InfoText, Dest
     add xsp, 1024                                       ;Retrieve the string room
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
-    invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, ??DbgDstWnd
+    invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, 0, ??DbgDstWnd
     DbgLoadContext
   endif
 endm

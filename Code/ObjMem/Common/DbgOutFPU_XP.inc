@@ -94,4 +94,3 @@ ProcName proc uses xbx xdi xsi pDest:POINTER, dColor:DWORD
   ret
 ProcName endp
 
-end

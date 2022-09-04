@@ -33,4 +33,3 @@ ProcName proc uses xbx cChar:CHR, dReps:DWORD
   ret
 ProcName endp
 
-end

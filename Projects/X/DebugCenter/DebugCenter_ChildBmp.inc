@@ -390,7 +390,7 @@ Method DbgMdiChildBmp.OnPaint, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
              xbx, xdi, DIB_RGB_COLORS, SRCCOPY
 
     ;Fill the remainig background with COLOR_APPWORKSPACE color
-    mov hBrush, $invoke(CreateSolidBrush, DBG_COLOR_BACKGROUND)
+    mov hBrush, $invoke(CreateSolidBrush, DBG_COLOR_BACKGROUND_WND)
     m2m Rct.left, DstRect.right, ecx
     invoke FillRect, PS.hdc, addr Rct, hBrush
     m2z Rct.left
@@ -400,7 +400,7 @@ Method DbgMdiChildBmp.OnPaint, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
 
   .else
     ;Fill the background with COLOR_APPWORKSPACE color
-    mov hBrush, $invoke(CreateSolidBrush, DBG_COLOR_BACKGROUND)
+    mov hBrush, $invoke(CreateSolidBrush, DBG_COLOR_BACKGROUND_WND)
     invoke FillRect, PS.hdc, addr Rct, hBrush
     invoke DeleteObject, hBrush
 

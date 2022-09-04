@@ -25,5 +25,3 @@ StrDispose_UEFI proc pString:POINTER
   .endif
   ret
 StrDispose_UEFI endp
-
-end

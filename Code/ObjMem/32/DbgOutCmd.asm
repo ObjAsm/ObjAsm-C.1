@@ -17,11 +17,12 @@ externdef DbgCritSect:CRITICAL_SECTION
 ; Procedure:  DbgOutCmd
 ; Purpose:    Send a command to a specific Debug window.
 ; Arguments:  Arg1: Command ID [BYTE].
-;             Arg2: Target Debug Window WIDE name.
+;             Arg2: Param (DWORD).
+;             Arg2: -> Destination Window WIDE name.
 ; Return:     Nothing.
 
 align ALIGN_CODE
-DbgOutCmd proc bCommand:BYTE, pTargetWnd:POINTER
+DbgOutCmd proc bCommand:BYTE, dParam:DWORD, pTargetWnd:POINTER
   local CDS:COPYDATASTRUCT, dResult:DWORD, dHeaderSize:DWORD, dESP:DWORD
 
   invoke EnterCriticalSection, offset DbgCritSect
@@ -56,6 +57,7 @@ DbgOutCmd proc bCommand:BYTE, pTargetWnd:POINTER
       mov [edx].DBG_CMD_INFO.bBlockID, DBG_MSG_CMD
       m2m [edx].DBG_CMD_INFO.bInfo, bCommand, al
       mov [edx].DBG_CMD_INFO.dBlockLen, sizeof DBG_CMD_INFO
+      m2m [edx].DBG_CMD_INFO.dParam, dParam, eax
       invoke SendMessageTimeoutW, hDbgDev, WM_COPYDATA, -1, addr CDS, \
                                   SMTO_BLOCK, SMTO_TIMEOUT, addr dResult
       mov esp, dESP                                     ;Restore stack

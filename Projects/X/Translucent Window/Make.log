@@ -1,0 +1,57 @@
+Building TranslucentWindow project ...
+
+BuildInfo is processing TranslucentWindow_Shared.inc ...
+Inc2RC is converting TranslucentWindow_Shared.inc ...
+
+Compiling TranslucentWindow.rc resources ...
+Creating TranslucentWindow.res
+Using codepage 1252 as default
+
+TranslucentWindow.rc.
+Writing VERSION:1,	lang:0x409,	size 796.
+Writing 24:1,	lang:0x409,	size 1742.
+Writing ICON:1,	lang:0x0,	size 744
+Writing ICON:2,	lang:0x0,	size 296
+Writing ICON:3,	lang:0x0,	size 3752
+Writing ICON:4,	lang:0x0,	size 2216
+Writing ICON:5,	lang:0x0,	size 1384
+Writing ICON:6,	lang:0x0,	size 9640
+Writing ICON:7,	lang:0x0,	size 4264
+Writing ICON:8,	lang:0x0,	size 1128
+Writing GROUP_ICON:ICON_APP,	lang:0x0,	size 118.
+Writing BITMAP:BMP_BACKGROUND,	lang:0x0,	size 6504.
+Writing PNG:PNG_SPLASH,	lang:0x0,	size 21616.
+Writing DIALOG:DIALOGABOUT,	lang:0x0,	size 220.
+Writing MENU:MENU_APP,	lang:0x0,	size 156
+
+Assembling TranslucentWindow.asm project ...
+D:\ObjAsm\\Code\\OA_Setup64.inc(17) : Warning A4305: Stackbase automatically changed to RSP to support WIN64 options
+ D:\ObjAsm\\Code\\OA_Setup64.inc(17): Included by
+  SysSetup(98)[Model.inc]: Macro called from
+   TranslucentWindow.asm(12): Main line code
+OOP Support:    ENABLED
+Platform:       WINDOWS
+User Interface: GRAPHIC
+Binary Format:  EXE
+Bitness:        64
+String Type:    WIDE (UNICODE)
+Mode:           DEBUG => WND, using rbp as stackframe pointer
+Inheritance path: OA_Primer
+Inheritance path: OA_Primer,OA_DesLUT
+Inheritance path: OA_Primer,OA_Stream
+Inheritance path: OA_Primer,OA_Streamable
+Inheritance path: OA_Primer,OA_Streamable,OA_WinPrimer
+Inheritance path: OA_Primer,OA_Streamable,OA_WinPrimer,OA_Window
+Inheritance path: OA_Primer,OA_Streamable,OA_WinPrimer,OA_Button
+Inheritance path: OA_Primer,OA_Streamable,OA_WinPrimer,OA_Button,OA_Hyperlink
+Inheritance path: OA_Primer,OA_Streamable,OA_WinPrimer,OA_Window,OA_Dialog
+Inheritance path: OA_Primer,OA_Streamable,OA_WinPrimer,OA_Window,OA_Dialog,OA_DialogModal
+Inheritance path: OA_Primer,OA_Streamable,OA_WinPrimer,OA_Window,OA_Dialog,OA_DialogModal,OA_DialogAbout
+Inheritance path: OA_Primer,OA_Streamable,OA_WinPrimer,OA_Window,OA_WinApp
+Inheritance path: OA_Primer,OA_Streamable,OA_WinPrimer,OA_Window,OA_WinApp,OA_SdiApp
+Inheritance path: OA_Primer,OA_Streamable,OA_WinPrimer,OA_Window,OA_WinApp,OA_SdiApp,OA_TranslucentWindow
+TranslucentWindow.asm : 1 warnings, 0 errors
+
+Linking object modules to EXE-file ...
+
+Ready!

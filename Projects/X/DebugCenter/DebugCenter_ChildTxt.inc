@@ -391,7 +391,7 @@ Method DbgMdiChildTxt.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
                          0, 0, 10, 10, [xsi].hWnd, RICHEDITID, hInstance, NULL
   mov [xsi].hEdit, xax
   invoke SendMessage, [xsi].hEdit, EM_SETEVENTMASK, 0, ENM_SELCHANGE
-  invoke SendMessage, [xsi].hEdit, EM_SETBKGNDCOLOR, 0, DBG_COLOR_BACKGROUND
+  invoke SendMessage, [xsi].hEdit, EM_SETBKGNDCOLOR, 0, DBG_COLOR_BACKGROUND_WND
   invoke SendMessage, [xsi].hEdit, EM_SETZOOM, $ObjTmpl(DebugCenter).dTxtZoomFactor, ZOOM_BASE
 
   mov [xsi].pEdtIptor, $New(REdtIptor)

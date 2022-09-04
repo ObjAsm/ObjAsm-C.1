@@ -1100,7 +1100,7 @@ ChildSearch proc uses xbx xdi hWnd:HWND, lParam:PDBG_CHILD_INFO
 ChildSearch endp
 
 Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
-  local CFD:CHARFORMAT, DCI:DBG_CHILD_INFO, dDbgCmd:DWORD
+  local CFD:CHARFORMAT, DCI:DBG_CHILD_INFO, dDbgCmd:DWORD, dDbgColor:DWORD
 
   SetObject xsi
   mov xcx, lParam
@@ -1114,6 +1114,7 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
       .if [xcx].DBG_CMD_INFO.bBlockID == DBG_MSG_CMD    ;Command
         movzx eax, [xcx].DBG_CMD_INFO.bInfo
         .if eax == DBG_CMD_CLEAR_TXT || eax == DBG_CMD_CLEAR_BMP
+          m2m dDbgColor, [xcx].DBG_CMD_INFO.dParam, edx
           .if eax == DBG_CMD_CLEAR_TXT
             mov DCI.dObjID, DbgMdiChildTxtID
           .else
@@ -1127,7 +1128,8 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
           .endif
 
         .elseif eax ==  DBG_CMD_CLEAR_ALL
-          invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset EraseChild, 0
+          m2m dDbgColor, [xcx].DBG_CMD_INFO.dParam, edx
+          invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset EraseChild, dDbgColor
 
         .elseif eax == DBG_CMD_CLOSE_TXT || eax == DBG_CMD_CLOSE_BMP
           .if eax == DBG_CMD_CLEAR_TXT
@@ -1148,6 +1150,7 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
 
         .elseif eax == DBG_CMD_SINGLE_LINE || eax == DBG_CMD_DOUBLE_LINE
           mov dDbgCmd, eax
+          m2m dDbgColor, [xcx].DBG_CMD_INFO.dParam, edx
           mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
           m2z DCI.pChild
           mov DCI.dObjID, DbgMdiChildTxtID
@@ -1164,7 +1167,7 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
           mov CFD.dwMask, CFM_COLOR or CFM_BOLD or CFM_ITALIC or CFM_STRIKEOUT or CFM_UNDERLINE
 
           ;m2z CFD.crTextColor
-          mov CFD.crTextColor, DBG_COLOR_LINE
+          m2m CFD.crTextColor, dDbgColor, eax
 
           m2z CFD.dwEffects
           invoke SendMessage, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_SETCHARFORMAT, SCF_SELECTION, addr CFD
@@ -1174,6 +1177,21 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
             invoke SendMessageW, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_REPLACESEL, FALSE, offset cDoubleLine
           .endif
           invoke SendMessageW, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_REPLACESEL, FALSE, offset wCRLF
+
+        .elseif eax == Dbg_CMD_SET_BKGND
+          m2m dDbgColor, [xcx].DBG_CMD_INFO.dParam, edx
+          mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
+          m2z DCI.pChild
+          mov DCI.dObjID, DbgMdiChildTxtID
+          invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset ChildSearch, addr DCI
+          .if DCI.pChild == 0
+            mov xdi, $New(DbgMdiChildTxt)
+            OCall xdi::DbgMdiChildTxt.Init, [xsi].pClientWnd, addr [xbx + DBG_HEADER_INFO], [xsi].hFont
+          .else
+            mov xdi, DCI.pChild
+          .endif
+          invoke SendMessage, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_SETBKGNDCOLOR, 0, dDbgColor
+          invoke ShowWindow, [xdi].$Obj(DbgMdiChildTxt).hEdit, SW_SHOW
         .endif
 
       .elseif BYTE ptr [xcx] == DBG_MSG_STR             ;Text (ANSI or WIDE)

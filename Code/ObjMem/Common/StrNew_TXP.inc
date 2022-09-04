@@ -39,4 +39,3 @@ ProcName proc uses xbx xdi xsi pString:POINTER
   ret
 ProcName endp
 
-end

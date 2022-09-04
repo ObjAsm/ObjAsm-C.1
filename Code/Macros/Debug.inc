@@ -15,6 +15,7 @@
 ;               - DbgClosexxx and DbgClearxxx do not open DbgCenter if closed.
 ;             Version C.1.3, August 2022
 ;               - DbgWrite & DbgWriteF added.
+;               - Color variables are introduced. Setup is done by SysInit.
 ; ==================================================================================================
 
 ;Supported debugging macros:
@@ -22,7 +23,7 @@
 ;  - DbgCloseAll, DbgCloseTxt, DbgCloseBmp
 ;  - DbgClearAll, DbgClearTxt, DbgClearBmp
 ;  - DbgLine, DbgLine2, DbgText, DbgTextF, DbgWarning
-;  - DbgWrite, DbgWriteF 
+;  - DbgWrite, DbgWriteF
 ;  - DbgARGB
 ;  - DbgStr, DbgStrA, DbgStrW, DbgStrCA, DbgStrCW
 ;  - DbgBin, DbgDec, DbgHex, DbgFloat, DbgGUID
@@ -39,56 +40,73 @@
 
 ; ==================================================================================================
 
-;Debug coloring setup
+;Debug coloring setup.
+;Note: The colors displayed on the target device are determined only by the debuggee.
+;      This is done when SysInit is executed.
 
 ifndef DBG_DEVICE
   DBG_DEVICE textequ <WND>
 endif
 
-ifidn DBG_DEVICE, <WND>
-  if FALSE                                                ;Use high contrast colors
-    DBG_COLOR_TEXT        equ   $RGB(230,230,230)
-    DBG_COLOR_BACKGROUND  equ   $RGB(000,000,048)
-  else
-    DBG_COLOR_TEXT        equ   $RGB(000,000,000)
-    DBG_COLOR_BACKGROUND  equ   $RGB(255,255,255)
-  endif
-  DBG_COLOR_COMMENT       equ   $RGB(128,128,128)
-  DBG_COLOR_WARNING       equ   $RGB(192,064,064)
-  DBG_COLOR_ERROR         equ   $RGB(255,000,000)
-  DBG_COLOR_STRING        equ   $RGB(000,000,255)
-  DBG_COLOR_MESSAGE       equ   $RGB(064,064,160)
-  DBG_COLOR_OBJECT        equ   $RGB(128,128,128)
-  DBG_COLOR_INTERFACE     equ   $RGB(090,090,255)
-  DBG_COLOR_VMT           equ   $RGB(063,063,255)
-  DBG_COLOR_FPU           equ   $RGB(050,150,050)
-  DBG_COLOR_MEMORY        equ   $RGB(100,100,200)
-  DBG_COLOR_RGB_RED       equ   $RGB(255,000,000)
-  DBG_COLOR_RGB_GREEN     equ   $RGB(000,160,000)
-  DBG_COLOR_RGB_BLUE      equ   $RGB(000,000,255)
-  DBG_COLOR_DEFAULT_PRE   equ   $RGB(090,090,090)
-  DBG_COLOR_DEFAULT_VAR   equ   $RGB(130,130,255)
-  DBG_COLOR_LINE          equ   $RGB(150,150,255)
-else
-  DBG_COLOR_TEXT          equ   $RGB(255,255,255)
-  DBG_COLOR_BACKGROUND    equ   $RGB(000,000,000)
-  DBG_COLOR_COMMENT       equ   $RGB(255,255,127)
-  DBG_COLOR_WARNING       equ   $RGB(127,255,000)
-  DBG_COLOR_ERROR         equ   $RGB(255,000,000)
-  DBG_COLOR_STRING        equ   $RGB(000,000,255)
-  DBG_COLOR_MESSAGE       equ   $RGB(127,255,255)
-  DBG_COLOR_OBJECT        equ   $RGB(127,255,255)
-  DBG_COLOR_INTERFACE     equ   $RGB(000,000,255)
-  DBG_COLOR_VMT           equ   $RGB(000,000,255)
-  DBG_COLOR_FPU           equ   $RGB(000,255,000)
-  DBG_COLOR_MEMORY        equ   $RGB(000,127,255)
-  DBG_COLOR_RGB_RED       equ   $RGB(255,000,000)
-  DBG_COLOR_RGB_GREEN     equ   $RGB(000,255,000)
-  DBG_COLOR_RGB_BLUE      equ   $RGB(000,000,255)
-  DBG_COLOR_DEFAULT_PRE   equ   $RGB(255,255,127)
-  DBG_COLOR_DEFAULT_VAR   equ   $RGB(255,255,255)
-  DBG_COLOR_LINE          equ   $RGB(127,127,127)
-endif
+;Device: WND or LOG
+DBG_COLOR_TEXT_WND        equ   $RGB(000,000,000)
+DBG_COLOR_BACKGROUND_WND  equ   $RGB(255,255,255)
+DBG_COLOR_COMMENT_WND     equ   $RGB(128,128,128)
+DBG_COLOR_WARNING_WND     equ   $RGB(192,064,064)
+DBG_COLOR_ERROR_WND       equ   $RGB(255,000,000)
+DBG_COLOR_STRING_WND      equ   $RGB(000,000,255)
+DBG_COLOR_MESSAGE_WND     equ   $RGB(064,064,160)
+DBG_COLOR_OBJECT_WND      equ   $RGB(128,128,128)
+DBG_COLOR_INTERFACE_WND   equ   $RGB(090,090,255)
+DBG_COLOR_VMT_WND         equ   $RGB(063,063,255)
+DBG_COLOR_FPU_WND         equ   $RGB(050,150,050)
+DBG_COLOR_MEMORY_WND      equ   $RGB(100,100,200)
+DBG_COLOR_DEFAULT_PRE_WND equ   $RGB(090,090,090)
+DBG_COLOR_DEFAULT_VAR_WND equ   $RGB(130,130,255)
+DBG_COLOR_LINE_WND        equ   $RGB(150,150,255)
+DBG_COLOR_RED_WND         equ   $RGB(255,000,000)
+DBG_COLOR_GREEN_WND       equ   $RGB(000,160,000)
+DBG_COLOR_BLUE_WND        equ   $RGB(000,000,255)
+
+;Device: WND in High Contrast
+DBG_COLOR_TEXT_HC         equ   $RGB(255,255,255)
+DBG_COLOR_BACKGROUND_HC   equ   $RGB(000,000,000)
+DBG_COLOR_COMMENT_HC      equ   $RGB(128,128,128)
+DBG_COLOR_WARNING_HC      equ   $RGB(192,064,064)
+DBG_COLOR_ERROR_HC        equ   $RGB(255,000,000)
+DBG_COLOR_STRING_HC       equ   $RGB(000,000,255)
+DBG_COLOR_MESSAGE_HC      equ   $RGB(064,064,160)
+DBG_COLOR_OBJECT_HC       equ   $RGB(128,128,128)
+DBG_COLOR_INTERFACE_HC    equ   $RGB(090,090,255)
+DBG_COLOR_VMT_HC          equ   $RGB(063,063,255)
+DBG_COLOR_FPU_HC          equ   $RGB(050,150,050)
+DBG_COLOR_MEMORY_HC       equ   $RGB(100,100,200)
+DBG_COLOR_DEFAULT_PRE_HC  equ   $RGB(255,255,255)
+DBG_COLOR_DEFAULT_VAR_HC  equ   $RGB(130,130,255)
+DBG_COLOR_LINE_HC         equ   $RGB(150,150,255)
+DBG_COLOR_RED_HC          equ   $RGB(255,000,000)
+DBG_COLOR_GREEN_HC        equ   $RGB(000,160,000)
+DBG_COLOR_BLUE_HC         equ   $RGB(000,000,255)
+
+;Device: CON
+DBG_COLOR_TEXT_CON        equ   $RGB(255,255,255)
+DBG_COLOR_BACKGROUND_CON  equ   $RGB(000,000,000)
+DBG_COLOR_COMMENT_CON     equ   $RGB(255,255,127)
+DBG_COLOR_WARNING_CON     equ   $RGB(127,255,000)
+DBG_COLOR_ERROR_CON       equ   $RGB(255,000,000)
+DBG_COLOR_STRING_CON      equ   $RGB(000,000,255)
+DBG_COLOR_MESSAGE_CON     equ   $RGB(127,255,255)
+DBG_COLOR_OBJECT_CON      equ   $RGB(127,255,255)
+DBG_COLOR_INTERFACE_CON   equ   $RGB(000,000,255)
+DBG_COLOR_VMT_CON         equ   $RGB(000,000,255)
+DBG_COLOR_FPU_CON         equ   $RGB(000,255,000)
+DBG_COLOR_MEMORY_CON      equ   $RGB(000,127,255)
+DBG_COLOR_DEFAULT_PRE_CON equ   $RGB(255,255,127)
+DBG_COLOR_DEFAULT_VAR_CON equ   $RGB(255,255,255)
+DBG_COLOR_LINE_CON        equ   $RGB(127,127,127)
+DBG_COLOR_RED_CON         equ   $RGB(255,000,000)
+DBG_COLOR_GREEN_CON       equ   $RGB(000,255,000)
+DBG_COLOR_BLUE_CON        equ   $RGB(000,000,255)
 
 ;Debug font
 DBG_FONT_TEXT             textequ <Courier New>
@@ -101,6 +119,7 @@ DBG_DEV_WIN_CON           equ   02h
 DBG_DEV_WIN_DC            equ   03h       ;DebugCenter Windows application
 DBG_DEV_UEFI_CON          equ   04h
 ;DBG_DEV_UEFI_LOG          equ   05h
+;DBG_DEV_UEFI_DC           equ   06h      ;Remote connection via HTTP, not implemented
 
 ;Debug options
 DBG_OPT_NONE              equ   00h
@@ -141,7 +160,7 @@ if DEBUGGING
   CStrW szDbgComErr,      "DebugCenter communication failed due to low system resources"
   CStrW szLeakReport,     "Resource Leakage Report"
 
-  externdef dDbgDev:DWORD                 ;Exports dDbgDev symbol, defined in SetupSys.inc
+  externdef dDbgDev:DWORD                 ;Exports dDbgDev symbol, defined in SysSetup
 
   if TARGET_PLATFORM eq PLATFORM_WINDOWS
     CStrA szDbgInvalid,     "????"
@@ -157,6 +176,31 @@ if DEBUGGING
     dObjIDTableCount    DWORD     ?
     pObjErrTableStart   POINTER   ?
     dObjErrTableCount   DWORD     ?
+
+    ;Initial value set by SysInit
+    DbgColorText        COLORREF  ?
+    DbgColorBackground  COLORREF  ?
+    DbgColorComment     COLORREF  ?
+    DbgColorWarning     COLORREF  ?
+    DbgColorError       COLORREF  ?
+    DbgColorString      COLORREF  ?
+    DbgColorMessage     COLORREF  ?
+    DbgColorObject      COLORREF  ?
+    DbgColorInterface   COLORREF  ?
+    DbgColorVMT         COLORREF  ?
+    DbgColorFPU         COLORREF  ?
+    DbgColorMemory      COLORREF  ?
+    DbgColorDefaultPre  COLORREF  ?
+    DbgColorDefaultVar  COLORREF  ?
+    DbgColorLine        COLORREF  ?
+    DbgColorRed         COLORREF  ?
+    DbgColorGreen       COLORREF  ?
+    DbgColorBlue        COLORREF  ?
+
+    ifidn DBG_DEVICE, <WND>
+      DbgHighContrast   HIGHCONTRAST  {}                ;Used by SysInit to get the High Contrast
+    endif                                               ; activation status
+
 endif
 
 
@@ -333,9 +377,9 @@ DbgShowSrcInfo macro Dest:req
   .ifBitSet dDbgOpt, DBG_OPT_SHOWINFO
     invoke DbgOutTextA, \
               $OfsCStrA(@CatStr(<!" [>, @SubStr(%@FileCur, ??DbgPos + 1), <, >, %@Line, <]!">)), \
-              DBG_COLOR_COMMENT, DBG_EFFECT_NEWLINE, Dest
+              DbgColorComment, DBG_EFFECT_NEWLINE, Dest
   .else
-    invoke DbgOutTextA, offset(bNULL), DBG_COLOR_TEXT, DBG_EFFECT_NEWLINE, Dest
+    invoke DbgOutTextA, offset(bNULL), DbgColorText, DBG_EFFECT_NEWLINE, Dest
   .endif
 endm
 
@@ -348,7 +392,7 @@ endm
 
 DbgShowTxtInfo macro Text, Dest
   ifnb <&Text>
-    invoke DbgOutTextA, $OfsCStrA(<", ", &Text>), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, Dest
+    invoke DbgOutTextA, $OfsCStrA(<", ", &Text>), DbgColorText, DBG_EFFECT_NORMAL, Dest
   endif
 endm
 
@@ -406,8 +450,8 @@ OutHexAux macro
   mov DCHRA ptr [xdi + H_Offset], "h"                   ;Include ZTC
 endm
 
-DbgOutHex macro PreText:=<>, PreColor:=<DBG_COLOR_DEFAULT_PRE>, Var:req, \
-                VarColor:=<DBG_COLOR_DEFAULT_VAR>, Dest:req
+DbgOutHex macro PreText:=<>, PreColor:=<DbgColorDefaultPre>, Var:req, \
+                VarColor:=<DbgColorDefaultVar>, Dest:req
   ??DbgDataSize = type(Var)
   if TARGET_BITNESS eq 32
     ;;Reserve stack = 4*8 chars + "h" + ZTC = 22h => 28h
@@ -488,10 +532,10 @@ DbgLine macro Dest
     DbgSaveContext
     DbgSetDestWnd Dest
     ifidn DBG_DEVICE, <WND>
-      invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, ??DbgDstWnd
+      invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, DbgColorLine, ??DbgDstWnd
     else
       invoke DbgOutTextA, $OfsCStrA("-------------------------------------------------------"), \
-                          DBG_COLOR_LINE, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+                          DbgColorLine, DBG_EFFECT_NEWLINE, ??DbgDstWnd
     endif
     DbgLoadContext
   endif
@@ -507,10 +551,10 @@ DbgLine2 macro Dest
     DbgSaveContext
     DbgSetDestWnd Dest
     ifidn DBG_DEVICE, <WND>
-      invoke DbgOutCmd, DBG_CMD_DOUBLE_LINE, ??DbgDstWnd
+      invoke DbgOutCmd, DBG_CMD_DOUBLE_LINE, DbgColorLine, ??DbgDstWnd
     else
       invoke DbgOutTextA, $OfsCStrA("======================================================="), \
-                          DBG_COLOR_LINE, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+                          DbgColorLine, DBG_EFFECT_NEWLINE, ??DbgDstWnd
     endif
     DbgLoadContext
   endif
@@ -528,10 +572,10 @@ DbgText macro Var, Dest
     DbgSetDestWnd Dest
     ifb <&Var>
       invoke DbgOutTextA, $OfsCStrA(@CatStr(<!">,<%@FileCur>,<!">)), \
-                          DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+                          DbgColorText, DBG_EFFECT_NORMAL, ??DbgDstWnd
     else
       invoke DbgOutTextA, $OfsCStrA($Esc(<&Var>)), \
-                          DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+                          DbgColorText, DBG_EFFECT_NORMAL, ??DbgDstWnd
     endif
     DbgShowSrcInfo ??DbgDstWnd
     DbgLoadContext
@@ -547,7 +591,7 @@ endm
 ;             Arg 4..n: optional arguments.
 ; Example:    DbgTextF "Output", $RGB(000,000,000), "Data = '%s'", xax
 
-DbgTextF macro Color:=<DBG_COLOR_TEXT>, Dest, Message:req, Args:vararg
+DbgTextF macro Color:=<DbgColorText>, Dest, Message:req, Args:vararg
   local DebugTextBuffer
 
   if DEBUGGING
@@ -581,10 +625,10 @@ DbgWarning macro DispText, Dest
     DbgSetDestWnd Dest
     ifb <&Var>
       invoke DbgOutTextA, $OfsCStrA($Esc("WARNING\:")), \
-                          DBG_COLOR_WARNING, DBG_EFFECT_NORMAL, ??DbgDstWnd
+                          DbgColorWarning, DBG_EFFECT_NORMAL, ??DbgDstWnd
     else
       invoke DbgOutTextA, $OfsCStrA($Esc(<DispText>)), \
-                          DBG_COLOR_WARNING, DBG_EFFECT_NORMAL, ??DbgDstWnd
+                          DbgColorWarning, DBG_EFFECT_NORMAL, ??DbgDstWnd
     endif
     DbgShowSrcInfo ??DbgDstWnd
     DbgLoadContext
@@ -605,7 +649,7 @@ endif
 ; Arguments:  Arg1: -> ANSI String.
 ;             Arg2: Optional destination Window name.
 
-DbgWriteA macro Var, Color:=<DBG_COLOR_TEXT>, Dest
+DbgWriteA macro Var, Color:=<DbgColorText>, Dest
   if DEBUGGING
     if type(Var) eq @WordSize                           ;;Check if Var is a POINTER or characters
       DbgSaveContext FALSE, Var                         ;;Pass Var as a value
@@ -625,7 +669,7 @@ endm
 ; Arguments:  Arg1: -> WIDE String.
 ;             Arg2: Optional destination Window name.
 
-DbgWriteW macro Var, Color:=<DBG_COLOR_TEXT>, Dest
+DbgWriteW macro Var, Color:=<DbgColorText>, Dest
   if DEBUGGING
     if type(Var) eq @WordSize                           ;;Check if Var is a POINTER or characters
       DbgSaveContext FALSE, Var                         ;;Pass Var as a value
@@ -656,9 +700,9 @@ endif
 ;             Arg 4..n: optional arguments.
 ; Note:       Dont use xbx as argument register. it is used internally!
 
-DbgWriteFA macro Color:=<DBG_COLOR_TEXT>, Dest, Format, Args:vararg
+DbgWriteFA macro Color:=<DbgColorText>, Dest, Format, Args:vararg
   local bBuffer
- 
+
   if DEBUGGING
     S_DATA segment
      bBuffer CHRA 4096 dup(?)
@@ -682,9 +726,9 @@ endm
 ;             Arg3: Quoted format string.
 ;             Arg 4..n: optional arguments.
 
-DbgWriteFW macro Color:=<DBG_COLOR_TEXT>, Dest, Format, Args:vararg
+DbgWriteFW macro Color:=<DbgColorText>, Dest, Format, Args:vararg
   local wBuffer
- 
+
   if DEBUGGING
     S_DATA segment
      wBuffer CHRW 4096 dup(?)
@@ -720,7 +764,7 @@ DbgStrA macro Var:req, InfoText, Dest
     if type(Var) eq @WordSize                           ;;Check if Var is a POINTER or characters
       DbgSaveContext FALSE, Var                         ;;Pass Var as a value
       DbgSetDestWnd Dest
-      invoke DbgOutTextA, $OfsCStrA($Esc("&Var& -\] ")), DBG_COLOR_DEFAULT_PRE, \
+      invoke DbgOutTextA, $OfsCStrA($Esc("&Var& -\] ")), DbgColorDefaultPre, \
                           DBG_EFFECT_NORMAL, ??DbgDstWnd
     else
       if (opattr Var) and OAT_REGISTER                  ;;Is Var a register?
@@ -729,11 +773,11 @@ DbgStrA macro Var:req, InfoText, Dest
       else
         DbgSaveContext TRUE, Var                        ;;Pass Var as a reference
         DbgSetDestWnd Dest
-        invoke DbgOutTextA, $OfsCStrA("&Var& = "), DBG_COLOR_DEFAULT_PRE, \
+        invoke DbgOutTextA, $OfsCStrA("&Var& = "), DbgColorDefaultPre, \
                             DBG_EFFECT_NORMAL, ??DbgDstWnd
       endif
     endif
-    invoke DbgOutTextA, ??VarXBX, DBG_COLOR_STRING, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextA, ??VarXBX, DbgColorString, DBG_EFFECT_NORMAL, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
     DbgLoadContext
@@ -752,7 +796,7 @@ DbgStrW macro Var:req, InfoText, Dest
     if type(Var) eq @WordSize                           ;;Check if Var is a POINTER or characters
       DbgSaveContext FALSE, Var                         ;;Pass Var as a value
       DbgSetDestWnd Dest
-      invoke DbgOutTextA, $OfsCStrA($Esc("&Var& -\] ")), DBG_COLOR_DEFAULT_PRE, \
+      invoke DbgOutTextA, $OfsCStrA($Esc("&Var& -\] ")), DbgColorDefaultPre, \
                           DBG_EFFECT_NORMAL, ??DbgDstWnd
     else
       if (opattr Var) and OAT_REGISTER                  ;;Is Var a register?
@@ -761,11 +805,11 @@ DbgStrW macro Var:req, InfoText, Dest
       else
         DbgSaveContext TRUE, Var                        ;;Pass Var as a reference
         DbgSetDestWnd Dest
-        invoke DbgOutTextA, $OfsCStrA("&Var& = "), DBG_COLOR_DEFAULT_PRE, \
+        invoke DbgOutTextA, $OfsCStrA("&Var& = "), DbgColorDefaultPre, \
                             DBG_EFFECT_NORMAL, ??DbgDstWnd
       endif
     endif
-    invoke DbgOutTextW, ??VarXBX, DBG_COLOR_STRING, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextW, ??VarXBX, DbgColorString, DBG_EFFECT_NORMAL, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
     DbgLoadContext
@@ -785,7 +829,7 @@ DbgStrCA macro Var:req, StrLen:req, InfoText, Dest
     if type(Var) eq @WordSize                           ;;Check if Var is a POINTER or characters
       DbgSaveContext FALSE, Var                         ;;Pass Var as a value
       DbgSetDestWnd Dest
-      invoke DbgOutTextA, $OfsCStrA($Esc("&Var& -\] ")), DBG_COLOR_DEFAULT_PRE, \
+      invoke DbgOutTextA, $OfsCStrA($Esc("&Var& -\] ")), DbgColorDefaultPre, \
                           DBG_EFFECT_NORMAL, ??DbgDstWnd
     else
       if (opattr Var) and OAT_REGISTER                  ;;Is Var a register?
@@ -794,11 +838,11 @@ DbgStrCA macro Var:req, StrLen:req, InfoText, Dest
       else
         DbgSaveContext TRUE, Var                        ;;Pass Var as a reference
         DbgSetDestWnd Dest
-        invoke DbgOutTextA, $OfsCStrA("&Var& = "), DBG_COLOR_DEFAULT_PRE, \
+        invoke DbgOutTextA, $OfsCStrA("&Var& = "), DbgColorDefaultPre, \
                             DBG_EFFECT_NORMAL, ??DbgDstWnd
       endif
     endif
-    invoke DbgOutTextCA, ??VarXBX, StrLen, DBG_COLOR_STRING, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextCA, ??VarXBX, StrLen, DbgColorString, DBG_EFFECT_NORMAL, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
     DbgLoadContext
@@ -818,7 +862,7 @@ DbgStrCW macro Var:req, StrLen:req, InfoText, Dest
     if type(Var) eq @WordSize                           ;;Check if Var is a POINTER or characters
       DbgSaveContext FALSE, Var                         ;;Pass Var as a value
       DbgSetDestWnd Dest
-      invoke DbgOutTextA, $OfsCStrA($Esc("&Var& -\] ")), DBG_COLOR_DEFAULT_PRE, \
+      invoke DbgOutTextA, $OfsCStrA($Esc("&Var& -\] ")), DbgColorDefaultPre, \
                           DBG_EFFECT_NORMAL, ??DbgDstWnd
     else
       if (opattr Var) and OAT_REGISTER                  ;;Is Var a register?
@@ -827,11 +871,11 @@ DbgStrCW macro Var:req, StrLen:req, InfoText, Dest
       else
         DbgSaveContext TRUE, Var                        ;;Pass Var as a reference
         DbgSetDestWnd Dest
-        invoke DbgOutTextA, $OfsCStrA("&Var& = "), DBG_COLOR_DEFAULT_PRE, \
+        invoke DbgOutTextA, $OfsCStrA("&Var& = "), DbgColorDefaultPre, \
                             DBG_EFFECT_NORMAL, ??DbgDstWnd
       endif
     endif
-    invoke DbgOutTextCW, ??VarXBX, StrLen, DBG_COLOR_STRING, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextCW, ??VarXBX, StrLen, DbgColorString, DBG_EFFECT_NORMAL, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
     DbgLoadContext
@@ -884,7 +928,7 @@ DbgBin macro Var:req, InfoText, Dest
   if DEBUGGING
     DbgSaveContext FALSE, Var
     DbgSetDestWnd Dest
-    invoke DbgOutTextA, $OfsCStrA("&Var = "), DBG_COLOR_DEFAULT_PRE, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextA, $OfsCStrA("&Var = "), DbgColorDefaultPre, DBG_EFFECT_NORMAL, ??DbgDstWnd
     if TARGET_BITNESS eq 32
       $$Buffersize = 24h                                ;;32 + "y" + ZTC + Padding(2) = 24h
       sub esp, $$Buffersize                             ;;Reserve a buffer on the stack.
@@ -906,7 +950,7 @@ DbgBin macro Var:req, InfoText, Dest
     stosb
     loop @B
     mov DCHRA ptr [xdi], "y"                            ;;Set "y" specifier and ZTC
-    invoke DbgOutTextA, xsi, DBG_COLOR_DEFAULT_VAR, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextA, xsi, DbgColorDefaultVar, DBG_EFFECT_NORMAL, ??DbgDstWnd
     add xsp, $$Buffersize                               ;;Restore stack
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
@@ -927,7 +971,7 @@ DbgDec macro Var:req, InfoText, Dest
   if DEBUGGING
     DbgSaveContext FALSE, Var
     DbgSetDestWnd Dest
-    invoke DbgOutTextA, $OfsCStrA("&Var = "), DBG_COLOR_DEFAULT_PRE, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextA, $OfsCStrA("&Var = "), DbgColorDefaultPre, DBG_EFFECT_NORMAL, ??DbgDstWnd
     if TARGET_BITNESS eq 32
       $$Buffersize = 0Ch                                ;;10 + "t" + ZTC + Padding(0) = 0Ch
       sub esp, $$Buffersize                             ;;Reserve a buffer on the stack.
@@ -938,7 +982,7 @@ DbgDec macro Var:req, InfoText, Dest
       lea rdi, [rsp + 20h]                              ;;Get a POINTER to the output buffer
     endif
     invoke xword2decA, xdi, ??VarXBX
-    invoke DbgOutTextA, xdi, DBG_COLOR_DEFAULT_VAR, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextA, xdi, DbgColorDefaultVar, DBG_EFFECT_NORMAL, ??DbgDstWnd
     add xsp, $$Buffersize                               ;;Restore stack
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
@@ -975,9 +1019,9 @@ DbgFloat macro Var:req, InfoText, Dest
         mov xdi, xsp
         sub xsp, DBG_FLOAT_BUFFERSIZE + 20h             ;;Reserve a buffer for the number
         lea xsi, [xsp + 20h]                            ;; Keep stack aligned!
-        invoke DbgOutTextA, $OfsCStrA("&Var = "), DBG_COLOR_DEFAULT_PRE, DBG_EFFECT_NORMAL, ??DbgDstWnd
+        invoke DbgOutTextA, $OfsCStrA("&Var = "), DbgColorDefaultPre, DBG_EFFECT_NORMAL, ??DbgDstWnd
         invoke St0ToStrA, xsi, 0, DBG_FLOAT_RESOLUTION, 1
-        invoke DbgOutTextA, xsi, DBG_COLOR_FPU, DBG_EFFECT_NORMAL, ??DbgDstWnd
+        invoke DbgOutTextA, xsi, DbgColorFPU, DBG_EFFECT_NORMAL, ??DbgDstWnd
         add xsp, DBG_FLOAT_BUFFERSIZE + 20h             ;;Restore stack
         DbgShowTxtInfo InfoText, ??DbgDstWnd
         DbgShowSrcInfo ??DbgDstWnd
@@ -1014,12 +1058,12 @@ DbgGUID macro Var:req, InfoText, Dest
       invoke GUID2StrA, xdi, ??VarXBX
       if ??DbgDataSize eq @WordSize
         invoke DbgOutTextA, $OfsCStrA($Esc("&Var& -\] ")), \
-                            DBG_COLOR_DEFAULT_PRE, DBG_EFFECT_NORMAL, ??DbgDstWnd
+                            DbgColorDefaultPre, DBG_EFFECT_NORMAL, ??DbgDstWnd
       else
         invoke DbgOutTextA, $OfsCStrA("&Var& = "), \
-                            DBG_COLOR_DEFAULT_PRE, DBG_EFFECT_NORMAL, ??DbgDstWnd
+                            DbgColorDefaultPre, DBG_EFFECT_NORMAL, ??DbgDstWnd
       endif
-      invoke DbgOutTextA, xdi, DBG_COLOR_DEFAULT_VAR, DBG_EFFECT_NORMAL, ??DbgDstWnd
+      invoke DbgOutTextA, xdi, DbgColorDefaultVar, DBG_EFFECT_NORMAL, ??DbgDstWnd
       add xsp, $$Buffersize                             ;;Restore stack
       DbgShowTxtInfo InfoText, ??DbgDstWnd
       DbgShowSrcInfo ??DbgDstWnd
@@ -1044,19 +1088,19 @@ DbgARGB macro Var:req, InfoText, Dest
     endif
     mov edi, ebx
     shr ebx, 24
-    DbgOutHex <Var = [A:>, DBG_COLOR_DEFAULT_PRE, al, DBG_COLOR_TEXT, ??DbgDstWnd
-    invoke DbgOutTextA, $OfsCStrA(", "), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    DbgOutHex <Var = [A:>, DbgColorDefaultPre, al, DbgColorText, ??DbgDstWnd
+    invoke DbgOutTextA, $OfsCStrA(", "), DbgColorText, DBG_EFFECT_NORMAL, ??DbgDstWnd
     mov ebx, edi
-    DbgOutHex <R:>, DBG_COLOR_RGB_RED, al, DBG_COLOR_RGB_RED, ??DbgDstWnd
-    invoke DbgOutTextA, $OfsCStrA(", "), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    DbgOutHex <R:>, DBG_COLOR_RED, al, DBG_COLOR_RED, ??DbgDstWnd
+    invoke DbgOutTextA, $OfsCStrA(", "), DbgColorText, DBG_EFFECT_NORMAL, ??DbgDstWnd
     mov ebx, edi
     shr ebx, 8
-    DbgOutHex <G:>, DBG_COLOR_RGB_GREEN, al, DBG_COLOR_RGB_GREEN, ??DbgDstWnd
-    invoke DbgOutTextA, $OfsCStrA(", "), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    DbgOutHex <G:>, DBG_COLOR_GREEN, al, DBG_COLOR_GREEN, ??DbgDstWnd
+    invoke DbgOutTextA, $OfsCStrA(", "), DbgColorText, DBG_EFFECT_NORMAL, ??DbgDstWnd
     mov ebx, edi
     shr ebx, 16
-    DbgOutHex <B:>, DBG_COLOR_RGB_BLUE, al, DBG_COLOR_RGB_BLUE, ??DbgDstWnd
-    invoke DbgOutTextA, $OfsCStrA("]"), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    DbgOutHex <B:>, DBG_COLOR_BLUE, al, DBG_COLOR_BLUE, ??DbgDstWnd
+    invoke DbgOutTextA, $OfsCStrA("]"), DbgColorText, DBG_EFFECT_NORMAL, ??DbgDstWnd
 
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
@@ -1084,11 +1128,11 @@ DbgBmp macro hBmp:req, Dest
         invoke DbgOutBitmap, ??VarXBX, ??DbgDstWnd
       .else
         invoke DbgOutTextA, $OfsCStrA("Invalid bitmap HANDLE"), \
-                            DBG_COLOR_ERROR, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+                            DbgColorError, DBG_EFFECT_NEWLINE, ??DbgDstWnd
       .endif
     else
       invoke DbgOutTextA, $OfsCStrA("Bitmap can not be shown on this device"), \
-                          DBG_COLOR_ERROR, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+                          DbgColorError, DBG_EFFECT_NEWLINE, ??DbgDstWnd
     endif
     DbgLoadContext
   endif
@@ -1109,7 +1153,7 @@ DbgBmpFromDC macro hDC:req, Dest
       invoke DbgOutBitmap, xax, ??DbgDstWnd
     else
       invoke DbgOutTextA, $OfsCStrA("Bitmap can not be shown on this device..."), \
-                          DBG_COLOR_ERROR, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+                          DbgColorError, DBG_EFFECT_NEWLINE, ??DbgDstWnd
     endif
     DbgLoadContext
   endif
@@ -1133,10 +1177,10 @@ DbgMem macro pData:req, DataSize:req, OutputFormat:=<DBG_MEM_NONE>, InfoText, De
   if DEBUGGING
     DbgSaveContext FALSE, pData                          ;;Pass pData as a value
     DbgSetDestWnd Dest
-    invoke DbgOutTextA, $OfsCStrA("MEMORY DUMP of &pData"), DBG_COLOR_MEMORY, DBG_EFFECT_BOLD, ??DbgDstWnd
+    invoke DbgOutTextA, $OfsCStrA("MEMORY DUMP of &pData"), DbgColorMemory, DBG_EFFECT_BOLD, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
-    invoke DbgOutMem, ??VarXBX, DataSize, OutputFormat, DBG_COLOR_MEMORY, DBG_COLOR_TEXT, ??DbgDstWnd
+    invoke DbgOutMem, ??VarXBX, DataSize, OutputFormat, DbgColorMemory, DbgColorText, ??DbgDstWnd
     DbgLoadContext
   endif
 endm
@@ -1163,19 +1207,19 @@ DbgGlobalMemUsage macro InfoText, Dest
     invoke GlobalMemoryStatus, xdi                      ;;No need to set MEMORYSTATUS.dwLength
 
     invoke wsprintfA, xsi, $OfsCStrA("Memory load: %lu%%"), [xdi].MEMORYSTATUS.dwMemoryLoad
-    invoke DbgOutTextA, xsi, DBG_COLOR_MEMORY, DBG_EFFECT_BOLD, ??DbgDstWnd
+    invoke DbgOutTextA, xsi, DbgColorMemory, DBG_EFFECT_BOLD, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
 
     invoke wsprintfA, xsi, $OfsCStrA(" - Physical: %lu of %lu bytes."), \
                       [xdi].dwAvailPhys, [xdi].dwTotalPhys
-    invoke DbgOutTextA, xsi, DBG_COLOR_MEMORY, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+    invoke DbgOutTextA, xsi, DbgColorMemory, DBG_EFFECT_NEWLINE, ??DbgDstWnd
     invoke wsprintfA, xsi, $OfsCStrA(" - PageFile: %lu of %lu bytes."), \
                       [xdi].dwAvailPageFile, [xdi].dwTotalPageFile
-    invoke DbgOutTextA, xsi, DBG_COLOR_MEMORY, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+    invoke DbgOutTextA, xsi, DbgColorMemory, DBG_EFFECT_NEWLINE, ??DbgDstWnd
     invoke wsprintfA, xsi, $OfsCStrA(" - Virtual : %lu of %lu bytes."), \
                       [xdi].dwAvailVirtual, [xdi].dwTotalVirtual
-    invoke DbgOutTextA, xsi, DBG_COLOR_MEMORY, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+    invoke DbgOutTextA, xsi, DbgColorMemory, DBG_EFFECT_NEWLINE, ??DbgDstWnd
     mov xsp, xbx
     DbgLoadContext
   endif
@@ -1198,10 +1242,10 @@ DbgFPU macro InfoText, Dest
   if DEBUGGING
     DbgSaveContext
     DbgSetDestWnd Dest
-    invoke DbgOutTextA, $OfsCStrA("FPU DUMP"), DBG_COLOR_FPU, DBG_EFFECT_BOLD, ??DbgDstWnd
+    invoke DbgOutTextA, $OfsCStrA("FPU DUMP"), DbgColorFPU, DBG_EFFECT_BOLD, ??DbgDstWnd
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
-    invoke DbgOutFPU, ??DbgDstWnd, DBG_COLOR_FPU
+    invoke DbgOutFPU, ??DbgDstWnd, DbgColorFPU
     DbgLoadContext
   endif
 endm
@@ -1222,7 +1266,7 @@ DbgMessage macro Var:req, InfoText, Dest
     if TARGET_PLATFORM eq PLATFORM_WINDOWS
       DbgSaveContext FALSE, Var
       DbgSetDestWnd Dest
-      invoke DbgOutMsg, ebx, DBG_COLOR_MESSAGE, ??DbgDstWnd
+      invoke DbgOutMsg, ebx, DbgColorMessage, ??DbgDstWnd
       DbgShowTxtInfo InfoText, ??DbgDstWnd
       DbgShowSrcInfo ??DbgDstWnd
       DbgLoadContext
@@ -1295,7 +1339,7 @@ DbgObject macro Expression, InfoText, Dest
       else
         DbgSaveContext TRUE, ??InsExpr
         DbgSetDestWnd Dest
-        invoke DbgShowObjectHeader, $OfsCStrA(<!"%??ObjExpr!">), xbx, DBG_COLOR_OBJECT, ??DbgDstWnd
+        invoke DbgShowObjectHeader, $OfsCStrA(<!"%??ObjExpr!">), xbx, DbgColorObject, ??DbgDstWnd
         DbgShowTxtInfo InfoText, ??DbgDstWnd
         DbgShowSrcInfo ??DbgDstWnd
         mov xdi, xbx
@@ -1314,15 +1358,15 @@ DbgObject macro Expression, InfoText, Dest
             endif
             lea xbx, @CatStr(<[xdi].>, <??TestObject>, <.>, %$$sz1)
             push xdi
-            %DbgOutHex < - &$$sz1 = >, DBG_COLOR_OBJECT, \
+            %DbgOutHex < - &$$sz1 = >, DbgColorObject, \
                        @CatStr(<[xdi].>, <??TestObject>, <.>, %$$sz1),, ??DbgDstWnd
             pop xdi
             %ifidn <??TestObject>, <??ObjExpr>
               invoke DbgOutTextA, $OfsCStrA(<!" (%$$sz2)!">), \
-                                   DBG_COLOR_OBJECT, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+                                   DbgColorObject, DBG_EFFECT_NEWLINE, ??DbgDstWnd
             else
               invoke DbgOutTextA, $OfsCStrA(<!" (%$$sz2 from &??TestObject)!">), \
-                                   DBG_COLOR_OBJECT, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+                                   DbgColorObject, DBG_EFFECT_NEWLINE, ??DbgDstWnd
             endif
           endm
         endm
@@ -1352,23 +1396,23 @@ DbgVMT macro Expression, InfoText, Dest
       else
         DbgSaveContext TRUE, ??InsExpr
         DbgSetDestWnd Dest
-        invoke DbgShowObjectHeader, $OfsCStrA(<!"%??ObjExpr!">), xbx, DBG_COLOR_OBJECT, ??DbgDstWnd
+        invoke DbgShowObjectHeader, $OfsCStrA(<!"%??ObjExpr!">), xbx, DbgColorObject, ??DbgDstWnd
         DbgShowTxtInfo InfoText, ??DbgDstWnd
         DbgShowSrcInfo ??DbgDstWnd
         mov xdi, [xbx]                                  ;;xbx -> VMT
-        DbgOutHex < Virtual Method Table @ >, DBG_COLOR_VMT, xbx, DBG_COLOR_TEXT, ??DbgDstWnd
-        invoke DbgOutTextA, offset(bCRLF), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+        DbgOutHex < Virtual Method Table @ >, DbgColorVMT, xbx, DbgColorText, ??DbgDstWnd
+        invoke DbgOutTextA, offset(bCRLF), DbgColorText, DBG_EFFECT_NORMAL, ??DbgDstWnd
         %for ??TestObject, @CatStr(<!<>, %??ObjExpr, <_InherFrwPath!>>)
           $$ACount = 0
           %repeat @CatStr(<??TestObject>, <_VtlMtdCount>)
             $$ACount = $$ACount + 1
             $$sz1 CatStr <??TestObject>, <_VtlMethodName_>, %$$ACount
             %invoke DbgOutTextA, $OfsCStrA(@CatStr(<!" - >, @SubStr(%$$sz1, ??MtdPfxOfs), \
-                                 < method @ !">)), DBG_COLOR_VMT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+                                 < method @ !">)), DbgColorVMT, DBG_EFFECT_NORMAL, ??DbgDstWnd
             DbgOutHex,, @CatStr(<[xdi - sizeof(??>, ??TestObject, <_VMT) - @WordSize].??>, \
                                 ??TestObject, <_VMT.>, %$$sz1), 0, ??DbgDstWnd
             invoke DbgOutTextA, offset(bCRLF), \
-                                DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+                                DbgColorText, DBG_EFFECT_NORMAL, ??DbgDstWnd
           endm
         endm
         DbgLoadContext
@@ -1397,23 +1441,23 @@ DbgIMT macro Expression, InfoText, Dest
       else
         DbgSaveContext TRUE, ??InsExpr
         DbgSetDestWnd Dest
-        invoke DbgShowObjectHeader, $OfsCStrA(<!"%??ObjExpr!">), xbx, DBG_COLOR_OBJECT, ??DbgDstWnd
+        invoke DbgShowObjectHeader, $OfsCStrA(<!"%??ObjExpr!">), xbx, DbgColorObject, ??DbgDstWnd
         DbgShowTxtInfo InfoText, ??DbgDstWnd
         DbgShowSrcInfo ??DbgDstWnd
         mov xdi, [xbx]                                  ;;xbx -> VMT
-        DbgOutHex < Interface Method Table @ >, DBG_COLOR_VMT, xbx, DBG_COLOR_TEXT, ??DbgDstWnd
-        invoke DbgOutTextA, offset(bCRLF), DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+        DbgOutHex < Interface Method Table @ >, DbgColorVMT, xbx, DbgColorText, ??DbgDstWnd
+        invoke DbgOutTextA, offset(bCRLF), DbgColorText, DBG_EFFECT_NORMAL, ??DbgDstWnd
         %for ??TestObject, @CatStr(<!<>, %??ObjExpr, <_InherFrwPath!>>)
           $$ACount = 0
           %repeat @CatStr(<??TestObject>, <_IfcMtdCount>)
             $$ACount = $$ACount + 1
             $$sz1 CatStr <??TestObject>, <_IfcMethodName_>, %$$ACount
             %invoke DbgOutTextA, $OfsCStrA(@CatStr(<!" - >, @SubStr(%$$sz1, ??MtdPfxOfs, \
-                                 < method @ !">)), DBG_COLOR_VMT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+                                 < method @ !">)), DbgColorVMT, DBG_EFFECT_NORMAL, ??DbgDstWnd
             DbgOutHex,, @CatStr(<[xdi - sizeof(??>, ??TestObject, <_IMT) - @WordSize].??>, \
                                  ??TestObject, <_VMT.>, %$$sz1), 0, ??DbgDstWnd
             invoke DbgOutTextA, offset(bCRLF), \
-                                DBG_COLOR_TEXT, DBG_EFFECT_NORMAL, ??DbgDstWnd
+                                DbgColorText, DBG_EFFECT_NORMAL, ??DbgDstWnd
           endm
         endm
         DbgLoadContext
@@ -1465,7 +1509,7 @@ endm
 ;    if TRACING
 ;      DbgSaveContext
 ;      DbgSetDestWnd Dest
-;      invoke DbgShowObjectHeader, $OfsCStrA("&OName"), ??pDbgTraceInstance, DBG_COLOR_OBJECT, ??DbgDstWnd
+;      invoke DbgShowObjectHeader, $OfsCStrA("&OName"), ??pDbgTraceInstance, DbgColorObject, ??DbgDstWnd
 ;      DbgShowTxtInfo InfoText, ??DbgDstWnd
 ;      DbgShowSrcInfo ??DbgDstWnd
 ;      %DbgShowTraceResult OName, ??DbgDstWnd          ;;Begin recursive display of results
@@ -1492,23 +1536,23 @@ endm
 ;        %ifidn <$$sz1>, <WndProc>
 ;          ;;WndProc can't be traced due to pSelf is set after the prologue!
 ;          %invoke DbgOutTextA, $OfsCStrA(@CatStr(<!"  >, ??TestObject, <.>, <!">)), \
-;                               DBG_COLOR_OBJECT, DBG_EFFECT_NORMAL, Dest
+;                               DbgColorObject, DBG_EFFECT_NORMAL, Dest
 ;          %invoke DbgOutTextA, $OfsCStrA(@CatStr(<!">, %$$sz1, <: !">)), \
-;                               DBG_COLOR_OBJECT, DBG_EFFECT_NORMAL, Dest
+;                               DbgColorObject, DBG_EFFECT_NORMAL, Dest
 ;          invoke DbgOutTextA, $OfsCStrA("unable to trace this method."), \
-;                              DBG_COLOR_WARNING, DBG_EFFECT_ITALIC or DBG_EFFECT_NEWLINE, Dest
+;                              DbgColorWarning, DBG_EFFECT_ITALIC or DBG_EFFECT_NEWLINE, Dest
 ;        else
 ;          %DbgShowTraceVar @CatStr(<??TestObject>, <.>, %$$sz1), \
 ;                           ??DbgTraceMtdCount, ??DbgTraceMtdTicks, Dest
 ;        endif
 ;      else                                                ;;It is an abstract method!
 ;        %invoke DbgOutTextA, $OfsCStrA(@CatStr(<!"  >, ??TestObject, <.>, <!">)), \
-;                             DBG_COLOR_OBJECT, DBG_EFFECT_NORMAL, Dest
+;                             DbgColorObject, DBG_EFFECT_NORMAL, Dest
 ;        %invoke DbgOutTextA, $OfsCStrA(@CatStr(<!">, %$$sz1, <: !">)), \
-;                            DBG_COLOR_OBJECT, DBG_EFFECT_NORMAL, Dest
+;                            DbgColorObject, DBG_EFFECT_NORMAL, Dest
 ;;        %echo @CatStr(OName, <_VtlMethod_Proc_>, %$$ACount)
 ;        invoke DbgOutTextA, $OfsCStrA("Unable to trace this method (abstract, precompiled, etc.)."), \
-;                            DBG_COLOR_WARNING, DBG_EFFECT_ITALIC or DBG_EFFECT_NEWLINE, Dest
+;                            DbgColorWarning, DBG_EFFECT_ITALIC or DBG_EFFECT_NEWLINE, Dest
 ;      endif
 ;    endm
 ;
@@ -1526,12 +1570,12 @@ endm
 ;                         ??DbgTraceMtdCount, ??DbgTraceMtdTicks, Dest
 ;      else                                                ;;It is an abstract method!
 ;        %invoke DbgOutTextA, $OfsCStrA(@CatStr(<!"  >, ??TestObject, <.>, <!">)), \
-;                            DBG_COLOR_OBJECT, DBG_EFFECT_NORMAL, Dest
+;                            DbgColorObject, DBG_EFFECT_NORMAL, Dest
 ;        %invoke DbgOutTextA, $OfsCStrA(@CatStr(<!">, %$$sz1, <: !">)), \
-;                            DBG_COLOR_OBJECT, DBG_EFFECT_NORMAL, Dest
+;                            DbgColorObject, DBG_EFFECT_NORMAL, Dest
 ;;        %echo @CatStr(OName, <_VtlMethod_Proc_>, %$$ACount)
 ;        invoke DbgOutTextA, $OfsCStrA("unable to trace this method."), \
-;                            DBG_COLOR_WARNING, DBG_EFFECT_ITALIC or DBG_EFFECT_NEWLINE, Dest
+;                            DbgColorWarning, DBG_EFFECT_ITALIC or DBG_EFFECT_NEWLINE, Dest
 ;      endif
 ;    endm
 ;
@@ -1548,23 +1592,23 @@ endm
 ;        %ifidn <$$sz1>, <WndProc>
 ;          ;;WndProc can't be traced due to pSelf is set after the prologue!
 ;        %invoke DbgOutTextA, $OfsCStrA(@CatStr(<!"  >, ??TestObject, <.>, <!">)), \
-;                             DBG_COLOR_OBJECT, DBG_EFFECT_NORMAL, Dest
+;                             DbgColorObject, DBG_EFFECT_NORMAL, Dest
 ;        %invoke DbgOutTextA, $OfsCStrA(@CatStr(<!">, %$$sz1, <: !">)), \
-;                             DBG_COLOR_OBJECT, DBG_EFFECT_NORMAL, Dest
+;                             DbgColorObject, DBG_EFFECT_NORMAL, Dest
 ;          invoke DbgOutTextA, $OfsCStrA("unable to trace this method."), \
-;                              DBG_COLOR_WARNING, DBG_EFFECT_ITALIC or DBG_EFFECT_NEWLINE, Dest
+;                              DbgColorWarning, DBG_EFFECT_ITALIC or DBG_EFFECT_NEWLINE, Dest
 ;        else
 ;          %DbgShowTraceVar @CatStr(<??TestObject>, <.>, %$$sz1), \
 ;                           ??DbgTraceMtdCount, ??DbgTraceMtdTicks, Dest
 ;        endif
 ;      else                                                ;;It is an abstract method!
 ;        %invoke DbgOutTextA, $OfsCStrA(@CatStr(<!"  >, ??TestObject, <.>, <!">)), \
-;                            DBG_COLOR_OBJECT, DBG_EFFECT_NORMAL, Dest
+;                            DbgColorObject, DBG_EFFECT_NORMAL, Dest
 ;        %invoke DbgOutTextA, $OfsCStrA(@CatStr(<!">, %$$sz1, <: !">)), \
-;                            DBG_COLOR_OBJECT, DBG_EFFECT_NORMAL, Dest
+;                            DbgColorObject, DBG_EFFECT_NORMAL, Dest
 ;;        %echo @CatStr(OName, <_VtlMethod_Proc_>, %$$ACount)
 ;        invoke DbgOutTextA, $OfsCStrA("Unable to trace this method (abstract, precompiled, etc.)."), \
-;                            DBG_COLOR_WARNING, DBG_EFFECT_ITALIC or DBG_EFFECT_NEWLINE, Dest
+;                            DbgColorWarning, DBG_EFFECT_ITALIC or DBG_EFFECT_NEWLINE, Dest
 ;      endif
 ;    endm
 ;
@@ -1581,11 +1625,11 @@ endm
 ;        %ifidn <$$sz1>, <WndProc>
 ;          ;;WndProc can't be traced due to pSelf is stablished after the prologue!
 ;          %invoke DbgOutTextA, $OfsCStrA(@CatStr(<!"  >, ??TestObject, <.>, <!">)), \
-;                              DBG_COLOR_OBJECT, DBG_EFFECT_NORMAL, Dest
+;                              DbgColorObject, DBG_EFFECT_NORMAL, Dest
 ;          %invoke DbgOutTextA, $OfsCStrA(@CatStr(<!">, %$$sz1, <: !">)), \
-;                              DBG_COLOR_OBJECT, DBG_EFFECT_NORMAL, Dest
+;                              DbgColorObject, DBG_EFFECT_NORMAL, Dest
 ;          invoke DbgOutTextA, $OfsCStrA("unable to trace this method."), \
-;                              DBG_COLOR_WARNING, DBG_EFFECT_ITALIC or DBG_EFFECT_NEWLINE, Dest
+;                              DbgColorWarning, DBG_EFFECT_ITALIC or DBG_EFFECT_NEWLINE, Dest
 ;        else
 ;          %DbgShowTraceVar @CatStr(<??TestObject>, <.>, %$$sz1), \
 ;                           ??DbgTraceMtdCount, ??DbgTraceMtdTicks, Dest
@@ -1645,7 +1689,7 @@ DbgCloseAll macro
     if TARGET_PLATFORM eq PLATFORM_WINDOWS
       ifidn DBG_DEVICE, <WND>
         DbgSaveContext
-        invoke DbgOutCmd, DBG_CMD_CLOSE_ALL, NULL
+        invoke DbgOutCmd, DBG_CMD_CLOSE_ALL, 0, NULL
         DbgLoadContext
       endif
     endif
@@ -1663,7 +1707,7 @@ DbgCloseTxt macro Dest
       ifidn DBG_DEVICE, <WND>
         DbgSaveContext
         DbgSetDestWnd Dest
-        invoke DbgOutCmd, DBG_CMD_CLOSE_TXT, ??DbgDstWnd
+        invoke DbgOutCmd, DBG_CMD_CLOSE_TXT, 0, ??DbgDstWnd
         DbgLoadContext
       endif
     endif
@@ -1681,7 +1725,7 @@ DbgCloseBmp macro Dest
       ifidn DBG_DEVICE, <WND>
         DbgSaveContext
         DbgSetDestWnd Dest
-        invoke DbgOutCmd, DBG_CMD_CLOSE_BMP, ??DbgDstWnd
+        invoke DbgOutCmd, DBG_CMD_CLOSE_BMP, 0, ??DbgDstWnd
         DbgLoadContext
       endif
     endif
@@ -1698,7 +1742,7 @@ DbgClearAll macro
     if TARGET_PLATFORM eq PLATFORM_WINDOWS
       ifidn DBG_DEVICE, <WND>
         DbgSaveContext
-        invoke DbgOutCmd, DBG_CMD_CLEAR_ALL, NULL
+        invoke DbgOutCmd, DBG_CMD_CLEAR_ALL, DbgColorBackground, NULL
         DbgLoadContext
       endif
     elseif TARGET_PLATFORM eq PLATFORM_UEFI
@@ -1719,7 +1763,7 @@ DbgClearTxt macro Dest
       ifidn DBG_DEVICE, <WND>
         DbgSaveContext
         DbgSetDestWnd Dest
-        invoke DbgOutCmd, DBG_CMD_CLEAR_TXT, ??DbgDstWnd
+        invoke DbgOutCmd, DBG_CMD_CLEAR_TXT, DbgColorBackground, ??DbgDstWnd
         DbgLoadContext
       endif
     elseif TARGET_PLATFORM eq PLATFORM_UEFI
@@ -1740,7 +1784,7 @@ DbgClearBmp macro Dest
       ifidn DBG_DEVICE, <WND>
         DbgSaveContext
         DbgSetDestWnd Dest
-        invoke DbgOutCmd, DBG_CMD_CLEAR_BMP, ??DbgDstWnd
+        invoke DbgOutCmd, DBG_CMD_CLEAR_BMP, DbgColorBackground, ??DbgDstWnd
         DbgLoadContext
       endif
     endif
@@ -1787,7 +1831,7 @@ ASSERT macro Expression:req, InfoText, Dest
       invoke EnterCriticalSection, offset(DbgCritSect)  ;;This call don't change GetLastError
       .if ebx == FALSE
         invoke DbgOutTextA, $OfsCStrA("Assertion failed"), \
-                            DBG_COLOR_WARNING, DBG_EFFECT_BOLD, ??DbgDstWnd
+                            DbgColorWarning, DBG_EFFECT_BOLD, ??DbgDstWnd
         DbgShowTxtInfo InfoText, ??DbgDstWnd
         DbgShowSrcInfo ??DbgDstWnd
       .endif
@@ -1815,7 +1859,7 @@ ResGuard_Show macro
     if TARGET_PLATFORM eq PLATFORM_WINDOWS
       DbgSaveContext
       invoke DbgOutTextA, $OfsCStrA("Report  "), \
-                          DBG_COLOR_TEXT, DBG_EFFECT_BOLD, offset(szLeakReport)
+                          DbgColorText, DBG_EFFECT_BOLD, offset(szLeakReport)
       DbgShowSrcInfo offset(szLeakReport)
       invoke ResGuardShow
       DbgLoadContext
@@ -1833,7 +1877,7 @@ ResGuard_Start macro
     if TARGET_PLATFORM eq PLATFORM_WINDOWS
       DbgSaveContext
       invoke DbgOutTextA, $OfsCStrA("Started "), \
-                          DBG_COLOR_TEXT, DBG_EFFECT_BOLD, offset(szLeakReport)
+                          DbgColorText, DBG_EFFECT_BOLD, offset(szLeakReport)
       DbgShowSrcInfo offset(szLeakReport)
       invoke ResGuardStart
       DbgLoadContext
@@ -1851,7 +1895,7 @@ ResGuard_Stop macro
     if TARGET_PLATFORM eq PLATFORM_WINDOWS
       DbgSaveContext
       invoke DbgOutTextA, $OfsCStrA("Stopped "), \
-                          DBG_COLOR_TEXT, DBG_EFFECT_BOLD, offset(szLeakReport)
+                          DbgColorText, DBG_EFFECT_BOLD, offset(szLeakReport)
       DbgShowSrcInfo offset(szLeakReport)
       invoke ResGuardStop
       DbgLoadContext
@@ -1875,7 +1919,7 @@ DbgComponent macro Var:req, InfoText, Dest
       else
         DbgSaveContext TRUE, Var
         DbgSetDestWnd Dest
-        invoke DbgOutComponent, ??VarXBX, DBG_COLOR_OBJECT, ??DbgDstWnd
+        invoke DbgOutComponent, ??VarXBX, DbgColorObject, ??DbgDstWnd
         DbgShowTxtInfo InfoText, ??DbgDstWnd
         DbgShowSrcInfo ??DbgDstWnd
         DbgLoadContext
@@ -1900,7 +1944,7 @@ DbgInterface macro Var:req, InfoText, Dest
       else
         DbgSaveContext TRUE, Var
         DbgSetDestWnd Dest
-        invoke DbgOutInterface, ??VarXBX, DBG_COLOR_INTERFACE, ??DbgDstWnd
+        invoke DbgOutInterface, ??VarXBX, DbgColorInterface, ??DbgDstWnd
         DbgShowTxtInfo InfoText, ??DbgDstWnd
         DbgShowSrcInfo ??DbgDstWnd
         DbgLoadContext

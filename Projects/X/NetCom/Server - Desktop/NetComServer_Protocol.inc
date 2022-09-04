@@ -159,7 +159,7 @@ Method NetComServerProtocol.OnAccept, uses xbx xsi, pConnection:$ObjPtr(NetComCo
   SetObject xsi
   mov xbx, pConnection
   if DEBUGGING
-    invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, ??DbgDstWnd
+    invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, 0, ??DbgDstWnd
     invoke GetNameInfo, addr [xbx].$Obj(NetComConnection).RemoteHostAddr, sizeof NETCOMADDR, \
                         addr cAddrStr, lengthof cAddrStr, \
                         NULL, 0, \

@@ -23,4 +23,3 @@ ProcName proc dChars:DWORD
   ret
 ProcName endp
 
-end

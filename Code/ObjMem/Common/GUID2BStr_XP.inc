@@ -1,32 +1,32 @@
 ; ==================================================================================================
-; Title:      GUID2Str_WXP.inc
+; Title:      GUID2BStr_XP.inc
 ; Author:     G. Friedrich
-; Version:    C.1.1
-; Notes:      Version C.1.1, August 2022
-;               - Char shifting bug detected by HSE.
-;             Version C.1.0, October 2017
+; Version:    C.1.0
+; Notes:      Version C.1.0, October 2017
 ;               - First release.
 ;               - Bitness and platform independent code.
 ; ==================================================================================================
 
 
+.code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  GUID2StrW
-; Purpose:    Convert a GUID to a WIDE string.
-; Arguments:  Arg1: -> Destination WIDE string Buffer.
-;                   It must hold at least 36 characters plus a ZTC (= 74 BYTEs).
+; Procedure:  GUID2BStr
+; Purpose:    Convert a GUID to a BStr.
+; Arguments:  Arg1: -> Destination BStr Buffer. It must hold at least
+;                   36 characters plus a terminating zero.
 ;             Arg2: -> GUID.
 ; Return:     Nothing.
 
 align ALIGN_CODE
-GUID2StrW proc uses xdi xsi pBuffer:POINTER, pGUID:POINTER
+GUID2BStr proc uses xdi xsi pBString:POINTER, pGUID:POINTER
   if TARGET_BITNESS eq 32
-    mov edi, pBuffer                                    ;xdi -> Buffer
+    mov edi, pBString                                   ;xdi -> BString
     mov esi, pGUID                                      ;xsi -> GUID
   else
-    mov rdi, rcx                                        ;xdi -> Buffer
+    mov rdi, rcx                                        ;xdi -> BString
     mov rsi, rdx                                        ;xsi -> GUID
   endif
+  mov DWORD ptr [xdi - 4], 72                           ;Byte size of the string
   invoke dword2hexW, xdi, DWORD ptr [xsi]               ;Convert DWORD to hex
   mov CHRW ptr [xdi + 16], "-"                          ;Append "-"
   add xdi, 18
@@ -57,5 +57,5 @@ GUID2StrW proc uses xdi xsi pBuffer:POINTER, pGUID:POINTER
   mov DCHRW ptr [xdi + 12], ecx
   mov DCHRW ptr [xdi + 08], eax
   ret
-GUID2StrW endp
+GUID2BStr endp
 

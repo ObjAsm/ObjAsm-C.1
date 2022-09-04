@@ -879,7 +879,7 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   DbgConOpen proto
   DbgLogOpen proto
   DbgClose proto
-  DbgOutCmd proto :BYTE, :POINTER
+  DbgOutCmd proto :BYTE, :DWORD, :POINTER
   DbgOutBitmap proto :HANDLE, :POINTER
   DbgOutApiErr proto :DWORD, :POINTER
   DbgOutComErr proto :DWORD, :POINTER

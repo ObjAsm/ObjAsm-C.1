@@ -30,4 +30,3 @@ ProcName proc uses xbx xdi xsi dObjectID:DWORD
   ret
 ProcName endp
 
-end

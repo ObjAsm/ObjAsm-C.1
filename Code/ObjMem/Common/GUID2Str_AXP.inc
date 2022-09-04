@@ -29,7 +29,7 @@ GUID2StrA proc uses xdi xsi pBuffer:POINTER, pGUID:POINTER
   mov CHRA ptr [xdi + 08], "-"                          ;Append "-"
   add xdi, 9
   invoke dword2hexA, xdi, DWORD ptr [xsi + 4]           ;Convert next DWORD to hex
-  mov ecx, QCHRA ptr [xdi + 0]                          ;Rearrange WORDs
+  mov ecx, QCHRA ptr [xdi + 0]                          ;Rearrange chars
   mov eax, QCHRA ptr [xdi + 4]
   mov QCHRA ptr [xdi + 0], eax
   mov CHRA ptr [xdi + 04], "-"                          ;Insert "-"
@@ -37,7 +37,7 @@ GUID2StrA proc uses xdi xsi pBuffer:POINTER, pGUID:POINTER
   mov CHRA ptr [xdi + 09], "-"                          ;Append "-"
   add xdi, 10
   invoke dword2hexA, xdi, DWORD ptr [xsi + 8]           ;Convert next DWORD to hex
-  mov ecx, QCHRA ptr [xdi + 0]                          ;Rearrange BYTEs
+  mov ecx, QCHRA ptr [xdi + 0]                          ;Rearrange chars
   mov eax, QCHRA ptr [xdi + 4]
   mov DCHRA ptr [xdi + 2], ax
   shr eax, 16
@@ -48,7 +48,7 @@ GUID2StrA proc uses xdi xsi pBuffer:POINTER, pGUID:POINTER
   mov DCHRA ptr [xdi + 5], cx
   add xdi, 9
   invoke dword2hexA, xdi, DWORD ptr [xsi + 12]          ;Convert next DWORD to hex
-  mov ecx, QCHRA ptr [xdi + 0]                          ;Rearrange BYTEs
+  mov ecx, QCHRA ptr [xdi + 0]                          ;Rearrange chars
   mov eax, QCHRA ptr [xdi + 4]
   mov DCHRA ptr [xdi + 2], ax
   shr eax, 16
