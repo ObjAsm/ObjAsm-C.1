@@ -55,7 +55,7 @@ AppStatusbar DEF_STATUSBAR {IDC_APP_SBR, SBR_STYLE, 0, 2}
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-CStr szApplicationClass, "DatabaseExplorer"
+CStr szApplicationClass, "OAC_DatabaseExplorer"
 
 Object Application, MySdiAppID, SdiApp                  ;Single Document Interface App.
 ;  VirtualMethod     Check1
@@ -956,7 +956,7 @@ Method Application.UpdateMenu, uses xsi
   SetObject xsi
   .if [xsi].Table.hFile == INVALID_HANDLE_VALUE
     invoke EnableMenuItem, [xsi].hMenu, IDM_NEW,          MF_ENABLED
-    invoke EnableMenuItem, [xsi].hMenu, IDM_OPEN,          MF_ENABLED
+    invoke EnableMenuItem, [xsi].hMenu, IDM_OPEN,         MF_ENABLED
     invoke EnableMenuItem, [xsi].hMenu, IDM_CLOSE,        MF_DISABLED
     invoke EnableMenuItem, [xsi].hMenu, IDM_STRUCDSGN,    MF_DISABLED
     invoke EnableMenuItem, [xsi].hMenu, IDM_INDEXING,     MF_DISABLED
@@ -966,7 +966,7 @@ Method Application.UpdateMenu, uses xsi
     invoke EnableMenuItem, [xsi].hMenu, IDM_REC_SEEK,     MF_DISABLED
   .else
     invoke EnableMenuItem, [xsi].hMenu, IDM_NEW,          MF_DISABLED
-    invoke EnableMenuItem, [xsi].hMenu, IDM_OPEN,          MF_DISABLED
+    invoke EnableMenuItem, [xsi].hMenu, IDM_OPEN,         MF_DISABLED
     invoke EnableMenuItem, [xsi].hMenu, IDM_CLOSE,        MF_ENABLED
     invoke EnableMenuItem, [xsi].hMenu, IDM_STRUCDSGN,    MF_ENABLED
     invoke EnableMenuItem, [xsi].hMenu, IDM_RECORD,       MF_ENABLED

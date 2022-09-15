@@ -10,7 +10,7 @@
 
 CLSSTYLE equ CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW
 
-CStr szImagApp, "ImagApp"
+CStr szImagApp, "OAC_ImagApp"
 
 WM_APPSTR equ 0C000h
 

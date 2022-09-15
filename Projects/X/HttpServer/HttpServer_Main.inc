@@ -8,7 +8,7 @@
 
 CLSSTYLE equ CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW
 
-CStr szHttpServerApp, "HttpServerApp"
+CStr szHttpServerApp, "OAC_HttpServerApp"
 
 
 Object HttpServerApp, MySdiAppID, SdiApp

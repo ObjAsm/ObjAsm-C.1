@@ -106,5 +106,5 @@ endif
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-DEBUG_CENTER_CLASS  textequ  <"DebugCenter">
+DEBUG_CENTER_CLASS  textequ  <"OAC_DebugCenter">
 DEBUG_CENTER_REGKEY textequ  <"Software\DebugCenter">

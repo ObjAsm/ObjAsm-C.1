@@ -230,7 +230,7 @@ MethodEnd
 
 ;##\
 
-CStr cInfoTreeClass, "InfoTreeClass"
+CStr cInfoTreeClass, "OAC_InfoTree"
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     InfoTree.Init

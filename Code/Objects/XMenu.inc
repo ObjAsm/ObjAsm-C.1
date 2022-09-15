@@ -312,7 +312,7 @@ MethodEnd
 ;    XMenu implementation
 ; ==================================================================================================
 
-CStr szPropXMenu, "OA_XMenu"                            ;Used for XMenu and XMdiMenu
+CStr szPropXMenu, "OAP_XMenu"                           ;Used for XMenu and XMdiMenu
 if DEBUGGING
   CStr cResStrNotFound, "Resource string not found"
 endif

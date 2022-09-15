@@ -11,7 +11,7 @@
 ; Design notes:
 
 
-CStr szGridViewClass, "GridViewClass", "&$ToStr(%TARGET_BITNESS)", "&TARGET_STR_AFFIX"
+CStr szGridViewClass, "OAC_GridView", "&$ToStr(%TARGET_BITNESS)", "&TARGET_STR_AFFIX"
 
 ;GridView Window Flag
 GVWF_RESOURCE      equ   BIT00

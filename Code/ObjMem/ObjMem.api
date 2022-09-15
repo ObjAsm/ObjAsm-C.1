@@ -546,12 +546,12 @@ DbgOutFPU_UEFI, pDestWndName, dColor
 
 RGB24To16ColorIndex, dColor
 
-MemAlloc_UEFI, dMemSize
-MemReAlloc_UEFI, pBuffer, dMemSize, dNewMemSize, dAttributes
+MemAlloc_UEFI, dAttributes, dMemSize, dType
+MemReAlloc_UEFI, pPrvBuffer, dPrvMemSize, dNewMemSize, dNewAttributes
 MemFree_UEFI, pBuffer
 
 SLR_Init, PSRL_DATA
-SLR_Calc_AB_DW, PSRL_DATA
+SLR_Calc_AB_DW, PSRL_DATAMemory type
 SLR_Calc_AB_QW, PSRL_DATA
 SLR_Calc_AB_R4, PSRL_DATA
 SLR_Calc_AB_R8, PSRL_DATA

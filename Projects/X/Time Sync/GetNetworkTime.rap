@@ -108,7 +108,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=14
+MilestoneOnDateDate=15
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -143,10 +143,10 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,0,0,6947
-3=0,0,0,0,12079
+2=0,0,0,0,6519
+3=0,0,0,0,1796
 1=0,0,0,0,125
-4=0,0,562,490,7119
+4=0,0,562,490,28667
 5=0,0,694,587,12924
 6=0,0,0,0,885
 8=0,0,0,0,19422
@@ -177,16 +177,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="szDbgSrc"
-2=".dbg"
-3="DbgShowSrcInfo"
-4=";inv gethostbyname, soff("
-5="dSec2Ns"
-6="qNtpFrac2Millis"
-7="dSrvDelay"
-8="TServerAddr"
-9="RemoteAddr"
-10="ServerAddr"
+1="_WIN"
+2="DBG_COLOR_COMMENT_WIN"
+3="szDbgSrc"
+4=".dbg"
+5="DbgShowSrcInfo"
+6=";inv gethostbyname, soff("
+7="dSec2Ns"
+8="qNtpFrac2Millis"
+9="dSrvDelay"
+10="TServerAddr"
 [Collapse]
 1=
 4=
@@ -205,9 +205,9 @@ ProductVer4Range=0
 13=,
 8=
 [AutoLoad]
-AutoLoad=2,1,10
+AutoLoad=2
 [PTimer]
-PTimer=845858327
+PTimer=846073202
 [GroupExpand]
 GroupExpand=0,1,1,0,0,1,1,0
 [RADebugBP]

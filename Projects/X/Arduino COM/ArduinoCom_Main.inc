@@ -8,7 +8,7 @@
 
 CLSSTYLE equ CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW; or CS_DROPSHADOW
 
-CStr szArduinoApp, "ArduinoApp"                         ;Creates szArduinoApp string in .const
+CStr szArduinoApp, "OAC_ArduinoApp"                     ;Creates szArduinoApp string in .const
 
 
 Object ArduinoApp, MySdiAppID, SdiApp

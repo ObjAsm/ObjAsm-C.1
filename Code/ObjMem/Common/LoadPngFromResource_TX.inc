@@ -14,9 +14,7 @@ GDIPVER equ 0100h
 % include &IncPath&Windows\GdiplusEnums.inc
 % include &IncPath&Windows\GdiplusGpStubs.inc
 % include &IncPath&Windows\GdiPlusFlat.inc
-% includelib &LibPath&Windows\GdiPlus.lib
-% includelib &LibPath&Windows\shlwapi.lib
-% includelib &LibPath&Windows\Ole32.lib
+
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  LoadPngFromResourceA / LoadPngFromResourceW
@@ -34,7 +32,6 @@ ProcName proc pResName:PSTRING
   mov hBmp, 0
   mov GPSI.GdiplusVersion, 1
   mov GPSI.DebugEventCallback, NULL
-  mov GPSI.SuppressBackgroundThread, FALSE
   mov GPSI.SuppressBackgroundThread, FALSE
   invoke GdiplusStartup, addr xToken, addr GPSI, NULL
   .if eax == 0

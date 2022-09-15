@@ -8,7 +8,7 @@
 
 CLSSTYLE equ CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW; or CS_DROPSHADOW
 
-CStr szNetComServer, "NetComServer"                     ;Creates szNetComServer string in .const
+CStr szNetComServer, "OAC_NetComServer"                 ;Creates szNetComServer string in .const
 
 
 Object NetComServer, MySdiAppID, SdiApp                 ;Single Document Interface App.

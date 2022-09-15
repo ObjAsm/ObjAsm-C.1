@@ -24,7 +24,7 @@ ObjectEnd                                               ;Ends object definition
 ;    Application implementation
 ; ==================================================================================================
 
-CStr szAppClassName, "Application"                      ;Creates szAppClassName string in .const
+CStr szAppClassName, "OAC_Application"                  ;Creates szAppClassName string in .const
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Application.Init

@@ -13,6 +13,8 @@
 ;ANSI_STRING will not work on languages that use UNICODE characters, like chinese or russian.
 SysSetup OOP, WIN64, WIDE_STRING, DEBUG(WND)
 
+GDIPVER equ 0100h
+
 % include &COMPath&COM.inc                              ;COM basic support
 % include &IncPath&Windows\sGUID.inc
 
@@ -27,6 +29,11 @@ SysSetup OOP, WIN64, WIDE_STRING, DEBUG(WND)
 % include &IncPath&Windows\Shlwapi.inc
 % include &IncPath&Windows\ShObjIDL.inc
 % include &IncPath&Windows\ShTypes.inc
+% include &IncPath&Windows\GdiplusPixelFormats.inc
+% include &IncPath&Windows\GdiplusInit.inc
+% include &IncPath&Windows\GdiplusEnums.inc
+% include &IncPath&Windows\GdiplusGpStubs.inc
+% include &IncPath&Windows\GdiPlusFlat.inc
 
 % includelib &LibPath&Windows\Shell32.lib
 % includelib &LibPath&Windows\Comdlg32.lib
@@ -35,6 +42,7 @@ SysSetup OOP, WIN64, WIDE_STRING, DEBUG(WND)
 % includelib &LibPath&Windows\UxTheme.lib
 % includelib &LibPath&Windows\Ole32.lib
 % includelib &LibPath&Windows\OleAut32.lib
+% includelib &LibPath&Windows\GdiPlus.lib
 
 sCLSID_FileOpenDialog   textequ   <DC1C5A9C-E88A-4DDE-A5A1-60F82A20AEF7>
 sIID_IFileDialog2       textequ   <61744FC7-85B5-4791-A9B0-272276309B13>

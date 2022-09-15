@@ -163,8 +163,10 @@ SkinID                            equ     0000000367
 ElasticSkinID                     equ     0000000368
 
 ;ActivityIndicators
-CircularActivityIndicatorID       equ     0000000370
-LinearActivityIndicatorID         equ     0000000371
+ActivityIndicatorID               equ     0000000370
+SimpleCircularActivityIndicatorID equ     0000000371
+MultiImageActivityIndicatorID     equ     0000000372
+LinearActivityIndicatorID         equ     0000000373
 
 ;3D Engine
 D3VectronCollectionID             equ     0000000400

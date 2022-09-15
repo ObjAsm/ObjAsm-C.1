@@ -11,11 +11,9 @@
 #include "Resource.h"               //Windows resource definitions
 #include "SimpleCircularActivityIndicator_Shared.rc"    //Application shared definitions
 #include "VER\Version.rc"           //Application version definition
-;#include "MFT\Manifest_Invoker.rc"  //Application manifest definition
+#include "MFT\Manifest_Invoker.rc"  //Application manifest definition
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-
-CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST DISCARDABLE ".\Manifest.xml"
 
 
 // Icons ------------------------------------------------------------------------------------------

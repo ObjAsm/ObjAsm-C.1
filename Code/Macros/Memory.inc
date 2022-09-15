@@ -165,7 +165,10 @@ MemAlloc macro MemSize:req, Flags:=<MEM_DEFAULT>
     endif
     invoke HeapAlloc, hProcessHeap, $$MemAttr, MemSize
   elseif TARGET_PLATFORM eq PLATFORM_UEFI
-    invoke MemAlloc_UEFI, Flags, MemSize
+    ifndef PLATFORM_UEFI_MEMORY
+      PLATFORM_UEFI_MEMORY = EFI_MEMORY_TYPE_EfiBootServicesData
+    endif
+    invoke MemAlloc_UEFI, Flags, MemSize, PLATFORM_UEFI_MEMORY
   endif
   if DEBUGGING
     .if xax == NULL
@@ -267,12 +270,12 @@ MemFree macro MemPtr:req, Flags:=<0>
         .endif
       endif
     endif
-  endif 
+  endif
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      MemCheck
-; Purpose:    Validates a memory block on the process heap.  
+; Purpose:    Validates a memory block on the process heap.
 ; Arguments:  Arg1: -> allocated memory block. If NULL, the whole heap is checked.
 ; Return:     eax = non FALSE if succeeded, otherwise FALSE.
 
@@ -282,7 +285,7 @@ MemCheck macro MemPtr:=<NULL>
     .if eax == 0
       DbgWarning "Process heap corrupted"
     .endif
-  endif  
+  endif
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

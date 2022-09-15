@@ -178,24 +178,24 @@ if DEBUGGING
     dObjErrTableCount   DWORD     ?
 
     ;Initial value set by SysInit
-    DbgColorText        COLORREF  ?
-    DbgColorBackground  COLORREF  ?
-    DbgColorComment     COLORREF  ?
-    DbgColorWarning     COLORREF  ?
-    DbgColorError       COLORREF  ?
-    DbgColorString      COLORREF  ?
-    DbgColorMessage     COLORREF  ?
-    DbgColorObject      COLORREF  ?
-    DbgColorInterface   COLORREF  ?
-    DbgColorVMT         COLORREF  ?
-    DbgColorFPU         COLORREF  ?
-    DbgColorMemory      COLORREF  ?
-    DbgColorDefaultPre  COLORREF  ?
-    DbgColorDefaultVar  COLORREF  ?
-    DbgColorLine        COLORREF  ?
-    DbgColorRed         COLORREF  ?
-    DbgColorGreen       COLORREF  ?
-    DbgColorBlue        COLORREF  ?
+    DbgColorText        DWORD     ?
+    DbgColorBackground  DWORD     ?
+    DbgColorComment     DWORD     ?
+    DbgColorWarning     DWORD     ?
+    DbgColorError       DWORD     ?
+    DbgColorString      DWORD     ?
+    DbgColorMessage     DWORD     ?
+    DbgColorObject      DWORD     ?
+    DbgColorInterface   DWORD     ?
+    DbgColorVMT         DWORD     ?
+    DbgColorFPU         DWORD     ?
+    DbgColorMemory      DWORD     ?
+    DbgColorDefaultPre  DWORD     ?
+    DbgColorDefaultVar  DWORD     ?
+    DbgColorLine        DWORD     ?
+    DbgColorRed         DWORD     ?
+    DbgColorGreen       DWORD     ?
+    DbgColorBlue        DWORD     ?
 
     ifidn DBG_DEVICE, <WND>
       DbgHighContrast   HIGHCONTRAST  {}                ;Used by SysInit to get the High Contrast

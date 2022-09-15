@@ -42,14 +42,14 @@ SetupTabCtrl DEF_TABCONTROL {100, TC_STYLE, 0, NULL, {<2,2,295,180>}}
 
 Object MyChildWnd, , MdiChildWnd                        ;MDI child window.
   RedefineMethod    Done
-  RedefineMethod    Init,             POINTER, PSTRING  ;-> Owner, -> Title
+  RedefineMethod    Init,               POINTER, PSTRING  ;-> Owner, -> Title
   StaticMethod      Startup
 
-  VirtualEvent      OnCommand,        WM_COMMAND
-  VirtualEvent      OnMdiActivate,    WM_MDIACTIVATE
-  VirtualEvent      OnPaint,          WM_PAINT
+  VirtualEvent      OnCommand,          WM_COMMAND
+  VirtualEvent      OnMdiActivate,      WM_MDIACTIVATE
+  VirtualEvent      OnPaint,            WM_PAINT
 
-  DefineVariable    dColorIndex,      DWORD,      0
+  DefineVariable    dColorIndex,        DWORD,      0
 ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -142,8 +142,8 @@ ObjectEnd
 ;    Application implementation
 ; ==================================================================================================
 
-CStr szAppClassName,   "Application"
-CStr szChildClassName, "AppChild"
+CStr szAppClassName,   "OAC_Application"
+CStr szChildClassName, "OAC_Child"
 
 ;##\
 

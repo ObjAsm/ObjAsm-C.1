@@ -8,7 +8,7 @@
 
 CLSSTYLE equ CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW; or CS_DROPSHADOW
 
-CStr szApplication, "Application"
+CStr szApplication, "OAC_Application"
 
 
 Object Application, MySdiAppID, SdiApp

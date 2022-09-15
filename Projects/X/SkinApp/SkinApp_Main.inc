@@ -54,7 +54,7 @@ IDC_BTNMAXIMIZE   equ   8002
 IDC_BTNSTART      equ   8003
 IDC_BTNSTOP       equ   8004
 
-CStr szSkinApp, "SkinApp"
+CStr szSkinApp, "OAC_SkinApp"
 
 .const
 RgnBtnClose     DEF_REGIONBUTTON {IDC_BTNCLOSE,    0, 0, 0, 0, $OfsTStr("BUTTON_SYSCLOSE")}

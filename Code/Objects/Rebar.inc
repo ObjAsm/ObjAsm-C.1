@@ -85,8 +85,8 @@ RB_CHEVRONGAP       equ     04      ;Gap between the last button anf the start o
 RB_BORDERWIDTH      equ     05
 
 
-CStr szRbMsgIptorProp, "OA_RbMsgIptor"
-CStr szBandFrameClass, "OA_BandFrame"
+CStr szRbMsgIptorProp, "OAP_RbMsgIptor"
+CStr szBandFrameClass, "OAC_BandFrame"
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Rebar.ChevronMenu

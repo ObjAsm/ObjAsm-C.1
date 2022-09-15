@@ -104,8 +104,8 @@ ObjectEnd
 ;    Application implementation
 ; ==================================================================================================
 
-CStr szAppClassName,   "Application"
-CStr szChildClassName, "AppChild"
+CStr szAppClassName,   "OAC_Application"
+CStr szChildClassName, "OAC_Child"
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Application.ChangeLanguage

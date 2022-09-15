@@ -35,8 +35,8 @@ AppStatusbar DEF_STATUSBAR {IDC_STATUSBAR, SB_STYLE, 0, 4}
 
 CloseEnumProc    proto :HWND, :LPARAM
 
-CStr szApplication,   "Application"                     ;Used by Startup and Shutdown
-CStr szChildWnd,      "ChildWnd"                        ;Used by Startup and Shutdown
+CStr szApplication,   "OAC_Application"                 ;Used by Startup and Shutdown
+CStr szChildWnd,      "OAC_Child"                       ;Used by Startup and Shutdown
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 

@@ -30,7 +30,7 @@ DplVector2      D3Vector      {  550.0,  250.0,  000.0}       ;Grey sphere initi
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-CStr szApi3DEngApp, "Api3DEngApp"
+CStr szApi3DEngApp, "OAC_Api3DEngApp"
 
 Object Api3DEngApp, MySdiAppID, SdiApp                        ;SDI application.
   RedefineMethod    Done

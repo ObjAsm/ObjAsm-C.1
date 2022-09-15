@@ -8,7 +8,7 @@
 
 CLSSTYLE equ CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW; or CS_DROPSHADOW
 
-CStr szDLApp, "DLApp"                                   ;Creates szDLApp string in .const
+CStr szDLApp, "OAC_DynLayoutApplication"                ;Creates szDLApp string in .const
 
 
 Object DLApp, MySdiAppID, SdiApp                        ;Single Document Interface App.

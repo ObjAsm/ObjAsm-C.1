@@ -5,6 +5,11 @@
 ; Purpose:    ObjAsm implementation of SimpleCircularActivityIndicator objects.
 ; Notes:      Version C.1.0, August 2022
 ;               - First release.
+;             Require an addition to the manifest to enable WS_EX_LAYERED style on child windows
+;             <application>
+;               <!--The ID below indicates app support for Windows 8 -->
+;               <supportedOS Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"/>
+;             </application>
 ; Links:      https://stackoverflow.com/questions/3970066/creating-a-transparent-window-in-c-win32
 ;             https://stackoverflow.com/questions/42569348/how-to-use-ws-ex-layered-on-child-controls
 ;             https://www.codeguru.com/multimedia/rotate-a-bitmap-image/
@@ -12,26 +17,9 @@
 ; ==================================================================================================
 
 
-SCAI_STATUS_STOPPED   equ 0
-SCAI_STATUS_STARTING  equ 1
-SCAI_STATUS_RUNNING   equ 2
-SCAI_STATUS_STOPPING  equ 3
-
 DEF_SCAI struc
-  xCtlID        XWORD     ?         ;Contol ID
-  dStyle        DWORD     ?         ;Style
-  dExStyle      DWORD     ?         ;Extended style
-  pTitle        PSTRING   ?         ;-> Window text
-  union
-    rect        RECT      {}
-    struct
-      sdPosX    SDWORD    ?         ;X position
-      sdPosY    SDWORD    ?         ;Y position
-      dWidth    DWORD     ?         ;Width
-      dHeight   DWORD     ?         ;Height
-    ends
-  ends
-  dInterval     DWORD     ?
+                DEF_AI    {}
+  pResName      POINTER   ?         ;-> Resource name
 DEF_SCAI ends
 PDEF_SCAI typedef ptr DEF_SCAI
 
@@ -45,131 +33,177 @@ PDEF_SCAI typedef ptr DEF_SCAI
 ;            <supportedOS Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"/>
 ;          </application>
 
-
-Object SimpleCircularActivityIndicator, CircularActivityIndicatorID, WinPrimer
-  VirtualMethod     AddBmpFromRes,      PSTRING
-  VirtualMethod     AddPngFromRes,      PSTRING
-  VirtualMethod     Dispatch,           HWND, DWORD, WPARAM, LPARAM
-  RedefineMethod    Done
+Object SimpleCircularActivityIndicator, SimpleCircularActivityIndicatorID, ActivityIndicator
+  RedefineMethod    Animate
+  RedefineMethod    Dispose
   RedefineMethod    Init,               POINTER, HWND, PDEF_SCAI
-  VirtualMethod     InitRes,            POINTER, HWND, DWORD
-  VirtualMethod     Start
+  VirtualMethod     InitRes,            POINTER, HWND
+  VirtualMethod     LoadBmpFromRes,     PSTRING
+  VirtualMethod     LoadPngFromRes,     PSTRING
   StaticMethod      Startup
-  VirtualMethod     Stop
   VirtualMethod     WndProc,            DWORD, WPARAM, LPARAM
 
-  VirtualEvent      OnTimer,        WM_TIMER
-
-  DefineVariable    dFlags,         DWORD,    0
-  DefineVariable    dStatus,        DWORD,    SCAI_STATUS_STOPPED
-  DefineVariable    hTimer,         HANDLE,   0
-  DefineVariable    hThread,        HANDLE,   0
-  DefineVariable    hBitmap,        HBITMAP,  0
-  DefineVariable    ControlSize,    POINT,    {}
-  DefineVariable    ImageSize,      POINT,    {}
-
-  DefineVariable    r4Rotation,     REAL4,    0.0     ;Rad/Frame
-  DefineVariable    r4Scaling,      REAL4,    0.0     ;Factor <= 1.0
-  DefineVariable    r4ScaleChange,  REAL4,    0.08    ;Factor/Frame
-  DefineVariable    dAlpha,         DWORD,    0       ;Factor 0..255
-
+  DefineVariable    hBitmap,            HBITMAP,  0
+  DefineVariable    r4Rotation,         REAL4,    0.0                 ;Rad/Frame
+  DefineVariable    r4RotationChange,   REAL4,    0.5235987666666667  ;Rad/Frame
 ObjectEnd
 
 
-CStr szCircularActivityIndicatorClass, "OA_CircularActivityIndicatorClass"
+CStr szSimpleCircularActivityIndicatorClass, "OAC_SimpleCircularActivityIndicator"
 
 ; ==================================================================================================
 
 if IMPLEMENT
 
-.const
-r4RotIncr     REAL4   0.3
-dAlphaChange  DWORD   20
-
-
-SCAI_SELF_INST        equ BIT00
-
-SCAI_STATUS_STOPPED   equ 0
-SCAI_STATUS_STARTING  equ 1
-SCAI_STATUS_RUNNING   equ 2
-SCAI_STATUS_STOPPING  equ 3
-
-SCAI_SCALE_START_END  equ 1.0
-SCAI_SCALE_STOP_END   equ 0.0
-
-
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     SimpleCircularActivityIndicator.AddBmpFromRes
-; Purpose:    Load a bitmap from the resource section and add it to the spinner resources.
-; Arguments   Arg1: -> Bitmap resource name.
+; Method:     SimpleCircularActivityIndicator.Animate
+; Purpose:    Show the animation.
+; Arguments:  None.
 ; Return:     Nothing.
 
-Method SimpleCircularActivityIndicator.AddBmpFromRes, uses xsi, pBmpName:PSTRING
-  local BMP:BITMAP
+Method SimpleCircularActivityIndicator.Animate
+  local hSrcDC:HDC, hPrvSrcBmp:HBITMAP, hModDC:HDC, hPrvModBmp:HBITMAP, hDstDC:HDC
+  local xform:XFORM, bfn:BLENDFUNCTION
+  local PtSize:POINT, PtZero:POINT
 
+;  DbgText "SimpleCircularActivityIndicator.OnTimer"
+  SetObject xsi
+  mov PtZero.x, 0
+  mov PtZero.y, 0
+  mov bfn.BlendOp, AC_SRC_OVER
+  mov bfn.BlendFlags, 0
+  mov bfn.AlphaFormat, AC_SRC_ALPHA
+
+  .repeat
+    mov eax, [xsi].dFlags
+    .ifBitSet eax, AI_FLAG_ANIMATION_THREAD_STOP
+      .break
+    .elseIfBitSet eax, AI_FLAG_ANIMATION_THREAD_FREEZE
+      BitSet [xsi].dFlags, AI_FLAG_ANIMATION_THREAD_FROZEN
+    .else
+      BitClr [xsi].dFlags, AI_FLAG_ANIMATION_THREAD_FROZEN
+      mov hDstDC, $invoke(GetDC, [xsi].hWnd)
+      mov hSrcDC, $invoke(CreateCompatibleDC, hDstDC)
+      mov hModDC, $invoke(CreateCompatibleDC, hDstDC)
+
+      mov hPrvSrcBmp, $invoke(SelectObject, hSrcDC, [xsi].hBitmap)
+      invoke CreateCompatibleBitmap, hDstDC, [xsi].BmpSize.x, [xsi].BmpSize.y
+      mov hPrvModBmp, $invoke(SelectObject, hModDC, xax)
+
+      .if [xsi].dStatus != AI_STATUS_STOPPED
+        fld [xsi].r4Rotation
+        fadd [xsi].r4RotationChange
+        fst [xsi].r4Rotation
+        fSinCos                                         ;  sin   ;  cos
+
+        mov eax, [xsi].dAlpha
+        .if [xsi].dStatus == AI_STATUS_STARTING
+          add eax, [xsi].dAlphaChange
+          .if eax > 255
+            mov eax, 255                                ;Saturate
+          .endif
+          mov [xsi].dAlpha, eax
+
+          fld [xsi].r4Scaling
+          fadd [xsi].r4ScalingChange
+
+          fld1
+          fcom
+          fGetFlags
+          .if CARRY?
+            mov [xsi].dStatus, AI_STATUS_RUNNING
+            fstp [xsi].r4Scaling                        ;1.0
+            fUnload
+          .else
+            fUnload
+            fmul st(1), st(0)
+            fmul st(2), st(0)
+            fstp [xsi].r4Scaling
+          .endif
+
+        .elseif [xsi].dStatus == AI_STATUS_STOPPING
+          sub eax, [xsi].dAlphaChange
+          .if SDWORD ptr eax < 0
+            xor eax, eax
+          .endif
+          mov [xsi].dAlpha, eax
+
+          fld [xsi].r4Scaling
+          fsub [xsi].r4ScalingChange
+
+          fldz
+          fcom
+          fGetFlags
+          .if !CARRY?
+            mov [xsi].dStatus, AI_STATUS_STOPPED
+            fstp [xsi].r4Scaling
+            fUnload 3
+            jmp @F
+          .endif
+          fUnload
+          fmul st(1), st(0)
+          fmul st(2), st(0)
+          fstp [xsi].r4Scaling
+        .endif
+
+        fst xform.eM21                                  ;  sin   ;  cos
+        fchs                                            ; -sin   ;  cos
+        fstp xform.eM12                                 ;  cos
+        fst xform.eM11
+        fstp xform.eM22
+        fld1                                            ;   1
+        fld1                                            ;   1    ;    1
+        faddp st(1), st(0)                              ;   2
+        fild [xsi].BmpSize.x                            ;   W    ;    2
+        fdiv st(0), st(1)                               ;  W/2   ;    2
+        fstp xform.eDx_                                 ;   2
+        fild [xsi].BmpSize.y                            ;   H    ;    2
+        fdivrp st(1), st(0)                             ;  H/2
+        fstp xform.eDy
+
+        invoke SetGraphicsMode, hModDC, GM_ADVANCED
+        invoke SetWorldTransform, hModDC, addr xform
+
+        mov edx, [xsi].BmpSize.x
+        mov eax, [xsi].BmpSize.y
+        shr edx, 1
+        neg edx
+        shr eax, 1
+        neg eax
+        invoke BitBlt, hModDC, edx, eax, [xsi].BmpSize.x, [xsi].BmpSize.y, hSrcDC, 0, 0, SRCCOPY
+      .endif
+
+    @@:
+      mov eax, [xsi].dAlpha
+      mov bfn.SourceConstantAlpha, al
+      s2s PtSize, [xsi].BmpSize, xax, xcx, xmm0
+      invoke UpdateLayeredWindow, [xsi].hWnd, hDstDC, NULL, addr PtSize, \
+                                  hModDC, addr PtZero, $RGB(0,0,0), addr bfn, ULW_ALPHA
+      invoke SelectObject, hSrcDC, hPrvSrcBmp
+      invoke DeleteDC, hSrcDC
+      invoke SelectObject, hModDC, hPrvModBmp
+      invoke DeleteObject, xax
+      invoke DeleteDC, hModDC
+      invoke ReleaseDC, [xsi].hWnd, hDstDC
+
+    .endif
+
+    invoke Sleep, [xsi].dInterval
+  .until FALSE
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     SimpleCircularActivityIndicator.Dispose
+; Purpose:    Free the allocated Bitmap.
+; Arguments:  None.
+; Return:     Nothing.
+
+Method SimpleCircularActivityIndicator.Dispose, uses xbx xsi
   SetObject xsi
   .if [xsi].hBitmap != 0
-    invoke DeleteObject,  [xsi].hBitmap
+    invoke DeleteObject, [xsi].hBitmap
+    mov [xsi].hBitmap, 0
   .endif
-
-  mov [xsi].hBitmap, $invoke(LoadImage, hInstance, pBmpName, IMAGE_BITMAP, 0, 0, 0)
-  invoke GetObject, [xsi].hBitmap, sizeof BMP, addr BMP
-  m2m [xsi].ImageSize.x, BMP.bmWidth, eax
-  m2m [xsi].ImageSize.y, BMP.bmHeight, ecx
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     SimpleCircularActivityIndicator.AddPngFromRes
-; Purpose:    Load a PNG from the resource section and add it to the spinner resources.
-; Arguments   Arg1: -> Image resource name. Must be of type IMAGE = 2110.
-; Return:     Nothing.
-
-Method SimpleCircularActivityIndicator.AddPngFromRes, uses xsi, pPngName:PSTRING
-  local BMP:BITMAP
-
-  SetObject xsi
-  .if [xsi].hBitmap != 0
-    invoke DeleteObject,  [xsi].hBitmap
-  .endif
-
-  mov [xsi].hBitmap, $invoke(LoadPngFromResource, pPngName)
-  invoke GetObject, [xsi].hBitmap, sizeof BMP, addr BMP
-  m2m [xsi].ImageSize.x, BMP.bmWidth, eax
-  m2m [xsi].ImageSize.y, BMP.bmHeight, ecx
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     SimpleCircularActivityIndicator.Dispatch
-; Purpose:    Dispatching of window messages.
-; Arguments:  Arg1: Window handle.
-;             Arg2: Message identifier.
-;             Arg3: First message parameter.
-;             Arg4: Second message parameter.
-; Return:     eax = This value is the result of the message processing and depends on the message.
-
-Method SimpleCircularActivityIndicator.Dispatch, uses xsi, hWnd:HWND, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-;  DbgMessage uMsg
-  SetObject xsi
-  DispatchEvent <DefWindowProc, hWnd>                   ;xsi -> Object instance
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     SimpleCircularActivityIndicator.Done
-; Purpose:    None.
-; Return:     Nothing.
-
-Method SimpleCircularActivityIndicator.Done, uses xbx xdi xsi
-;  DbgText "SimpleCircularActivityIndicator.Done"
-  SetObject xsi
-  OCall xsi.Stop
-  .if [xsi].hTimer != 0
-    invoke KillTimer, [xsi].hWnd, 0
-    m2z [xsi].hTimer
-  .endif
-  invoke DeleteObject, [xsi].hBitmap
-  m2z [xsi].hBitmap
-  ACall xsi.Done
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -186,11 +220,22 @@ Method SimpleCircularActivityIndicator.Init, uses xbx xsi, pOwner:POINTER, hPare
   assume xbx:PDEF_SCAI
   mov ecx, [xbx].dExStyle
   or ecx, WS_EX_LAYERED
-  invoke CreateWindowEx, ecx, offset(szCircularActivityIndicatorClass), [xbx].pTitle, \
-                         [xbx].dStyle, [xbx].sdPosX, [xbx].sdPosY, [xbx].dWidth, [xbx].dHeight, \
+  invoke CreateWindowEx, ecx, offset(szSimpleCircularActivityIndicatorClass), [xbx].pTitle, \
+                         [xbx].dStyle, [xbx].sdPosX, [xbx].sdPosY, 1, 1, \
                          hParent, [xbx].xCtlID, hInstance, pSelf
   ACall xsi.Init, pOwner, xax
-  mov [xsi].hTimer, $invoke(SetTimer, [xsi].hWnd, 0, [xbx].dInterval, NULL)
+  .if [xbx].dImageType == AI_IMAGE_BMP
+    OCall xsi.LoadBmpFromResList, [xbx].pResName
+  .elseif [xbx].dImageType == AI_IMAGE_PNG
+    OCall xsi.LoadPngFromResList, [xbx].pResName
+  .endif
+  m2m [xsi].dInterval, [xbx].dInterval, xax
+
+  BitClr [xsi].dFlags, AI_FLAG_ANIMATION_THREAD_STOP
+  invoke CreateThread, 0, 0, $MethodAddr(SimpleCircularActivityIndicator.Animate), \
+                       xsi, CREATE_SUSPENDED, NULL
+  mov [xsi].hThread, xax
+  invoke ResumeThread, xax
   assume xbx:NOTHING
 MethodEnd
 
@@ -202,156 +247,51 @@ MethodEnd
 ;             Arg3: Frame presentation interval.
 ; Return:     Nothing.
 
-Method SimpleCircularActivityIndicator.InitRes, uses xsi, pOwner:POINTER, hWnd:HWND, dInterval:DWORD
+Method SimpleCircularActivityIndicator.InitRes, uses xsi, pOwner:POINTER, hWnd:HWND
   SetObject xsi
   ACall xsi.Init, pOwner, hWnd
-  mov [xsi].hTimer, $invoke(SetTimer, [xsi].hWnd, 0, dInterval, NULL)
+  mov eax, [xsi].dFlags
+  BitSet eax, AI_FLAG_SELF_INST
+  BitClr eax, AI_FLAG_ANIMATION_THREAD_STOP
+  mov [xsi].dFlags, eax
+  invoke CreateThread, 0, 0, $MethodAddr(SimpleCircularActivityIndicator.Animate), \
+                       xsi, CREATE_SUSPENDED, NULL
+  mov [xsi].hThread, xax
+  invoke ResumeThread, xax
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     SimpleCircularActivityIndicator.OnTimer
-; Purpose:    Event procedure for WM_TIMER message.
-; Arguments:  Arg1: First message parameter.
-;             Arg2: Second message parameter.
-; Return:     eax = Zero if handled.
-
-Method SimpleCircularActivityIndicator.OnTimer, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
-  local hSrcDC:HDC, hPrvSrcBmp:HBITMAP, hModDC:HDC, hPrvModBmp:HBITMAP, hDstDC:HDC, hPrvModBrush:HBRUSH
-  local xform:XFORM, bfn:BLENDFUNCTION, WRect:RECT
-  local PtSize:POINT, PtZero:POINT
-
-;  DbgText "SimpleCircularActivityIndicator.OnTimer"
-  SetObject xsi
-
-  invoke GetWindowRect, [xsi].hWnd, addr WRect
-  mov eax, WRect.right
-  mov ecx, WRect.bottom
-  sub eax, WRect.left
-  sub ecx, WRect.top
-  mov [xsi].ControlSize.x, eax
-  mov [xsi].ControlSize.y, ecx
-
-  mov hDstDC, $invoke(GetDC, [xsi].hWnd)
-  mov hSrcDC, $invoke(CreateCompatibleDC, hDstDC)
-  mov hModDC, $invoke(CreateCompatibleDC, hDstDC)
-
-  mov hPrvSrcBmp, $invoke(SelectObject, hSrcDC, [xsi].hBitmap)
-  invoke CreateCompatibleBitmap, hDstDC, [xsi].ControlSize.x, [xsi].ControlSize.y
-  mov hPrvModBmp, $invoke(SelectObject, hModDC, xax)
-
-  .if [xsi].dStatus != SCAI_STATUS_STOPPED
-    fld [xsi].r4Rotation
-    fadd r4RotIncr
-    fst [xsi].r4Rotation
-    fSinCos                           ;  sin   ;  cos
-
-    mov eax, [xsi].dAlpha
-    .if [xsi].dStatus == SCAI_STATUS_STARTING
-      add eax, dAlphaChange
-      .if eax > 255
-        mov eax, 255                  ;Saturate
-      .endif
-      mov [xsi].dAlpha, eax
-
-      fld [xsi].r4Scaling
-      fadd [xsi].r4ScaleChange
-
-      fld1
-      fcom
-      fGetFlags
-      .if CARRY?
-        mov [xsi].dStatus, SCAI_STATUS_RUNNING
-        fstp [xsi].r4Scaling          ;1.0
-        fUnload
-      .else
-        fUnload
-        fmul st(1), st(0)
-        fmul st(2), st(0)
-        fstp [xsi].r4Scaling
-      .endif
-
-    .elseif [xsi].dStatus == SCAI_STATUS_STOPPING
-      sub eax, dAlphaChange
-      .if SDWORD ptr eax < 0
-        xor eax, eax
-      .endif
-      mov [xsi].dAlpha, eax
-
-      fld [xsi].r4Scaling
-      fsub [xsi].r4ScaleChange
-
-      fldz
-      fcom
-      fGetFlags
-      .if !CARRY?
-        mov [xsi].dStatus, SCAI_STATUS_STOPPED
-        fst st(1)
-      .endif
-      fUnload
-      fmul st(1), st(0)
-      fmul st(2), st(0)
-      fstp [xsi].r4Scaling
-    .endif
-
-    fst xform.eM21
-    fchs                              ; -sin   ;  cos
-    fstp xform.eM12                   ;  cos
-    fst xform.eM11
-    fstp xform.eM22
-    fld1                              ;   1
-    fld1                              ;   1    ;    1
-    faddp st(1), st(0)                ;   2
-    fild [xsi].ImageSize.x            ;   W    ;    2
-    fdiv st(0), st(1)                 ;  W/2   ;    2
-    fstp xform.eDx_                   ;   2
-    fild [xsi].ImageSize.y            ;   H    ;    2
-    fdivrp st(1), st(0)               ;  H/2
-    fstp xform.eDy
-
-    invoke SetGraphicsMode, hModDC, GM_ADVANCED
-    invoke SetWorldTransform, hModDC, addr xform
-
-    invoke CreateSolidBrush, $RGB(128,128,255,128)
-    mov hPrvModBrush, $invoke(SelectObject, hModDC, xax)
-
-    mov edx, [xsi].ImageSize.x
-    mov eax, [xsi].ImageSize.y
-    shr edx, 1
-    neg edx
-    shr eax, 1
-    neg eax
-    invoke BitBlt, hModDC, edx, eax, [xsi].ImageSize.x, [xsi].ImageSize.y, hSrcDC, 0, 0, SRCCOPY
-    invoke DeleteObject, $invoke(SelectObject, hModDC, hPrvModBrush)
-  .endif
-
-  mov bfn.BlendOp, AC_SRC_OVER
-  mov bfn.BlendFlags, 0
-  mov eax, [xsi].dAlpha
-  mov bfn.SourceConstantAlpha, al
-  mov bfn.AlphaFormat, AC_SRC_ALPHA
-  s2s PtSize, [xsi].ImageSize, xax, xcx, xmm0
-  mov PtZero.x, 0
-  mov PtZero.y, 0
-  invoke UpdateLayeredWindow, [xsi].hWnd, hDstDC, NULL, addr PtSize, \
-                              hModDC, addr PtZero, $RGB(0,0,0), addr bfn, ULW_ALPHA
-  invoke SelectObject, hSrcDC, hPrvSrcBmp
-  invoke DeleteDC, hSrcDC
-  invoke SelectObject, hModDC, hPrvModBmp
-  invoke DeleteObject, xax
-  invoke DeleteDC, hModDC
-  invoke ReleaseDC, [xsi].hWnd, hDstDC
-
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     SimpleCircularActivityIndicator.Start
-; Purpose:    Start spinning.
-; Arguments:  Arg1: Interval between steps.
+; Method:     SimpleCircularActivityIndicator.LoadBmpFromRes
+; Purpose:    Load a bitmap from the resource section and add it to the spinner resources.
+; Arguments   Arg1: -> Bitmap resource name.
 ; Return:     Nothing.
 
-Method SimpleCircularActivityIndicator.Start, uses xsi
+Method SimpleCircularActivityIndicator.LoadBmpFromRes, uses xsi, pBmpName:PSTRING
+  local BMP:BITMAP
+
   SetObject xsi
-  mov [xsi].dStatus, SCAI_STATUS_STARTING
+  OCall xsi.Dispose
+  mov [xsi].hBitmap, $invoke(LoadImage, hInstance, pBmpName, IMAGE_BITMAP, 0, 0, 0)
+  invoke GetObject, [xsi].hBitmap, sizeof BMP, addr BMP
+  m2m [xsi].BmpSize.x, BMP.bmWidth, eax
+  m2m [xsi].BmpSize.y, BMP.bmHeight, ecx
+MethodEnd
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Method:     SimpleCircularActivityIndicator.LoadPngFromRes
+; Purpose:    Load a PNG from the resource section and add it to the spinner resources.
+; Arguments   Arg1: -> Image resource name. Must be of type IMAGE = 2110.
+; Return:     Nothing.
+
+Method SimpleCircularActivityIndicator.LoadPngFromRes, uses xsi, pPngName:PSTRING
+  local BMP:BITMAP
+
+  SetObject xsi
+  OCall xsi.Dispose
+  mov [xsi].hBitmap, $invoke(LoadPngFromResource, pPngName)
+  invoke GetObject, [xsi].hBitmap, sizeof BMP, addr BMP
+  m2m [xsi].BmpSize.x, BMP.bmWidth, eax
+  m2m [xsi].BmpSize.y, BMP.bmHeight, ecx
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -371,23 +311,12 @@ Method SimpleCircularActivityIndicator.Startup
   m2m WC.hInstance, hInstance, xdx
   m2z WC.hbrBackground
   m2z WC.lpszMenuName
-  c2m WC.lpszClassName, offset szCircularActivityIndicatorClass, xdx
+  c2m WC.lpszClassName, offset szSimpleCircularActivityIndicatorClass, xdx
   mov WC.hIcon, 0
   mov WC.hCursor, 0
   m2z WC.hIconSm
 
   invoke RegisterClassEx, addr WC
-MethodEnd
-
-; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     SimpleCircularActivityIndicator.Stop
-; Purpose:    Stop spinning.
-; Arguments:  None.
-; Return:     Nothing.
-
-Method SimpleCircularActivityIndicator.Stop, uses xsi
-  SetObject xsi
-  mov [xsi].dStatus, SCAI_STATUS_STOPPING
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -410,13 +339,11 @@ Method SimpleCircularActivityIndicator.WndProc, uses xsi, uMsg:DWORD, wParam:WPA
       .if xax != 0
         invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0 ;Get instance POINTER of the parent object
       .endif
-      OCall xsi::SimpleCircularActivityIndicator.InitRes, xax, pSelf, 50
-      BitSet [xsi].$Obj(SimpleCircularActivityIndicator).dFlags, SCAI_SELF_INST
+      OCall xsi::SimpleCircularActivityIndicator.InitRes, xax, pSelf
     .else
       ;Code call
       mov xsi, [xax].CREATESTRUCT.lpCreateParams
       m2m [xsi].$Obj(SimpleCircularActivityIndicator).hWnd, pSelf, xax
-      BitClr [xsi].$Obj(SimpleCircularActivityIndicator).dFlags, SCAI_SELF_INST
     .endif
     invoke SetWindowLongPtr, pSelf, GWLP_USERDATA, xsi  ;Store the instance pointer
     OCall xsi::SimpleCircularActivityIndicator.Dispatch, pSelf, uMsg, wParam, lParam
@@ -428,7 +355,7 @@ Method SimpleCircularActivityIndicator.WndProc, uses xsi, uMsg:DWORD, wParam:WPA
       mov xsi, xax
       OCall xsi::SimpleCircularActivityIndicator.Dispatch, pSelf, uMsg, wParam, lParam
       .if uMsg == WM_NCDESTROY
-        .ifBitSet [xsi].$Obj(SimpleCircularActivityIndicator).dFlags, SCAI_SELF_INST
+        .ifBitSet [xsi].$Obj(SimpleCircularActivityIndicator).dFlags, AI_FLAG_SELF_INST
           Destroy xsi
         .endif
       .endif

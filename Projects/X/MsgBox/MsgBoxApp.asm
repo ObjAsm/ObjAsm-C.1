@@ -1,5 +1,5 @@
 ; ==================================================================================================
-; Title:      ViewDemo.asm
+; Title:      MsgBoxApp.asm
 ; Author:     G. Friedrich
 ; Version:    1.0.0
 ; Purpose:    ObjAsm MsgBox Application.
@@ -22,7 +22,7 @@ SysSetup OOP, WIN64, WIDE_STRING;, DEBUG(WND)
 % include &IncPath&Windows\richedit.inc
 
 ;Load or build the following objects
-MakeObjects Primer, Stream, WinPrimer
+MakeObjects Primer, Stream, WinPrimer, Button, Hyperlink
 MakeObjects Collection, DataCollection, SortedCollection, SortedDataCollection, XWCollection
 MakeObjects Window, Dialog, DialogModal, DialogAbout, Image
 MakeObjects WinApp, SdiApp

@@ -136,7 +136,7 @@ Method NNet.ShowWeights, uses xbx xdi xsi, dWindow:DWORD
   .while !ZERO?
     fld NNT_DATATYPE ptr [xdi + NNT_DATATYPE*xbx]
     invoke St0ToStrA, addr cFloat, 0, DBG_FLOAT_RESOLUTION, 1
-    invoke DbgOutTextA, addr cFloat, DBG_COLOR_TEXT, DBG_EFFECT_NORMAL or DBG_EFFECT_NEWLINE, addr cWindow
+    invoke DbgOutTextA, addr cFloat, DbgColorText, DBG_EFFECT_NORMAL or DBG_EFFECT_NEWLINE, addr cWindow
     fUnload
     dec ebx
   .endw

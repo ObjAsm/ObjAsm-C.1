@@ -10,7 +10,7 @@ CLSSTYLE    equ  CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HR
 APPSTYLE    equ  WS_OVERLAPPED or WS_CAPTION or WS_SYSMENU or WS_MINIMIZEBOX
 APPEXSTYLE  equ  WS_EX_LEFT or WS_EX_APPWINDOW
 
-CStr szPixelmapApp, "PixelmapApp"                       ;Creates szPixelmapApp string in .const
+CStr szPixelmapApp, "OAC_PixelmapApp"                   ;Creates szPixelmapApp string in .const
 
 Object PixelmapApp, MySdiAppID, SdiApp                  ;Single Document Interface App.
   RedefineMethod    Done

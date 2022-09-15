@@ -13,7 +13,7 @@ EDTSTYLE    equ     WS_CHILD or WS_VISIBLE or WS_TABSTOP or \
 RICHEDITID  equ     250
 
 CStr szDbgMdiChildTxt,  "DbgMdiChildTxt"                ;Debug Center Child Textoutput
-CStr szPropREdtIptor,   "OA_REdtIptor"
+CStr szPropREdtIptor,   "OAP_REdtIptor"
 
 CALC_KEY_TIMEOUT  equ   1000
 

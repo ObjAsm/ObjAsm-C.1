@@ -80,7 +80,7 @@ ObjectEnd
 ;    Application implementation
 ; ==================================================================================================
 
-CStr szAppClassName, "Application"
+CStr szAppClassName, "OAC_Application"
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Application.Done

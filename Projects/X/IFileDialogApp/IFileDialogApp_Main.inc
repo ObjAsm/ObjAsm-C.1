@@ -8,7 +8,7 @@
 
 CLSSTYLE equ CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW
 
-CStr szIFileDialogApp, "Application"
+CStr szIFileDialogApp, "OAC_Application"
 
 Object Application, MySdiAppID, SdiApp
   RedefineMethod    Init
@@ -32,8 +32,8 @@ ObjectEnd
 ; Return:     Nothing.
 
 Method Application.Done, uses xsi
-    SetObject xsi
-    ACall xsi.Done
+  SetObject xsi
+  ACall xsi.Done
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

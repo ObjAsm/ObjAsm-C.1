@@ -632,7 +632,7 @@ SysInit macro Arg1, Arg2
         mov DbgColorVMT, DBG_COLOR_VMT_CON
         mov DbgColorFPU, DBG_COLOR_FPU_CON
         mov DbgColorMemory, DBG_COLOR_MEMORY_CON
-        mov DbgColorDefaultPre, DBG_COLOR_DEFAULTPRE_CON
+        mov DbgColorDefaultPre, DBG_COLOR_DEFAULT_PRE_CON
         mov DbgColorDefaultVar, DBG_COLOR_DEFAULT_VAR_CON
         mov DbgColorLine, DBG_COLOR_LINE_CON
         mov DbgColorRed, DBG_COLOR_RED_CON
@@ -641,22 +641,22 @@ SysInit macro Arg1, Arg2
       elseifidn DBG_DEVICE, <LOG>
         mov DbgColorText, DBG_COLOR_TEXT_WND
         mov DbgColorBackground, DBG_COLOR_BACKGROUND_WND
-        mov DbgColorComment, DBG_COLOR_COMMENT_WIN
-        mov DbgColorWarning, DBG_COLOR_WARNING_WIN
-        mov DbgColorError, DBG_COLOR_ERROR_WIN
-        mov DbgColorString, DBG_COLOR_STRING_WIN
-        mov DbgColorMessage, DBG_COLOR_MESSAGE_WIN
-        mov DbgColorObject, DBG_COLOR_OBJECT_WIN
-        mov DbgColorInterface, DBG_COLOR_INTERFACE_WIN
-        mov DbgColorVMT, DBG_COLOR_VMT_WIN
-        mov DbgColorFPU, DBG_COLOR_FPU_WIN
-        mov DbgColorMemory, DBG_COLOR_MEMORY_WIN
-        mov DbgColorDefaultPre, DBG_COLOR_DEFAULT_PRE_WIN
-        mov DbgColorDefaultVar, DBG_COLOR_DEFAULT_VAR_WIN
-        mov DbgColorLine, DBG_COLOR_LINE_WIN
-        mov DbgColorRed, DBG_COLOR_RED_WIN
-        mov DbgColorGreen, DBG_COLOR_GREEN_WIN
-        mov DbgColorBlue, DBG_COLOR_BLUE_WIN
+        mov DbgColorComment, DBG_COLOR_COMMENT_WND
+        mov DbgColorWarning, DBG_COLOR_WARNING_WND
+        mov DbgColorError, DBG_COLOR_ERROR_WND
+        mov DbgColorString, DBG_COLOR_STRING_WND
+        mov DbgColorMessage, DBG_COLOR_MESSAGE_WND
+        mov DbgColorObject, DBG_COLOR_OBJECT_WND
+        mov DbgColorInterface, DBG_COLOR_INTERFACE_WND
+        mov DbgColorVMT, DBG_COLOR_VMT_WND
+        mov DbgColorFPU, DBG_COLOR_FPU_WND
+        mov DbgColorMemory, DBG_COLOR_MEMORY_WND
+        mov DbgColorDefaultPre, DBG_COLOR_DEFAULT_PRE_WND
+        mov DbgColorDefaultVar, DBG_COLOR_DEFAULT_VAR_WND
+        mov DbgColorLine, DBG_COLOR_LINE_WND
+        mov DbgColorRed, DBG_COLOR_RED_WND
+        mov DbgColorGreen, DBG_COLOR_GREEN_WND
+        mov DbgColorBlue, DBG_COLOR_BLUE_WND
       else
         mov DbgHighContrast.cbSize, sizeof(HIGHCONTRAST)
         mov DbgHighContrast.dwFlags, 0                  ;;Just in case the API fails

@@ -67,9 +67,9 @@ CStr szColorLocWarning,       "Color.LocWarning"
 CStr szColorFailure,          "Color.Failure"
 CStr szColorBkground,         "Color.Background"
                               
-CStr szOAT_Child,             "OAT_Child"
-CStr szOAT_App,               "OAT_App"
-CStr szPropEditIptor,         "OAT_EditIptor"
+CStr szOAT_Child,             "OAC_OAToolChild"
+CStr szOAT_App,               "OAC_OAToolApplication"
+CStr szPropEditIptor,         "OAP_OATEditIptor"
 CStr szOpen,                  "open"
                               
 CStrA szMethod,               "Method"

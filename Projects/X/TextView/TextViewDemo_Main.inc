@@ -6,7 +6,7 @@
 ; ==================================================================================================
 
 
-CStr szApplication, "Application"
+CStr szApplication, "OAC_Application"
 
 
 Object Application, MySdiAppID, SdiApp

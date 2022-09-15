@@ -8,7 +8,7 @@
 
 CLSSTYLE equ CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW; or CS_DROPSHADOW
 
-CStr szAppClassName, "WebCamApp"                        ;Creates szAppClassName string in .const
+CStr szAppClassName, "OAC_WebCamApp"                    ;Creates szAppClassName string in .const
 
 ERROR_BASE = BIT29 + 1000
 AddErrMsg WEBCAM_NO_DEVICE_FOUND, "No WebCam found"

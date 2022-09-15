@@ -366,7 +366,7 @@ InfoArea ends
 
 if IMPLEMENT
 
-CStr szChart, "OA_Chart"
+CStr szChart, "OAC_Chart"
 
 .code
 % include &ObjPath&ChartSeries.inc

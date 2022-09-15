@@ -8,7 +8,7 @@
 
 CLSSTYLE equ CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW; or CS_DROPSHADOW
 
-CStr szNetComClient, "NetComClient"                     ;Creates szNetComClient string in .const
+CStr szNetComClient, "OAC_NetComClient"                 ;Creates szNetComClient string in .const
 
 BUFFERSIZE  equ   2048
 

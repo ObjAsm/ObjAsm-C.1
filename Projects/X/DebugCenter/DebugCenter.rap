@@ -175,7 +175,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=3
+MilestoneOnDateDate=15
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -210,8 +210,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,806,424,48860
-3=0,0,2127,589,1905
+2=0,0,806,424,63380
+3=0,0,2127,589,1677
 1=0,0,694,487,994
 4=0,0,706,573,5735
 1001=0,0,0,0,460
@@ -222,7 +222,7 @@ ProductVer4Range=0
 11=0,0,706,600,0
 10=0,0,0,0,10132
 9=0,0,0,0,2776
-12=0,0,848,586,3512
+12=0,0,848,586,4094
 13=0,0,738,582,4853
 14=
 15=0,0,0,0,4702
@@ -283,16 +283,16 @@ ProductVer4Range=0
 0=724,30,
 
 [Find]
-1="EraseChild"
-2="DbgMdiChild.Erase"
-3="DbgOutCmd"
-4="DbgLine"
-5="dDbgCmd"
-6="DBG_CMD_CLEAR_TXT"
-7="DrawPopupText"
-8="DrawMenuBarText"
-9="INFO_COLOR"
-10="LINK_COLOR"
+1="DEBUG_CENTER_CLASS"
+2="szDbgCtrCls"
+3="EraseChild"
+4="DbgMdiChild.Erase"
+5="DbgOutCmd"
+6="DbgLine"
+7="dDbgCmd"
+8="DBG_CMD_CLEAR_TXT"
+9="DrawPopupText"
+10="DrawMenuBarText"
 "
 [Collapse]
 7=,,
@@ -349,9 +349,9 @@ ProductVer4Range=0
 53=
 54=
 [AutoLoad]
-AutoLoad=6,12,2,13,5,7
+AutoLoad=6,12,2,13,5,7,3
 [PTimer]
-PTimer=2066145686
+PTimer=2066195936
 [RADebugBP]
 5=
 2=

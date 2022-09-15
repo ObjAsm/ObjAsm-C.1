@@ -6,7 +6,7 @@
 ; ==================================================================================================
 
 
-CStr szTranslucentWindow, "TranslucentWindow"           ;Creates szTranslucentWindow string in .const
+CStr szTranslucentWindow, "OAC_TranslucentWindow"       ;Creates szTranslucentWindow string in .const
 
 Object TranslucentWindow, MySdiAppID, SdiApp            ;Single Document Interface App.
   RedefineMethod    Init                                ;Init method redefinition

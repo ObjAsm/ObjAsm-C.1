@@ -9,23 +9,30 @@
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc   ;Include & initialize standard modules
-SysSetup OOP, WIN64, WIDE_STRING;, DEBUG(WND)            ;Load OOP files and OS related objects
+SysSetup OOP, WIN64, WIDE_STRING, DEBUG(WND)            ;Load OOP files and OS related objects
+
+GDIPVER equ 0100h
 
 % include &COMPath&COM.inc                              ;COM basic support
 % include &MacPath&fMath.inc
 % include &IncPath&Windows\CommCtrl.inc
 % include &IncPath&Windows\richedit.inc
-
+% include &IncPath&Windows\GdiplusPixelFormats.inc
+% include &IncPath&Windows\GdiplusInit.inc
+% include &IncPath&Windows\GdiplusEnums.inc
+% include &IncPath&Windows\GdiplusGpStubs.inc
+% include &IncPath&Windows\GdiPlusFlat.inc
 
 % includelib &LibPath&Windows\shell32.lib
 % includelib &LibPath&Windows\shlwapi.lib
 % includelib &LibPath&Windows\Msimg32.lib
 % includelib &LibPath&Windows\Ole32.lib
+% includelib &LibPath&Windows\GdiPlus.lib
 
 ;Load or build the following objects
 MakeObjects Primer, Stream, WinPrimer
 MakeObjects Window, Button, Hyperlink, Dialog, DialogModal, DialogAbout
-MakeObjects SimpleCircularActivityIndicator
+MakeObjects ActivityIndicator, SimpleCircularActivityIndicator
 MakeObjects WinApp, SdiApp
 MakeObjects Collection, DataCollection, SortedCollection, SortedDataCollection, XWCollection
 MakeObjects TextView

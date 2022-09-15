@@ -1,8 +1,10 @@
 ; ==================================================================================================
 ; Title:      MemAlloc_X_UEFI.inc
-; Author:     G. Friedrich
-; Version:    C.1.0
-; Notes:      Version C.1.0, June 2022
+; Author:     HSE, G. Friedrich
+; Version:    C.1.1
+; Notes:      Version C.1.1, September 2022
+;               - Arg3 = Memory type added by HSE.
+;             Version C.1.0, June 2022
 ;               - First release.
 ; ==================================================================================================
 
@@ -12,15 +14,15 @@
 ; Purpose:    Allocate a memory block.
 ; Arguments:  Arg1: Memory block attributes [0, MEM_INIT_ZERO].
 ;             Arg2: Memory block size in BYTEs.
+;             Arg3: Memory type.
 ; Return:     xax -> Memory block or NULL if failed.
 
 align ALIGN_CODE
-MemAlloc_UEFI proc uses xbx dAttr:DWORD, dMemSize:DWORD
+MemAlloc_UEFI proc uses xbx dAttr:DWORD, dMemSize:DWORD, dType:DWORD
   local pMemBlock:POINTER
-  
+
   mov xbx, pBootServices
-  invoke [xbx].EFI_BOOT_SERVICES.AllocatePool, EFI_MEMORY_TYPE_EfiBootServicesData, \
-                                               dMemSize, addr pMemBlock
+  invoke [xbx].EFI_BOOT_SERVICES.AllocatePool, dType, dMemSize, addr pMemBlock
   .ifBitSet xax, EFI_ERROR
     xor eax, eax
   .else
@@ -29,5 +31,5 @@ MemAlloc_UEFI proc uses xbx dAttr:DWORD, dMemSize:DWORD
     .endif
     mov xax, pMemBlock
   .endif
-  ret 
+  ret
 MemAlloc_UEFI endp

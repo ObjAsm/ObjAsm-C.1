@@ -8,7 +8,7 @@
 
 CLSSTYLE equ CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW
 
-CStr szRibbonApp, "RibbonApp"
+CStr szRibbonApp, "OAC_RibbonApp"
 
 Object RibbonApp, MySdiAppID, SdiApp
   RedefineMethod    Init

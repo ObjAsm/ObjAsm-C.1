@@ -6,7 +6,7 @@
 ; ==================================================================================================
 
 
-CStr szSplashDemo, "SplashDemo"                         ;Creates szSplashDemo string in .const
+CStr szSplashDemo, "OAC_SplashDemo"                     ;Creates szSplashDemo string in .const
 
 Object SplashDemo, MySdiAppID, SdiApp                   ;Single Document Interface App.
   RedefineMethod    Init                                ;Init method redefinition

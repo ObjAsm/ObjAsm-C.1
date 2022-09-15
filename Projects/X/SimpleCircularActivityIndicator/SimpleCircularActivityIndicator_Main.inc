@@ -82,22 +82,22 @@ MethodEnd
 Method Application.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   invoke CreateWindowEx, WS_EX_LAYERED, \
-                         offset szCircularActivityIndicatorClass, NULL, WS_VISIBLE or WS_CHILD, \
-                         150, 100, 100, 100, [xsi].hWnd, 0, hInstance, NULL
+                         offset szSimpleCircularActivityIndicatorClass, NULL, WS_VISIBLE or WS_CHILD, \
+                         150, 100, 1, 1, [xsi].hWnd, 0, hInstance, NULL
   .if xax != 0
     invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0 ;Get instance POINTER of the parent object
     mov [xsi].pSCAI1, xax
-    OCall [xsi].pSCAI1::SimpleCircularActivityIndicator.AddPngFromRes, $OfsCStr("SPINNER1")
+    OCall [xsi].pSCAI1::SimpleCircularActivityIndicator.LoadPngFromRes, $OfsCStr("SPINNER1")
     OCall [xsi].pSCAI1::SimpleCircularActivityIndicator.Start
   .endif
 
   invoke CreateWindowEx, WS_EX_LAYERED, \
-                         offset szCircularActivityIndicatorClass, NULL, WS_VISIBLE or WS_CHILD, \
-                         170, 120, 100, 100, [xsi].hWnd, 0, hInstance, NULL
+                         offset szSimpleCircularActivityIndicatorClass, NULL, WS_VISIBLE or WS_CHILD, \
+                         170, 120, 1, 1, [xsi].hWnd, 0, hInstance, NULL
   .if xax != 0
     invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0 ;Get instance POINTER of the parent object
     mov [xsi].pSCAI2, xax
-    OCall [xsi].pSCAI2::SimpleCircularActivityIndicator.AddPngFromRes, $OfsCStr("SPINNER2")
+    OCall [xsi].pSCAI2::SimpleCircularActivityIndicator.LoadPngFromRes, $OfsCStr("SPINNER2")
     OCall [xsi].pSCAI2::SimpleCircularActivityIndicator.Start
   .endif
 

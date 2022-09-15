@@ -86,16 +86,16 @@ Group=Added files,Assembly,Resources,Misc,Modules,Objects
 10=,,
 [Size]
 1=0,0,0,0,161
-8=0,0,0,0,15829
+8=0,0,0,0,7660
 6=0,0,0,0,150
 7=0,0,0,0,5818
-2=0,0,0,0,237
+2=0,0,0,0,6685
 4=0,0,0,0,235
 5=0,0,1862,628,940
 3=0,0,0,0,936
 9=0,0,0,0,14392
 11=0,0,0,0,958
-10=0,0,0,0,9274
+10=0,0,0,0,6619
 
 
 [Colref]
@@ -121,7 +121,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Objects
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,6,2,4,5
+AutoLoad=1,6,2,4,5,10,8
 [RADebugBP]
 1=
 0=
@@ -131,7 +131,7 @@ AutoLoad=1,6,2,4,5
 8=
 11=
 [PTimer]
-PTimer=98763837
+PTimer=98844931
 [GroupExpand]
 GroupExpand=1,1,0,0,1,1,0
 [VersionControl]
@@ -144,7 +144,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=14
+MilestoneOnDateDate=15
 MilestoneOnDateTimeYear=2020
 MilestoneOnDateTimeMonth=1
 MilestoneOnDateTimeDate=13
@@ -168,4 +168,5 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [Find]
-1="Method Array.ItemAt, uses xbx xdi xsi, dIndex:VARARG"
+1="DBG_COLOR_TEXT"
+2="Method Array.ItemAt, uses xbx xdi xsi, dIndex:VARARG"

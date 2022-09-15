@@ -83,7 +83,7 @@ ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-CStr cIntPropClass, "IntPropWndClass"                   ;Interface Property Window
+CStr cIntPropClass, "OAC_IntPropWnd"                    ;Interface Property Window
 
 Object IntPropWnd, OAE_IntPropWndID, PropWnd
 ;  RedefineMethod    CreateMarkupText
@@ -99,7 +99,7 @@ ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-CStr cObjPropClass, "ObjPropWndClass"
+CStr cObjPropClass, "OAC_ObjPropWnd"
 
 Object ObjPropWnd, OAE_ObjPropWndID, PropWnd            ;Object property Window
   RedefineMethod    CreateMarkupText
@@ -145,7 +145,7 @@ ObjectEnd
 
 CloseEnumProc    proto :HANDLE, :LPARAM
 
-CStr cObjExplorerClass, "ObjExplorerClass"
+CStr cObjExplorerClass, "OAC_ObjExplorer"
 
 Object Application, OAE_ApplicationID, MdiApp           ;MDI application.
   VirtualMethod     ChangeBtnLanguage,  DWORD           ;IDLANG_XXX

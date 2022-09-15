@@ -8,7 +8,7 @@
 
 CLSSTYLE equ CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW; or CS_DROPSHADOW
 
-CStr szJsonDemoApp, "JsonDemoApp"
+CStr szJsonDemoApp, "OAC_JsonDemoApp"
 
 
 Object JsonDemoApp, MySdiAppID, SdiApp
