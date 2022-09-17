@@ -1,14 +1,14 @@
 ; ==================================================================================================
-; Title:      SimpleCircularActivityIndicator_Globals.inc
+; Title:      SpinningThrobber_Globals.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:    ObjAsm Simple Circular Activity Indicator.
+; Purpose:    ObjAsm Spinning Throbber.
 ; Notes:      Version C.1.0, August 2022
 ;               - First release.
 ; ==================================================================================================
 
 
-include SimpleCircularActivityIndicator_Shared.inc
+include SpinningThrobber_Shared.inc
 
 CStr szIcoName,   "ICON_APP"
 %CStr szAppTitle, "&APP_TITLE"

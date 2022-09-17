@@ -1,15 +1,15 @@
 ; ==================================================================================================
-; Title:      SimpleCircularActivityIndicator.asm
+; Title:      SpinningThrobber.asm
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:    ObjAsm Simple Circular Activity Indicator.
+; Purpose:    ObjAsm Spinning Throbber.
 ; Notes:      Version C.1.0, August 2022
 ;               - First release.
 ; ==================================================================================================
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc   ;Include & initialize standard modules
-SysSetup OOP, WIN64, WIDE_STRING, DEBUG(WND)            ;Load OOP files and OS related objects
+SysSetup OOP, WIN64, WIDE_STRING;, DEBUG(WND)            ;Load OOP files and OS related objects
 
 GDIPVER equ 0100h
 
@@ -32,14 +32,14 @@ GDIPVER equ 0100h
 ;Load or build the following objects
 MakeObjects Primer, Stream, WinPrimer
 MakeObjects Window, Button, Hyperlink, Dialog, DialogModal, DialogAbout
-MakeObjects ActivityIndicator, SimpleCircularActivityIndicator
+MakeObjects Throbber, SpinningThrobber
 MakeObjects WinApp, SdiApp
 MakeObjects Collection, DataCollection, SortedCollection, SortedDataCollection, XWCollection
 MakeObjects TextView
 
 
-include SimpleCircularActivityIndicator_Globals.inc     ;Application globals
-include SimpleCircularActivityIndicator_Main.inc        ;Application object
+include SpinningThrobber_Globals.inc     ;Application globals
+include SpinningThrobber_Main.inc        ;Application object
 
 .code
 start proc                                              ;Program entry point
@@ -47,7 +47,7 @@ start proc                                              ;Program entry point
   SysInit                                               ;Runtime initialization of OOP model
 
   DbgClearAll
-  
+
   invoke GetWinVersion, addr dMajorVersion, NULL, NULL
   .if dMajorVersion < 8
     invoke MsgBox, 0, offset cWarningMsg, offset cAppWarning, MB_OK

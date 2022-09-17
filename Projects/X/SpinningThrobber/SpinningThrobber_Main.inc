@@ -1,8 +1,8 @@
 ; ==================================================================================================
-; Title:      CircularActivityIndicator_Main.inc
+; Title:      SpinningThrobber_Main.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:    ObjAsm Simple Circular Activity Indicator.
+; Purpose:    ObjAsm Spinning Throbber.
 ; Notes:      Version C.1.0, August 2022
 ;               - First release.
 ; ==================================================================================================
@@ -10,7 +10,7 @@
 
 CLSSTYLE equ CS_BYTEALIGNWINDOW or CS_BYTEALIGNCLIENT or CS_VREDRAW or CS_HREDRAW; or CS_DROPSHADOW
 
-CStr szApplication, "Application"                       ;Creates szApplication string in .const
+CStr szApplicationClass, "OAC_Application"              ;Creates szApplicationClass string in .const
 
 
 Object Application, MySdiAppID, SdiApp                  ;Single Document Interface App.
@@ -18,13 +18,13 @@ Object Application, MySdiAppID, SdiApp                  ;Single Document Interfa
   RedefineMethod    Init                                ;Init method redefinition
   StaticMethod      Startup
 
-  VirtualEvent      OnCreate,   WM_CREATE
-  VirtualEvent      OnCommand,  WM_COMMAND
-  VirtualEvent      OnClose,    WM_CLOSE, WM_QUERYENDSESSION
-  VirtualEvent      OnPaint,    WM_PAINT
+  VirtualEvent      OnCreate,     WM_CREATE
+  VirtualEvent      OnCommand,    WM_COMMAND
+  VirtualEvent      OnClose,      WM_CLOSE, WM_QUERYENDSESSION
+  VirtualEvent      OnPaint,      WM_PAINT
 
-  DefineVariable    pSCAI1,   $ObjPtr(SimpleCircularActivityIndicator),   NULL
-  DefineVariable    pSCAI2,   $ObjPtr(SimpleCircularActivityIndicator),   NULL
+  DefineVariable    pThrobber1,   $ObjPtr(SpinningThrobber),   NULL
+  DefineVariable    pThrobber2,   $ObjPtr(SpinningThrobber),   NULL
 
 ObjectEnd                                               ;Ends object definition
 
@@ -43,7 +43,6 @@ ObjectEnd                                               ;Ends object definition
 Method Application.Done, uses xsi
   SetObject xsi
 
-;  DbgText "Application.Done"
   ACall xsi.Done
 MethodEnd
 
@@ -65,7 +64,7 @@ Method Application.Init, uses xsi
   mov dWndPosY, $32($invoke(CenterForm, dWndHeight, $32($invoke(GetSystemMetrics, SM_CYSCREEN))))
 
   invoke CreateWindowEx, WS_EX_LEFT or WS_EX_APPWINDOW, \
-                         offset szApplication, offset szAppTitle, WS_OVERLAPPEDWINDOW, \
+                         offset szApplicationClass, offset szAppTitle, WS_OVERLAPPEDWINDOW, \
                          dWndPosX, dWndPosY, dWndWidth, dWndHeight, NULL, NULL, hInstance, xsi
 
   invoke ShowWindow, [xsi].hWnd, SW_SHOWNORMAL          ;Show the window
@@ -82,23 +81,23 @@ MethodEnd
 Method Application.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   invoke CreateWindowEx, WS_EX_LAYERED, \
-                         offset szSimpleCircularActivityIndicatorClass, NULL, WS_VISIBLE or WS_CHILD, \
+                         offset szSpinningThrobberClass, NULL, WS_VISIBLE or WS_CHILD, \
                          150, 100, 1, 1, [xsi].hWnd, 0, hInstance, NULL
   .if xax != 0
     invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0 ;Get instance POINTER of the parent object
-    mov [xsi].pSCAI1, xax
-    OCall [xsi].pSCAI1::SimpleCircularActivityIndicator.LoadPngFromRes, $OfsCStr("SPINNER1")
-    OCall [xsi].pSCAI1::SimpleCircularActivityIndicator.Start
+    mov [xsi].pThrobber1, xax
+    OCall [xsi].pThrobber1::SpinningThrobber.LoadPngFromRes, $OfsCStr("SPINNER1")
+    OCall [xsi].pThrobber1::SpinningThrobber.Start
   .endif
 
   invoke CreateWindowEx, WS_EX_LAYERED, \
-                         offset szSimpleCircularActivityIndicatorClass, NULL, WS_VISIBLE or WS_CHILD, \
+                         offset szSpinningThrobberClass, NULL, WS_VISIBLE or WS_CHILD, \
                          170, 120, 1, 1, [xsi].hWnd, 0, hInstance, NULL
   .if xax != 0
     invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0 ;Get instance POINTER of the parent object
-    mov [xsi].pSCAI2, xax
-    OCall [xsi].pSCAI2::SimpleCircularActivityIndicator.LoadPngFromRes, $OfsCStr("SPINNER2")
-    OCall [xsi].pSCAI2::SimpleCircularActivityIndicator.Start
+    mov [xsi].pThrobber2, xax
+    OCall [xsi].pThrobber2::SpinningThrobber.LoadPngFromRes, $OfsCStr("SPINNER2")
+    OCall [xsi].pThrobber2::SpinningThrobber.Start
   .endif
 
   xor eax, eax
@@ -121,23 +120,23 @@ Method Application.OnCommand, uses xsi, wParam:WPARAM, lParam:LPARAM
     xor eax, eax
 
   .elseif ax == IDM_START_1
-    .if [xsi].pSCAI1 != NULL
-      OCall [xsi].pSCAI1::SimpleCircularActivityIndicator.Start
+    .if [xsi].pThrobber1 != NULL
+      OCall [xsi].pThrobber1::SpinningThrobber.Start
     .endif
 
   .elseif ax == IDM_START_2
-    .if [xsi].pSCAI2 != NULL
-      OCall [xsi].pSCAI2::SimpleCircularActivityIndicator.Start
+    .if [xsi].pThrobber2 != NULL
+      OCall [xsi].pThrobber2::SpinningThrobber.Start
     .endif
 
   .elseif ax == IDM_STOP_1
-    .if [xsi].pSCAI1 != NULL
-      OCall [xsi].pSCAI1::SimpleCircularActivityIndicator.Stop
+    .if [xsi].pThrobber1 != NULL
+      OCall [xsi].pThrobber1::SpinningThrobber.Stop
     .endif
 
   .elseif ax == IDM_STOP_2
-    .if [xsi].pSCAI2 != NULL
-      OCall [xsi].pSCAI2::SimpleCircularActivityIndicator.Stop
+    .if [xsi].pThrobber2 != NULL
+      OCall [xsi].pThrobber2::SpinningThrobber.Stop
     .endif
 
   .elseif ax == IDM_ABOUT
@@ -215,7 +214,7 @@ Method Application.Startup
   invoke LoadBitmap, hInstance, $OfsCStr("BMP_BACKGROUND")
   mov WC.hbrBackground, $invoke(CreatePatternBrush, xax)
   c2m WC.lpszMenuName, $OfsCStr("MENU_APP"), rax
-  c2m WC.lpszClassName, offset szApplication, rax
+  c2m WC.lpszClassName, offset szApplicationClass, rax
   mov WC.hIcon, $invoke(LoadIcon, hInstance, offset szIcoName)
   mov WC.hCursor, $invoke(LoadCursor, 0, IDC_ARROW)
   m2z WC.hIconSm

@@ -1,8 +1,8 @@
 ; ==================================================================================================
-; Title:      MultiImageActivityIndicator.inc
+; Title:      MovingThrobber.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.1
-; Purpose:    ObjAsm implementation of MultiImageActivityIndicator objects.
+; Purpose:    ObjAsm implementation of MovingThrobber objects.
 ; Notes:      Version C.1.0, August 2022
 ;               - First release.
 ;             Require an addition to the manifest to enable WS_EX_LAYERED style on child windows
@@ -24,47 +24,48 @@
 ;             mov DefStruc.dInterval, 50
 ;             c2m DefStruc.pResList, offset SpinnerList0, xax
 ;             mov DefStruc.dResListCount, SpinnerCount0
-;             mov DefStruc.dImageType, AI_IMAGE_PNG
-;             mov [xsi].pControl, $New(MultiImageActivityIndicator)
-;             OCall [xsi].pControl::MultiImageActivityIndicator.Init, xsi, [xsi].hWnd, addr DefStruc
-;             OCall [xsi].pControl::MultiImageActivityIndicator.Start
+;             mov DefStruc.dImageType, TBR_IMAGE_PNG
+;             mov [xsi].pControl, $New(MovingThrobber)
+;             OCall [xsi].pControl::MovingThrobber.Init, xsi, [xsi].hWnd, addr DefStruc
+;             OCall [xsi].pControl::MovingThrobber.Start
 ;             ...
 ;
 ; Example 2:  invoke CreateWindowEx, WS_EX_LAYERED, \
-;                                    offset szMultiImageActivityIndicatorClass, NULL, \
+;                                    offset szMovingThrobberClass, NULL, \
 ;                                    WS_VISIBLE or WS_CHILD, \
 ;                                    100, 100, 1, 1, [xsi].hWnd, 123, hInstance, NULL
 ;             .if xax != 0
 ;               invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0
 ;               mov [xsi].pControl, xax
-;               mov [xax].$Obj(MultiImageActivityIndicator).dInterval, 50
-;               OCall [xsi].pControl::MultiImageActivityIndicator.AddPngFromResList, \
+;               mov [xax].$Obj(MovingThrobber).dInterval, 50
+;               OCall [xsi].pControl::MovingThrobber.AddPngFromResList, \
 ;                                                                 offset SpinnerList0, SpinnerCount0
-;               OCall [xsi].pControl::MultiImageActivityIndicator.Start
+;               OCall [xsi].pControl::MovingThrobber.Start
 ;               ...
 ; ==================================================================================================
 
 
-DEF_MIAI struc
-                DEF_AI    {}
-  pResList      POINTER   ?         ;-> Resource string list
-  dResListCount DWORD     ?         ;List item count
-DEF_MIAI ends
-PDEF_MIAI typedef ptr DEF_MIAI
+DEF_MTHROBBER struc
+                DEF_THROBBER    {}
+  pResList      POINTER   ?             ;-> Resource string list
+  dResListCount DWORD     ?             ;List item count
+DEF_MTHROBBER ends
+PDEF_MTHROBBER typedef ptr DEF_MTHROBBER
 
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Object:  MultiImageActivityIndicator
-; Purpose: Animated control that shows the loaded images in sequence, like GIF but mit transparency.
+; Object:  MovingThrobber
+; Purpose: Animated control that displays previously loaded images in sequence, to show a backround
+;          activity, like GIF but mit transparency.
 
-Object MultiImageActivityIndicator, MultiImageActivityIndicatorID, ActivityIndicator
+Object MovingThrobber, MovingThrobberID, Throbber
   VirtualMethod     AddBmpFromRes,      PSTRING
   VirtualMethod     AddBmpFromResList,  POINTER, DWORD
   VirtualMethod     AddPngFromRes,      PSTRING
   VirtualMethod     AddPngFromResList,  POINTER, DWORD
   RedefineMethod    Animate
   RedefineMethod    Dispose
-  RedefineMethod    Init,               POINTER, HWND, PDEF_MIAI
+  RedefineMethod    Init,               POINTER, HWND, PDEF_MTHROBBER
   VirtualMethod     InitRes,            POINTER, HWND
   StaticMethod      Startup
   VirtualMethod     WndProc,            DWORD, WPARAM, LPARAM
@@ -75,19 +76,19 @@ Object MultiImageActivityIndicator, MultiImageActivityIndicatorID, ActivityIndic
 ObjectEnd
 
 
-CStr szMultiImageActivityIndicatorClass, "OAC_MultiImageActivityIndicator"
+CStr szMovingThrobberClass, "OAC_MovingThrobber"
 
 ; ==================================================================================================
 
 if IMPLEMENT
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     MultiImageActivityIndicator.AddBmpFromRes
+; Method:     MovingThrobber.AddBmpFromRes
 ; Purpose:    Load a BMP images from the resource section.
 ; Arguments   Arg1: -> Bitmap resource name.
 ; Return:     eax = Number of new loaded images, in this case 1 if succeded, otherwise 0.
 
-Method MultiImageActivityIndicator.AddBmpFromRes, uses xsi, pBmpName:PSTRING
+Method MovingThrobber.AddBmpFromRes, uses xsi, pBmpName:PSTRING
   local BMP:BITMAP
 
   SetObject xsi
@@ -128,13 +129,13 @@ Method MultiImageActivityIndicator.AddBmpFromRes, uses xsi, pBmpName:PSTRING
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     MultiImageActivityIndicator.AddBmpFromResList
+; Method:     MovingThrobber.AddBmpFromResList
 ; Purpose:    Load a series of BMP images from the resource section.
 ; Arguments   Arg1: -> PNG resource name pointer list.
 ;             Arg2: Number of PSTRINGs in the list.
 ; Return:     eax = Number of new loaded images, or 0 if failed.
 
-Method MultiImageActivityIndicator.AddBmpFromResList, uses xbx xdi xsi, pList:POINTER, dCount:DWORD
+Method MovingThrobber.AddBmpFromResList, uses xbx xdi xsi, pList:POINTER, dCount:DWORD
   local BMP:BITMAP, dSuccessCount:DWORD
 
   SetObject xsi
@@ -189,12 +190,12 @@ Method MultiImageActivityIndicator.AddBmpFromResList, uses xbx xdi xsi, pList:PO
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     MultiImageActivityIndicator.AddPngFromRes
+; Method:     MovingThrobber.AddPngFromRes
 ; Purpose:    Load a PNG image from the resource section.
 ; Arguments   Arg1: -> PNG resource name.
 ; Return:     eax = Number of new loaded images, in this case 1 if succeded, otherwise 0.
 
-Method MultiImageActivityIndicator.AddPngFromRes, uses xsi, pPngName:PSTRING
+Method MovingThrobber.AddPngFromRes, uses xsi, pPngName:PSTRING
   local GPSI:GdiplusStartupInput, xToken:XWORD
   local pBitmap:ptr GpBitmap, hBmp:HBITMAP
   local hResource:HRSRC, dResSize:DWORD, pResource:POINTER
@@ -275,13 +276,13 @@ Method MultiImageActivityIndicator.AddPngFromRes, uses xsi, pPngName:PSTRING
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     MultiImageActivityIndicator.AddPngFromResList
+; Method:     MovingThrobber.AddPngFromResList
 ; Purpose:    Load a series of PNG images from the resource section.
 ; Arguments   Arg1: -> PNG resource name pointer list.
 ;             Arg2: Number of PSTRINGs in the list.
 ; Return:     eax = Number of new loaded images, or 0 if failed.
 
-Method MultiImageActivityIndicator.AddPngFromResList, uses xbx xdi xsi, pList:POINTER, dListCount:DWORD
+Method MovingThrobber.AddPngFromResList, uses xbx xdi xsi, pList:POINTER, dListCount:DWORD
   local GPSI:GdiplusStartupInput, xToken:XWORD
   local pBitmap:ptr GpBitmap, hBmp:HBITMAP
   local hResource:HRSRC, dResSize:DWORD, pResource:POINTER
@@ -377,12 +378,12 @@ Method MultiImageActivityIndicator.AddPngFromResList, uses xbx xdi xsi, pList:PO
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     MultiImageActivityIndicator.Animate
+; Method:     MovingThrobber.Animate
 ; Purpose:    Show the animation.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method MultiImageActivityIndicator.Animate, uses xbx xsi
+Method MovingThrobber.Animate, uses xbx xsi
   local hSrcDC:HDC, hPrvSrcBmp:HBITMAP, hDstDC:HDC
   local hModDC:HDC, hPrvModBmp:HBITMAP, hPrvModBrush:HBRUSH
   local xform:XFORM, bfn:BLENDFUNCTION
@@ -397,12 +398,12 @@ Method MultiImageActivityIndicator.Animate, uses xbx xsi
 
   .repeat
     mov eax, [xsi].dFlags
-    .ifBitSet eax, AI_FLAG_ANIMATION_THREAD_STOP
+    .ifBitSet eax, TBR_FLAG_ANIMATION_THREAD_STOP
       .break
-    .elseIfBitSet eax, AI_FLAG_ANIMATION_THREAD_FREEZE
-      BitSet [xsi].dFlags, AI_FLAG_ANIMATION_THREAD_FROZEN
+    .elseIfBitSet eax, TBR_FLAG_ANIMATION_THREAD_FREEZE
+      BitSet [xsi].dFlags, TBR_FLAG_ANIMATION_THREAD_FROZEN
     .else
-      BitClr [xsi].dFlags, AI_FLAG_ANIMATION_THREAD_FROZEN
+      BitClr [xsi].dFlags, TBR_FLAG_ANIMATION_THREAD_FROZEN
       mov hDstDC, $invoke(GetDC, [xsi].hWnd)
       mov hSrcDC, $invoke(CreateCompatibleDC, hDstDC)
       mov hModDC, $invoke(CreateCompatibleDC, hDstDC)
@@ -424,12 +425,12 @@ Method MultiImageActivityIndicator.Animate, uses xbx xsi
       invoke CreateCompatibleBitmap, hDstDC, [xsi].BmpSize.x, [xsi].BmpSize.y
       mov hPrvModBmp, $invoke(SelectObject, hModDC, xax)
 
-      .if [xsi].dStatus != AI_STATUS_STOPPED
+      .if [xsi].dStatus != TBR_STATUS_STOPPED
         fld1
         fldz
 
         mov eax, [xsi].dAlpha
-        .if [xsi].dStatus == AI_STATUS_STARTING
+        .if [xsi].dStatus == TBR_STATUS_STARTING
           add eax, [xsi].dAlphaChange
           .if eax > 255
             mov eax, 255                                ;Saturate
@@ -443,7 +444,7 @@ Method MultiImageActivityIndicator.Animate, uses xbx xsi
           fcom
           fGetFlags
           .if CARRY?
-            mov [xsi].dStatus, AI_STATUS_RUNNING
+            mov [xsi].dStatus, TBR_STATUS_RUNNING
             fstp [xsi].r4Scaling                        ;1.0
             fUnload
           .else
@@ -452,7 +453,7 @@ Method MultiImageActivityIndicator.Animate, uses xbx xsi
             fstp [xsi].r4Scaling
           .endif
 
-        .elseif [xsi].dStatus == AI_STATUS_STOPPING
+        .elseif [xsi].dStatus == TBR_STATUS_STOPPING
           sub eax, [xsi].dAlphaChange
           .if SDWORD ptr eax < 0
             xor eax, eax
@@ -466,7 +467,7 @@ Method MultiImageActivityIndicator.Animate, uses xbx xsi
           fcom
           fGetFlags
           .if !CARRY?
-            mov [xsi].dStatus, AI_STATUS_STOPPED
+            mov [xsi].dStatus, TBR_STATUS_STOPPED
             fstp [xsi].r4Scaling
             fUnload 3
             jmp @F
@@ -525,12 +526,12 @@ Method MultiImageActivityIndicator.Animate, uses xbx xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     MultiImageActivityIndicator.Dispose
+; Method:     MovingThrobber.Dispose
 ; Purpose:    Free all allocated Bitmaps.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method MultiImageActivityIndicator.Dispose, uses xbx xsi
+Method MovingThrobber.Dispose, uses xbx xsi
   SetObject xsi
   .if [xsi].phBitmaps != NULL
     xor ebx, ebx
@@ -546,32 +547,32 @@ Method MultiImageActivityIndicator.Dispose, uses xbx xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     MultiImageActivityIndicator.Init
-; Purpose:    Initialize the MultiImageActivityIndicator object.
+; Method:     MovingThrobber.Init
+; Purpose:    Initialize the MovingThrobber object.
 ; Arguments:  Arg1: -> Owner object.
 ;             Arg2: Parent Window HANDLE.
 ;             Arg3: -> Definition structure.
 ; Return:     Nothing.
 
-Method MultiImageActivityIndicator.Init, uses xbx xsi, pOwner:POINTER, hParent:HWND, pDefStruc:PDEF_MIAI
+Method MovingThrobber.Init, uses xbx xsi, pOwner:POINTER, hParent:HWND, pDefStruc:PDEF_MTHROBBER
   SetObject xsi
   mov xbx, pDefStruc
-  assume xbx:PDEF_MIAI
+  assume xbx:PDEF_MTHROBBER
   mov ecx, [xbx].dExStyle
   or ecx, WS_EX_LAYERED
-  invoke CreateWindowEx, ecx, offset(szMultiImageActivityIndicatorClass), [xbx].pTitle, \
+  invoke CreateWindowEx, ecx, offset(szMovingThrobberClass), [xbx].pTitle, \
                          [xbx].dStyle, [xbx].sdPosX, [xbx].sdPosY, 1, 1, \
                          hParent, [xbx].xCtlID, hInstance, xsi
   ACall xsi.Init, pOwner, xax
-  .if [xbx].dImageType == AI_IMAGE_BMP
+  .if [xbx].dImageType == TBR_IMAGE_BMP
     OCall xsi.AddBmpFromResList, [xbx].pResList, [xbx].dResListCount
-  .elseif [xbx].dImageType == AI_IMAGE_PNG
+  .elseif [xbx].dImageType == TBR_IMAGE_PNG
     OCall xsi.AddPngFromResList, [xbx].pResList, [xbx].dResListCount
   .endif
   m2m [xsi].dInterval, [xbx].dInterval, xax
 
-  BitClr [xsi].dFlags, AI_FLAG_ANIMATION_THREAD_STOP
-  invoke CreateThread, 0, 0, $MethodAddr(MultiImageActivityIndicator.Animate), \
+  BitClr [xsi].dFlags, TBR_FLAG_ANIMATION_THREAD_STOP
+  invoke CreateThread, 0, 0, $MethodAddr(MovingThrobber.Animate), \
                        xsi, CREATE_SUSPENDED, NULL
   mov [xsi].hThread, xax
   invoke ResumeThread, xax
@@ -580,43 +581,43 @@ Method MultiImageActivityIndicator.Init, uses xbx xsi, pOwner:POINTER, hParent:H
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     MultiImageActivityIndicator.InitRes
-; Purpose:    Initialize the MultiImageActivityIndicator object.
+; Method:     MovingThrobber.InitRes
+; Purpose:    Initialize the MovingThrobber object.
 ; Arguments:  Arg1: -> Owner object.
 ;             Arg2: Window HANDLE.
 ; Return:     Nothing.
 
-Method MultiImageActivityIndicator.InitRes, uses xsi, pOwner:POINTER, hWnd:HWND
+Method MovingThrobber.InitRes, uses xsi, pOwner:POINTER, hWnd:HWND
   SetObject xsi
   ACall xsi.Init, pOwner, hWnd
   mov eax, [xsi].dFlags
-  BitSet eax, AI_FLAG_SELF_INST
-  BitClr eax, AI_FLAG_ANIMATION_THREAD_STOP
+  BitSet eax, TBR_FLAG_SELF_INST
+  BitClr eax, TBR_FLAG_ANIMATION_THREAD_STOP
   mov [xsi].dFlags, eax
-  invoke CreateThread, 0, 0, $MethodAddr(MultiImageActivityIndicator.Animate), \
+  invoke CreateThread, 0, 0, $MethodAddr(MovingThrobber.Animate), \
                        xsi, CREATE_SUSPENDED, NULL
   mov [xsi].hThread, xax
   invoke ResumeThread, xax
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     MultiImageActivityIndicator.Startup
+; Method:     MovingThrobber.Startup
 ; Purpose:    Register the object with the OS.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method MultiImageActivityIndicator.Startup
+Method MovingThrobber.Startup
   local WC:WNDCLASSEX
 
   mov WC.cbSize, sizeof WNDCLASSEX
   m2z WC.style
-  m2m WC.lpfnWndProc, $MethodAddr(MultiImageActivityIndicator.WndProc), xdx
+  m2m WC.lpfnWndProc, $MethodAddr(MovingThrobber.WndProc), xdx
   m2z WC.cbClsExtra
   m2z WC.cbWndExtra
   m2m WC.hInstance, hInstance, xdx
   m2z WC.hbrBackground
   m2z WC.lpszMenuName
-  c2m WC.lpszClassName, offset szMultiImageActivityIndicatorClass, xdx
+  c2m WC.lpszClassName, offset szMovingThrobberClass, xdx
   m2z WC.hIcon
   m2z WC.hCursor
   m2z WC.hIconSm
@@ -625,42 +626,42 @@ Method MultiImageActivityIndicator.Startup
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     MultiImageActivityIndicator.WindowProc
+; Method:     MovingThrobber.WindowProc
 ; Purpose:    Dispatching of window messages.
 ; Arguments:  Arg1: Message identifier.
 ;             Arg2: First message parameter.
 ;             Arg3: Second message parameter.
 ; Return:     eax = This value is the result of the message processing and depends on the msg ID.
-;             MultiImageActivityIndicator HANDLE is passed in pSelf (hidden parameter).
+;             MovingThrobber HANDLE is passed in pSelf (hidden parameter).
 
-Method MultiImageActivityIndicator.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-;  DbgMessage uMsg,, "MultiImageActivityIndicator.WndProc"
+Method MovingThrobber.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
+;  DbgMessage uMsg,, "MovingThrobber.WndProc"
   .if uMsg == WM_NCCREATE
     mov xax, lParam
     .if [xax].CREATESTRUCT.lpCreateParams == NULL
       ;If lpCreateParams is 0, then it is a resource call => Create new object instance
-      mov xsi, $New(MultiImageActivityIndicator)
+      mov xsi, $New(MovingThrobber)
       invoke GetParent, pSelf
       .if xax != 0
         invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0 ;Get instance POINTER to parent object
       .endif
-      OCall xsi::MultiImageActivityIndicator.InitRes, xax, pSelf
+      OCall xsi::MovingThrobber.InitRes, xax, pSelf
     .else
       ;Code call
       mov xsi, [xax].CREATESTRUCT.lpCreateParams
-      m2m [xsi].$Obj(MultiImageActivityIndicator).hWnd, pSelf, xax
+      m2m [xsi].$Obj(MovingThrobber).hWnd, pSelf, xax
     .endif
     invoke SetWindowLongPtr, pSelf, GWLP_USERDATA, xsi  ;Store the instance POINTER
-    OCall xsi::MultiImageActivityIndicator.Dispatch, pSelf, uMsg, wParam, lParam
+    OCall xsi::MovingThrobber.Dispatch, pSelf, uMsg, wParam, lParam
   .else
     invoke GetWindowLongPtr, pSelf, GWLP_USERDATA       ;if GWLP_USERDATA wasn't set,
     .if xax == NULL                                     ;GetWindowLongPtr returns NULL
       invoke DefWindowProc, pSelf, uMsg, wParam, lParam
     .else
       mov xsi, xax
-      OCall xsi::MultiImageActivityIndicator.Dispatch, pSelf, uMsg, wParam, lParam
+      OCall xsi::MovingThrobber.Dispatch, pSelf, uMsg, wParam, lParam
       .if uMsg == WM_NCDESTROY
-        .ifBitSet [xsi].$Obj(MultiImageActivityIndicator).dFlags, AI_FLAG_SELF_INST
+        .ifBitSet [xsi].$Obj(MovingThrobber).dFlags, TBR_FLAG_SELF_INST
           Destroy xsi
         .endif
       .endif

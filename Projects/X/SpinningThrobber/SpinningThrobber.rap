@@ -1,7 +1,7 @@
 [Project]
 Assembler=masm
 Type=Win32 App
-Description=ObjAsm SimpleCircularActivityIndicator
+Description=ObjAsm Spinning Throbber
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
@@ -9,17 +9,17 @@ Ver.rc=1
 Debug=0
 
 [Files]
-1=SimpleCircularActivityIndicator.asm
-2=SimpleCircularActivityIndicator_Main.inc
-3=SimpleCircularActivityIndicator_Globals.inc
-4=SimpleCircularActivityIndicator.rc
+1=SpinningThrobber.asm
+2=SpinningThrobber_Main.inc
+3=SpinningThrobber_Globals.inc
+4=SpinningThrobber.rc
 5=..\..\..\Code\Macros\Debug.inc
 6=..\..\..\Code\Macros\Objects.inc
 7=..\..\..\Code\Objects\WinPrimer.inc
 8=..\..\..\Code\Macros\Model.inc
 9=..\..\..\Code\Macros\System.inc
 10=..\..\..\Code\Objects\ObjErrs.inc
-11=SimpleCircularActivityIndicator_Shared.inc
+11=SpinningThrobber_Shared.inc
 12=..\..\..\Code\Objects\WinApp.inc
 13=..\..\..\Code\Objects\Stream.inc
 14=..\..\..\Code\Objects\SdiApp.inc
@@ -36,33 +36,33 @@ Debug=0
 25=..\..\..\Code\Objects\DlgApp.inc
 26=..\..\..\Code\Macros\Memory.inc
 27=..\..\..\Code\Objects\ChartWnd.inc
-28=..\..\..\Code\Objects\SimpleCircularActivityIndicator.inc
+28=..\..\..\Code\Objects\SpinningThrobber.inc
 29=..\..\..\Code\Objects\Image.inc
 30=..\..\..\Code\ObjMem\64\DrawTransparentBitmap.asm
-31=..\..\..\Code\Objects\MultiImageActivityIndicator.inc
-32=..\..\..\Code\Objects\ActivityIndicator.inc
+31=..\..\..\Code\Objects\MovingThrobber.inc
+32=..\..\..\Code\Objects\Throbber.inc
 33=..\..\..\Code\Macros\fMath.inc
 
 
 [MakeFiles]
-0=SimpleCircularActivityIndicator.rap
-1=SimpleCircularActivityIndicator.rc
-2=SimpleCircularActivityIndicator.asm
-3=SimpleCircularActivityIndicator.obj
-4=SimpleCircularActivityIndicator.res
-5=SimpleCircularActivityIndicator.exe
-6=SimpleCircularActivityIndicator.def
-7=SimpleCircularActivityIndicator.dll
-8=SimpleCircularActivityIndicator.txt
-9=SimpleCircularActivityIndicator.lib
-10=SimpleCircularActivityIndicator.mak
-11=SimpleCircularActivityIndicator.hla
-12=SimpleCircularActivityIndicator.com
-13=SimpleCircularActivityIndicator.ocx
-14=SimpleCircularActivityIndicator.idl
-15=SimpleCircularActivityIndicator.tlb
-16=SimpleCircularActivityIndicator.sys
-17=SimpleCircularActivityIndicator.rco
+0=SpinningThrobber.rap
+1=SpinningThrobber.rc
+2=SpinningThrobber.asm
+3=SpinningThrobber.obj
+4=SpinningThrobber.res
+5=SpinningThrobber.exe
+6=SpinningThrobber.def
+7=SpinningThrobber.dll
+8=SpinningThrobber.txt
+9=SpinningThrobber.lib
+10=SpinningThrobber.mak
+11=SpinningThrobber.hla
+12=SpinningThrobber.com
+13=SpinningThrobber.ocx
+14=SpinningThrobber.idl
+15=SpinningThrobber.tlb
+16=SpinningThrobber.sys
+17=SpinningThrobber.rco
 
 [MakeDef]
 Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
@@ -135,7 +135,7 @@ OriginalFilename=
 LegalTrademarks=
 LegalCopyright=
 InternalName=
-FileDescription=ObjAsm SimpleCircularActivityIndicator
+FileDescription=ObjAsm Spinning Throbber
 CompanyName=
 
 [VersionControl]
@@ -148,7 +148,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=15
+MilestoneOnDateDate=17
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -183,23 +183,23 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,1449,575,3628
-1=0,0,0,0,559
+2=0,0,1449,575,1386
+1=0,0,0,0,1106
 6=0,0,1456,414,295
-4=0,0,1449,575,746
-31=0,0,0,0,125
+4=0,0,1449,575,472
+31=0,0,0,0,2098
 8=0,0,777,591,241
 7=0,0,0,0,256
 9=0,0,0,0,252
 10=0,0,0,0,1137
 5=0,0,0,0,236
-3=0,0,0,0,490
-11=0,0,1783,588,1621
+3=0,0,0,0,610
+11=0,0,1783,588,220
 15=0,0,0,0,250
 14=0,0,0,0,363
 13=0,0,0,0,253
 12=0,0,0,0,414
-16=0,0,0,0,7236
+16=0,0,0,0,6688
 17=0,0,0,0,267
 20=0,0,0,0,924
 18=0,0,0,0,250
@@ -211,10 +211,10 @@ ProductVer4Range=0
 22=0,0,0,0,14104
 26=0,0,0,0,6064
 27=0,0,0,0,51736
-28=0,0,1449,575,2518
+28=0,0,1449,575,1599
 29=0,0,0,0,8977
 30=0,0,0,0,1048
-32=0,0,0,0,2500
+32=0,0,0,0,3456
 33=0,0,0,0,39836
 
 [BookMark]
@@ -234,16 +234,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="dCurrStep"
-2="WRect"
-3="Multi"
-4="AddPngFromRes"
-5="AddBmpFromRes"
-6="ImageSize"
-7="dImages"
-8="szCircularActivityIndicatorClass"
-9="OA_CircularActivityIndicatorClass"
-10="CircularActivityIndicator"
+1="szApplication"
+2="DEF_MTBR"
+3="DEF_STBR"
+4="PDEF_STHROBBER"
+5="PDEF_STBR"
+6="Simple Circular Activity Indicator"
+7="CircularThrobber"
+8="pSCAI2"
+9="pSCAI1"
+10="AI_"
 [Collapse]
 1=
 2=
@@ -357,9 +357,9 @@ ProductVer4Range=0
 27=,,,,,,,
 32=
 [AutoLoad]
-AutoLoad=1,28,31,32
+AutoLoad=1
 [PTimer]
-PTimer=1368073104
+PTimer=1378298463
 [GroupExpand]
 GroupExpand=1,1,1,0,0,1,1,0
 [RADebugBP]
@@ -391,3 +391,4 @@ GroupExpand=1,1,1,0,0,1,1,0
 30=
 31=
 33=
+32=

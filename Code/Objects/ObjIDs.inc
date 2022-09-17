@@ -162,11 +162,10 @@ HyperlinkID                       equ     0000000364
 SkinID                            equ     0000000367
 ElasticSkinID                     equ     0000000368
 
-;ActivityIndicators
-ActivityIndicatorID               equ     0000000370
-SimpleCircularActivityIndicatorID equ     0000000371
-MultiImageActivityIndicatorID     equ     0000000372
-LinearActivityIndicatorID         equ     0000000373
+;Throbbers
+ThrobberID                        equ     0000000370
+SpinningThrobberID                equ     0000000371
+MovingThrobberID                  equ     0000000372
 
 ;3D Engine
 D3VectronCollectionID             equ     0000000400

@@ -1,8 +1,8 @@
 ; ==================================================================================================
-; Title:      ActivityIndicator.inc
+; Title:      Throbber.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.0
-; Purpose:    ObjAsm implementation of ActivityIndicator base class.
+; Purpose:    ObjAsm implementation of Throbber base class.
 ; Notes:      Version C.1.0, August 2022
 ;               - First release.
 ;             Require an addition to the manifest to enable WS_EX_LAYERED style on child windows
@@ -17,15 +17,15 @@
 ; ==================================================================================================
 
 
-AI_STATUS_STOPPED   equ 0
-AI_STATUS_STARTING  equ 1
-AI_STATUS_RUNNING   equ 2
-AI_STATUS_STOPPING  equ 3
+TBR_STATUS_STOPPED    equ 0
+TBR_STATUS_STARTING   equ 1
+TBR_STATUS_RUNNING    equ 2
+TBR_STATUS_STOPPING   equ 3
 
-AI_IMAGE_BMP        equ 0
-AI_IMAGE_PNG        equ 1
+TBR_IMAGE_BMP         equ 0
+TBR_IMAGE_PNG         equ 1
 
-DEF_AI struc
+DEF_THROBBER struc
   xCtlID        XWORD     ?         ;Contol ID
   dStyle        DWORD     ?         ;Style
   dExStyle      DWORD     ?         ;Extended style
@@ -34,15 +34,15 @@ DEF_AI struc
   sdPosY        SDWORD    ?         ;Y position
   dInterval     DWORD     ?         ;Animation frame presentation interval
   dImageType    DWORD     ?         ;0: BMP, 1: PNG
-DEF_AI ends
-PDEF_AI typedef ptr DEF_AI
+DEF_THROBBER ends
+PDEF_THROBBER typedef ptr DEF_THROBBER
 
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Object:  ActivityIndicator
-; Purpose: Animated control that shows the loaded images in sequence, like GIF but mit transparency.
+; Object:  Throbber
+; Purpose: Control that shows an animation, like GIF but mit transparency.
 
-Object ActivityIndicator, ActivityIndicatorID, WinPrimer
+Object Throbber, ThrobberID, WinPrimer
   VirtualAbstract   Animate  
   VirtualMethod     Dispatch,           HWND, DWORD, WPARAM, LPARAM
   VirtualAbstract   Dispose  
@@ -53,7 +53,7 @@ Object ActivityIndicator, ActivityIndicatorID, WinPrimer
   VirtualMethod     Stop
 
   DefineVariable    dFlags,             DWORD,    0
-  DefineVariable    dStatus,            DWORD,    AI_STATUS_STOPPED
+  DefineVariable    dStatus,            DWORD,    TBR_STATUS_STOPPED
   DefineVariable    hThread,            HANDLE,   0
   DefineVariable    BmpSize,            POINT,    {}
   DefineVariable    dInterval,          DWORD,    50          ;Frame presentation interval
@@ -69,21 +69,21 @@ ObjectEnd
 
 if IMPLEMENT
 
-AI_FLAG_SELF_INST                 equ BIT00     ;Creation info
-AI_FLAG_ANIMATION_THREAD_STOP     equ BIT01     ;Command
-AI_FLAG_ANIMATION_THREAD_FREEZE   equ BIT02     ;Command
-AI_FLAG_ANIMATION_THREAD_FROZEN   equ BIT03     ;Feedback to MIAI_FLAG_ANIMATION_THREAD_FREEZE
+TBR_FLAG_SELF_INST                equ BIT00     ;Creation info
+TBR_FLAG_ANIMATION_THREAD_STOP    equ BIT01     ;Command
+TBR_FLAG_ANIMATION_THREAD_FREEZE  equ BIT02     ;Command
+TBR_FLAG_ANIMATION_THREAD_FROZEN  equ BIT03     ;Feedback to MITBR_FLAG_ANIMATION_THREAD_FREEZE
 
-AI_STATUS_STOPPED     equ 0
-AI_STATUS_STARTING    equ 1
-AI_STATUS_RUNNING     equ 2
-AI_STATUS_STOPPING    equ 3
+TBR_STATUS_STOPPED    equ 0
+TBR_STATUS_STARTING   equ 1
+TBR_STATUS_RUNNING    equ 2
+TBR_STATUS_STOPPING   equ 3
 
-AI_SCALE_START_END    equ 1.0
-AI_SCALE_STOP_END     equ 0.0
+TBR_SCALE_START_END   equ 1.0
+TBR_SCALE_STOP_END    equ 0.0
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ActivityIndicator.Dispatch
+; Method:     Throbber.Dispatch
 ; Purpose:    Dispatching of window messages.
 ; Arguments:  Arg1: Window handle.
 ;             Arg2: Message identifier.
@@ -91,40 +91,38 @@ AI_SCALE_STOP_END     equ 0.0
 ;             Arg4: Second message parameter.
 ; Return:     eax = This value is the result of the message processing and depends on the message.
 
-Method ActivityIndicator.Dispatch, uses xsi, hWnd:HWND, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-;  DbgMessage uMsg
+Method Throbber.Dispatch, uses xsi, hWnd:HWND, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
   SetObject xsi
   DispatchEvent <DefWindowProc, hWnd>                   ;xsi -> Object instance
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ActivityIndicator.Done
+; Method:     Throbber.Done
 ; Purpose:    None.
 ; Return:     Nothing.
 
-Method ActivityIndicator.Done, uses xsi
-;  DbgText "ActivityIndicator.Done"
+Method Throbber.Done, uses xsi
   SetObject xsi
 
-  BitSet [xsi].dFlags, AI_FLAG_ANIMATION_THREAD_STOP
+  BitSet [xsi].dFlags, TBR_FLAG_ANIMATION_THREAD_STOP
   invoke WaitForSingleObject, [xsi].hThread, INFINITE
   OCall xsi.Dispose
   ACall xsi.Done
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ActivityIndicator.Freeze
+; Method:     Throbber.Freeze
 ; Purpose:    Halt the animation, e.g. to make changes on the images (delete, add, etc.)
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ActivityIndicator.Freeze, uses xbx xsi
+Method Throbber.Freeze, uses xbx xsi
   SetObject xsi
   mov ebx, [xsi].dInterval                              ;Save current value
   mov [xsi].dInterval, 0                                ;Skip waiting in the thread loop
-  BitSet [xsi].dFlags, AI_FLAG_ANIMATION_THREAD_FREEZE
+  BitSet [xsi].dFlags, TBR_FLAG_ANIMATION_THREAD_FREEZE
   @@:
-  .ifBitClr [xsi].dFlags, AI_FLAG_ANIMATION_THREAD_FROZEN ;Check if the state was reached
+  .ifBitClr [xsi].dFlags, TBR_FLAG_ANIMATION_THREAD_FROZEN ;Check if the state was reached
     invoke Sleep, ebx                                   ;Wait
     jmp @B
   .endif
@@ -132,36 +130,36 @@ Method ActivityIndicator.Freeze, uses xbx xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ActivityIndicator.Resume
+; Method:     Throbber.Resume
 ; Purpose:    Resume animation after a freeze state.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ActivityIndicator.Resume
+Method Throbber.Resume
   SetObject xcx
-  BitClr [xcx].dFlags, AI_FLAG_ANIMATION_THREAD_FREEZE
+  BitClr [xcx].dFlags, TBR_FLAG_ANIMATION_THREAD_FREEZE
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ActivityIndicator.Start
+; Method:     Throbber.Start
 ; Purpose:    Start spinning.
 ; Arguments:  Arg1: Interval between steps.
 ; Return:     Nothing.
 
-Method ActivityIndicator.Start
+Method Throbber.Start
   SetObject xcx
-  mov [xcx].dStatus, AI_STATUS_STARTING
+  mov [xcx].dStatus, TBR_STATUS_STARTING
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     ActivityIndicator.Stop
+; Method:     Throbber.Stop
 ; Purpose:    Stop spinning.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method ActivityIndicator.Stop
+Method Throbber.Stop
   SetObject xcx
-  mov [xcx].dStatus, AI_STATUS_STOPPING
+  mov [xcx].dStatus, TBR_STATUS_STOPPING
 MethodEnd
 
 endif

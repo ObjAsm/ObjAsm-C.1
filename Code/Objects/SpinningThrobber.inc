@@ -1,8 +1,8 @@
 ; ==================================================================================================
-; Title:      SimpleCircularActivityIndicator.inc
+; Title:      SpinningThrobber.inc
 ; Author:     G. Friedrich
 ; Version:    C.1.1
-; Purpose:    ObjAsm implementation of SimpleCircularActivityIndicator objects.
+; Purpose:    ObjAsm implementation of SpinningThrobber objects.
 ; Notes:      Version C.1.0, August 2022
 ;               - First release.
 ;             Require an addition to the manifest to enable WS_EX_LAYERED style on child windows
@@ -17,26 +17,26 @@
 ; ==================================================================================================
 
 
-DEF_SCAI struc
-                DEF_AI    {}
-  pResName      POINTER   ?         ;-> Resource name
-DEF_SCAI ends
-PDEF_SCAI typedef ptr DEF_SCAI
+DEF_STHROBBER struc
+            DEF_THROBBER  {}
+  pResName  POINTER       ?             ;-> Resource name
+DEF_STHROBBER ends
+PDEF_STHROBBER typedef ptr DEF_STHROBBER
 
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Object:  SimpleCircularActivityIndicator
-; Purpose: Implement an animated control that rotates a loaded image to show activity.
+; Object:  SpinningThrobber
+; Purpose: Animated control that displays a rotating image to show a background activity.
 ; Notes:   Require an addition to the manifest to enable WS_EX_LAYERED style on child windows
 ;          <application>
 ;            <!--The ID below indicates app support for Windows 8 -->
 ;            <supportedOS Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"/>
 ;          </application>
 
-Object SimpleCircularActivityIndicator, SimpleCircularActivityIndicatorID, ActivityIndicator
+Object SpinningThrobber, SpinningThrobberID, Throbber
   RedefineMethod    Animate
   RedefineMethod    Dispose
-  RedefineMethod    Init,               POINTER, HWND, PDEF_SCAI
+  RedefineMethod    Init,               POINTER, HWND, PDEF_STHROBBER
   VirtualMethod     InitRes,            POINTER, HWND
   VirtualMethod     LoadBmpFromRes,     PSTRING
   VirtualMethod     LoadPngFromRes,     PSTRING
@@ -49,24 +49,24 @@ Object SimpleCircularActivityIndicator, SimpleCircularActivityIndicatorID, Activ
 ObjectEnd
 
 
-CStr szSimpleCircularActivityIndicatorClass, "OAC_SimpleCircularActivityIndicator"
+CStr szSpinningThrobberClass, "OAC_SpinningThrobber"
 
 ; ==================================================================================================
 
 if IMPLEMENT
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     SimpleCircularActivityIndicator.Animate
+; Method:     SpinningThrobber.Animate
 ; Purpose:    Show the animation.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method SimpleCircularActivityIndicator.Animate
+Method SpinningThrobber.Animate
   local hSrcDC:HDC, hPrvSrcBmp:HBITMAP, hModDC:HDC, hPrvModBmp:HBITMAP, hDstDC:HDC
   local xform:XFORM, bfn:BLENDFUNCTION
   local PtSize:POINT, PtZero:POINT
 
-;  DbgText "SimpleCircularActivityIndicator.OnTimer"
+;  DbgText "SpinningThrobber.OnTimer"
   SetObject xsi
   mov PtZero.x, 0
   mov PtZero.y, 0
@@ -76,12 +76,12 @@ Method SimpleCircularActivityIndicator.Animate
 
   .repeat
     mov eax, [xsi].dFlags
-    .ifBitSet eax, AI_FLAG_ANIMATION_THREAD_STOP
+    .ifBitSet eax, TBR_FLAG_ANIMATION_THREAD_STOP
       .break
-    .elseIfBitSet eax, AI_FLAG_ANIMATION_THREAD_FREEZE
-      BitSet [xsi].dFlags, AI_FLAG_ANIMATION_THREAD_FROZEN
+    .elseIfBitSet eax, TBR_FLAG_ANIMATION_THREAD_FREEZE
+      BitSet [xsi].dFlags, TBR_FLAG_ANIMATION_THREAD_FROZEN
     .else
-      BitClr [xsi].dFlags, AI_FLAG_ANIMATION_THREAD_FROZEN
+      BitClr [xsi].dFlags, TBR_FLAG_ANIMATION_THREAD_FROZEN
       mov hDstDC, $invoke(GetDC, [xsi].hWnd)
       mov hSrcDC, $invoke(CreateCompatibleDC, hDstDC)
       mov hModDC, $invoke(CreateCompatibleDC, hDstDC)
@@ -90,14 +90,14 @@ Method SimpleCircularActivityIndicator.Animate
       invoke CreateCompatibleBitmap, hDstDC, [xsi].BmpSize.x, [xsi].BmpSize.y
       mov hPrvModBmp, $invoke(SelectObject, hModDC, xax)
 
-      .if [xsi].dStatus != AI_STATUS_STOPPED
+      .if [xsi].dStatus != TBR_STATUS_STOPPED
         fld [xsi].r4Rotation
         fadd [xsi].r4RotationChange
         fst [xsi].r4Rotation
         fSinCos                                         ;  sin   ;  cos
 
         mov eax, [xsi].dAlpha
-        .if [xsi].dStatus == AI_STATUS_STARTING
+        .if [xsi].dStatus == TBR_STATUS_STARTING
           add eax, [xsi].dAlphaChange
           .if eax > 255
             mov eax, 255                                ;Saturate
@@ -111,7 +111,7 @@ Method SimpleCircularActivityIndicator.Animate
           fcom
           fGetFlags
           .if CARRY?
-            mov [xsi].dStatus, AI_STATUS_RUNNING
+            mov [xsi].dStatus, TBR_STATUS_RUNNING
             fstp [xsi].r4Scaling                        ;1.0
             fUnload
           .else
@@ -121,7 +121,7 @@ Method SimpleCircularActivityIndicator.Animate
             fstp [xsi].r4Scaling
           .endif
 
-        .elseif [xsi].dStatus == AI_STATUS_STOPPING
+        .elseif [xsi].dStatus == TBR_STATUS_STOPPING
           sub eax, [xsi].dAlphaChange
           .if SDWORD ptr eax < 0
             xor eax, eax
@@ -135,7 +135,7 @@ Method SimpleCircularActivityIndicator.Animate
           fcom
           fGetFlags
           .if !CARRY?
-            mov [xsi].dStatus, AI_STATUS_STOPPED
+            mov [xsi].dStatus, TBR_STATUS_STOPPED
             fstp [xsi].r4Scaling
             fUnload 3
             jmp @F
@@ -193,12 +193,12 @@ Method SimpleCircularActivityIndicator.Animate
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     SimpleCircularActivityIndicator.Dispose
+; Method:     SpinningThrobber.Dispose
 ; Purpose:    Free the allocated Bitmap.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method SimpleCircularActivityIndicator.Dispose, uses xbx xsi
+Method SpinningThrobber.Dispose, uses xbx xsi
   SetObject xsi
   .if [xsi].hBitmap != 0
     invoke DeleteObject, [xsi].hBitmap
@@ -207,32 +207,32 @@ Method SimpleCircularActivityIndicator.Dispose, uses xbx xsi
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     SimpleCircularActivityIndicator.Init
-; Purpose:    Initialize the SimpleCircularActivityIndicator object.
+; Method:     SpinningThrobber.Init
+; Purpose:    Initialize the SpinningThrobber object.
 ; Arguments:  Arg1: -> Owner object.
 ;             Arg2: Parent Window HANDLE.
 ;             Arg3: -> Definition structure.
 ; Return:     Nothing.
 
-Method SimpleCircularActivityIndicator.Init, uses xbx xsi, pOwner:POINTER, hParent:HWND, pDefStruc:PDEF_SCAI
+Method SpinningThrobber.Init, uses xbx xsi, pOwner:POINTER, hParent:HWND, pDefStruc:PDEF_STHROBBER
   SetObject xsi
   mov xbx, pDefStruc
-  assume xbx:PDEF_SCAI
+  assume xbx:PDEF_STHROBBER
   mov ecx, [xbx].dExStyle
   or ecx, WS_EX_LAYERED
-  invoke CreateWindowEx, ecx, offset(szSimpleCircularActivityIndicatorClass), [xbx].pTitle, \
+  invoke CreateWindowEx, ecx, offset(szSpinningThrobberClass), [xbx].pTitle, \
                          [xbx].dStyle, [xbx].sdPosX, [xbx].sdPosY, 1, 1, \
                          hParent, [xbx].xCtlID, hInstance, pSelf
   ACall xsi.Init, pOwner, xax
-  .if [xbx].dImageType == AI_IMAGE_BMP
+  .if [xbx].dImageType == TBR_IMAGE_BMP
     OCall xsi.LoadBmpFromResList, [xbx].pResName
-  .elseif [xbx].dImageType == AI_IMAGE_PNG
+  .elseif [xbx].dImageType == TBR_IMAGE_PNG
     OCall xsi.LoadPngFromResList, [xbx].pResName
   .endif
   m2m [xsi].dInterval, [xbx].dInterval, xax
 
-  BitClr [xsi].dFlags, AI_FLAG_ANIMATION_THREAD_STOP
-  invoke CreateThread, 0, 0, $MethodAddr(SimpleCircularActivityIndicator.Animate), \
+  BitClr [xsi].dFlags, TBR_FLAG_ANIMATION_THREAD_STOP
+  invoke CreateThread, 0, 0, $MethodAddr(SpinningThrobber.Animate), \
                        xsi, CREATE_SUSPENDED, NULL
   mov [xsi].hThread, xax
   invoke ResumeThread, xax
@@ -240,33 +240,33 @@ Method SimpleCircularActivityIndicator.Init, uses xbx xsi, pOwner:POINTER, hPare
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     SimpleCircularActivityIndicator.InitRes
-; Purpose:    Initialize the SimpleCircularActivityIndicator object.
+; Method:     SpinningThrobber.InitRes
+; Purpose:    Initialize the SpinningThrobber object.
 ; Arguments:  Arg1: -> Owner object.
 ;             Arg2: Window HANDLE.
 ;             Arg3: Frame presentation interval.
 ; Return:     Nothing.
 
-Method SimpleCircularActivityIndicator.InitRes, uses xsi, pOwner:POINTER, hWnd:HWND
+Method SpinningThrobber.InitRes, uses xsi, pOwner:POINTER, hWnd:HWND
   SetObject xsi
   ACall xsi.Init, pOwner, hWnd
   mov eax, [xsi].dFlags
-  BitSet eax, AI_FLAG_SELF_INST
-  BitClr eax, AI_FLAG_ANIMATION_THREAD_STOP
+  BitSet eax, TBR_FLAG_SELF_INST
+  BitClr eax, TBR_FLAG_ANIMATION_THREAD_STOP
   mov [xsi].dFlags, eax
-  invoke CreateThread, 0, 0, $MethodAddr(SimpleCircularActivityIndicator.Animate), \
+  invoke CreateThread, 0, 0, $MethodAddr(SpinningThrobber.Animate), \
                        xsi, CREATE_SUSPENDED, NULL
   mov [xsi].hThread, xax
   invoke ResumeThread, xax
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     SimpleCircularActivityIndicator.LoadBmpFromRes
+; Method:     SpinningThrobber.LoadBmpFromRes
 ; Purpose:    Load a bitmap from the resource section and add it to the spinner resources.
 ; Arguments   Arg1: -> Bitmap resource name.
 ; Return:     Nothing.
 
-Method SimpleCircularActivityIndicator.LoadBmpFromRes, uses xsi, pBmpName:PSTRING
+Method SpinningThrobber.LoadBmpFromRes, uses xsi, pBmpName:PSTRING
   local BMP:BITMAP
 
   SetObject xsi
@@ -278,12 +278,12 @@ Method SimpleCircularActivityIndicator.LoadBmpFromRes, uses xsi, pBmpName:PSTRIN
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     SimpleCircularActivityIndicator.LoadPngFromRes
+; Method:     SpinningThrobber.LoadPngFromRes
 ; Purpose:    Load a PNG from the resource section and add it to the spinner resources.
 ; Arguments   Arg1: -> Image resource name. Must be of type IMAGE = 2110.
 ; Return:     Nothing.
 
-Method SimpleCircularActivityIndicator.LoadPngFromRes, uses xsi, pPngName:PSTRING
+Method SpinningThrobber.LoadPngFromRes, uses xsi, pPngName:PSTRING
   local BMP:BITMAP
 
   SetObject xsi
@@ -295,23 +295,23 @@ Method SimpleCircularActivityIndicator.LoadPngFromRes, uses xsi, pPngName:PSTRIN
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     SimpleCircularActivityIndicator.Startup
+; Method:     SpinningThrobber.Startup
 ; Purpose:    Register the object with the OS.
 ; Arguments:  None.
 ; Return:     Nothing.
 
-Method SimpleCircularActivityIndicator.Startup
+Method SpinningThrobber.Startup
   local WC:WNDCLASSEX
 
   mov WC.cbSize, sizeof WNDCLASSEX
   mov WC.style, CS_HREDRAW or CS_VREDRAW
-  m2m WC.lpfnWndProc, $MethodAddr(SimpleCircularActivityIndicator.WndProc), xdx
+  m2m WC.lpfnWndProc, $MethodAddr(SpinningThrobber.WndProc), xdx
   m2z WC.cbClsExtra
   m2z WC.cbWndExtra
   m2m WC.hInstance, hInstance, xdx
   m2z WC.hbrBackground
   m2z WC.lpszMenuName
-  c2m WC.lpszClassName, offset szSimpleCircularActivityIndicatorClass, xdx
+  c2m WC.lpszClassName, offset szSpinningThrobberClass, xdx
   mov WC.hIcon, 0
   mov WC.hCursor, 0
   m2z WC.hIconSm
@@ -320,42 +320,42 @@ Method SimpleCircularActivityIndicator.Startup
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Method:     SimpleCircularActivityIndicator.WindowProc
+; Method:     SpinningThrobber.WindowProc
 ; Purpose:    Dispatching of window messages.
 ; Arguments:  Arg1: Message identifier.
 ;             Arg2: First message parameter.
 ;             Arg3: Second message parameter.
 ; Return:     eax = This value is the result of the message processing and depends on the msg ID.
-;             SimpleCircularActivityIndicator HANDLE is passed in pSelf (hidden parameter).
+;             SpinningThrobber HANDLE is passed in pSelf (hidden parameter).
 
-Method SimpleCircularActivityIndicator.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-;  DbgMessage uMsg,, "SimpleCircularActivityIndicator.WndProc"
+Method SpinningThrobber.WndProc, uses xsi, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
+;  DbgMessage uMsg,, "SpinningThrobber.WndProc"
   .if uMsg == WM_NCCREATE
     mov xax, lParam
     .if [xax].CREATESTRUCT.lpCreateParams == NULL
       ;If lpCreateParams is 0, then it is a resource call => Create new object instance
-      mov xsi, $New(SimpleCircularActivityIndicator)
+      mov xsi, $New(SpinningThrobber)
       invoke GetParent, pSelf
       .if xax != 0
         invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0 ;Get instance POINTER of the parent object
       .endif
-      OCall xsi::SimpleCircularActivityIndicator.InitRes, xax, pSelf
+      OCall xsi::SpinningThrobber.InitRes, xax, pSelf
     .else
       ;Code call
       mov xsi, [xax].CREATESTRUCT.lpCreateParams
-      m2m [xsi].$Obj(SimpleCircularActivityIndicator).hWnd, pSelf, xax
+      m2m [xsi].$Obj(SpinningThrobber).hWnd, pSelf, xax
     .endif
     invoke SetWindowLongPtr, pSelf, GWLP_USERDATA, xsi  ;Store the instance pointer
-    OCall xsi::SimpleCircularActivityIndicator.Dispatch, pSelf, uMsg, wParam, lParam
+    OCall xsi::SpinningThrobber.Dispatch, pSelf, uMsg, wParam, lParam
   .else
     invoke GetWindowLongPtr, pSelf, GWLP_USERDATA       ;if GWLP_USERDATA wasn't set,
     .if xax == NULL                                     ;GetWindowLongPtr returns NULL
       invoke DefWindowProc, pSelf, uMsg, wParam, lParam
     .else
       mov xsi, xax
-      OCall xsi::SimpleCircularActivityIndicator.Dispatch, pSelf, uMsg, wParam, lParam
+      OCall xsi::SpinningThrobber.Dispatch, pSelf, uMsg, wParam, lParam
       .if uMsg == WM_NCDESTROY
-        .ifBitSet [xsi].$Obj(SimpleCircularActivityIndicator).dFlags, AI_FLAG_SELF_INST
+        .ifBitSet [xsi].$Obj(SpinningThrobber).dFlags, TBR_FLAG_SELF_INST
           Destroy xsi
         .endif
       .endif
