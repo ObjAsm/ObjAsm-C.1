@@ -6,7 +6,7 @@
 ; ==================================================================================================
 
 
-Object DbgMdiChild, DbgMdiChildID, MdiChildWnd                  ;MDI Child descendant.
+Object DbgMdiChild, DBG_MDI_CHILD_ID, MdiChildWnd               ;MDI Child descendant.
   VirtualMethod     ClpBrdClear
   VirtualMethod     ClpBrdCopy
   VirtualMethod     ClpBrdCut

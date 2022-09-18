@@ -63,11 +63,11 @@ ZOOM_STEP               equ     8
 DBG_PINNED              equ     BIT31
 DBG_BMP                 equ     BIT30
 
-DebugCenterID           equ     10000
-DbgMdiClientID          equ     10001
-DbgMdiChildID           equ     10002
-DbgMdiChildBmpID        equ     10003
-DbgMdiChildTxtID        equ     10004
+DEBUG_CENTER_ID         equ     10000
+DBG_MDI_CLIENT_ID       equ     10001
+DBG_MDI_CHILD_ID        equ     10002
+DBG_MDI_CHILD_BMP_ID    equ     10003
+DBG_MDI_CHILD_TXT_ID    equ     10004
 REDT_IPTOR_ID           equ     10005
 
 ;Bitmap IDs

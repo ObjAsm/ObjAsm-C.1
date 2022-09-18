@@ -29,8 +29,7 @@ ProcName proc uses xbx pString:POINTER, dColor:DWORD, dEffects:DWORD, pDest:POIN
 
   mov eax, dDbgDev
   .if eax == DBG_DEV_WIN_LOG
-    invoke DbgLogOpen
-    .if $invoke(DbgLogOpen)
+    .if $invoke(DbgOpenLog)
       invoke StrSize, pString
       sub eax, sizeof(CHR)
       invoke WriteFile, hDbgDev, pString, eax, NULL, NULL
@@ -40,7 +39,7 @@ ProcName proc uses xbx pString:POINTER, dColor:DWORD, dEffects:DWORD, pDest:POIN
     .endif
 
   .elseif eax == DBG_DEV_WIN_CON
-    .if $invoke(DbgConOpen)
+    .if $invoke(DbgOpenCon)
       invoke RGB24To16ColorIndex, dColor
       invoke SetConsoleTextAttribute, hDbgDev, ax
       invoke StrLength, pString
@@ -52,7 +51,7 @@ ProcName proc uses xbx pString:POINTER, dColor:DWORD, dEffects:DWORD, pDest:POIN
     .endif
 
   .elseif eax == DBG_DEV_WIN_DC
-    .if $invoke(DbgWndOpen)
+    .if $invoke(DbgOpenWnd)
       mov CDS.dwData, DGB_MSG_ID                        ;Set DebugCenter identifier
       invoke StrSize, pString                           ;String size
       mov dInfo1, eax

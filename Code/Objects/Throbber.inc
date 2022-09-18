@@ -106,6 +106,7 @@ Method Throbber.Done, uses xsi
 
   BitSet [xsi].dFlags, TBR_FLAG_ANIMATION_THREAD_STOP
   invoke WaitForSingleObject, [xsi].hThread, INFINITE
+  invoke CloseHandle, [xsi].hThread
   OCall xsi.Dispose
   ACall xsi.Done
 MethodEnd

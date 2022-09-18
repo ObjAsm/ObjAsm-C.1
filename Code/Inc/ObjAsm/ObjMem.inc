@@ -875,11 +875,11 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   endif
 
 ; DebugCenter procedures contained in DebugProcs.asm
-  DbgWndOpen proto
-  DbgConOpen proto
-  DbgLogOpen proto
-  DbgClose proto
-  DbgOutCmd proto :BYTE, :DWORD, :POINTER
+  DbgOpenWnd proto
+  DbgOpenCon proto
+  DbgOpenLog proto
+  DbgCloseDevice proto
+  DbgOutCmd proto :BYTE, :DWORD, :DWORD, :POINTER
   DbgOutBitmap proto :HANDLE, :POINTER
   DbgOutApiErr proto :DWORD, :POINTER
   DbgOutComErr proto :DWORD, :POINTER

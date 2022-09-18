@@ -24,7 +24,7 @@ CReal8 r8MyFloat2, 89.2398756225
 .code
 ;Build the following objects
 MakeObjects Primer, Stream
-MakeObjects WinPrimer, Window, Dialog, DialogModal, DialogAbout
+MakeObjects WinPrimer, Window, Button, Hyperlink, Dialog, DialogModal, DialogAbout
 MakeObjects WinApp, SdiApp
 
 .code
@@ -36,13 +36,16 @@ pApp equ offset $ObjTmpl(DC_Test)
 
 start proc
   SysInit
-  DbgClearAll
+  DbgCloseAll
+  DbgFlashWindow FLASHW_CAPTION, 3
+  DbgPinWnd TRUE
   xor eax, eax
   DbgStr xax ;offset szMyStr
   mov xax, offset szMyStr
   DbgStr xax
   DbgStr szMyStr
   
+  DbgBkgndTxt $RGB(128,255,255)
   DbgText "aaa", "bbb"
   DbgComError 08007000Eh, "COM error"
   DbgComError 000000000h, "COM error"
@@ -53,11 +56,13 @@ start proc
   DbgWarning "Here is something wrong"
   DbgWarning
   DbgHex eax, "My text"
+  DbgFrontTxt "bbb"
 
   invoke LoadBitmap, hInstance, $OfsCStr("BMP_TEST1")
   DbgBmp xax, "BMP1"
   invoke LoadBitmap, hInstance, $OfsCStr("BMP_TEST2")
   DbgBmp xax, "BMP2"
+  DbgTileHor
 
 ;  DbgTraceObject $ObjTmpl(DC_Test)
   OCall $ObjTmpl(DC_Test)::DC_Test.Init                         ;Initialize the object data
@@ -111,8 +116,14 @@ start proc
   DbgComError 08000FFFFh
   DbgComError 0
   DbgText "Test ready. Bye..."
+  DbgFrontBmp "BMP1"
+  DbgBkgndBmp $RGB(128,255,255), "BMP1"
+  DbgFlashMenu $RGB(255,0,0), 5
+  DbgZoomIn "BMP2"
+  DbgFrontWnd
 ;  DbgClearTxt "Performance data"
 ;  DbgClearBmp "BMP1"
+  DbgPinWnd FALSE
 
   SysDone
 

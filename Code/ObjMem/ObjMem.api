@@ -511,11 +511,11 @@ _alloca_16
 
 EHandler, pExceptionRecord, pEstablisherFrame, pContextRecord, pDispatcherContext
 
-DbgWndOpen
-DbgConOpen
-DbgLogOpen
-DbgClose
-DbgOutCmd, bCommand, pData
+DbgOpenWnd
+DbgOpenCon
+DbgOpenLog
+DbgCloseDevice
+DbgOutCmd, bCommand, dParam1, dParam2, pDestWndName
 DbgOutText, pString, dColor, dEffects, pDestWndName
 DbgOutTextA, pStringA, dColor, dEffects, pDestWndName
 DbgOutTextW, pStringW, dColor, dEffects, pDestWndName

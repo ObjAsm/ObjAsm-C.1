@@ -33,8 +33,7 @@ DbgOutTextCA proc pStr:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD, pDe
 
   mov eax, dDbgDev
   .if eax == DBG_DEV_WIN_LOG
-    invoke DbgLogOpen
-    .if $invoke(DbgLogOpen)
+    .if $invoke(DbgOpenLog)
       lea ecx, dCharsWritten
       invoke WriteFile, hDbgDev, pStr, dLength, ecx, NULL
     .endif
@@ -43,7 +42,7 @@ DbgOutTextCA proc pStr:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD, pDe
     .endif
 
   .elseif eax == DBG_DEV_WIN_CON
-    .if $invoke(DbgConOpen)
+    .if $invoke(DbgOpenCon)
       m2z wAttrib
       mov eax, dColor
       .ifBitSet al, BIT07 
@@ -79,7 +78,7 @@ DbgOutTextCA proc pStr:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD, pDe
     .endif
 
   .else                                                 ;DBG_DEV_WIN_DC
-    .if $invoke(DbgWndOpen)
+    .if $invoke(DbgOpenWnd)
       mov CDS.dwData, DGB_MSG_ID                        ;Set DebugCenter identifier
       mov eax, dLength                                  ;String size without the ZTC
       push eax

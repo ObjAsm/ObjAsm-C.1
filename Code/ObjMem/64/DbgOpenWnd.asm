@@ -1,5 +1,5 @@
 ; ==================================================================================================
-; Title:      DbgWndOpen.asm
+; Title:      DbgOpenWnd.asm
 ; Author:     G. Friedrich
 ; Version:    C.1.0
 ; Notes:      Version C.1.0, October 2017
@@ -12,13 +12,13 @@
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgWndOpen
+; Procedure:  DbgOpenWnd
 ; Purpose:    Open a "Debug Center" instance.
 ; Arguments:  None.
 ; Return:     eax = TRUE if it was opened, otherwise FALSE.
 
 align ALIGN_CODE
-DbgWndOpen proc uses rbx
+DbgOpenWnd proc uses rbx
   local StartupInfo:STARTUPINFO, ProcessInforamtion:PROCESS_INFORMATION
   local WP:WINDOWPLACEMENT, hKey:HKEY, dValueType:DWORD
   local dBufSize:DWORD, cBuffer[MAX_PATH]:CHRW
@@ -99,6 +99,6 @@ DbgWndOpen proc uses rbx
   .endif
 @@Exit:
   ret
-DbgWndOpen endp
+DbgOpenWnd endp
 
 end

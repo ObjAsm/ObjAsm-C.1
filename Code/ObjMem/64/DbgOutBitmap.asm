@@ -23,7 +23,7 @@ DbgOutBitmap proc uses rbx rdi rsi r12 hBmp:HANDLE, pDest:POINTER
   local CDS:COPYDATASTRUCT, hDC:HDC, BMI:BITMAPINFO, dResult:DWORD
 
   .if dDbgDev == DBG_DEV_WIN_DC
-    .if $invoke(DbgWndOpen)
+    .if $invoke(DbgOpenWnd)
       .if hBmp != 0
         mov CDS.dwData, DGB_MSG_ID                      ;Set DebugCenter identifier
         mov hDC, $invoke(GetDC, 0)

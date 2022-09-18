@@ -12,17 +12,25 @@
 ;               - DbgLoadContext simplified.
 ;               - DbgStr bug corrected.
 ;               - DbgTextF added.
-;               - DbgClosexxx and DbgClearxxx do not open DbgCenter if closed.
+;               - DbgClosexxx and DbgClearxxx do not open DbgCenter if it is closed.
 ;             Version C.1.3, August 2022
 ;               - DbgWrite & DbgWriteF added.
-;               - Color variables are introduced. Setup is done by SysInit.
+;               - DbgBkgnd, DbgBkgndTxt, DbgBkgndBmp
+;               - DbgFlashWnd, DbgFlashMenu, DbgTileHor, DbgTileVer, DbgCascade, DbgArrange
+;               - DbgZoomIn, DbgZoomInTxt, DbgZoomInBmp, DbgZoomOut, DbgZoomOutTxt, DbgZoomOutBmp
+;               - DbgPinWnd, DbgFrontWnd, DbgFront, DbgFrontTxt, DbgFrontBmp added.
+;               - Color variables introduced. Setup is done by SysInit.
 ; ==================================================================================================
 
 ;Supported debugging macros:
 ;———————————————————————————
-;  - DbgCloseAll, DbgCloseTxt, DbgCloseBmp
-;  - DbgClearAll, DbgClearTxt, DbgClearBmp
+;  - DbgClose, DbgCloseAll, DbgCloseTxt, DbgCloseBmp
+;  - DbgClear, DbgClearAll, DbgClearTxt, DbgClearBmp
 ;  - DbgLine, DbgLine2, DbgText, DbgTextF, DbgWarning
+;  - DbgBkgnd, DbgBkgndTxt, DbgBkgndBmp, DbgFrontTxt, DbgFrontBmp, DbgFront
+;  - DbgFlashWnd, DbgFlashMenu, DbgTileHor, DbgTileVer, DbgCascade, DbgArrange
+;  - DbgZoomIn, DbgZoomInTxt, DbgZoomInBmp, DbgZoomOut, DbgZoomOutTxt, DbgZoomOutBmp
+;  - DbgPinWnd, DbgFrontWnd, DbgFront, DbgFrontTxt, DbgFrontBmp
 ;  - DbgWrite, DbgWriteF
 ;  - DbgARGB
 ;  - DbgStr, DbgStrA, DbgStrW, DbgStrCA, DbgStrCW
@@ -119,7 +127,7 @@ DBG_DEV_WIN_CON           equ   02h
 DBG_DEV_WIN_DC            equ   03h       ;DebugCenter Windows application
 DBG_DEV_UEFI_CON          equ   04h
 ;DBG_DEV_UEFI_LOG          equ   05h
-;DBG_DEV_UEFI_DC           equ   06h      ;Remote connection via HTTP, not implemented
+;DBG_DEV_UEFI_HTTP         equ   06h       ;Remote connection via HTTP, not implemented
 
 ;Debug options
 DBG_OPT_NONE              equ   00h
@@ -532,7 +540,7 @@ DbgLine macro Dest
     DbgSaveContext
     DbgSetDestWnd Dest
     ifidn DBG_DEVICE, <WND>
-      invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, DbgColorLine, ??DbgDstWnd
+      invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, DbgColorLine, 0, ??DbgDstWnd
     else
       invoke DbgOutTextA, $OfsCStrA("-------------------------------------------------------"), \
                           DbgColorLine, DBG_EFFECT_NEWLINE, ??DbgDstWnd
@@ -551,7 +559,7 @@ DbgLine2 macro Dest
     DbgSaveContext
     DbgSetDestWnd Dest
     ifidn DBG_DEVICE, <WND>
-      invoke DbgOutCmd, DBG_CMD_DOUBLE_LINE, DbgColorLine, ??DbgDstWnd
+      invoke DbgOutCmd, DBG_CMD_DOUBLE_LINE, DbgColorLine, 0, ??DbgDstWnd
     else
       invoke DbgOutTextA, $OfsCStrA("======================================================="), \
                           DbgColorLine, DBG_EFFECT_NEWLINE, ??DbgDstWnd
@@ -632,6 +640,332 @@ DbgWarning macro DispText, Dest
     endif
     DbgShowSrcInfo ??DbgDstWnd
     DbgLoadContext
+  endif
+endm
+
+; ==================================================================================================
+;   Window Management macros
+; ==================================================================================================
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgBkgndTxt
+; Purpose:    Set the text window background color.
+; Arguments:  Arg1: RGB color.
+;             Arg2: Optional destination Window name.
+
+DbgBkgndTxt macro Color, Dest
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      DbgSetDestWnd Dest
+      invoke DbgOutCmd, DBG_CMD_SET_BKGND_TXT, Color, 0, ??DbgDstWnd
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgBkgndBmp
+; Purpose:    Set the bitmap window background color.
+; Arguments:  Arg1: RGB color.
+;             Arg2: Optional destination Window name.
+
+DbgBkgndBmp macro Color, Dest
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      DbgSetDestWnd Dest
+      invoke DbgOutCmd, DBG_CMD_SET_BKGND_BMP, Color, 0, ??DbgDstWnd
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgBkgnd
+; Purpose:    Set the window background color.
+; Arguments:  Arg1: RGB color.
+;             Arg2: Optional destination Window name.
+
+DbgBkgnd macro Color, Dest
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      DbgSetDestWnd Dest
+      invoke DbgOutCmd, DBG_CMD_SET_BKGND_TXT, Color, 0, ??DbgDstWnd
+      invoke DbgOutCmd, DBG_CMD_SET_BKGND_BMP, Color, 0, ??DbgDstWnd
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgFlashWnd
+; Purpose:    Flash the DebugCenter menu bar.
+; Arguments:  Arg1: Flashing flags, e.g. FLASHW_CAPTION
+;             Arg2: Number of flashes.
+
+DbgFlashWnd macro Flags, Reps
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      invoke DbgOutCmd, DBG_CMD_FLASH_WINDOW, Flags, Reps, NULL
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgFlashMenu
+; Purpose:    Flash the DebugCenter menu bar.
+; Arguments:  Arg1: Menu flash RGB color.
+;             Arg2: Number of flashes.
+
+DbgFlashMenu macro Color, Reps, Dest
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      invoke DbgOutCmd, DBG_CMD_FLASH_MENU, Color, Reps, NULL
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgTileHor
+; Purpose:    Tile the output windows horizontally.
+; Arguments:  None.
+
+DbgTileHor macro
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      invoke DbgOutCmd, DBG_CMD_CHILDREN_TILE_HOR, 0, 0, NULL
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgTileVer
+; Purpose:    Tile the output windows vertically.
+; Arguments:  None.
+
+DbgTileVer macro
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      invoke DbgOutCmd, DBG_CMD_CHILDREN_TILE_VER, 0, 0, NULL
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgCascade
+; Purpose:    Arrange output windows in a cascade.
+; Arguments:  None.
+
+DbgCascade macro
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      invoke DbgOutCmd, DBG_CMD_CHILDREN_CASCADE, 0, 0, NULL
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgArrange
+; Purpose:    Arrange iconized output windows.
+; Arguments:  None.
+
+DbgArrange macro
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      invoke DbgOutCmd, DBG_CMD_ICONS_ARRANGE, 0, 0, NULL
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgZoomInTxt
+; Purpose:    Zoom In a specified text output window.
+; Arguments:  Arg1: Destination Window name.
+
+DbgZoomInTxt macro Dest
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      DbgSetDestWnd Dest
+      invoke DbgOutCmd, DBG_CMD_ZOOM_IN_TXT, 0, 0, ??DbgDstWnd
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgZoomInBmp
+; Purpose:    Zoom In a specified bitmap output window.
+; Arguments:  Arg1: Destination Window name.
+
+DbgZoomInBmp macro Dest
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      DbgSetDestWnd Dest
+      invoke DbgOutCmd, DBG_CMD_ZOOM_IN_BMP, 0, 0, ??DbgDstWnd
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgZoomIn
+; Purpose:    Zoom In specified output windows.
+; Arguments:  Arg1: Destination Window name.
+
+DbgZoomIn macro Dest
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      DbgSetDestWnd Dest
+      invoke DbgOutCmd, DBG_CMD_ZOOM_IN_TXT, 0, 0, ??DbgDstWnd
+      invoke DbgOutCmd, DBG_CMD_ZOOM_IN_BMP, 0, 0, ??DbgDstWnd
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgZoomOutTxt
+; Purpose:    Zoom Out a specified text output window.
+; Arguments:  Arg1: Destination Window name.
+
+DbgZoomOutTxt macro Dest
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      DbgSetDestWnd Dest
+      invoke DbgOutCmd, DBG_CMD_ZOOM_OUT_TXT, 0, 0, ??DbgDstWnd
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgZoomOutBmp
+; Purpose:    Zoom Out a specified bitmap output window.
+; Arguments:  Arg1: Destination Window name.
+
+DbgZoomOutBmp macro Dest
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      DbgSetDestWnd Dest
+      invoke DbgOutCmd, DBG_CMD_ZOOM_OUT_BMP, 0, 0, ??DbgDstWnd
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgZoomOut
+; Purpose:    Zoom Out specified output windows.
+; Arguments:  Arg1: Destination Window name.
+
+DbgZoomOut macro Dest
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      DbgSetDestWnd Dest
+      invoke DbgOutCmd, DBG_CMD_ZOOM_OUT_TXT, 0, 0, ??DbgDstWnd
+      invoke DbgOutCmd, DBG_CMD_ZOOM_OUT_BMP, 0, 0, ??DbgDstWnd
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgFrontTxt
+; Purpose:    Bring a specified text output window to front.
+; Arguments:  Arg1: Destination Window name.
+
+DbgFrontTxt macro Dest
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      DbgSetDestWnd Dest
+      invoke DbgOutCmd, DBG_CMD_FRONT_TXT, 0, 0, ??DbgDstWnd
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgFrontBmp
+; Purpose:    Bring a specified output bitmap window to front.
+; Arguments:  Arg1: Destination Window name.
+
+DbgFrontBmp macro Dest
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      DbgSetDestWnd Dest
+      invoke DbgOutCmd, DBG_CMD_FRONT_BMP, 0, 0, ??DbgDstWnd
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgFront
+; Purpose:    Bring specified output windows to front.
+; Arguments:  Arg1: Destination Window name.
+
+DbgFront macro Dest
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      DbgSetDestWnd Dest
+      invoke DbgOutCmd, DBG_CMD_FRONT_BMP, 0, 0, ??DbgDstWnd
+      invoke DbgOutCmd, DBG_CMD_FRONT_TXT, 0, 0, ??DbgDstWnd
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgPinWnd
+; Purpose:    Set TOPMOST flag.
+; Arguments:  Arg1; TRUE or FALSE.
+
+DbgPinWnd macro Arg:=<TRUE>
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      invoke DbgOutCmd, DBG_CMD_PIN_WND, Arg, 0, NULL
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgFrontWnd
+; Purpose:    Bring specified output windows to front.
+; Arguments:  Arg1: Destination Window name.
+
+DbgFrontWnd macro Dest
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      DbgSetDestWnd Dest
+      invoke DbgOutCmd, DBG_CMD_FRONT_WND, 0, 0, ??DbgDstWnd
+      DbgLoadContext
+    endif
   endif
 endm
 
@@ -1689,7 +2023,26 @@ DbgCloseAll macro
     if TARGET_PLATFORM eq PLATFORM_WINDOWS
       ifidn DBG_DEVICE, <WND>
         DbgSaveContext
-        invoke DbgOutCmd, DBG_CMD_CLOSE_ALL, 0, NULL
+        invoke DbgOutCmd, DBG_CMD_CLOSE_ALL, 0, 0, NULL
+        DbgLoadContext
+      endif
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgClose
+; Purpose:    Close a specific child window of the Debug window.
+; Arguments:  Arg1: Target Debug Window name.
+
+DbgClose macro Dest
+  if DEBUGGING
+    if TARGET_PLATFORM eq PLATFORM_WINDOWS
+      ifidn DBG_DEVICE, <WND>
+        DbgSaveContext
+        DbgSetDestWnd Dest
+        invoke DbgOutCmd, DBG_CMD_CLOSE_TXT, 0, 0, ??DbgDstWnd
+        invoke DbgOutCmd, DBG_CMD_CLOSE_BMP, 0, 0, ??DbgDstWnd
         DbgLoadContext
       endif
     endif
@@ -1707,7 +2060,7 @@ DbgCloseTxt macro Dest
       ifidn DBG_DEVICE, <WND>
         DbgSaveContext
         DbgSetDestWnd Dest
-        invoke DbgOutCmd, DBG_CMD_CLOSE_TXT, 0, ??DbgDstWnd
+        invoke DbgOutCmd, DBG_CMD_CLOSE_TXT, 0, 0, ??DbgDstWnd
         DbgLoadContext
       endif
     endif
@@ -1725,7 +2078,7 @@ DbgCloseBmp macro Dest
       ifidn DBG_DEVICE, <WND>
         DbgSaveContext
         DbgSetDestWnd Dest
-        invoke DbgOutCmd, DBG_CMD_CLOSE_BMP, 0, ??DbgDstWnd
+        invoke DbgOutCmd, DBG_CMD_CLOSE_BMP, 0, 0, ??DbgDstWnd
         DbgLoadContext
       endif
     endif
@@ -1740,14 +2093,37 @@ endm
 DbgClearAll macro
   if DEBUGGING
     if TARGET_PLATFORM eq PLATFORM_WINDOWS
+      DbgSaveContext
       ifidn DBG_DEVICE, <WND>
-        DbgSaveContext
-        invoke DbgOutCmd, DBG_CMD_CLEAR_ALL, DbgColorBackground, NULL
-        DbgLoadContext
+        invoke DbgOutCmd, DBG_CMD_CLEAR_ALL, DbgColorBackground, 0, NULL
+      elseifidn DBG_DEVICE, <CON>
+        ;... cls
+      elseifidn DBG_DEVICE, <LOG>
+        ;... close and delete file
       endif
+      DbgLoadContext
     elseif TARGET_PLATFORM eq PLATFORM_UEFI
       mov xcx, pConsoleOut
       invoke [xcx].ConOut.ClearScreen, xcx
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgClear
+; Purpose:    Clear the content of a specific child window of the Debug window.
+; Arguments:  Arg1: Target Debug Window name.
+
+DbgClear macro Dest
+  if DEBUGGING
+    if TARGET_PLATFORM eq PLATFORM_WINDOWS
+      ifidn DBG_DEVICE, <WND>
+        DbgSaveContext
+        DbgSetDestWnd Dest
+        invoke DbgOutCmd, DBG_CMD_CLEAR_TXT, DbgColorBackground, 0, ??DbgDstWnd
+        invoke DbgOutCmd, DBG_CMD_CLEAR_BMP, DbgColorBackground, 0, ??DbgDstWnd
+        DbgLoadContext
+      endif
     endif
   endif
 endm
@@ -1763,12 +2139,9 @@ DbgClearTxt macro Dest
       ifidn DBG_DEVICE, <WND>
         DbgSaveContext
         DbgSetDestWnd Dest
-        invoke DbgOutCmd, DBG_CMD_CLEAR_TXT, DbgColorBackground, ??DbgDstWnd
+        invoke DbgOutCmd, DBG_CMD_CLEAR_TXT, DbgColorBackground, 0, ??DbgDstWnd
         DbgLoadContext
       endif
-    elseif TARGET_PLATFORM eq PLATFORM_UEFI
-      mov xcx, pConsoleOut
-      invoke [xcx].ConOut.ClearScreen, xcx
     endif
   endif
 endm
@@ -1784,7 +2157,7 @@ DbgClearBmp macro Dest
       ifidn DBG_DEVICE, <WND>
         DbgSaveContext
         DbgSetDestWnd Dest
-        invoke DbgOutCmd, DBG_CMD_CLEAR_BMP, DbgColorBackground, ??DbgDstWnd
+        invoke DbgOutCmd, DBG_CMD_CLEAR_BMP, DbgColorBackground, 0, ??DbgDstWnd
         DbgLoadContext
       endif
     endif

@@ -1,7 +1,7 @@
 ; ==================================================================================================
 ; Title:      DebugCenter.asm
 ; Authors:    G. Friedrich
-; Version     2.1.1
+; Version     2.2.0
 ; Purpose:    ObjAsm DebugCenter application.
 ; Notes:      Version 1.1.0, October 2017
 ;               - First release. Ported to BNC. 
@@ -11,6 +11,9 @@
 ;               - First click into ChildTxt bug corrected.
 ;               - Find text bug corrected.
 ;               - Word break routine added to ChildTxt to improve usability. 
+;             Version 2.2.0, September 2022
+;               - Background color command added.
+;               - Menu flash command added.
 ; ==================================================================================================
 
 

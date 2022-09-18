@@ -66,9 +66,9 @@ Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 12=3,O,$B\RA_ASM.cmd,2
 13=5,O,$B\RA_LINK.cmd,3
 14=0,0,,5
-17=0,O,$B\..\..\Build\RA_DEBUG.cmd,5
+17=0,O,$B\RA_DEBUG.cmd,5
 15=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
-16=*.obj,O,$B\..\..\Build\Tools\UASM64.EXE /c /coff /Cp /nologo /I"$I",*.asm
+16=*.obj,O,$B\Tools\UASM64.EXE /c /coff /Cp /nologo /I"$I",*.asm
 
 [Group]
 Group=Added files,Assembly,Resources,Misc,Modules,Objects,Macros
@@ -128,7 +128,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=24
+MilestoneOnDateDate=18
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -163,9 +163,9 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,802,423,2762
+2=0,0,802,423,33809
 3=0,0,0,0,388
-1=480,488,480,244,541
+1=480,488,480,244,797
 4=0,0,0,0,442
 1001=0,0,0,0,460
 5=0,0,0,0,772
@@ -175,7 +175,7 @@ ProductVer4Range=0
 9=0,0,0,0,2227
 10=
 11=0,0,0,0,3100
-13=0,0,0,0,1630
+13=0,0,0,0,2975
 26=0,0,0,0,793
 14=
 24=
@@ -212,19 +212,19 @@ ProductVer4Range=0
 0=724,30,
 
 [Find]
-1="DBG_COLOR_BACKGROUND"
-2="BMP"
-3="DbgStr"
-4=".while"
-5=";;Dump text output:"
-6="invoke wsprintfA"
-7="bx"
-8="DbgComError"
-9="20000014"
-10="dErrorCode"
+1="DBG_CMD_PIN_WND"
+2="DBG_CMD_TOPMOST"
+3="DbgTopWnd"
+4="DbgFrontWnd"
+5="DbgZoomInBmp"
+6="DbgTileVer"
+7="DbgBkgndTxt"
+8="DbgFrontBmp"
+9="DbgZoomOutBmp"
+10="DbgFrontTxt"
 [Collapse]
 1=
-2=,
+2=,,
 4=
 5=
 6=,,
@@ -246,7 +246,7 @@ ProductVer4Range=0
 15=
 3=
 [AutoLoad]
-AutoLoad=1,5,2
+AutoLoad=1,5
 [RADebugBP]
 1=
 2=
@@ -263,7 +263,8 @@ AutoLoad=1,5,2
 28=
 15=
 3=
+13=
 [PTimer]
-PTimer=293504147
+PTimer=360159506
 [GroupExpand]
 GroupExpand=0,1,1,0,0,1,1,0

@@ -12,8 +12,8 @@ EDTSTYLE    equ     WS_CHILD or WS_VISIBLE or WS_TABSTOP or \
 
 RICHEDITID  equ     250
 
-CStr szDbgMdiChildTxt,  "DbgMdiChildTxt"                ;Debug Center Child Textoutput
-CStr szPropREdtIptor,   "OAP_REdtIptor"
+CStr szDbgMdiChildTxtClass, "OAC_DbgMdiChildTxt"                ;Debug Center Child Textoutput
+CStr szPropREdtIptor,       "OAP_REdtIptor"
 
 CALC_KEY_TIMEOUT  equ   1000
 
@@ -38,7 +38,7 @@ ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-Object DbgMdiChildTxt, DbgMdiChildTxtID, DbgMdiChild
+Object DbgMdiChildTxt, DBG_MDI_CHILD_TXT_ID, DbgMdiChild
   RedefineMethod    ClpBrdClear
   RedefineMethod    ClpBrdCopy
   RedefineMethod    ClpBrdCut
@@ -340,7 +340,7 @@ Method DbgMdiChildTxt.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRINGW, h
   ACall xsi.Init, pOwner, NULL                          ;hWnd is set in WndProc
 
   mov xdi, pOwner
-  invoke CreateMDIWindow, offset szDbgMdiChildTxt, pTitle, 0, \
+  invoke CreateMDIWindow, offset szDbgMdiChildTxtClass, pTitle, 0, \
                           CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, \
                           [xdi].$Obj(DbgMdiClient).hWnd, hInstance, pSelf
   .if xax != 0
@@ -358,7 +358,7 @@ Method DbgMdiChildTxt.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRINGW, h
                           [xbx].$Obj(DebugCenter).hMenuChild, [xbx].$Obj(DebugCenter).hMenuChildWnd
       OCall xbx::DebugCenter.EnableActions, TRUE
       invoke DrawMenuBar, [xbx].$Obj(DebugCenter).hWnd  ;Redraw the new menu bar
-      OCall xbx::DebugCenter.ManageOptions, DbgMdiChildTxtID
+      OCall xbx::DebugCenter.ManageOptions, DBG_MDI_CHILD_TXT_ID
     .endif
 
     ;Install Magnetism
@@ -414,7 +414,7 @@ Method DbgMdiChildTxt.OnMdiActivate, uses xsi, wParam:WPARAM, lParam:LPARAM
   .if wParam != 0
     mov pChild, $invoke(SendMessage, wParam, WM_GETOBJECTINSTANCE, 0, 0)
     invoke GetObjectID, xax
-    .if eax == DbgMdiChildTxtID
+    .if eax == DBG_MDI_CHILD_TXT_ID
       mov xcx, pChild
       mov xax, [xcx].$Obj(DbgMdiChildTxt).pEdtIptor
       .if [xax].$Obj(REdtIptor).pFindDialog != NULL
@@ -721,7 +721,7 @@ Method DbgMdiChildTxt.Startup
   m2m WC.hInstance, hInstance, edx
   m2z WC.hbrBackground
   m2z WC.lpszMenuName
-  c2m WC.lpszClassName, offset szDbgMdiChildTxt, xax
+  c2m WC.lpszClassName, offset szDbgMdiChildTxtClass, xax
   mov WC.hIcon, $invoke(LoadIcon, hInstance, $OfsCStr("ICON_APP_CHILD_TXT"))
   m2z WC.hIconSm
   mov WC.hCursor, $invoke(LoadCursor, 0, IDC_ARROW)

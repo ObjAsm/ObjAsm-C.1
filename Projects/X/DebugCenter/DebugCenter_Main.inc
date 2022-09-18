@@ -64,7 +64,7 @@ AppStatusbar DEF_STATUSBAR {IDC_STATUSBAR, SBSTYLE, 0, 4}
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-Object DbgMdiClient, DbgMdiClientID, MdiClientWnd               ;MDI client window.
+Object DbgMdiClient, DBG_MDI_CLIENT_ID, MdiClientWnd               ;MDI client window.
   RedefineMethod    Done
   RedefineMethod    Init,               POINTER                 ;-> Owner
 
@@ -78,7 +78,7 @@ ObjectEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-Object DebugCenter, DebugCenterID, MdiApp                       ;MDI application.
+Object DebugCenter, DEBUG_CENTER_ID, MdiApp                     ;MDI application.
   VirtualMethod     ChangeLanguage,     DWORD                   ;IDLANG_XXX
   RedefineMethod    Done
   VirtualMethod     EnableActions,      DWORD                   ;TRUE / FALSE
@@ -548,7 +548,7 @@ Method DebugCenter.ManageOptions, uses xbx xdi xsi, dObjID:DWORD
     invoke EnableMenuItem, xdi, IDM_EDIT_FIND,      MF_BYCOMMAND or MF_GRAYED
     invoke EnableMenuItem, xdi, IDM_EDIT_CALC,      MF_BYCOMMAND or MF_GRAYED
 
-  .elseif dObjID == DbgMdiChildTxtID
+  .elseif dObjID == DBG_MDI_CHILD_TXT_ID
     mov xbx, [xsi].pToolbarFile
     invoke SendMessage, [xbx].$Obj(Toolbar).hWnd, TB_ENABLEBUTTON, IDM_FILE_SAVE, TRUE
     invoke SendMessage, [xbx].$Obj(Toolbar).hWnd, TB_ENABLEBUTTON, IDM_FILE_SAVEAS, TRUE
@@ -917,7 +917,7 @@ Method DebugCenter.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
     .if xax
       mov xdi, $invoke(SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0)
       invoke GetObjectID, xdi
-      .if eax == DbgMdiChildTxtID
+      .if eax == DBG_MDI_CHILD_TXT_ID
         OCall xdi::DbgMdiChildTxt.SelectAll
         mov xcx, [xdi].$Obj(DbgMdiChildTxt).hEdit
         invoke SetFocus, xcx
@@ -930,7 +930,7 @@ Method DebugCenter.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
     invoke SendMessage, xbx, WM_MDIGETACTIVE, 0, 0
     mov pChild, $invoke(SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0)
     invoke GetObjectID, xax
-    .if eax == DbgMdiChildTxtID
+    .if eax == DBG_MDI_CHILD_TXT_ID
       mov xcx, pChild
       mov xdi, [xcx].$Obj(DbgMdiChildTxt).pEdtIptor
       .if [xdi].$Obj(REdtIptor).pFindDialog == NULL
@@ -953,7 +953,7 @@ Method DebugCenter.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
     invoke SendMessage, xbx, WM_MDIGETACTIVE, 0, 0
     mov pChild, $invoke(SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0)
     invoke GetObjectID, xax
-    .if eax == DbgMdiChildTxtID
+    .if eax == DBG_MDI_CHILD_TXT_ID
       mov xcx, pChild
       OCall [xcx].$Obj(DbgMdiChildTxt).pEdtIptor::REdtIptor.SendToCalc
     .endif
@@ -1007,6 +1007,11 @@ Method DebugCenter.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   .elseif ax == SC_MINIMIZE                             ;Minimize the active window
     mov hChildWnd, $invoke(SendMessage, xbx, WM_MDIGETACTIVE, 0, 0)
     invoke ShowWindow, xax, SW_MINIMIZE
+    xor eax, eax
+
+  .elseif ax == SC_MAXIMIZE                             ;Maximize the active window
+    mov hChildWnd, $invoke(SendMessage, xbx, WM_MDIGETACTIVE, 0, 0)
+    invoke ShowWindow, xax, SW_MAXIMIZE
     xor eax, eax
 
   .elseif ax == IDM_WINDOW_ZOOMIN
@@ -1069,7 +1074,7 @@ MethodEnd
 DBG_CHILD_INFO struc
   pCaption    PSTRINGW              ?
   pChild      $ObjPtr(DbgMdiChild)  ?
-  dObjID      DWORD                 ?                   ;DbgMdiChildTxtID or DbgMdiClhildBmpID
+  dObjID      DWORD                 ?                   ;DBG_MDI_CHILD_TXT_ID or DbgMdiClhildBmpID
 DBG_CHILD_INFO ends
 PDBG_CHILD_INFO typedef ptr DBG_CHILD_INFO
 
@@ -1100,7 +1105,7 @@ ChildSearch proc uses xbx xdi hWnd:HWND, lParam:PDBG_CHILD_INFO
 ChildSearch endp
 
 Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
-  local CFD:CHARFORMAT, DCI:DBG_CHILD_INFO, dDbgCmd:DWORD, dDbgColor:DWORD
+  local CFD:CHARFORMAT, DCI:DBG_CHILD_INFO, dDbgCmd:DWORD, dParam1:DWORD, FWI:FLASHWINFO
 
   SetObject xsi
   mov xcx, lParam
@@ -1114,11 +1119,11 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
       .if [xcx].DBG_CMD_INFO.bBlockID == DBG_MSG_CMD    ;Command
         movzx eax, [xcx].DBG_CMD_INFO.bInfo
         .if eax == DBG_CMD_CLEAR_TXT || eax == DBG_CMD_CLEAR_BMP
-          m2m dDbgColor, [xcx].DBG_CMD_INFO.dParam, edx
+          m2m dParam1, [xcx].DBG_CMD_INFO.dParam1, edx
           .if eax == DBG_CMD_CLEAR_TXT
-            mov DCI.dObjID, DbgMdiChildTxtID
+            mov DCI.dObjID, DBG_MDI_CHILD_TXT_ID
           .else
-            mov DCI.dObjID, DbgMdiChildBmpID
+            mov DCI.dObjID, DBG_MDI_CHILD_BMP_ID
           .endif
           m2z DCI.pChild
           mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
@@ -1128,14 +1133,13 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
           .endif
 
         .elseif eax ==  DBG_CMD_CLEAR_ALL
-          m2m dDbgColor, [xcx].DBG_CMD_INFO.dParam, edx
-          invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset EraseChild, dDbgColor
+          invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset EraseChild, 0
 
         .elseif eax == DBG_CMD_CLOSE_TXT || eax == DBG_CMD_CLOSE_BMP
           .if eax == DBG_CMD_CLEAR_TXT
-            mov DCI.dObjID, DbgMdiChildTxtID
+            mov DCI.dObjID, DBG_MDI_CHILD_TXT_ID
           .else
-            mov DCI.dObjID, DbgMdiChildBmpID
+            mov DCI.dObjID, DBG_MDI_CHILD_BMP_ID
           .endif
           m2z DCI.pChild
           mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
@@ -1150,12 +1154,12 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
 
         .elseif eax == DBG_CMD_SINGLE_LINE || eax == DBG_CMD_DOUBLE_LINE
           mov dDbgCmd, eax
-          m2m dDbgColor, [xcx].DBG_CMD_INFO.dParam, edx
+          m2m dParam1, [xcx].DBG_CMD_INFO.dParam1, edx
           mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
           m2z DCI.pChild
-          mov DCI.dObjID, DbgMdiChildTxtID
+          mov DCI.dObjID, DBG_MDI_CHILD_TXT_ID
           invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset ChildSearch, addr DCI
-          .if DCI.pChild == 0
+          .if DCI.pChild == NULL
             mov xdi, $New(DbgMdiChildTxt)
             OCall xdi::DbgMdiChildTxt.Init, [xsi].pClientWnd, addr [xbx + DBG_HEADER_INFO], [xsi].hFont
           .else
@@ -1167,7 +1171,7 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
           mov CFD.dwMask, CFM_COLOR or CFM_BOLD or CFM_ITALIC or CFM_STRIKEOUT or CFM_UNDERLINE
 
           ;m2z CFD.crTextColor
-          m2m CFD.crTextColor, dDbgColor, eax
+          m2m CFD.crTextColor, dParam1, eax
 
           m2z CFD.dwEffects
           invoke SendMessage, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_SETCHARFORMAT, SCF_SELECTION, addr CFD
@@ -1178,28 +1182,143 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
           .endif
           invoke SendMessageW, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_REPLACESEL, FALSE, offset wCRLF
 
-        .elseif eax == Dbg_CMD_SET_BKGND
-          m2m dDbgColor, [xcx].DBG_CMD_INFO.dParam, edx
+        .elseif eax == DBG_CMD_SET_BKGND_TXT
+          m2m dParam1, [xcx].DBG_CMD_INFO.dParam1, edx
           mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
           m2z DCI.pChild
-          mov DCI.dObjID, DbgMdiChildTxtID
+          mov DCI.dObjID, DBG_MDI_CHILD_TXT_ID
           invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset ChildSearch, addr DCI
-          .if DCI.pChild == 0
-            mov xdi, $New(DbgMdiChildTxt)
-            OCall xdi::DbgMdiChildTxt.Init, [xsi].pClientWnd, addr [xbx + DBG_HEADER_INFO], [xsi].hFont
-          .else
+          .if DCI.pChild != NULL
             mov xdi, DCI.pChild
+            invoke SendMessage, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_SETBKGNDCOLOR, 0, dParam1
+            invoke InvalidateRect, [xdi].$Obj(DbgMdiChildTxt).hEdit, NULL, TRUE
           .endif
-          invoke SendMessage, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_SETBKGNDCOLOR, 0, dDbgColor
-          invoke ShowWindow, [xdi].$Obj(DbgMdiChildTxt).hEdit, SW_SHOW
+
+        .elseif eax == DBG_CMD_SET_BKGND_BMP
+          m2m dParam1, [xcx].DBG_CMD_INFO.dParam1, edx
+          mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
+          m2z DCI.pChild
+          mov DCI.dObjID, DBG_MDI_CHILD_BMP_ID
+          invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset ChildSearch, addr DCI
+          .if DCI.pChild != NULL
+            mov xdi, DCI.pChild
+            m2m [xdi].$Obj(DbgMdiChildBmp).ColorBackground, dParam1, edx
+            invoke InvalidateRect, [xdi].$Obj(DbgMdiChildBmp).hWnd, NULL, TRUE
+          .endif
+
+        .elseif eax == DBG_CMD_ZOOM_IN_TXT
+          mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
+          m2z DCI.pChild
+          mov DCI.dObjID, DBG_MDI_CHILD_TXT_ID
+          invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset ChildSearch, addr DCI
+          .if DCI.pChild != NULL
+            OCall DCI.pChild::DbgMdiChild.ZoomIn        ;Polymorphic call
+          .endif
+
+        .elseif eax == DBG_CMD_ZOOM_IN_BMP
+          mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
+          m2z DCI.pChild
+          mov DCI.dObjID, DBG_MDI_CHILD_BMP_ID
+          invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset ChildSearch, addr DCI
+          .if DCI.pChild != NULL
+            OCall DCI.pChild::DbgMdiChild.ZoomIn        ;Polymorphic call
+          .endif
+
+        .elseif eax == DBG_CMD_ZOOM_OUT_TXT
+          mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
+          m2z DCI.pChild
+          mov DCI.dObjID, DBG_MDI_CHILD_TXT_ID
+          invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset ChildSearch, addr DCI
+          .if DCI.pChild != NULL
+            OCall DCI.pChild::DbgMdiChild.ZoomOut       ;Polymorphic call
+          .endif
+
+        .elseif eax == DBG_CMD_ZOOM_OUT_BMP
+          mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
+          m2z DCI.pChild
+          mov DCI.dObjID, DBG_MDI_CHILD_BMP_ID
+          invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset ChildSearch, addr DCI
+          .if DCI.pChild != NULL
+            OCall DCI.pChild::DbgMdiChild.ZoomOut       ;Polymorphic call
+          .endif
+
+        .elseif eax == DBG_CMD_FRONT_WND
+          invoke SetForegroundWindow, [xsi].hWnd
+
+        .elseif eax == DBG_CMD_FRONT_TXT
+          mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
+          m2z DCI.pChild
+          mov DCI.dObjID, DBG_MDI_CHILD_TXT_ID
+          invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset ChildSearch, addr DCI
+          .if DCI.pChild != NULL
+            mov xax, DCI.pChild
+            mov xdx, [xsi].pClientWnd
+            mov xcx, [xdx].$Obj(DbgMdiClient).hWnd
+            invoke SendMessage, xcx, WM_MDIACTIVATE, [xax].$Obj(DbgMdiChild).hWnd, 0
+          .endif
+
+        .elseif eax == DBG_CMD_FRONT_BMP
+          mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
+          m2z DCI.pChild
+          mov DCI.dObjID, DBG_MDI_CHILD_BMP_ID
+          invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset ChildSearch, addr DCI
+          .if DCI.pChild != NULL
+            mov xax, DCI.pChild
+            mov xdx, [xsi].pClientWnd
+            mov xcx, [xdx].$Obj(DbgMdiClient).hWnd
+            invoke SendMessage, xcx, WM_MDIACTIVATE, [xax].$Obj(DbgMdiChild).hWnd, 0
+          .endif
+
+        .elseif eax == DBG_CMD_CHILDREN_TILE_HOR
+          invoke SendMessage, [xdi].$Obj(DbgMdiClient).hWnd, WM_MDITILE, MDITILE_HORIZONTAL, 0
+
+        .elseif eax == DBG_CMD_CHILDREN_TILE_VER
+          invoke SendMessage, [xdi].$Obj(DbgMdiClient).hWnd, WM_MDITILE, MDITILE_VERTICAL, 0
+
+        .elseif eax == DBG_CMD_CHILDREN_CASCADE
+          invoke SendMessage, [xdi].$Obj(DbgMdiClient).hWnd, WM_MDICASCADE, 0, 0
+
+        .elseif eax == DBG_CMD_ICONS_ARRANGE
+          invoke SendMessage, [xdi].$Obj(DbgMdiClient).hWnd, WM_MDIICONARRANGE, 0, 0
+
+        .elseif eax == DBG_CMD_FLASH_MENU
+          mov edx, [xcx].DBG_CMD_INFO.dParam1
+          mov eax, [xcx].DBG_CMD_INFO.dParam2
+          OCall [xsi].pXMenu::XMenu.FlashMenuBar, edx, eax
+
+        .elseif eax == DBG_CMD_FLASH_WINDOW
+          mov FWI.cbSize, sizeof(FWI)
+          m2m FWI.hwnd, [xsi].hWnd, xax
+          m2m FWI.dwFlags, [xcx].DBG_CMD_INFO.dParam1, edx
+          m2m FWI.uCount, [xcx].DBG_CMD_INFO.dParam2, eax
+          mov FWI.dwTimeout, 0
+          invoke FlashWindowEx, addr FWI
+
+        .elseif eax == DBG_CMD_PIN_WND
+          m2m dParam1, [xcx].DBG_CMD_INFO.dParam1, edx
+          mov xbx, [xsi].pToolbarFile
+          invoke SendMessage, [xbx].$Obj(Toolbar).hWnd, TB_GETSTATE, IDM_FILE_PIN, 0
+          .ifBitSet eax, TBSTATE_CHECKED
+            .if dParam1 == FALSE
+              BitClr eax, TBSTATE_CHECKED
+              invoke SendMessage, [xbx].$Obj(Toolbar).hWnd, TB_SETSTATE, IDM_FILE_PIN, eax
+              invoke SetWindowPos, [xsi].hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE
+            .endif
+          .else
+            .if dParam1 != FALSE
+              BitSet eax, TBSTATE_CHECKED
+              invoke SendMessage, [xbx].$Obj(Toolbar).hWnd, TB_SETSTATE, IDM_FILE_PIN, eax
+              invoke SetWindowPos, [xsi].hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE
+            .endif
+          .endif
         .endif
 
       .elseif BYTE ptr [xcx] == DBG_MSG_STR             ;Text (ANSI or WIDE)
         mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
         m2z DCI.pChild
-        mov DCI.dObjID, DbgMdiChildTxtID
+        mov DCI.dObjID, DBG_MDI_CHILD_TXT_ID
         invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset ChildSearch, addr DCI
-        .if DCI.pChild == 0
+        .if DCI.pChild == NULL
           mov xdi, $New(DbgMdiChildTxt)
           OCall xdi::DbgMdiChildTxt.Init, [xsi].pClientWnd, addr [xbx + DBG_HEADER_INFO], [xsi].hFont
         .else
@@ -1240,9 +1359,9 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
       .elseif BYTE ptr [xcx] == DBG_MSG_BMP             ;Bitmap
         mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
         m2z DCI.pChild
-        mov DCI.dObjID, DbgMdiChildBmpID
+        mov DCI.dObjID, DBG_MDI_CHILD_BMP_ID
         invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset ChildSearch, addr DCI
-        .if DCI.pChild == 0
+        .if DCI.pChild == NULL
           mov xdi, $New(DbgMdiChildBmp)
           OCall xdi::DbgMdiChildBmp.Init, [xsi].pClientWnd, addr [xbx + DBG_HEADER_INFO]
         .else

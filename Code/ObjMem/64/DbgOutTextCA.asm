@@ -39,8 +39,7 @@ DbgOutTextCA proc pStringA:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD,
 
   mov eax, dDbgDev
   .if eax == DBG_DEV_WIN_LOG
-    invoke DbgLogOpen
-    .if $invoke(DbgLogOpen)
+    .if $invoke(DbgOpenLog)
       invoke WriteFile, hDbgDev, pStringA, dLength, NULL, NULL
     .endif
     .ifBitSet dEffects, DBG_EFFECT_NEWLINE
@@ -48,7 +47,7 @@ DbgOutTextCA proc pStringA:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD,
     .endif
 
   .elseif eax == DBG_DEV_WIN_CON
-    .if $invoke(DbgConOpen)
+    .if $invoke(DbgOpenCon)
       m2z wAttrib
       mov eax, dColor
       .ifBitSet al, BIT07 
@@ -84,7 +83,7 @@ DbgOutTextCA proc pStringA:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD,
     .endif
 
   .else                                                 ;DBG_DEV_WIN_DC
-    .if $invoke(DbgWndOpen)
+    .if $invoke(DbgOpenWnd)
       mov CDS.dwData, DGB_MSG_ID                        ;Set DebugCenter identifier
       mov eax, dLength                                  ;String length
       mov dInfo1, eax

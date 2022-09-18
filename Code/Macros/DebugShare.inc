@@ -36,36 +36,50 @@ externdef szDbgRegKey:CHRW
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 
-DGB_MSG_ID            equ   58ADF9ACh       ;Random number that identifies these debug messages
-DBG_MSG_HDR           equ   00
-DBG_MSG_CMD           equ   01
-DBG_MSG_STR           equ   02
-DBG_MSG_BMP           equ   03
+DGB_MSG_ID                equ   58ADF9ACh     ;Random number that identifies these debug messages
+DBG_MSG_HDR               equ   00
+DBG_MSG_CMD               equ   01
+DBG_MSG_STR               equ   02
+DBG_MSG_BMP               equ   03
+                          
+DBG_EFFECT_NORMAL         equ   00000000h     ;Regular text
+DBG_EFFECT_BOLD           equ   00000001h     ;CFE_BOLD
+DBG_EFFECT_ITALIC         equ   00000002h     ;CFE_ITALIC
+DBG_EFFECT_UNDERLINE      equ   00000004h     ;CFE_UNDERLINE
+DBG_EFFECT_STRIKEOUT      equ   00000008h     ;CFE_STRIKEOUT
+DBG_EFFECT_NEWLINE        equ   00000100h
+                          
+DBG_CHARTYPE_WIDE         equ   80000000h     ;if not set => ANSI (BIT31)
+                          
+DBG_CMD_CLEAR_TXT         equ   00
+DBG_CMD_CLEAR_BMP         equ   01
+DBG_CMD_CLEAR_ALL         equ   02
+DBG_CMD_CLOSE_TXT         equ   03
+DBG_CMD_CLOSE_BMP         equ   04
+DBG_CMD_CLOSE_ALL         equ   05
+DBG_CMD_SINGLE_LINE       equ   06            ;char 2500 or 2014
+DBG_CMD_DOUBLE_LINE       equ   07            ;Char 2550
+DBG_CMD_FLASH_WINDOW      equ   08            ;Flags in dParam1, number of flashes in dParam2
+DBG_CMD_FLASH_MENU        equ   09            ;Color in dParam1, number of flashes in dParam2
+DBG_CMD_SET_BKGND_TXT     equ   10            ;Color in dParam1
+DBG_CMD_SET_BKGND_BMP     equ   11            ;Color in dParam1
+DBG_CMD_ZOOM_IN_TXT       equ   12
+DBG_CMD_ZOOM_IN_BMP       equ   13
+DBG_CMD_ZOOM_OUT_TXT      equ   14
+DBG_CMD_ZOOM_OUT_BMP      equ   15
+DBG_CMD_FRONT_TXT         equ   16
+DBG_CMD_FRONT_BMP         equ   17
+DBG_CMD_FRONT_WND         equ   18
+DBG_CMD_CHILDREN_TILE_HOR equ   19
+DBG_CMD_CHILDREN_TILE_VER equ   20
+DBG_CMD_CHILDREN_CASCADE  equ   21
+DBG_CMD_ICONS_ARRANGE     equ   22
+DBG_CMD_PIN_WND           equ   23                          
+                          
+SMTO_TIMEOUT              equ   5000          ;Timeout of a WM_COPYDATA message
 
-DBG_EFFECT_NORMAL     equ   00000000h       ;Regular text
-DBG_EFFECT_BOLD       equ   00000001h       ;CFE_BOLD
-DBG_EFFECT_ITALIC     equ   00000002h       ;CFE_ITALIC
-DBG_EFFECT_UNDERLINE  equ   00000004h       ;CFE_UNDERLINE
-DBG_EFFECT_STRIKEOUT  equ   00000008h       ;CFE_STRIKEOUT
-DBG_EFFECT_NEWLINE    equ   00000100h
 
-DBG_CHARTYPE_WIDE     equ   80000000h       ;if not set => ANSI (BIT31)
-
-DBG_CMD_CLEAR_TXT     equ   0
-DBG_CMD_CLEAR_BMP     equ   1
-DBG_CMD_CLEAR_ALL     equ   2
-DBG_CMD_CLOSE_TXT     equ   3               ;Currently not implemented!
-DBG_CMD_CLOSE_BMP     equ   4               ;Currently not implemented!
-DBG_CMD_CLOSE_ALL     equ   5               ;Currently not implemented!
-DBG_CMD_SINGLE_LINE   equ   6               ;char 2500 or 2014
-DBG_CMD_DOUBLE_LINE   equ   7               ;Char 2550
-Dbg_CMD_SET_BKGND     equ   8               ;Color in Param
-
-
-SMTO_TIMEOUT          equ   5000            ;Timeout of a WM_COPYDATA message
-
-
-IDM_DEBUG_CENTER_RESTORE  equ   0f6cah      ;Random number
+IDM_DEBUG_CENTER_RESTORE  equ   0F6CAh      ;Random number
 
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -91,7 +105,8 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
     bBlockID    BYTE    DBG_MSG_CMD
     bInfo       BYTE    ?                   ;Used for single byte commands
     dBlockLen   DWORD   ?                   ;Size of this structure + size of the data (may be zero)
-    dParam      DWORD   ?
+    dParam1     DWORD   ?                   ;First parameter
+    dParam2     DWORD   ?                   ;Second parameter
   DBG_CMD_INFO ends
   ;Data bytes may follow this structure
 

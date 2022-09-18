@@ -6,9 +6,9 @@
 ; ==================================================================================================
 
 
-CStr szDbgMdiChildBmp, "DbgMdiChildBmp"                         ;Debug Window Child Textoutput
+CStr szDbgMdiChildBmpClass, "OAC_DbgMdiChildBmp"                         ;Debug Window Child Textoutput
 
-Object DbgMdiChildBmp, DbgMdiChildBmpID, DbgMdiChild
+Object DbgMdiChildBmp, DBG_MDI_CHILD_BMP_ID, DbgMdiChild
   RedefineMethod    ClpBrdClear
   RedefineMethod    ClpBrdCopy
   RedefineMethod    ClpBrdCut
@@ -36,9 +36,9 @@ Object DbgMdiChildBmp, DbgMdiChildBmpID, DbgMdiChild
   VirtualEvent      OnKeyDown,        WM_KEYDOWN
 
   DefineVariable    pBmp,             POINTER,        NULL
-  DefineVariable    dColorIndex,      DWORD,          0
   DefineVariable    dHorzOffset,      DWORD,          0
   DefineVariable    dVertOffset,      DWORD,          0
+  DefineVariable    ColorBackground,  COLORREF,       DBG_COLOR_BACKGROUND_WND
 ObjectEnd
 
 
@@ -240,7 +240,7 @@ Method DbgMdiChildBmp.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRING
   ACall xsi.Init, pOwner, NULL                          ;hWnd is set in WndProc
   m2m [xsi].dZoomFactor, $ObjTmpl(DebugCenter).dTxtZoomFactor, eax
   mov xdi, pOwner
-  invoke CreateMDIWindow, offset szDbgMdiChildBmp, pTitle, \
+  invoke CreateMDIWindow, offset szDbgMdiChildBmpClass, pTitle, \
              WS_HSCROLL or WS_VSCROLL, CW_USEDEFAULT, CW_USEDEFAULT, \
              CW_USEDEFAULT, CW_USEDEFAULT, [xdi].$Obj(DbgMdiClient).hWnd, hInstance, pSelf
   .if xax != 0
@@ -253,7 +253,7 @@ Method DbgMdiChildBmp.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRING
                           [xbx].$Obj(DebugCenter).hMenuChild, [xbx].$Obj(DebugCenter).hMenuChildWnd
       OCall xbx::DebugCenter.EnableActions, TRUE
       invoke DrawMenuBar, [xbx].$Obj(MdiApp).hWnd             ;Redraw the new menu bar
-      OCall xbx::DebugCenter.ManageOptions, DbgMdiChildBmpID
+      OCall xbx::DebugCenter.ManageOptions, DBG_MDI_CHILD_BMP_ID
     .endif
 
     ;Install Magnetism
@@ -390,7 +390,7 @@ Method DbgMdiChildBmp.OnPaint, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
              xbx, xdi, DIB_RGB_COLORS, SRCCOPY
 
     ;Fill the remainig background with COLOR_APPWORKSPACE color
-    mov hBrush, $invoke(CreateSolidBrush, DBG_COLOR_BACKGROUND_WND)
+    mov hBrush, $invoke(CreateSolidBrush, [xsi].ColorBackground)
     m2m Rct.left, DstRect.right, ecx
     invoke FillRect, PS.hdc, addr Rct, hBrush
     m2z Rct.left
@@ -400,7 +400,7 @@ Method DbgMdiChildBmp.OnPaint, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
 
   .else
     ;Fill the background with COLOR_APPWORKSPACE color
-    mov hBrush, $invoke(CreateSolidBrush, DBG_COLOR_BACKGROUND_WND)
+    mov hBrush, $invoke(CreateSolidBrush, [xsi].ColorBackground)
     invoke FillRect, PS.hdc, addr Rct, hBrush
     invoke DeleteObject, hBrush
 
@@ -897,7 +897,7 @@ Method DbgMdiChildBmp.Startup
   m2m WC.hInstance, hInstance, xax
   m2z WC.hbrBackground
   m2z WC.lpszMenuName
-  c2m WC.lpszClassName, offset szDbgMdiChildBmp, xax
+  c2m WC.lpszClassName, offset szDbgMdiChildBmpClass, xax
   mov WC.hIcon, $invoke(LoadIcon, hInstance, $OfsCStr("ICON_APP_CHILD_BMP"))
   m2z WC.hIconSm
   mov WC.hCursor, $invoke(LoadCursor, 0, IDC_ARROW)

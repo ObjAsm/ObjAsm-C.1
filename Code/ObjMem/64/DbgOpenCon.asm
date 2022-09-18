@@ -1,5 +1,5 @@
 ; ==================================================================================================
-; Title:      DbgConOpen.asm
+; Title:      DbgOpenCon.asm
 ; Author:     G. Friedrich
 ; Version:    C.1.0
 ; Notes:      Version C.1.0, October 2017
@@ -7,21 +7,18 @@
 ; ==================================================================================================
 
 
-% include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
+% include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
 % include &ObjMemPath&ObjMemWin.cop
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgConOpen
+; Procedure:  DbgOpenCon
 ; Purpose:    Open a new console for the calling process.
 ; Arguments:  None.
-; Return:     eax = TRUE if it was opened, otherwise FALSE.
-
-OPTION PROLOGUE:NONE
-OPTION EPILOGUE:NONE
+; Return:     rax = TRUE if it was opened, otherwise FALSE.
 
 align ALIGN_CODE
-DbgConOpen proc
+DbgOpenCon proc
   .if hDbgDev == 0
     .if $invoke(AllocConsole)
       invoke SetConsoleTitleW, offset szDbgSrc
@@ -34,10 +31,7 @@ DbgConOpen proc
     xor eax, eax
     inc eax
   .endif
-  ret 0
-DbgConOpen endp
-
-OPTION PROLOGUE:PrologueDef
-OPTION EPILOGUE:EpilogueDef
+  ret
+DbgOpenCon endp
 
 end

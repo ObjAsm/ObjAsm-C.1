@@ -27,11 +27,6 @@ PDEF_STHROBBER typedef ptr DEF_STHROBBER
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Object:  SpinningThrobber
 ; Purpose: Animated control that displays a rotating image to show a background activity.
-; Notes:   Require an addition to the manifest to enable WS_EX_LAYERED style on child windows
-;          <application>
-;            <!--The ID below indicates app support for Windows 8 -->
-;            <supportedOS Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"/>
-;          </application>
 
 Object SpinningThrobber, SpinningThrobberID, Throbber
   RedefineMethod    Animate

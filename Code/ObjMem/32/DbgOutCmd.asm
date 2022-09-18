@@ -17,12 +17,13 @@ externdef DbgCritSect:CRITICAL_SECTION
 ; Procedure:  DbgOutCmd
 ; Purpose:    Send a command to a specific Debug window.
 ; Arguments:  Arg1: Command ID [BYTE].
-;             Arg2: Param (DWORD).
-;             Arg2: -> Destination Window WIDE name.
+;             Arg2: First parameter (DWORD).
+;             Arg3: Second parameter (DWORD).
+;             Arg4: -> Destination Window WIDE name.
 ; Return:     Nothing.
 
 align ALIGN_CODE
-DbgOutCmd proc bCommand:BYTE, dParam:DWORD, pTargetWnd:POINTER
+DbgOutCmd proc bCommand:BYTE, dParam1:DWORD, dParam2:DWORD, pTargetWnd:POINTER
   local CDS:COPYDATASTRUCT, dResult:DWORD, dHeaderSize:DWORD, dESP:DWORD
 
   invoke EnterCriticalSection, offset DbgCritSect
@@ -30,7 +31,7 @@ DbgOutCmd proc bCommand:BYTE, dParam:DWORD, pTargetWnd:POINTER
   .if eax == DBG_DEV_WIN_LOG
   .elseif eax == DBG_DEV_WIN_CON
   .else                                                 ;DBG_DEV_WIN_DC
-    .if $invoke(DbgWndOpen)
+    .if $invoke(DbgOpenWnd)
       mov CDS.dwData, DGB_MSG_ID                        ;Identify this message source
       .if pTargetWnd != NULL
         invoke StrSizeW, pTargetWnd                     ;Always a WIDE string
@@ -57,7 +58,10 @@ DbgOutCmd proc bCommand:BYTE, dParam:DWORD, pTargetWnd:POINTER
       mov [edx].DBG_CMD_INFO.bBlockID, DBG_MSG_CMD
       m2m [edx].DBG_CMD_INFO.bInfo, bCommand, al
       mov [edx].DBG_CMD_INFO.dBlockLen, sizeof DBG_CMD_INFO
-      m2m [edx].DBG_CMD_INFO.dParam, dParam, eax
+      mov eax, dParam1
+      mov ecx, dParam2
+      mov [edx].DBG_CMD_INFO.dParam1, eax
+      mov [edx].DBG_CMD_INFO.dParam2, ecx
       invoke SendMessageTimeoutW, hDbgDev, WM_COPYDATA, -1, addr CDS, \
                                   SMTO_BLOCK, SMTO_TIMEOUT, addr dResult
       mov esp, dESP                                     ;Restore stack

@@ -168,6 +168,7 @@ Method HttpServer.Done, uses xsi
   .if eax == WAIT_TIMEOUT
     invoke TerminateThread, [xsi].hThread, 0
   .endif
+  invoke CloseHandle, [xsi].hThread
 
   .if [xsi].hReqQueue != 0
     OCall [xsi].UrlColl::XWCollection.ForEach, addr RemoveUrl, [xsi].hReqQueue, NULL

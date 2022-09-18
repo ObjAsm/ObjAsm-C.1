@@ -1,5 +1,5 @@
 ; ==================================================================================================
-; Title:      DbgLogOpen.asm
+; Title:      DbgOpenLog.asm
 ; Author:     G. Friedrich
 ; Version:    C.1.0
 ; Notes:      Version C.1.0, October 2017
@@ -12,13 +12,13 @@
 
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Procedure:  DbgLogOpen
+; Procedure:  DbgOpenLog
 ; Purpose:    Open a Log-File.
 ; Arguments:  None.
 ; Return:     eax = TRUE if it was opened, otherwise FALSE.
 
 align ALIGN_CODE
-DbgLogOpen proc
+DbgOpenLog proc
   local cFileName[MAX_PATH]:CHRW
 
   .if hDbgDev == -1
@@ -42,6 +42,6 @@ DbgLogOpen proc
     .endif
   .endif
   ret
-DbgLogOpen endp
+DbgOpenLog endp
 
 end

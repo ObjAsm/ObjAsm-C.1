@@ -1278,16 +1278,16 @@ MethodEnd
 ; Return:     Nothing.
 
 FMB_Params struc
-  pXMenu    POINTER   ?
-  BkColor1  RGBQUAD   {}
-  BkColor2  RGBQUAD   {}
-  dTimes    DWORD     ?
+  pXMenu        POINTER   ?
+  BkColor1      RGBQUAD   {}
+  BkColor2      RGBQUAD   {}
+  dRepetitions  DWORD     ?
 FMB_Params ends
 
 FlashMenuBar proc uses xbx xdi xsi, pFMBParam:ptr FMB_Params
   mov xsi, pFMBParam
   mov xdi, [xsi].FMB_Params.pXMenu
-  mov ebx, [xsi].FMB_Params.dTimes
+  mov ebx, [xsi].FMB_Params.dRepetitions
   test ebx, ebx
   .while !ZERO?
     OCall xdi::XMenu.SetMenuBarBkColor, [xsi].FMB_Params.BkColor1
@@ -1298,24 +1298,25 @@ FlashMenuBar proc uses xbx xdi xsi, pFMBParam:ptr FMB_Params
     invoke Sleep, 150
     dec ebx
   .endw
-  BitClr [xdi].$Obj(XMenu).dFlags, XMF_FLASHING
   invoke DrawMenuBar, [xdi].$Obj(XMenu).hWnd            ;Final update
   MemFree xsi
+  BitClr [xdi].$Obj(XMenu).dFlags, XMF_FLASHING
   ret
 FlashMenuBar endp
 
-Method XMenu.FlashMenuBar, uses xbx xsi, BkColor:RGBQUAD, dTimes:DWORD
+Method XMenu.FlashMenuBar, uses xbx xsi, BkColor:RGBQUAD, dRepetitions:DWORD
 ;  DbgText "XMenu.FlashMenuBar"
   SetObject xsi
-  .ifBitClr [xsi].dFlags, XMF_FLASHING
+  .ifBitClr [xsi].dFlags, XMF_FLASHING                  ;Don't accept new commands while flashing
     BitSet [xsi].dFlags, XMF_FLASHING
     MemAlloc sizeof FMB_Params
     mov xbx, xax
     mov [xbx].FMB_Params.pXMenu, xsi
     m2m [xbx].FMB_Params.BkColor1, BkColor, eax
     m2m [xbx].FMB_Params.BkColor2, [xsi].MenuBarBkColor, ecx
-    m2m [xbx].FMB_Params.dTimes, dTimes, eax
+    m2m [xbx].FMB_Params.dRepetitions, dRepetitions, eax
     invoke CreateThread, NULL, 4096, offset FlashMenuBar, xbx, 0, NULL
+    invoke CloseHandle, xax                             ;Decrement Reference Count
   .endif
 MethodEnd
 
