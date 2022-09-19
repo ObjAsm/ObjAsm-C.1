@@ -162,9 +162,9 @@ DbgOutputF macro Color:req, Message:req, Args:vararg
     DbgSetDestWnd "Output"
     ifnb <Args>
       invoke wsprintf, offset DebugMessage, $OfsCStrA($Esc(Message)), Args
-      invoke DbgOutTextA, offset DebugMessage, Color, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+      invoke DbgOutTextA, offset DebugMessage, Color, DbgColorBackground, DBG_EFFECT_NEWLINE, ??DbgDstWnd
     else
-      invoke DbgOutTextA, $OfsCStrA($Esc(Message)), Color, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+      invoke DbgOutTextA, $OfsCStrA($Esc(Message)), Color, DbgColorBackground, DBG_EFFECT_NEWLINE, ??DbgDstWnd
     endif
     DbgLoadContext
   endif
@@ -176,9 +176,9 @@ DbgPrintF macro Color:req, Message:req, Args:vararg
     endif
 endm
 
-DbgErrorF macro Color:req, Message:req, Args:vararg
+DbgErrorF macro Message:req, Args:vararg
   if 1
-    DbgOutputF Color, Message, Args
+    DbgOutputF DbgColorError, Message, Args
   endif
 endm
 

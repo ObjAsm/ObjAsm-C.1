@@ -44,7 +44,7 @@ dShowMemPoolStatus macro
       mov eax, [esi].pMemMax
       sub eax, ecx
       invoke wsprintf, offset DebugMessage, $OfsCStrA("%u of %u"), edx, eax
-      invoke DbgOutTextA, offset DebugMessage, $RGB(0,0,0), DBG_EFFECT_NEWLINE, ??DbgDstWnd
+      invoke DbgOutTextA, offset DebugMessage, DbgColorForeground, DbgColorBackground, DBG_EFFECT_NEWLINE, ??DbgDstWnd
 ;      DbgLoadContext
     endif
 endm

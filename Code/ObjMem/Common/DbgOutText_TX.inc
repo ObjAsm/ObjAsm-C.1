@@ -7,24 +7,26 @@
 ; ==================================================================================================
 
 
+externdef DbgColorError:DWORD
+
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutTextA / DbgOutTextW
 ; Purpose:    Send a string to the debug output device.
 ; Arguments:  Arg1: -> Zero terminated string.
-;             Arg2: Color value.
-;             Arg3: Effect value (DBG_EFFECT_XXX)
-;             Arg4: -> Destination window WIDE name.
+;             Arg2: Foreground RGB color value.
+;             Arg3: Background RGB color value.
+;             Arg4: Effect value (DBG_EFFECT_XXX)
+;             Arg5: -> Destination window WIDE name.
 ; Return:     Nothing.
 
 align ALIGN_CODE
-ProcName proc uses xbx pString:POINTER, dColor:DWORD, dEffects:DWORD, pDest:POINTER
+ProcName proc uses xbx pString:POINTER, dForeColor:DWORD, dBackColor:DWORD, dEffects:DWORD, pDest:POINTER
   local CDS:COPYDATASTRUCT, dCharsWritten:DWORD
   local dInfo1:DWORD, dInfo2:DWORD, dInfo3:DWORD, dInfo4:DWORD
 
   .if pString == NULL
-    mov xax, $OfsCStr("NULL Pointer")
-    mov pString, xax
-    mov dColor, $RGB(255, 0, 0)
+    c2m pString, $OfsCStr("NULL Pointer"), xax
+    m2m dForeColor, DbgColorError, edx
   .endif
 
   mov eax, dDbgDev
@@ -40,7 +42,7 @@ ProcName proc uses xbx pString:POINTER, dColor:DWORD, dEffects:DWORD, pDest:POIN
 
   .elseif eax == DBG_DEV_WIN_CON
     .if $invoke(DbgOpenCon)
-      invoke RGB24To16ColorIndex, dColor
+      invoke RGB24To16ColorIndex, dForeColor
       invoke SetConsoleTextAttribute, hDbgDev, ax
       invoke StrLength, pString
       lea xbx, dCharsWritten
@@ -74,8 +76,9 @@ ProcName proc uses xbx pString:POINTER, dColor:DWORD, dEffects:DWORD, pDest:POIN
         mov ecx, [xax].DBG_HEADER_INFO.dBlockLen
         add xax, xcx
         mov [xax].DBG_STR_INFO.bBlockID, DBG_MSG_STR    ;Set block type = string
-        m2m [xax].DBG_STR_INFO.dBlockLen, dInfo2, edx
-        m2m [xax].DBG_STR_INFO.dColor, dColor, ebx
+        m2m [xax].DBG_STR_INFO.dBlockLen, dInfo2, ebx
+        m2m [xax].DBG_STR_INFO.dForeColor, dForeColor, edx
+        m2m [xax].DBG_STR_INFO.dBackColor, dBackColor, ebx
         mov edx, dEffects
         if TARGET_STR_TYPE eq STR_TYPE_WIDE
           BitSet edx, DBG_CHARTYPE_WIDE                 ;Clear if ANSI

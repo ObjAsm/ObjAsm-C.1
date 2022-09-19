@@ -37,7 +37,7 @@ pApp equ offset $ObjTmpl(DC_Test)
 start proc
   SysInit
   DbgCloseAll
-  DbgFlashWindow FLASHW_CAPTION, 3
+  DbgFlashWnd FLASHW_CAPTION, 3
   DbgPinWnd TRUE
   xor eax, eax
   DbgStr xax ;offset szMyStr
@@ -45,7 +45,7 @@ start proc
   DbgStr xax
   DbgStr szMyStr
   
-  DbgBkgndTxt $RGB(128,255,255)
+;  DbgBkgndTxt $RGB(128,255,255)
   DbgText "aaa", "bbb"
   DbgComError 08007000Eh, "COM error"
   DbgComError 000000000h, "COM error"

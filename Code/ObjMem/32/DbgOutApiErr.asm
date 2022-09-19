@@ -15,7 +15,9 @@
 ; Procedure:  DbgOutApiErr
 ; Purpose:    Identify a API error with a string.
 ; Arguments:  Arg1: Api error code obtained with GetLastError.
-;             Arg2: -> Destination Window WIDE name.
+;             Arg2: Foreground RGB color value.
+;             Arg3: Background RGB color value.
+;             Arg4: -> Destination Window WIDE name.
 ; Return:     Nothing.
 
 % include &ObjMemPath&Common\DbgOutApiErr_X.inc

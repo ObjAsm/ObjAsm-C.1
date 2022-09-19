@@ -17,7 +17,8 @@ ProcName textequ <DbgOutFPU_UEFI>
 ; Procedure:  DbgOutFPU_UEFI
 ; Purpose:    Display the content of the FPU.
 ; Arguments:  Arg1: -> Destination Window WIDE name.
-;             Arg2: Text RGB color.
+;             Arg2: Foreground RGB color value.
+;             Arg3: Background RGB color value.
 ; Return:     Nothing.
 
 % include &ObjMemPath&Common\\DbgOutFPU_XP.inc

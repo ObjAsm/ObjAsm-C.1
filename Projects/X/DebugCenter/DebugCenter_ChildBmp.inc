@@ -16,7 +16,7 @@ Object DbgMdiChildBmp, DBG_MDI_CHILD_BMP_ID, DbgMdiChild
   RedefineMethod    ClpBrdSetBtns
   RedefineMethod    Done
   RedefineMethod    Erase
-  RedefineMethod    Init,             POINTER, PSTRING          ;-> Owner, -> Title
+  RedefineMethod    Init,             POINTER, PSTRING, DWORD   ;-> Owner, -> Title, BackColor
   RedefineMethod    Open,             PSTRING
   RedefineMethod    Print
   RedefineMethod    SaveAs,           PSTRING, PSTRING          ;-> Filter, -> Def. extension
@@ -38,7 +38,7 @@ Object DbgMdiChildBmp, DBG_MDI_CHILD_BMP_ID, DbgMdiChild
   DefineVariable    pBmp,             POINTER,        NULL
   DefineVariable    dHorzOffset,      DWORD,          0
   DefineVariable    dVertOffset,      DWORD,          0
-  DefineVariable    ColorBackground,  COLORREF,       DBG_COLOR_BACKGROUND_WND
+  DefineVariable    dBackColor,  dword,          DBG_COLOR_BACKGROUND_WND
 ObjectEnd
 
 
@@ -231,13 +231,15 @@ MethodEnd
 ; Purpose:    Initialize the DbgMdiChildBmp object.
 ; Arguments:  Arg1: -> Owner object.
 ;             Arg2: -> Title string.
+;             Arg3: Background RGB color value.
 ; Return:     Nothing.
 
-Method DbgMdiChildBmp.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRING
+Method DbgMdiChildBmp.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRING, dBackColor:DWORD
   local cMsg[1024]:CHR
 
   SetObject xsi
   ACall xsi.Init, pOwner, NULL                          ;hWnd is set in WndProc
+  m2m [xsi].dBackColor, dBackColor, ecx
   m2m [xsi].dZoomFactor, $ObjTmpl(DebugCenter).dTxtZoomFactor, eax
   mov xdi, pOwner
   invoke CreateMDIWindow, offset szDbgMdiChildBmpClass, pTitle, \
@@ -390,7 +392,7 @@ Method DbgMdiChildBmp.OnPaint, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
              xbx, xdi, DIB_RGB_COLORS, SRCCOPY
 
     ;Fill the remainig background with COLOR_APPWORKSPACE color
-    mov hBrush, $invoke(CreateSolidBrush, [xsi].ColorBackground)
+    mov hBrush, $invoke(CreateSolidBrush, [xsi].dBackColor)
     m2m Rct.left, DstRect.right, ecx
     invoke FillRect, PS.hdc, addr Rct, hBrush
     m2z Rct.left
@@ -400,7 +402,7 @@ Method DbgMdiChildBmp.OnPaint, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
 
   .else
     ;Fill the background with COLOR_APPWORKSPACE color
-    mov hBrush, $invoke(CreateSolidBrush, [xsi].ColorBackground)
+    mov hBrush, $invoke(CreateSolidBrush, [xsi].dBackColor)
     invoke FillRect, PS.hdc, addr Rct, hBrush
     invoke DeleteObject, hBrush
 

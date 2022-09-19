@@ -10,20 +10,21 @@
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgShowObjectHeader / DbgShowObjectHeader_UEFI
 ; Purpose:    Output heading object information.
-; Arguments:  Arg1: -> Object Name.
+; Arguments:  Arg1: -> ANSI Object Name.
 ;             Arg2: -> Instance.
-;             Arg3: Text RGB color.
-;             Arg3: -> Destination Window WIDE name.
+;             Arg3: Foreground RGB color value.
+;             Arg4: Background RGB color value.
+;             Arg5: -> Destination window WIDE name.
 ; Return:     Nothing.
 
 align ALIGN_CODE
-ProcName proc pObjectName:POINTER, pInstance:POINTER, dColor:DWORD, pDest:POINTER
+ProcName proc pObjectName:POINTER, pInstance:POINTER, dForeColor:DWORD, dBackColor:DWORD, pDest:POINTER
   local bNum[20]:CHRA
 
-  invoke DbgOutTextA, $OfsCStrA("Object "), dColor, DBG_EFFECT_BOLD, pDest
+  invoke DbgOutTextA, $OfsCStrA("Object "), dForeColor, dBackColor, DBG_EFFECT_BOLD, pDest
   invoke xword2hexA, addr bNum, pInstance
-  invoke DbgOutTextA, addr bNum, dColor, DBG_EFFECT_BOLD, pDest
-  invoke DbgOutTextA, $OfsCStrA("h::"), dColor, DBG_EFFECT_BOLD, pDest
-  invoke DbgOutTextA, pObjectName, dColor, DBG_EFFECT_BOLD, pDest
+  invoke DbgOutTextA, addr bNum, dForeColor, dBackColor, DBG_EFFECT_BOLD, pDest
+  invoke DbgOutTextA, $OfsCStrA("h::"), dForeColor, dBackColor, DBG_EFFECT_BOLD, pDest
+  invoke DbgOutTextA, pObjectName, dForeColor, dBackColor, DBG_EFFECT_BOLD, pDest
   ret
 ProcName endp

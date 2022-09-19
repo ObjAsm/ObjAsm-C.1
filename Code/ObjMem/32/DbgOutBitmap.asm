@@ -15,11 +15,12 @@
 ; Procedure:  DbgOutBitmap
 ; Purpose:    Send a bitmap to the Debug Center Window.
 ; Arguments:  Arg1: Bitamp HANDLE.
-;             Arg2: -> Destination window WIDE name.
+;             Arg2: Background RGB color value.
+;             Arg3: -> Destination Window WIDE name.
 ; Return:     Nothing.
 
 align ALIGN_CODE
-DbgOutBitmap proc hBmp:HANDLE, pDest:POINTER
+DbgOutBitmap proc hBmp:HANDLE, dBackColor:DWORD, pDest:POINTER
   local CDS:COPYDATASTRUCT, hDC:HDC, BMI:BITMAPINFO, pBuffer:POINTER, dResult:DWORD
 
   .if dDbgDev == DBG_DEV_WIN_DC
@@ -57,6 +58,7 @@ DbgOutBitmap proc hBmp:HANDLE, pDest:POINTER
           add ecx, [ecx].DBG_HEADER_INFO.dBlockLen
           mov [ecx].DBG_BMP_INFO.bBlockID, DBG_MSG_BMP  ;Set block type = bitmap
           pop [ecx].DBG_BMP_INFO.dBlockLen
+          m2m [ecx].DBG_BMP_INFO.dBackColor, dBackColor, eax
           mov BMI.bmiHeader.biBitCount, 32
           mov BMI.bmiHeader.biCompression, BI_RGB
           PushArgsFor GetDIBits, hDC, hBmp, 0, BMI.bmiHeader.biHeight, \

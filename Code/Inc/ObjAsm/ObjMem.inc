@@ -880,17 +880,17 @@ if TARGET_PLATFORM eq PLATFORM_WINDOWS
   DbgOpenLog proto
   DbgCloseDevice proto
   DbgOutCmd proto :BYTE, :DWORD, :DWORD, :POINTER
-  DbgOutBitmap proto :HANDLE, :POINTER
-  DbgOutApiErr proto :DWORD, :POINTER
-  DbgOutComErr proto :DWORD, :POINTER
-  DbgShowTraceMethod proto :POINTER, :DWORD, :POINTER, :POINTER
+  DbgOutBitmap proto :HANDLE, :DWORD, :POINTER
+  DbgOutApiErr proto :DWORD, :DWORD, :DWORD, :POINTER
+  DbgOutComErr proto :DWORD, :DWORD, :DWORD, :POINTER
+  DbgShowTraceMethod proto :POINTER, :DWORD, :POINTER, :DWORD, :DWORD, :POINTER
 
-  DbgOutInterfaceName proto :ptr GUID, :DWORD, :POINTER
-  DbgOutInterface proto :ptr GUID, :DWORD, :POINTER
-  DbgOutComponentName proto :ptr GUID, :DWORD, :POINTER
-  DbgOutComponent proto :ptr GUID, :DWORD, :POINTER
+  DbgOutInterfaceName proto :ptr GUID, :DWORD, :DWORD, :POINTER
+  DbgOutInterface proto :ptr GUID, :DWORD, :DWORD, :POINTER
+  DbgOutComponentName proto :ptr GUID, :DWORD, :DWORD, :POINTER
+  DbgOutComponent proto :ptr GUID, :DWORD, :DWORD, :POINTER
 
-  DbgOutMsg proto :DWORD, :DWORD, :POINTER
+  DbgOutMsg proto :DWORD, :DWORD, :DWORD, :POINTER
 
 elseif TARGET_PLATFORM eq PLATFORM_UEFI
   MemAlloc_UEFI proto :DWORD, :DWORD, :DWORD
@@ -914,13 +914,13 @@ elseif TARGET_PLATFORM eq PLATFORM_UEFI
   DbgShowObjectHeader textequ <DbgShowObjectHeader_UEFI>
 endif
 
-DbgOutTextA proto :POINTER, :DWORD, :DWORD, :POINTER
-DbgOutTextW proto :POINTER, :DWORD, :DWORD, :POINTER
-DbgOutTextCA proto :POINTER, :DWORD, :DWORD, :DWORD, :POINTER
-DbgOutTextCW proto :POINTER, :DWORD, :DWORD, :DWORD, :POINTER
-DbgOutMem proto :POINTER, :DWORD, :DWORD, :DWORD, :DWORD, :POINTER
-DbgOutFPU proto :POINTER, :DWORD
-DbgShowObjectHeader proto :POINTER, :POINTER, :DWORD, :POINTER
+DbgOutTextA proto :POINTER, :DWORD, :DWORD, :DWORD, :POINTER
+DbgOutTextW proto :POINTER, :DWORD, :DWORD, :DWORD, :POINTER
+DbgOutTextCA proto :POINTER, :DWORD, :DWORD, :DWORD, :DWORD, :POINTER
+DbgOutTextCW proto :POINTER, :DWORD, :DWORD, :DWORD, :DWORD, :POINTER
+DbgOutMem proto :POINTER, :DWORD, :DWORD, :DWORD, :DWORD, :DWORD, :POINTER
+DbgOutFPU proto :POINTER, :DWORD, :DWORD
+DbgShowObjectHeader proto :POINTER, :POINTER, :DWORD, :DWORD, :POINTER
 
 if TARGET_STR_TYPE eq STR_TYPE_ANSI
   DbgOutText textequ <DbgOutTextA>

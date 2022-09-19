@@ -23,9 +23,10 @@ BYTES_PER_LINE equ 16     ;Must be a multiple of 8
 ; Arguments:  Arg1: -> Memory block.
 ;             Arg2: Memory block size.
 ;             Arg3: Representation format.
-;             Arg4: Memory output color.
-;             Arg5: Representation output color.
-;             Arg6: -> Destination Window WIDE name.
+;             Arg4: Memory output RGB color value.
+;             Arg5: Representation output RGB color value.
+;             Arg6: Background RGB color value.
+;             Arg7: -> Destination Window WIDE name.
 ; Return:     Nothing.
 
 % include &ObjMemPath&Common\DbgOutMem_XP.inc

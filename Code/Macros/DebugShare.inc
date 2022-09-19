@@ -87,33 +87,29 @@ IDM_DEBUG_CENTER_RESTORE  equ   0F6CAh      ;Random number
 DBG_HEADER_INFO struc 1
   bBlockID    BYTE    DBG_MSG_HDR
   bInfo       BYTE    ?                     ;Not used
-  dBlockLen   DWORD   ?                     ;Size of this structure + size of the source WIDE string
+  dBlockLen   DWORD   ?                     ;Size of this structure + payload size
 DBG_HEADER_INFO ends
 ;Source WIDE string & ZTC follow this structure
 
 DBG_STR_INFO struc 1
-  bBlockID    BYTE    DBG_MSG_STR
-  bInfo       BYTE    ?                     ;Not used
-  dBlockLen   DWORD   ?                     ;Size of this structure + size of the WIDE string
-  dColor      DWORD   ?
+              DBG_HEADER_INFO {DBG_MSG_STR}
+  dForeColor  DWORD   ?
+  dBackColor  DWORD   ?
   dEffects    DWORD   ?                     ;Text effects & flags
 DBG_STR_INFO ends
 ;WIDE characters & ZTC (WIDE string) follow this structure
 
 if TARGET_PLATFORM eq PLATFORM_WINDOWS
   DBG_CMD_INFO struc 1
-    bBlockID    BYTE    DBG_MSG_CMD
-    bInfo       BYTE    ?                   ;Used for single byte commands
-    dBlockLen   DWORD   ?                   ;Size of this structure + size of the data (may be zero)
+                DBG_HEADER_INFO {DBG_MSG_CMD}
     dParam1     DWORD   ?                   ;First parameter
     dParam2     DWORD   ?                   ;Second parameter
   DBG_CMD_INFO ends
   ;Data bytes may follow this structure
 
   DBG_BMP_INFO struc 1
-    bBlockID    BYTE    DBG_MSG_BMP
-    bInfo       BYTE    ?                   ;Not used
-    dBlockLen   DWORD   ?                   ;Size of this structure + size of bitmap data (RGBQUADs)
+                DBG_HEADER_INFO {DBG_MSG_BMP}
+    dBackColor  DWORD   ?
     BmpHeader   BITMAPINFOHEADER  {}
   DBG_BMP_INFO ends
   ;Bitmap data follow this structure

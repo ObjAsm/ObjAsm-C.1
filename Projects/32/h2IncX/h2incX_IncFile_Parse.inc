@@ -180,7 +180,7 @@ ParseEqu proc uses edi esi pName:PSTRINGA
     ret
 
 @Error:
-    DbgErrorF $RGB(255,0,0), <"%s(%u): ParseEqu - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
+    DbgErrorF <"%s(%u): ParseEqu - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
     Destroy@Stacklist pItems                            ;Restore stack
     ret
 ParseEqu endp
@@ -300,11 +300,11 @@ ParseExternItem proc uses edi pToken:PTOKEN
         .elseif pName == NULL
           mov pName, eax
         .else
-          DbgErrorF $RGB(255,0,0), <"%s(%u): ParseExternItem - unknown Token 1 '%s'">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr, pToken
+          DbgErrorF <"%s(%u): ParseExternItem - unknown Token 1 '%s'">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr, pToken
           jmp @Error
         .endif
       .else
-        DbgErrorF $RGB(255,0,0), <"%s(%u): ParseExternItem - unknown Token 2 '%s'">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr, pToken
+        DbgErrorF <"%s(%u): ParseExternItem - unknown Token 2 '%s'">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr, pToken
         jmp @Error
       .endif
 
@@ -332,7 +332,7 @@ ParseExternItem proc uses edi pToken:PTOKEN
     ret
 
 @Error:
-    DbgErrorF $RGB(255,0,0), <"%s(%u): ParseExternItem - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
+    DbgErrorF <"%s(%u): ParseExternItem - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
     ret
 ParseExternItem endp
 
@@ -409,7 +409,7 @@ ParseFurtherTypes proc uses edi pType:PSTRINGA, pTag:PSTRINGA, pToken:PTOKEN
     ret
 
 @Error:
-    DbgErrorF $RGB(255,0,0), <"%s(%u): ParseFurtherTypes - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
+    DbgErrorF <"%s(%u): ParseFurtherTypes - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
     ret
 ParseFurtherTypes endp
 
@@ -546,7 +546,7 @@ ParseTypedefFunction proc pName:PSTRINGA, bAcceptBody:DWORD, pParent:PSTRINGA
     ret
 
 @Error:
-    DbgErrorF $RGB(255,0,0), <"%s(%u): ParseTypedefFunction - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
+    DbgErrorF <"%s(%u): ParseTypedefFunction - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
     ret
 ParseTypedefFunction endp
 
@@ -786,7 +786,7 @@ ParseTypedefFunctionPtr proc uses edi pParent:PSTRINGA
     ret
 
 @Error:
-    DbgErrorF $RGB(255,0,0), <"%s(%u): ParseTypedefFunctionPtr - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
+    DbgErrorF <"%s(%u): ParseTypedefFunctionPtr - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
     mov edx, pName
     mov eax, pToken
     ret
@@ -1333,7 +1333,7 @@ ParseMemLayoutItem proc uses edi pToken:PTOKEN, pMemLayoutName:PSTRINGA
     ret
 
 @Error:
-    DbgErrorF $RGB(255,0,0), <"%s(%u): ParseMemLayoutItem - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
+    DbgErrorF <"%s(%u): ParseMemLayoutItem - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
     m2m [ebx].$Obj(IncFile).pStructName, pPrvName, eax
     OCall ebx::IncFile.ShowError, $OfsCStrA("unexpected '%s' MemLayoutItem = '%s'"), pMemLayoutName, pToken
     mov eax, pEndToken
@@ -1474,7 +1474,7 @@ ParseEnumItem proc uses edi pToken:PTOKEN
     ret
 
 @Error:
-    DbgErrorF $RGB(255,0,0), <"%s(%u): ParseEnumItem - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
+    DbgErrorF <"%s(%u): ParseEnumItem - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
     OCall ebx::IncFile.ShowError, $OfsCStrA("unexpected enum item = '%s'"), pToken
     mov eax, pToken
     ret
@@ -1700,7 +1700,7 @@ ParseTypedefEnum proc uses edi bIsTypedef:BOOL
     ret
 
 @Error:
-    DbgErrorF $RGB(255,0,0), <"%s(%u): ParseTypedefEnum - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
+    DbgErrorF <"%s(%u): ParseTypedefEnum - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
     ret
 ParseTypedefEnum endp
 
@@ -1885,7 +1885,7 @@ ParseTypedefUnionStruct proc pMemLayoutType:PSTRINGA, bInsideClass:BOOL
     ret
 
 @Error:
-    DbgErrorF $RGB(255,0,0), <"%s(%u): ParseTypedefUnionStruct - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
+    DbgErrorF <"%s(%u): ParseTypedefUnionStruct - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
     mov [ebx].$Obj(IncFile).bInsideClass, FALSE
     Destroy@Stacklist pInherit
     ret
@@ -2169,7 +2169,7 @@ ParseTypedef proc
     .if eax != NULL
       OCall ebx::IncFile.ShowError, $OfsCStrA("unexpected item '%s' in typedef [%u]"), pToken, eax
     .endif
-    DbgErrorF $RGB(255,0,0), <"%s(%u): ParseTypedef - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
+    DbgErrorF <"%s(%u): ParseTypedef - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
     ret
 ParseTypedef endp
 
@@ -2208,7 +2208,7 @@ ParseExtern proc
     ret
 
 @Error:
-    DbgErrorF $RGB(255,0,0), <"%s(%u): ParseExtern - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
+    DbgErrorF <"%s(%u): ParseExtern - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
     ret
 ParseExtern endp
 
@@ -2460,7 +2460,7 @@ ParsePrototype proc pProcName:PSTRINGA, pImportSpec:PSTRINGA, pCallConv:PSTRINGA
     ret
 
 @Error:
-    DbgErrorF $RGB(255,0,0), <"%s(%u): ParsePrototype - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
+    DbgErrorF <"%s(%u): ParsePrototype - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
     ret
 ParsePrototype endp
 
@@ -2707,7 +2707,7 @@ ParseMacroInvocation proc pMacroName:PSTRINGA, dMacroFlags:DWORD, bWriteLF:DWORD
     ret
 
 @Error:
-    DbgErrorF $RGB(255,0,0), <"%s(%u): ParseMacroInvocation - error">, \
+    DbgErrorF <"%s(%u): ParseMacroInvocation - error">, \
               [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
     Destroy@Stacklist pArgStack
     xor eax, eax

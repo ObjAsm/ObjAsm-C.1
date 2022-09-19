@@ -46,7 +46,7 @@ Object DbgMdiChildTxt, DBG_MDI_CHILD_TXT_ID, DbgMdiChild
   RedefineMethod    ClpBrdSetBtns
   RedefineMethod    Erase
   RedefineMethod    Done
-  RedefineMethod    Init,             POINTER, PSTRINGW, HFONT  ;-> Owner, -> Title, hFont
+  RedefineMethod    Init,             POINTER, PSTRINGW, HFONT, DWORD
   RedefineMethod    OnMdiActivate,    WPARAM, LPARAM
   RedefineMethod    OnSize,           WPARAM, LPARAM
   RedefineMethod    Open,             PSTRING
@@ -330,10 +330,11 @@ DbgMdiChildTxt_WordBreak_Callback endp
 ; Purpose:    Initialize the DbgMdiChildTxt object.
 ; Arguments:  Arg1: -> Owner object.
 ;             Arg2: -> Title string.
-;             Arg3: Font handle to use.
+;             Arg3: Font HANDLE to use.
+;             Arg4: Background RGB color value.
 ; Return:     Nothing.
 
-Method DbgMdiChildTxt.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRINGW, hFont:HFONT
+Method DbgMdiChildTxt.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRINGW, hFont:HFONT, dBackColor:DWORD
   local cMsg[1024]:CHR
 
   SetObject xsi
@@ -344,6 +345,7 @@ Method DbgMdiChildTxt.Init, uses xbx xdi xsi, pOwner:POINTER, pTitle:PSTRINGW, h
                           CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, \
                           [xdi].$Obj(DbgMdiClient).hWnd, hInstance, pSelf
   .if xax != 0
+    invoke SendMessage, [xsi].hEdit, EM_SETBKGNDCOLOR, 0, dBackColor
     invoke SendMessage, [xsi].hEdit, WM_SETFONT, hFont, FALSE
 
     ;Set our new WordBreak procedure
@@ -391,7 +393,6 @@ Method DbgMdiChildTxt.OnCreate, uses xsi, wParam:WPARAM, lParam:LPARAM
                          0, 0, 10, 10, [xsi].hWnd, RICHEDITID, hInstance, NULL
   mov [xsi].hEdit, xax
   invoke SendMessage, [xsi].hEdit, EM_SETEVENTMASK, 0, ENM_SELCHANGE
-  invoke SendMessage, [xsi].hEdit, EM_SETBKGNDCOLOR, 0, DBG_COLOR_BACKGROUND_WND
   invoke SendMessage, [xsi].hEdit, EM_SETZOOM, $ObjTmpl(DebugCenter).dTxtZoomFactor, ZOOM_BASE
 
   mov [xsi].pEdtIptor, $New(REdtIptor)

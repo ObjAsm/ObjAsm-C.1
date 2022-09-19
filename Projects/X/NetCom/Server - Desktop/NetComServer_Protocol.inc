@@ -115,9 +115,9 @@ Method NetComServerProtocol.IsDataComplete?, uses xsi, pConnection:$ObjPtr(NetCo
 ;    .else
 ;      mov xcx, $OfsCStr("1")
 ;    .endif
-;    invoke DbgOutText, xcx, edx, DBG_EFFECT_NORMAL, ??DbgDstWnd
+;    invoke DbgOutText, xcx, edx, DbgColorBackground, DBG_EFFECT_NORMAL, ??DbgDstWnd
 ;  .endw
-;  invoke DbgOutText, $OfsCStr(" "), 0, DBG_EFFECT_NEWLINE, ??DbgDstWnd
+;  invoke DbgOutText, $OfsCStr(" "), DbgColorForeground, DbgColorBackground, DBG_EFFECT_NEWLINE, ??DbgDstWnd
 ;  ; ********************************************************
 
   .if [xsi].SRVPROTDATA.pLastIOJob == NULL
@@ -164,8 +164,8 @@ Method NetComServerProtocol.OnAccept, uses xbx xsi, pConnection:$ObjPtr(NetComCo
                         addr cAddrStr, lengthof cAddrStr, \
                         NULL, 0, \
                         NI_NUMERICHOST
-    invoke DbgOutText, addr cAddrStr, DBG_COLOR_STRING, DBG_EFFECT_NORMAL, ??DbgDstWnd
-    invoke DbgOutText, $OfsCStr(" is requesting a connection..."), DBG_COLOR_STRING, \
+    invoke DbgOutText, addr cAddrStr, DbgColorString, DbgColorBackground, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutText, $OfsCStr(" is requesting a connection..."), DbgColorString, DbgColorBackground, \
                        DBG_EFFECT_NEWLINE, ??DbgDstWnd
   endif
 

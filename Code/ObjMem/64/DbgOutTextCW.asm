@@ -10,26 +10,28 @@
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup64.inc
 % include &ObjMemPath&ObjMemWin.cop
 
+externdef DbgColorError:DWORD
+
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutTextCW
 ; Purpose:    Send a counted WIDE string to the debug output device.
 ; Arguments:  Arg1: -> Null terminated WIDE string.
 ;             Arg2: Maximal character count.
-;             Arg3: Color value.
-;             Arg4: Effect value (DBG_EFFECT_XXX).
-;             Arg5: -> Destination Window WIDE name.
+;             Arg3: Foreground RGB color value.
+;             Arg4: Background RGB color value.
+;             Arg5: Effect value (DBG_EFFECT_XXX).
+;             Arg6: -> Destination Window WIDE name.
 ; Return:     Nothing.
 
 align ALIGN_CODE
-DbgOutTextCW proc pStringW:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD, pDest:POINTER
+DbgOutTextCW proc pStringW:POINTER, dLength:DWORD, dForeColor:DWORD, dBackColor:DWORD, dEffects:DWORD, pDest:POINTER
   local CDS:COPYDATASTRUCT, dCharsWritten:DWORD, wAttrib:WORD
   local dInfo1:DWORD, dInfo2:DWORD, dInfo3:DWORD, dInfo4:DWORD
 
   .if pStringW == NULL
-    mov rax, $OfsCStrW("NULL Pointer")
-    mov pStringW, rax
-    mov dColor, $RGB(255, 0, 0)
+    c2m pStringW, $OfsCStrW("NULL Pointer"), rax
+    m2m dForeColor, DbgColorError, edx
   .endif
   
   invoke StrLengthW, pStringW
@@ -51,7 +53,7 @@ DbgOutTextCW proc pStringW:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD,
   .elseif eax == DBG_DEV_WIN_CON
     .if $invoke(DbgOpenCon)
       m2z wAttrib
-      mov eax, dColor
+      mov eax, dForeColor
       .ifBitSet al, BIT07 
         or wAttrib, FOREGROUND_INTENSITY or FOREGROUND_RED
       .endif
@@ -64,7 +66,7 @@ DbgOutTextCW proc pStringW:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD,
       .endif
       
       .ifBitClr wAttrib, FOREGROUND_INTENSITY
-        mov eax, dColor
+        mov eax, dForeColor
         .if al != 0h 
           or wAttrib, FOREGROUND_RED
         .endif
@@ -110,7 +112,8 @@ DbgOutTextCW proc pStringW:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD,
         add rax, rcx
         mov [rax].DBG_STR_INFO.bBlockID, DBG_MSG_STR    ;Set block type = string
         m2m [rax].DBG_STR_INFO.dBlockLen, dInfo2, r8d
-        m2m [rax].DBG_STR_INFO.dColor, dColor, r9d
+        m2m [rax].DBG_STR_INFO.dForeColor, dForeColor, r9d
+        m2m [rax].DBG_STR_INFO.dBackColor, dBackColor, r8d
         mov edx, dEffects
         BitSet edx, DBG_CHARTYPE_WIDE
         mov [rax].DBG_STR_INFO.dEffects, edx

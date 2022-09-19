@@ -7,21 +7,24 @@
 ; ==================================================================================================
 
 
+externdef DbgColorError:DWORD
+
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutTextA_UEFI / DbgOutTextW_UEFI
 ; Purpose:    Send a string to the debug output device.
 ; Arguments:  Arg1: -> Zero terminated string.
-;             Arg2: Color value.
-;             Arg3: Effect value (DBG_EFFECT_XXX)
-;             Arg4: -> Destination window WIDE name.
+;             Arg2: Foreground RGB color value.
+;             Arg3: Background RGB color value.
+;             Arg4: Effect value (DBG_EFFECT_XXX)
+;             Arg5: -> Destination window WIDE name.
 ; Return:     Nothing.
 
 align ALIGN_CODE
-ProcName proc uses xbx pString:POINTER, dColor:DWORD, dEffects:DWORD, pDest:POINTER
+ProcName proc uses xbx pString:POINTER, dForeColor:DWORD, dBackColor:DWORD, dEffects:DWORD, pDest:POINTER
   .if pString == NULL
     mov xax, $OfsCStr("NULL Pointer")
     mov pString, xax
-    mov dColor, $RGB(255, 0, 0)
+    m2m dForeColor, DbgColorError, edx
   .endif
 
   mov eax, dDbgDev
@@ -33,7 +36,7 @@ ProcName proc uses xbx pString:POINTER, dColor:DWORD, dEffects:DWORD, pDest:POIN
       invoke StrA2StrW, xax, pString
       mov pString, xbx
     endif
-    invoke RGB24To16ColorIndex, dColor
+    invoke RGB24To16ColorIndex, dForeColor
     mov xbx, pConsoleOut
     invoke [xbx].ConOut.SetAttribute, xbx, xax
     invoke [xbx].ConOut.OutputString, xbx, pString

@@ -173,32 +173,32 @@ ShowRBSubtree proc uses xbx pNode:PRBT_NODE, dIndent:DWORD        ;xsi and xdi a
     mov dColor, RBT_COLOR_GREEN
   .endif
 
-  invoke DbgOutTextA, addr bIndBuffer, dColor, DBG_EFFECT_NORMAL, offset DestWindow
-  invoke DbgOutTextA, $OfsCStrA("Object at address "), dColor, DBG_EFFECT_NORMAL, offset DestWindow
+  invoke DbgOutTextA, addr bIndBuffer, dColor, DbgColorBackground, DBG_EFFECT_NORMAL, offset DestWindow
+  invoke DbgOutTextA, $OfsCStrA("Object at address "), dColor, DbgColorBackground, DBG_EFFECT_NORMAL, offset DestWindow
   mov xdx, xbx
   sub xdx, [xsi].$Obj(RedBlackTree).xNodeOffset
   invoke xword2hexA, addr bNumBuffer, xdx
-  invoke DbgOutTextA, addr bNumBuffer, dColor, DBG_EFFECT_NORMAL, offset DestWindow
-  invoke DbgOutTextA, $OfsCStrA($Esc(" =\] Key = ")), dColor, DBG_EFFECT_NORMAL, offset DestWindow
+  invoke DbgOutTextA, addr bNumBuffer, dColor, DbgColorBackground, DBG_EFFECT_NORMAL, offset DestWindow
+  invoke DbgOutTextA, $OfsCStrA($Esc(" =\] Key = ")), dColor, DbgColorBackground, DBG_EFFECT_NORMAL, offset DestWindow
   mov xdx, xbx
   sub xdx, [xsi].$Obj(RedBlackTree).xNodeOffset         ;Host object addr
   add xdx, xdi                                          ;Key addr
   invoke dword2decA, addr bNumBuffer, DWORD ptr [xdx]
-  invoke DbgOutTextA, addr bNumBuffer, dColor, DBG_EFFECT_NORMAL, offset DestWindow
+  invoke DbgOutTextA, addr bNumBuffer, dColor, DbgColorBackground, DBG_EFFECT_NORMAL, offset DestWindow
 
-;  invoke DbgOutTextA, $OfsCStrA(" parent "), dColor, DBG_EFFECT_NORMAL, offset DestWindow
+;  invoke DbgOutTextA, $OfsCStrA(" parent "), dColor, DbgColorBackground, DBG_EFFECT_NORMAL, offset DestWindow
 ;  mov xcx, xbx
 ;  mov xdx, [xcx].RBT_NODE.pParentNode
 ;  .if xdx != NULL
 ;    sub xdx, [xsi].$Obj(RedBlackTree).xNodeOffset
 ;    add xdx, xdi
 ;    invoke dword2dec, addr bNumBuffer, DWORD ptr [xdx]
-;    invoke DbgOutTextA, addr bNumBuffer, dColor, DBG_EFFECT_NORMAL, offset DestWindow
+;    invoke DbgOutTextA, addr bNumBuffer, dColor, DbgColorBackground, DBG_EFFECT_NORMAL, offset DestWindow
 ;  .else
-;    invoke DbgOutTextA, $OfsCStrA(" (NULL) "), dColor, DBG_EFFECT_NORMAL, offset DestWindow
+;    invoke DbgOutTextA, $OfsCStrA(" (NULL) "), dColor, DbgColorBackground, DBG_EFFECT_NORMAL, offset DestWindow
 ;  .endif
 
-  invoke DbgOutTextA, offset bCRLF, dColor, DBG_EFFECT_NORMAL, offset DestWindow
+  invoke DbgOutTextA, offset bCRLF, dColor, DbgColorBackground, DBG_EFFECT_NORMAL, offset DestWindow
 
   add dIndent, 2
 
@@ -207,17 +207,17 @@ ShowRBSubtree proc uses xbx pNode:PRBT_NODE, dIndent:DWORD        ;xsi and xdi a
     .if xax != NULL
       invoke ShowRBSubtree, xax, dIndent
     .else
-      invoke DbgOutTextA, addr bIndBuffer, RBT_COLOR_TEXT, DBG_EFFECT_NORMAL, offset DestWindow
-      invoke DbgOutTextA, $OfsCStrA("  Null"), RBT_COLOR_TEXT, DBG_EFFECT_NORMAL, offset DestWindow
-      invoke DbgOutTextA, offset bCRLF, RBT_COLOR_TEXT, DBG_EFFECT_NORMAL, offset DestWindow
+      invoke DbgOutTextA, addr bIndBuffer, RBT_COLOR_TEXT, DbgColorBackground, DBG_EFFECT_NORMAL, offset DestWindow
+      invoke DbgOutTextA, $OfsCStrA("  Null"), RBT_COLOR_TEXT, DbgColorBackground, DBG_EFFECT_NORMAL, offset DestWindow
+      invoke DbgOutTextA, offset bCRLF, RBT_COLOR_TEXT, DbgColorBackground, DBG_EFFECT_NORMAL, offset DestWindow
     .endif
     mov xax, [xbx].RBT_NODE.pRightNode
     .if xax != NULL
       invoke ShowRBSubtree, xax, dIndent
     .else
-      invoke DbgOutTextA, addr bIndBuffer, RBT_COLOR_TEXT, DBG_EFFECT_NORMAL, offset DestWindow
-      invoke DbgOutTextA, $OfsCStrA("  Null"), RBT_COLOR_TEXT, DBG_EFFECT_NORMAL, offset DestWindow
-      invoke DbgOutTextA, offset bCRLF, RBT_COLOR_TEXT, DBG_EFFECT_NORMAL, offset DestWindow
+      invoke DbgOutTextA, addr bIndBuffer, RBT_COLOR_TEXT, DbgColorBackground, DBG_EFFECT_NORMAL, offset DestWindow
+      invoke DbgOutTextA, $OfsCStrA("  Null"), RBT_COLOR_TEXT, DbgColorBackground, DBG_EFFECT_NORMAL, offset DestWindow
+      invoke DbgOutTextA, offset bCRLF, RBT_COLOR_TEXT, DbgColorBackground, DBG_EFFECT_NORMAL, offset DestWindow
     .endif
   .endif
 

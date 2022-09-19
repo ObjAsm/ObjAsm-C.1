@@ -758,13 +758,13 @@ Method DebugCenter.OnCommand, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
         invoke StrIComp, xdi, offset szRtfExt
         .if eax == 0
           mov xdi, $New(DbgMdiChildTxt)
-          OCall xdi::DbgMdiChildTxt.Init, [xsi].pClientWnd, addr cFileName, [xsi].hFont
+          OCall xdi::DbgMdiChildTxt.Init, [xsi].pClientWnd, addr cFileName, [xsi].hFont, DBG_COLOR_FOREGROUND_WND
           OCall xdi::DbgMdiChildTxt.Open, addr cFileName
         .else
           invoke StrIComp, xdi, offset szBmpExt
           .if eax == 0
             mov xdi, $New(DbgMdiChildBmp)
-            OCall xdi::DbgMdiChildBmp.Init, [xsi].pClientWnd, addr cFileName
+            OCall xdi::DbgMdiChildBmp.Init, [xsi].pClientWnd, addr cFileName, DBG_COLOR_BACKGROUND_WND
             OCall xdi::DbgMdiChildBmp.Open, addr cFileName
           .else
             mov edx, $ObjTmpl(DebugCenter).dLanguage
@@ -1105,7 +1105,7 @@ ChildSearch proc uses xbx xdi hWnd:HWND, lParam:PDBG_CHILD_INFO
 ChildSearch endp
 
 Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
-  local CFD:CHARFORMAT, DCI:DBG_CHILD_INFO, dDbgCmd:DWORD, dParam1:DWORD, FWI:FLASHWINFO
+  local CFD:CHARFORMAT, DCI:DBG_CHILD_INFO, dDbgCmd:DWORD, dParam1:DWORD, dParam2:DWORD, FWI:FLASHWINFO
 
   SetObject xsi
   mov xcx, lParam
@@ -1116,7 +1116,7 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
       mov xcx, xbx
       mov eax, [xbx].DBG_HEADER_INFO.dBlockLen
       add xcx, xax
-      .if [xcx].DBG_CMD_INFO.bBlockID == DBG_MSG_CMD    ;Command
+      .if [xcx].DBG_HEADER_INFO.bBlockID == DBG_MSG_CMD    ;Command
         movzx eax, [xcx].DBG_CMD_INFO.bInfo
         .if eax == DBG_CMD_CLEAR_TXT || eax == DBG_CMD_CLEAR_BMP
           m2m dParam1, [xcx].DBG_CMD_INFO.dParam1, edx
@@ -1155,13 +1155,14 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
         .elseif eax == DBG_CMD_SINGLE_LINE || eax == DBG_CMD_DOUBLE_LINE
           mov dDbgCmd, eax
           m2m dParam1, [xcx].DBG_CMD_INFO.dParam1, edx
+          m2m dParam2, [xcx].DBG_CMD_INFO.dParam2, eax
           mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
           m2z DCI.pChild
           mov DCI.dObjID, DBG_MDI_CHILD_TXT_ID
           invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset ChildSearch, addr DCI
           .if DCI.pChild == NULL
             mov xdi, $New(DbgMdiChildTxt)
-            OCall xdi::DbgMdiChildTxt.Init, [xsi].pClientWnd, addr [xbx + DBG_HEADER_INFO], [xsi].hFont
+            OCall xdi::DbgMdiChildTxt.Init, [xsi].pClientWnd, addr [xbx + DBG_HEADER_INFO], [xsi].hFont, dParam2
           .else
             mov xdi, DCI.pChild
           .endif
@@ -1202,7 +1203,7 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
           invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset ChildSearch, addr DCI
           .if DCI.pChild != NULL
             mov xdi, DCI.pChild
-            m2m [xdi].$Obj(DbgMdiChildBmp).ColorBackground, dParam1, edx
+            m2m [xdi].$Obj(DbgMdiChildBmp).dBackColor, dParam1, edx
             invoke InvalidateRect, [xdi].$Obj(DbgMdiChildBmp).hWnd, NULL, TRUE
           .endif
 
@@ -1313,14 +1314,15 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
           .endif
         .endif
 
-      .elseif BYTE ptr [xcx] == DBG_MSG_STR             ;Text (ANSI or WIDE)
+      .elseif [xcx].DBG_HEADER_INFO.bBlockID == DBG_MSG_STR             ;Text (ANSI or WIDE)
+        m2m dParam2, [xcx].DBG_STR_INFO.dBackColor, eax                       
         mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
         m2z DCI.pChild
         mov DCI.dObjID, DBG_MDI_CHILD_TXT_ID
         invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset ChildSearch, addr DCI
         .if DCI.pChild == NULL
           mov xdi, $New(DbgMdiChildTxt)
-          OCall xdi::DbgMdiChildTxt.Init, [xsi].pClientWnd, addr [xbx + DBG_HEADER_INFO], [xsi].hFont
+          OCall xdi::DbgMdiChildTxt.Init, [xsi].pClientWnd, addr [xbx + DBG_HEADER_INFO], [xsi].hFont, dParam2
         .else
           mov xdi, DCI.pChild
         .endif
@@ -1330,7 +1332,7 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
         add xbx, xax
         mov CFD.cbSize, sizeof(CFD)
         mov CFD.dwMask, CFM_COLOR or CFM_BOLD or CFM_ITALIC or CFM_STRIKEOUT or CFM_UNDERLINE
-        m2m CFD.crTextColor, [xbx].DBG_STR_INFO.dColor, eax
+        m2m CFD.crTextColor, [xbx].DBG_STR_INFO.dForeColor, eax
         mov eax, [xbx].DBG_STR_INFO.dEffects
         BitClr eax, DBG_CHARTYPE_WIDE
         mov CFD.dwEffects, eax
@@ -1356,14 +1358,15 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
         invoke SendMessage, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_SETSEL, -1, -1         ;Move caret to last position
         invoke SendMessage, [xdi].$Obj(DbgMdiChildTxt).hEdit, EM_SCROLLCARET, 0, 0      ;Make caret visible
 
-      .elseif BYTE ptr [xcx] == DBG_MSG_BMP             ;Bitmap
+      .elseif [xcx].DBG_HEADER_INFO.bBlockID == DBG_MSG_BMP     ;Bitmap
+        m2m dParam2, [xcx].DBG_BMP_INFO.dBackColor, eax                       
         mov DCI.pCaption, $addr(xbx + DBG_HEADER_INFO)
         m2z DCI.pChild
         mov DCI.dObjID, DBG_MDI_CHILD_BMP_ID
         invoke EnumChildWindows, [xdi].$Obj(DbgMdiClient).hWnd, offset ChildSearch, addr DCI
         .if DCI.pChild == NULL
           mov xdi, $New(DbgMdiChildBmp)
-          OCall xdi::DbgMdiChildBmp.Init, [xsi].pClientWnd, addr [xbx + DBG_HEADER_INFO]
+          OCall xdi::DbgMdiChildBmp.Init, [xsi].pClientWnd, addr [xbx + DBG_HEADER_INFO], dParam2
         .else
           mov xdi, DCI.pChild
         .endif
@@ -1754,13 +1757,13 @@ Method DbgMdiClient.OnDropFiles, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
       .if $invoke(StrComp, xdi, offset szRtfExt) == 0
         mov xdi, $New(DbgMdiChildTxt)
         mov xax, [xsi].pOwner
-        OCall xdi::DbgMdiChildTxt.Init, xsi, pFileName, [xax].$Obj(DebugCenter).hFont
+        OCall xdi::DbgMdiChildTxt.Init, xsi, pFileName, [xax].$Obj(DebugCenter).hFont, DBG_COLOR_FOREGROUND_WND
         OCall xdi::DbgMdiChildTxt.Open, pFileName
       .else
         .if $invoke(StrComp, xdi, offset szBmpExt) == 0
           mov xdi, $New(DbgMdiChildBmp)
           mov xax, [xsi].pOwner
-          OCall xdi::DbgMdiChildBmp.Init, xsi, pFileName
+          OCall xdi::DbgMdiChildBmp.Init, xsi, pFileName, DBG_COLOR_BACKGROUND_WND
           OCall xdi::DbgMdiChildBmp.Open, pFileName
         .else
           jmp @@Error

@@ -620,7 +620,7 @@ SysInit macro Arg1, Arg2
       endif
 
       ifidn DBG_DEVICE, <CON>
-        mov DbgColorText, DBG_COLOR_TEXT_CON
+        mov DbgColorForeground, DBG_COLOR_FOREGROUND_CON
         mov DbgColorBackground, DBG_COLOR_BACKGROUND_CON
         mov DbgColorComment, DBG_COLOR_COMMENT_CON
         mov DbgColorWarning, DBG_COLOR_WARNING_CON
@@ -639,7 +639,7 @@ SysInit macro Arg1, Arg2
         mov DbgColorGreen, DBG_COLOR_GREEN_CON
         mov DbgColorBlue, DBG_COLOR_BLUE_CON
       elseifidn DBG_DEVICE, <LOG>
-        mov DbgColorText, DBG_COLOR_TEXT_WND
+        mov DbgColorForeground, DBG_COLOR_FOREGROUND_WND
         mov DbgColorBackground, DBG_COLOR_BACKGROUND_WND
         mov DbgColorComment, DBG_COLOR_COMMENT_WND
         mov DbgColorWarning, DBG_COLOR_WARNING_WND
@@ -662,7 +662,7 @@ SysInit macro Arg1, Arg2
         mov DbgHighContrast.dwFlags, 0                  ;;Just in case the API fails
         invoke SystemParametersInfo, SPI_GETHIGHCONTRAST, 0, addr DbgHighContrast, FALSE
         .ifBitSet DbgHighContrast.dwFlags, HCF_HIGHCONTRASTON
-          mov DbgColorText, DBG_COLOR_TEXT_HC
+          mov DbgColorForeground, DBG_COLOR_FOREGROUND_HC
           mov DbgColorBackground, DBG_COLOR_BACKGROUND_HC
           mov DbgColorComment, DBG_COLOR_COMMENT_HC
           mov DbgColorWarning, DBG_COLOR_WARNING_HC
@@ -681,7 +681,7 @@ SysInit macro Arg1, Arg2
           mov DbgColorGreen, DBG_COLOR_GREEN_HC
           mov DbgColorBlue, DBG_COLOR_BLUE_HC
         .else
-          mov DbgColorText, DBG_COLOR_TEXT_WND
+          mov DbgColorForeground, DBG_COLOR_FOREGROUND_WND
           mov DbgColorBackground, DBG_COLOR_BACKGROUND_WND
           mov DbgColorComment, DBG_COLOR_COMMENT_WND
           mov DbgColorWarning, DBG_COLOR_WARNING_WND

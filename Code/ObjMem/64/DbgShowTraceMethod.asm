@@ -14,31 +14,14 @@
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgShowTraceMethod
 ; Purpose:    Output trace information about a method.
-; Arguments:  Arg1: -> Method Name.
+; Arguments:  Arg1: -> ANSI Method Name.
 ;             Arg2: Method count.
-;             Arg3: Method ticks.
-;             Arg4: -> Destination Window WIDE name.
+;             Arg3: -> Method ticks.
+;             Arg4: Foreground RGB color value.
+;             Arg5: Background RGB color value.
+;             Arg6: -> Destination Window WIDE name.
 ; Return:     Nothing.
 
-align ALIGN_CODE
-DbgShowTraceMethod proc uses rbx pMName:POINTER, dCount:DWORD, pTicks:POINTER, pDest:POINTER
-  local cBuffer[100]:CHRW
-
-  lea rbx, cBuffer
-  invoke DbgOutTextA, $OfsCStrA("  "), $RGB(64,64,255), DBG_EFFECT_NORMAL, pDest
-  invoke DbgOutTextA, pMName, $RGB(64,64,255), DBG_EFFECT_NORMAL, pDest
-  invoke DbgOutTextA, $OfsCStrA(": Calls = "), $RGB(64,64,255), DBG_EFFECT_NORMAL, pDest
-  invoke wsprintfA, rbx, $OfsCStrA("%li"), dCount
-  invoke DbgOutTextA, rbx, $RGB(0,0,0), DBG_EFFECT_NORMAL, pDest
-  .if dCount != 0
-    invoke DbgOutTextA, $OfsCStrA(", Ticks = "), $RGB(64,64,255), DBG_EFFECT_NORMAL, pDest
-    mov rax, pTicks
-    invoke qword2hexA, rbx, QWORD ptr [rax]
-    mov WORD ptr [rbx + 16], "h"
-    invoke DbgOutTextA, rbx, $RGB(0,0,0), DBG_EFFECT_NORMAL, pDest
-  .endif
-  invoke DbgOutTextA, offset bCRLF, $RGB(0,0,0), DBG_EFFECT_NORMAL, pDest
-  ret
-DbgShowTraceMethod endp
+% include &ObjMemPath&Common\\DbgShowTraceMethod_XP.inc
 
 end

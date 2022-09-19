@@ -382,12 +382,13 @@ DbgWndMsgTableCount equ ($ - DbgWndMsgTable)/sizeof(DOM)
 ; Procedure:  DbgOutMsg
 ; Purpose:    Identify a windows message with a string.
 ; Arguments:  Arg1: Windows message ID.
-;             Arg2: Foreground color.
-;             Arg3: -> Destination window name.
+;             Arg2: Foreground RGB color value.
+;             Arg3: Background RGB color value.
+;             Arg4: -> Destination window name.
 ; Return:     Nothing.
 
 align ALIGN_CODE
-DbgOutMsg proc dMsgID:DWORD, dColor:DWORD, pDest:POINTER
+DbgOutMsg proc dMsgID:DWORD, dForeColor:DWORD, dBackColor:DWORD, pDest:POINTER
   mov edx, dMsgID                                       ;edx = window message
   mov xax, offset DbgWndMsgTable
   mov ecx, DbgWndMsgTableCount
@@ -434,6 +435,6 @@ DbgOutMsg proc dMsgID:DWORD, dColor:DWORD, pDest:POINTER
 @@:
   mov xax, [xax].DOM.pStr                               ;Get text pointer
 @@Exit:
-  invoke DbgOutTextA, xax, dColor, DBG_EFFECT_NORMAL, pDest
+  invoke DbgOutTextA, xax, dForeColor, dBackColor, DBG_EFFECT_NORMAL, pDest
   ret
 DbgOutMsg endp

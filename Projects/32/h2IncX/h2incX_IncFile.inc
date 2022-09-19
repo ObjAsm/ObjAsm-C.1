@@ -1113,7 +1113,7 @@ Method IncFile.ShowError, uses ebx edi, pFormat:PSTRINGA, Args:vararg
     if DEBUGGING
       DbgSaveContext TRUE, edi                   ;ebx = edi
       DbgSetDestWnd "Output"
-      invoke DbgOutTextA, ebx, $RGB(255,0,0), DBG_EFFECT_NEWLINE, ??DbgDstWnd
+      invoke DbgOutTextA, ebx, DbgColorError, DbgColorBackground, DBG_EFFECT_NEWLINE, ??DbgDstWnd
       DbgLoadContext
     endif
 MethodEnd
@@ -1140,7 +1140,7 @@ Method IncFile.ShowWarning, uses ebx edi, pFormat:PSTRINGA, Args:vararg
     if DEBUGGING
       DbgSaveContext TRUE, edi                   ;ebx = edi
       DbgSetDestWnd "Output"
-      invoke DbgOutTextA, ebx, $RGB(128,0,0), DBG_EFFECT_NEWLINE, ??DbgDstWnd
+      invoke DbgOutTextA, ebx, DbgColorWarning, DbgColorBackground, DBG_EFFECT_NEWLINE, ??DbgDstWnd
       DbgLoadContext
     endif
 MethodEnd

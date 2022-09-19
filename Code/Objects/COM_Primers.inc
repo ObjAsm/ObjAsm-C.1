@@ -48,10 +48,8 @@ ObjectEnd
 ;             and implements a way to reuse other COM objects called aggregation, shown in the
 ;             following diagram:
 ;
-;                                                                覧・
-;                                                               |   |
-;                                                                覧・
-;                                                                 |
+;                                                                覧・;                                                               |   |
+;                                                                覧・;                                                                 |
 ;              Outer Component                                    |
 ;              覧覧覧覧覧覧覧覧覧覧覧覧覧覧覧覧覧覧覧覧覧覧覧覧覧慾覧覧覧覧覧覧覧覧覧覧覧覧覧覧覧
 ;             |                                                   |                              |
@@ -138,33 +136,33 @@ PrintRefCounters proc pInterface:POINTER, dColor:DWORD, pDestWnd:PSTRINGA
   DbgSaveContext
   invoke EnterCriticalSection, offset DbgCritSect
   DbgOutHex <Interface -\] >, dColor, xbx, dColor, pDestWnd
-  invoke DbgOutTextA, $OfsCStrA(",   IID = "), dColor, DBG_EFFECT_NORMAL, pDestWnd
+  invoke DbgOutTextA, $OfsCStrA(",   IID = "), dColor, DbgColorBackground, DBG_EFFECT_NORMAL, pDestWnd
   mov xsi, pInterface
   invoke DbgOutInterfaceName, [xsi].$Obj(IUnknown).pIID, dColor, pDestWnd
   mov ebx, [xsi].$Obj(IUnknown).dRefCount
   DbgOutHex <, Reference Count = >, dColor, ebx, dColor, pDestWnd
-  invoke DbgOutTextA, offset bCRLF, dColor, DBG_EFFECT_NORMAL, pDestWnd
+  invoke DbgOutTextA, offset bCRLF, dColor, DbgColorBackground, DBG_EFFECT_NORMAL, pDestWnd
 
   mov xsi, pInterface
   mov xbx, [xsi].$Obj(IUnknown).pOwner
   DbgOutHex <Component -\] >, dColor, xbx, dColor, pDestWnd
-  invoke DbgOutTextA, $OfsCStrA(", CLSID = "), dColor, DBG_EFFECT_NORMAL, pDestWnd
+  invoke DbgOutTextA, $OfsCStrA(", CLSID = "), dColor, DbgColorBackground, DBG_EFFECT_NORMAL, pDestWnd
   mov xsi, pInterface
   mov xdx, [xsi].$Obj(IUnknown).pOwner
   .if [xdx].$Obj(Component).pCLSID == NULL
     invoke DbgOutTextA, $OfsCStrA("????????-????-????-????-????????????"), \
-                        dColor, DBG_EFFECT_NORMAL, pDestWnd
+                        dColor, DbgColorBackground, DBG_EFFECT_NORMAL, pDestWnd
   .else
     lea xbx, COM_GUID_STR
     invoke GUID2StrA, xbx, [xdx].$Obj(Component).pCLSID
-    invoke DbgOutTextA, xbx, dColor, DBG_EFFECT_NORMAL, pDestWnd
+    invoke DbgOutTextA, xbx, dColor, DbgColorBackground, DBG_EFFECT_NORMAL, pDestWnd
   .endif
   mov xsi, pInterface
   mov xcx, [xsi].$Obj(IUnknown).pOwner
   lea xdx, [xcx].$Obj(Component).IUnkNoDelegate
   mov ebx, [xdx].$Obj(IUnknown).dRefCount
   DbgOutHex <, Reference Count = >, dColor, ebx, dColor, pDestWnd
-  invoke DbgOutTextA, offset bCRLF, dColor, DBG_EFFECT_NORMAL, pDestWnd
+  invoke DbgOutTextA, offset bCRLF, dColor, DbgColorBackground, DBG_EFFECT_NORMAL, pDestWnd
   invoke LeaveCriticalSection, offset DbgCritSect
   DbgLoadContext
   ret
@@ -177,27 +175,27 @@ PrintQueryInfoBeg proc pInterface:POINTER, pReqIID:POINTER, dColor:DWORD, pDestW
   invoke EnterCriticalSection, offset DbgCritSect
   mov xsi, pInterface
   Invoke DbgOutInterface, pReqIID, dColor, pDestWnd
-  invoke DbgOutTextA, offset bCRLF, dColor, DBG_EFFECT_NORMAL, pDestWnd
+  invoke DbgOutTextA, offset bCRLF, dColor, DbgColorBackground, DBG_EFFECT_NORMAL, pDestWnd
 
   mov xbx, pInterface
   DbgOutHex <Interface -\] >, dColor, xbx, dColor, pDestWnd
-  invoke DbgOutTextA, $OfsCStrA(",   IID = "), dColor, DBG_EFFECT_NORMAL, pDestWnd
+  invoke DbgOutTextA, $OfsCStrA(",   IID = "), dColor, DbgColorBackground, DBG_EFFECT_NORMAL, pDestWnd
   mov xsi, pInterface
   invoke DbgOutInterfaceName, [xsi].$Obj(IUnknown).pIID, dColor, pDestWnd
-  invoke DbgOutTextA, offset bCRLF, dColor, DBG_EFFECT_NORMAL, pDestWnd
+  invoke DbgOutTextA, offset bCRLF, dColor, DbgColorBackground, DBG_EFFECT_NORMAL, pDestWnd
 
   mov xbx, [xsi].$Obj(IUnknown).pOwner
   DbgOutHex <Component -\] >, dColor, xbx, dColor, pDestWnd
-  invoke DbgOutTextA, $OfsCStrA(", CLSID = "), dColor, DBG_EFFECT_NORMAL, pDestWnd
+  invoke DbgOutTextA, $OfsCStrA(", CLSID = "), dColor, DbgColorBackground, DBG_EFFECT_NORMAL, pDestWnd
   mov xsi, pInterface
   mov xdx, [xsi].$Obj(IUnknown).pOwner
   .if [xdx].$Obj(Component).pCLSID == NULL
     invoke DbgOutTextA, $OfsCStrA("????????-????-????-????-????????????"), \
-                        dColor, DBG_EFFECT_NORMAL, pDestWnd
+                        dColor, DbgColorBackground, DBG_EFFECT_NORMAL, pDestWnd
   .else
     invoke DbgOutComponentName, [xdx].$Obj(Component).pCLSID, dColor, pDestWnd
   .endif
-  invoke DbgOutTextA, offset bCRLF, dColor, DBG_EFFECT_NORMAL, pDestWnd
+  invoke DbgOutTextA, offset bCRLF, dColor, DbgColorBackground, DBG_EFFECT_NORMAL, pDestWnd
 
   invoke LeaveCriticalSection, offset DbgCritSect
   DbgLoadContext
@@ -208,11 +206,11 @@ PrintQueryInfoEnd proc hResult:DWORD, dColor:DWORD, pDestWnd:PSTRINGA
   DbgSaveContext
   invoke EnterCriticalSection, offset DbgCritSect
   .if hResult == S_OK
-    invoke DbgOutTextA, $OfsCStrA("IUnknown.QueryInterface succeeded"), dColor, \
+    invoke DbgOutTextA, $OfsCStrA("IUnknown.QueryInterface succeeded"), dColor, DbgColorBackground, \
                         DBG_EFFECT_BOLD or DBG_EFFECT_NEWLINE, pDestWnd
   .else
     invoke DbgOutComErr, hResult, pDestWnd
-    invoke DbgOutTextA, offset bCRLF, dColor, DBG_EFFECT_NORMAL, pDestWnd
+    invoke DbgOutTextA, offset bCRLF, dColor, DbgColorBackground, DBG_EFFECT_NORMAL, pDestWnd
   .endif
   invoke LeaveCriticalSection, offset DbgCritSect
   DbgLoadContext

@@ -448,7 +448,7 @@ DbgSockError macro WarningText:req, InfoText, Dest
   if DEBUGGING
     DbgSaveContext
     DbgSetDestWnd Dest
-    invoke DbgOutTextA, $OfsCStrA($Esc(<WarningText>)), DBG_COLOR_WARNING, DBG_EFFECT_NORMAL, \
+    invoke DbgOutTextA, $OfsCStrA($Esc(<WarningText>)), DbgColorWarning, DbgColorBackground, DBG_EFFECT_NORMAL, \
                         ??DbgDstWnd
     invoke WSAGetLastError
     $$Buffersize = 1024
@@ -459,7 +459,7 @@ DbgSockError macro WarningText:req, InfoText, Dest
       lea rdi, [rsp + 20h]                              ;;Get a POINTER to the output buffer
     endif
     invoke wsprintfA, xdi, $OfsCStrA(" - WSA error code: %lit"), eax
-    invoke DbgOutTextA, xdi, DBG_COLOR_WARNING, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    invoke DbgOutTextA, xdi, DbgColorWarning, DbgColorBackground, DBG_EFFECT_NORMAL, ??DbgDstWnd
     invoke NetErr2Str, eax, xdi, $$Buffersize - 20h     ;Get the error message
     add xsp, 1024                                       ;Retrieve the string room
     DbgShowTxtInfo InfoText, ??DbgDstWnd

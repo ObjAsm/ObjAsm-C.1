@@ -14,11 +14,12 @@
 ; Procedure:  DbgOutFPU / DbgOutFPU_UEFI
 ; Purpose:    Display the content of the FPU.
 ; Arguments:  Arg1: -> Destination Window WIDE name.
-;             Arg2: Text RGB color.
+;             Arg2: Foreground RGB color value.
+;             Arg3: Background RGB color value.
 ; Return:     Nothing.
 
 align ALIGN_CODE
-ProcName proc uses xbx xdi xsi pDest:POINTER, dColor:DWORD
+ProcName proc uses xbx xdi xsi pDest:POINTER, dForeColor:DWORD, dBackColor:DWORD
   local FPU_Buffer:FPU_CONTEXT, dLevels:DWORD
   local bBuffer[128]:CHRA, bFPExept[30]:CHRA
 
@@ -40,7 +41,7 @@ ProcName proc uses xbx xdi xsi pDest:POINTER, dColor:DWORD
 
   invoke StrECopyA, addr bBuffer, $OfsCStrA("FPU Levels : ")
   invoke udword2decA, xax, dLevels                    ;Display Levels found
-  invoke DbgOutTextA, addr bBuffer, dColor, DBG_EFFECT_NEWLINE, pDest
+  invoke DbgOutTextA, addr bBuffer, dForeColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
   movzx eax, WORD ptr FPU_Buffer.wStatusWord
   shr eax, 6                                          ;ax  = 000000X* XXY*Y*ZZ
@@ -58,7 +59,7 @@ ProcName proc uses xbx xdi xsi pDest:POINTER, dColor:DWORD
   .else                                               ;Anything else
     mov xcx, $OfsCStrA("Conditional: Undefined")
   .endif
-  invoke DbgOutTextA, xcx, dColor, DBG_EFFECT_NEWLINE, pDest
+  invoke DbgOutTextA, xcx, dForeColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
   invoke StrCopyA, addr bFPExept, $OfsCStrA("Exceptions : e s p u o z d i")  ;FPU Exceptions
   movzx eax, WORD ptr FPU_Buffer.wStatusWord          ;eax = Status first found
@@ -75,7 +76,7 @@ ProcName proc uses xbx xdi xsi pDest:POINTER, dColor:DWORD
     add xdx, 2                                        ;Since Spaces, inc 2 in string
     inc ecx                                           ;Next bit!
   .endw
-  invoke DbgOutTextA, addr bFPExept, dColor, DBG_EFFECT_NEWLINE, pDest
+  invoke DbgOutTextA, addr bFPExept, dForeColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
   xor esi, esi                                        ;esi = Counter = 0
   lea xdi, FPU_Buffer.tST0
@@ -86,7 +87,7 @@ ProcName proc uses xbx xdi xsi pDest:POINTER, dColor:DWORD
     invoke udword2decA, xax, esi                      ;Display levels
     invoke StrECopyA, addr [xbx + xax - 1], $OfsCStrA(") = ")
     invoke St0ToStrA, xax, 0, 7, f_SCI
-    invoke DbgOutTextA, addr bBuffer, dColor, DBG_EFFECT_NEWLINE, pDest
+    invoke DbgOutTextA, addr bBuffer, dForeColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
     add xdi, sizeof(TBYTE)                            ;Next entry
     inc esi
   .endw

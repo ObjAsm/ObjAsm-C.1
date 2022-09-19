@@ -10,32 +10,35 @@
 % include @Environ(OBJASM_PATH)\\Code\\OA_Setup32.inc
 % include &ObjMemPath&ObjMemWin.cop
 
+externdef DbgColorError:DWORD
+
 .code
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgOutTextCA
 ; Purpose:    Send a counted ANSI string to the debug output device
 ; Arguments:  Arg1: -> Null terminated ANSI string.
-;             Arg2: Character count.
-;             Arg3: Color value.
-;             Arg4: Effect value (DBG_EFFECT_XXX).
-;             Arg5: -> Destination Window WIDE name.
+;             Arg2: Maximal character count.
+;             Arg3: Foreground RGB color value.
+;             Arg4: Background RGB color value.
+;             Arg5: Effect value (DBG_EFFECT_XXX).
+;             Arg6: -> Destination Window WIDE name.
 ; Return:     Nothing.
 
 align ALIGN_CODE
-DbgOutTextCA proc pStr:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD, pDest:POINTER
+DbgOutTextCA proc pStringA:POINTER, dLength:DWORD, dForeColor:DWORD, dBackColor:DWORD, dEffects:DWORD, pDest:POINTER
   local dCharsWritten:DWORD, wAttrib:WORD, dResult:DWORD
   local CDS:COPYDATASTRUCT
 
-  .if pStr == NULL
-    mov pStr, $OfsCStrA("NULL Pointer")
-    mov dColor, $RGB(255, 0, 0)
+  .if pStringA == NULL
+    mov pStringA, $OfsCStrA("NULL Pointer")
+    m2m dForeColor, DbgColorError, edx
   .endif
 
   mov eax, dDbgDev
   .if eax == DBG_DEV_WIN_LOG
     .if $invoke(DbgOpenLog)
       lea ecx, dCharsWritten
-      invoke WriteFile, hDbgDev, pStr, dLength, ecx, NULL
+      invoke WriteFile, hDbgDev, pStringA, dLength, ecx, NULL
     .endif
     .ifBitSet dEffects, DBG_EFFECT_NEWLINE
       invoke WriteFile, hDbgDev, offset bCRLF, 2, addr dCharsWritten, NULL
@@ -44,7 +47,7 @@ DbgOutTextCA proc pStr:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD, pDe
   .elseif eax == DBG_DEV_WIN_CON
     .if $invoke(DbgOpenCon)
       m2z wAttrib
-      mov eax, dColor
+      mov eax, dForeColor
       .ifBitSet al, BIT07 
         or wAttrib, FOREGROUND_INTENSITY or FOREGROUND_RED
       .endif
@@ -57,7 +60,7 @@ DbgOutTextCA proc pStr:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD, pDe
       .endif
       
       .ifBitClr wAttrib, FOREGROUND_INTENSITY
-        mov eax, dColor
+        mov eax, dForeColor
         .if al != 0h 
           or wAttrib, FOREGROUND_RED
         .endif
@@ -71,7 +74,7 @@ DbgOutTextCA proc pStr:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD, pDe
       .endif
       invoke SetConsoleTextAttribute, hDbgDev, wAttrib
       lea ecx, dCharsWritten
-      invoke WriteConsoleA, hDbgDev, pStr, dLength, ecx, NULL
+      invoke WriteConsoleA, hDbgDev, pStringA, dLength, ecx, NULL
       .ifBitSet dEffects, DBG_EFFECT_NEWLINE
         invoke WriteConsoleA, hDbgDev, offset bCRLF, 2, addr dCharsWritten, NULL
       .endif
@@ -106,8 +109,9 @@ DbgOutTextCA proc pStr:POINTER, dLength:DWORD, dColor:DWORD, dEffects:DWORD, pDe
         mov edx, dEffects
         BitSet edx, DBG_CHARTYPE_WIDE                   ;Set this bit
         mov [eax].DBG_STR_INFO.dEffects, edx
-        m2m [eax].DBG_STR_INFO.dColor, dColor, ecx
-        push pStr
+        m2m [eax].DBG_STR_INFO.dForeColor, dForeColor, ecx
+        m2m [eax].DBG_STR_INFO.dBackColor, dBackColor, edx
+        push pStringA
         lea ecx, [eax + sizeof DBG_STR_INFO]
         push ecx
         call MemClone

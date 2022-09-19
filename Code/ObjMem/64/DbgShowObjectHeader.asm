@@ -16,10 +16,11 @@ ProcName textequ <DbgShowObjectHeader>
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  DbgShowObjectHeader
 ; Purpose:    Output heading object information.
-; Arguments:  Arg1: -> Object Name.
+; Arguments:  Arg1: -> ANSI Object Name.
 ;             Arg2: -> Instance.
-;             Arg3: Text RGB color.
-;             Arg3: -> Destination Window WIDE name.
+;             Arg3: Foreground RGB color value.
+;             Arg4: Background RGB color value.
+;             Arg5: -> Destination window WIDE name.
 ; Return:     Nothing.
 
 % include &ObjMemPath&Common\\DbgShowObjectHeader_XP.inc

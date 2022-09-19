@@ -15,14 +15,11 @@
 ; Procedure:  DbgOutComponent
 ; Purpose:    Identify a COM-Component.
 ; Arguments:  Arg1: -> CSLID.
-;             Arg2: Foreground color.
-;             Arg2: -> Destination Window WIDE name.
+;             Arg2: Foreground RGB color value.
+;             Arg3: Background RGB color value.
+;             Arg4: -> Destination Window WIDE name.
+; Return:     Nothing.
 
-align ALIGN_CODE
-DbgOutComponent proc pIID:ptr GUID, dColor:DWORD, pDestWnd:POINTER
-  invoke DbgOutTextA, $OfsCStrA("Component: "), dColor, DBG_EFFECT_NORMAL, pDestWnd
-  invoke DbgOutComponentName, pIID, dColor, pDestWnd
-  ret
-DbgOutComponent endp
+% include &ObjMemPath&Common\DbgOutComponent_X.inc
 
 end

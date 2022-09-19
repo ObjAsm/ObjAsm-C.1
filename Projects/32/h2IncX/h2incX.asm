@@ -266,8 +266,8 @@ GetOption proc uses edi esi pArgument:PSTRINGA
     ret
 
 @Error:
-    DbgErrorF $RGB(255,0,0), <"%s(%u): ParseEqu - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
-    DbgErrorF $RGB(255,0,0), <"%u: GetOption - error">, [ebx].$Obj(IncFile).dLineNbr
+    DbgErrorF <"%s(%u): ParseEqu - error">, [ebx].$Obj(IncFile).pFileName, [ebx].$Obj(IncFile).dLineNbr
+    DbgErrorF <"%u: GetOption - error">, [ebx].$Obj(IncFile).dLineNbr
     mov eax, FALSE
     ret
 GetOption endp
@@ -359,7 +359,7 @@ ProcessFile proc uses ebx esi pFileName:PSTRINGA, pParent:ptr IncFile
       .endif
       invoke StrECopy, edi, pFileName
       invoke StrCopy, eax, $OfsCStrA(" [")
-      invoke DbgOutTextA, addr szMsg, $RGB(0,0,0), DBG_EFFECT_NORMAL, ??DbgDstWnd
+      invoke DbgOutTextA, addr szMsg, DbgColorForeground, DbgColorBackground, DBG_EFFECT_NORMAL, ??DbgDstWnd
       DbgLoadContext
       inc g_dIncLevel
     endif
@@ -395,7 +395,7 @@ ProcessFile proc uses ebx esi pFileName:PSTRINGA, pParent:ptr IncFile
             if DEBUGGING
               DbgSaveContext
               DbgSetDestWnd "Include Tree"
-              invoke DbgOutTextA, $OfsCStrA("processed]"), $RGB(0,0,0), DBG_EFFECT_NEWLINE, ??DbgDstWnd
+              invoke DbgOutTextA, $OfsCStrA("processed]"), DbgColorForeground, DbgColorBackground, DBG_EFFECT_NEWLINE, ??DbgDstWnd
               DbgLoadContext
             endif
             OCall pIncFile::IncFile.ParseHeaderFile
@@ -408,8 +408,8 @@ ProcessFile proc uses ebx esi pFileName:PSTRINGA, pParent:ptr IncFile
             if DEBUGGING
               DbgSaveContext
               DbgSetDestWnd "Include Tree"
-              invoke DbgOutTextA, $OfsCStrA("failed"), $RGB(255,0,0), DBG_EFFECT_NORMAL, ??DbgDstWnd
-              invoke DbgOutTextA, $OfsCStrA("]"), $RGB(0,0,0), DBG_EFFECT_NEWLINE, ??DbgDstWnd
+              invoke DbgOutTextA, $OfsCStrA("failed"), DbgColorError, DbgColorBackground, DBG_EFFECT_NORMAL, ??DbgDstWnd
+              invoke DbgOutTextA, $OfsCStrA("]"), DbgColorForeground, DbgColorBackground, DBG_EFFECT_NEWLINE, ??DbgDstWnd
               DbgLoadContext
             endif
           .endif
@@ -423,8 +423,8 @@ ProcessFile proc uses ebx esi pFileName:PSTRINGA, pParent:ptr IncFile
     .else
       DbgSaveContext
       DbgSetDestWnd "Include Tree"
-      invoke DbgOutTextA, $OfsCStrA("skipped"), $RGB(0,0,255), DBG_EFFECT_NORMAL, ??DbgDstWnd
-      invoke DbgOutTextA, $OfsCStrA("]"), $RGB(0,0,0), DBG_EFFECT_NEWLINE, ??DbgDstWnd
+      invoke DbgOutTextA, $OfsCStrA("skipped"), DbgColorBlue, DbgColorBackground, DBG_EFFECT_NORMAL, ??DbgDstWnd
+      invoke DbgOutTextA, $OfsCStrA("]"), DbgColorForeground, DbgColorBackground, DBG_EFFECT_NEWLINE, ??DbgDstWnd
       DbgLoadContext
     endif
     .endif

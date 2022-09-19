@@ -16,14 +16,15 @@
 ; Arguments:  Arg1: -> Memory block.
 ;             Arg2: Memory block size.
 ;             Arg3: Representation format.
-;             Arg4: Memory output color.
-;             Arg5: Representation output color.
+;             Arg4: Memory output RGB color value.
+;             Arg5: Representation output RGB color value.
+;             Arg5: Background RGB color value.
 ;             Arg6: -> Destination Window WIDE name.
 ; Return:     Nothing.
 
 align ALIGN_CODE
 ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationFormat:DWORD, \
-                                dMemColor:DWORD, dRepColor:DWORD, pDest:POINTER
+                                dMemColor:DWORD, dRepColor:DWORD, dBackColor:DWORD, pDest:POINTER
   local bOutBuffer[1024]:CHRA, bAuxBuffer[128]:CHRA, dHeaderCount:DWORD
   local .xsi:XWORD, .xbx:XWORD, .ecx:DWORD
 
@@ -85,7 +86,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
     mov xsi, .xsi
 
     m2z BYTE ptr [xdi]
-    invoke DbgOutTextA, addr bOutBuffer, dMemColor, DBG_EFFECT_NORMAL, pDest
+    invoke DbgOutTextA, addr bOutBuffer, dMemColor, dBackColor, DBG_EFFECT_NORMAL, pDest
     lea xdi, bOutBuffer
 
     .if dRepresentationFormat == DBG_MEM_NONE
@@ -96,7 +97,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         xor ebx, ebx
       .endif
       m2z BYTE ptr [xdi]
-      invoke DbgOutTextA, xdi, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextA, xdi, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
     .elseif dRepresentationFormat == DBG_MEM_STRA
       mov DWORD ptr [xdi], " A: "
@@ -117,7 +118,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         inc ecx
       .endw
       m2z BYTE ptr [xdi]
-      invoke DbgOutTextA, addr bOutBuffer, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextA, addr bOutBuffer, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
     .elseif dRepresentationFormat == DBG_MEM_STRW
       mov DWORD ptr [xdi], 65536*':' + ' '
@@ -144,7 +145,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         .endif
       .endw
       m2z WORD ptr [xdi]
-      invoke DbgOutTextW, addr bOutBuffer, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextW, addr bOutBuffer, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
     .elseif dRepresentationFormat == DBG_MEM_UI8
       mov DWORD ptr [xdi], " U: "
@@ -177,7 +178,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         .endif
       .endw
       m2z BYTE ptr [xdi]
-      invoke DbgOutTextA, addr bOutBuffer, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextA, addr bOutBuffer, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
     .elseif dRepresentationFormat == DBG_MEM_UI16
       mov DWORD ptr [xdi], " U: "
@@ -215,7 +216,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         .endif
       .endw
       m2z BYTE ptr [xdi]
-      invoke DbgOutTextA, addr bOutBuffer, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextA, addr bOutBuffer, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
     .elseif dRepresentationFormat == DBG_MEM_UI32
       mov DWORD ptr [xdi], " U: "
@@ -253,7 +254,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         .endif
       .endw
       m2z BYTE ptr [xdi]
-      invoke DbgOutTextA, addr bOutBuffer, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextA, addr bOutBuffer, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
     .elseif dRepresentationFormat == DBG_MEM_I8
       mov DWORD ptr [xdi], " S: "
@@ -295,7 +296,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         .endif
       .endw
       m2z BYTE ptr [xdi]
-      invoke DbgOutTextA, addr bOutBuffer, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextA, addr bOutBuffer, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
     .elseif dRepresentationFormat == DBG_MEM_I16
       mov DWORD ptr [xdi], " S: "
@@ -341,7 +342,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         .endif
       .endw
       m2z BYTE ptr [xdi]
-      invoke DbgOutTextA, addr bOutBuffer, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextA, addr bOutBuffer, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
     .elseif dRepresentationFormat == DBG_MEM_I32
       mov DWORD ptr [xdi], " S: "
@@ -385,7 +386,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         .endif
       .endw
       m2z BYTE ptr [xdi]
-      invoke DbgOutTextA, addr bOutBuffer, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextA, addr bOutBuffer, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
     .elseif dRepresentationFormat == DBG_MEM_R4
       mov DWORD ptr [xdi], " R: "
@@ -421,7 +422,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         .endif
       .endw
       m2z BYTE ptr [xdi]
-      invoke DbgOutTextA, addr bOutBuffer, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextA, addr bOutBuffer, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
     .elseif dRepresentationFormat == DBG_MEM_R8
       mov DWORD ptr [xdi], " R: "
@@ -457,7 +458,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         .endif
       .endw
       m2z BYTE ptr [xdi]
-      invoke DbgOutTextA, addr bOutBuffer, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextA, addr bOutBuffer, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
     .elseif dRepresentationFormat == DBG_MEM_H8
       mov DWORD ptr [xdi], " H: "
@@ -488,7 +489,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         .endif
       .endw
       m2z BYTE ptr [xdi]
-      invoke DbgOutTextA, addr bOutBuffer, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextA, addr bOutBuffer, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
     .elseif dRepresentationFormat == DBG_MEM_H16
       mov DWORD ptr [xdi], " H: "
@@ -523,7 +524,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         .endif
       .endw
       m2z BYTE ptr [xdi]
-      invoke DbgOutTextA, addr bOutBuffer, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextA, addr bOutBuffer, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
     .elseif dRepresentationFormat == DBG_MEM_H32
       mov DWORD ptr [xdi], " H: "
@@ -557,7 +558,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         .endif
       .endw
       m2z BYTE ptr [xdi]
-      invoke DbgOutTextA, addr bOutBuffer, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextA, addr bOutBuffer, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
     if TARGET_BITNESS eq 64
     .elseif dRepresentationFormat == DBG_MEM_H64
@@ -592,7 +593,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         .endif
       .endw
       m2z BYTE ptr [xdi]
-      invoke DbgOutTextA, addr bOutBuffer, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextA, addr bOutBuffer, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
     .elseif dRepresentationFormat == DBG_MEM_UI64
       mov DWORD ptr [xdi], " U: "
@@ -630,7 +631,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         .endif
       .endw
       m2z BYTE ptr [xdi]
-      invoke DbgOutTextA, addr bOutBuffer, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextA, addr bOutBuffer, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
 
     .elseif dRepresentationFormat == DBG_MEM_I64
       mov DWORD ptr [xdi], " S: "
@@ -675,7 +676,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         .endif
       .endw
       m2z BYTE ptr [xdi]
-      invoke DbgOutTextA, addr bOutBuffer, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextA, addr bOutBuffer, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
     endif
 
     .else
@@ -688,7 +689,7 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
         xor ebx, ebx
       .endif
       m2z BYTE ptr [xdi]
-      invoke DbgOutTextA, addr bOutBuffer, dRepColor, DBG_EFFECT_NEWLINE, pDest
+      invoke DbgOutTextA, addr bOutBuffer, dRepColor, dBackColor, DBG_EFFECT_NEWLINE, pDest
     .endif
 
   .endw

@@ -15,14 +15,11 @@
 ; Procedure:  DbgOutInterface
 ; Purpose:    Identify a COM-Interface.
 ; Arguments:  Arg1: -> CSLID.
-;             Arg2: Foreground color.
-;             Arg2: -> Destination Window WIDE name.
+;             Arg2: Foreground RGB color value.
+;             Arg3: Background RGB color value.
+;             Arg4: -> Destination Window WIDE name.
+; Return:     Nothing.
 
-align ALIGN_CODE
-DbgOutInterface proc pIID:ptr GUID, dColor:DWORD, pDestWnd:POINTER
-  invoke DbgOutTextA, $OfsCStrA("Interface: "), dColor, DBG_EFFECT_NORMAL, pDestWnd
-  invoke DbgOutInterfaceName, pIID, dColor, pDestWnd
-  ret
-DbgOutInterface endp
+% include &ObjMemPath&Common\DbgOutInterface_X.inc
 
 end

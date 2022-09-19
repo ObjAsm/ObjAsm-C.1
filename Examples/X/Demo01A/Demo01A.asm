@@ -16,6 +16,7 @@ MakeObjects Primer, Demo01                              ;Include Shape, Triangle
 .data                                                   ;Define global variables in the Data segment
 pShape_1  $ObjPtr(Triangle)   NULL
 pShape_2  $ObjPtr(Rectangle)  NULL
+cBuff CHR 100 dup(0)
 
 .code                                                   ;Begin Code segment
 start proc                                              ;Here is the program entry point
@@ -27,6 +28,9 @@ start proc                                              ;Here is the program ent
   OCall pShape_1::Triangle.Init, 10, 15                 ;Initialize Triangle
   OCall pShape_1::Shape.GetArea                         ;Invoke GetArea method of Triangle
   DbgDec eax                                            ;Result = 75
+  invoke xword2decA, addr cBuff, eax
+  DbgStr cBuff
+  
 
   New Rectangle                                         ;Create an new instance of Rectangle
   mov pShape_2, xax                                     ;Store instance pointer
