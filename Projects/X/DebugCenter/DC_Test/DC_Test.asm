@@ -124,6 +124,7 @@ start proc
 ;  DbgClearTxt "Performance data"
 ;  DbgClearBmp "BMP1"
   DbgPinWnd FALSE
+  DbgCloseWnd
 
   SysDone
 

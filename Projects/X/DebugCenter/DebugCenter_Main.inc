@@ -1312,6 +1312,11 @@ Method DebugCenter.OnCopyData, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
               invoke SetWindowPos, [xsi].hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE
             .endif
           .endif
+
+        .elseif eax == DBG_CMD_CLOSE_WND
+          invoke Shell_NotifyIcon, NIM_DELETE, addr [xsi].NotifyIconData  ;If exist, delete Tray Icon
+          invoke DefFrameProc, [xsi].hWnd, [xdi].$Obj(DbgMdiClient).hWnd, WM_CLOSE, 0, 0
+
         .endif
 
       .elseif [xcx].DBG_HEADER_INFO.bBlockID == DBG_MSG_STR             ;Text (ANSI or WIDE)

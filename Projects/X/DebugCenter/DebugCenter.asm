@@ -4,16 +4,16 @@
 ; Version     2.2.0
 ; Purpose:    ObjAsm DebugCenter application.
 ; Notes:      Version 1.1.0, October 2017
-;               - First release. Ported to BNC. 
+;               - First release. Ported to BNC.
 ;             Version 2.1.0, October 2019
 ;               - Added more color and font customization by HSE.
 ;             Version 2.1.1, October 2021
 ;               - First click into ChildTxt bug corrected.
 ;               - Find text bug corrected.
-;               - Word break routine added to ChildTxt to improve usability. 
+;               - Word break routine added to ChildTxt to improve usability.
 ;             Version 2.2.0, September 2022
 ;               - Background color command added.
-;               - Menu flash command added.
+;               - Some miscellaneous commands added (see Debug.inc for a complete list).
 ; ==================================================================================================
 
 
