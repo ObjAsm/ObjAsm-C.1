@@ -41,16 +41,16 @@ DBG_MSG_HDR               equ   00
 DBG_MSG_CMD               equ   01
 DBG_MSG_STR               equ   02
 DBG_MSG_BMP               equ   03
-                          
+
 DBG_EFFECT_NORMAL         equ   00000000h     ;Regular text
 DBG_EFFECT_BOLD           equ   00000001h     ;CFE_BOLD
 DBG_EFFECT_ITALIC         equ   00000002h     ;CFE_ITALIC
 DBG_EFFECT_UNDERLINE      equ   00000004h     ;CFE_UNDERLINE
 DBG_EFFECT_STRIKEOUT      equ   00000008h     ;CFE_STRIKEOUT
 DBG_EFFECT_NEWLINE        equ   00000100h
-                          
+
 DBG_CHARTYPE_WIDE         equ   80000000h     ;if not set => ANSI (BIT31)
-                          
+
 DBG_CMD_CLEAR_TXT         equ   00
 DBG_CMD_CLEAR_BMP         equ   01
 DBG_CMD_CLEAR_ALL         equ   02
@@ -74,8 +74,9 @@ DBG_CMD_CHILDREN_TILE_HOR equ   19
 DBG_CMD_CHILDREN_TILE_VER equ   20
 DBG_CMD_CHILDREN_CASCADE  equ   21
 DBG_CMD_ICONS_ARRANGE     equ   22
-DBG_CMD_PIN_WND           equ   23                          
-                          
+DBG_CMD_PIN_WND           equ   23
+DBG_CMD_CLOSE_WND         equ   24
+
 SMTO_TIMEOUT              equ   5000          ;Timeout of a WM_COPYDATA message
 
 

@@ -18,7 +18,7 @@
 ;               - DbgBkgnd, DbgBkgndTxt, DbgBkgndBmp
 ;               - DbgFlashWnd, DbgFlashMenu, DbgTileHor, DbgTileVer, DbgCascade, DbgArrange
 ;               - DbgZoomIn, DbgZoomInTxt, DbgZoomInBmp, DbgZoomOut, DbgZoomOutTxt, DbgZoomOutBmp
-;               - DbgPinWnd, DbgFrontWnd, DbgFront, DbgFrontTxt, DbgFrontBmp added.
+;               - DbgCloseWnd, DbgPinWnd, DbgFrontWnd, DbgFront, DbgFrontTxt, DbgFrontBmp added.
 ;               - Color variables introduced. Setup is done by SysInit.
 ; ==================================================================================================
 
@@ -30,7 +30,7 @@
 ;  - DbgBkgnd, DbgBkgndTxt, DbgBkgndBmp, DbgFrontTxt, DbgFrontBmp, DbgFront
 ;  - DbgFlashWnd, DbgFlashMenu, DbgTileHor, DbgTileVer, DbgCascade, DbgArrange
 ;  - DbgZoomIn, DbgZoomInTxt, DbgZoomInBmp, DbgZoomOut, DbgZoomOutTxt, DbgZoomOutBmp
-;  - DbgPinWnd, DbgFrontWnd, DbgFront, DbgFrontTxt, DbgFrontBmp
+;  - DbgCloseWnd, DbgPinWnd, DbgFrontWnd, DbgFront, DbgFrontTxt, DbgFrontBmp
 ;  - DbgWrite, DbgWriteF
 ;  - DbgARGB
 ;  - DbgStr, DbgStrA, DbgStrW, DbgStrCA, DbgStrCW
@@ -957,9 +957,24 @@ DbgFront macro Dest
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
+; Macro:      DbgCloseWnd
+; Purpose:    Close Debug Center.
+; Arguments:  None.
+
+DbgCloseWnd macro Arg:=<TRUE>
+  if DEBUGGING
+    ifidn DBG_DEVICE, <WND>
+      DbgSaveContext
+      invoke DbgOutCmd, DBG_CMD_CLOSE_WND, 0, 0, NULL
+      DbgLoadContext
+    endif
+  endif
+endm
+
+; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      DbgPinWnd
 ; Purpose:    Set TOPMOST flag.
-; Arguments:  Arg1; TRUE or FALSE.
+; Arguments:  Arg1: TRUE or FALSE.
 
 DbgPinWnd macro Arg:=<TRUE>
   if DEBUGGING
@@ -1312,8 +1327,8 @@ endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Macro:      DbgDec
-; Purpose:    Output a number in decimal format on the debug device.
-; Arguments:  Arg1: Number (register or symbol). Max 32 bits
+; Purpose:    Output a number in signed decimal format on the debug device.
+; Arguments:  Arg1: Number (register or symbol).
 ;             Arg2: Additional information.
 ;             Arg3: Optional destination Window name.
 ; Note:       If register addressing is used, a size prefix is required.
@@ -1321,6 +1336,7 @@ endm
 
 DbgDec macro Var:req, InfoText, Dest
   if DEBUGGING
+    ??DbgDataSize = type(Var)
     DbgSaveContext FALSE, Var
     DbgSetDestWnd Dest
     invoke DbgOutTextA, $OfsCStrA("&Var = "), DbgColorDefaultPre, DbgColorBackground, DBG_EFFECT_NORMAL, ??DbgDstWnd
@@ -1333,8 +1349,25 @@ DbgDec macro Var:req, InfoText, Dest
       sub rsp, $$Buffersize                             ;;Reserve a buffer on the stack.
       lea rdi, [rsp + 28h]                              ;;Get a POINTER to the output buffer
     endif
-    invoke xword2decA, xdi, ??VarXBX
-    invoke DbgOutTextA, xdi, DbgColorDefaultVar, DbgColorBackground, DBG_EFFECT_NORMAL, ??DbgDstWnd
+    if ??DbgDataSize eq 1
+      movsx ebx, ??VarXBX
+      invoke sdword2decA, xdi, ebx
+      mov edx, DbgColorDefaultVar
+    elseif ??DbgDataSize eq 2
+      movsx ebx, ??VarXBX
+      invoke sdword2decA, xdi, ebx
+      mov edx, DbgColorDefaultVar
+    elseif ??DbgDataSize eq 4
+      invoke sdword2decA, xdi, ??VarXBX
+      mov edx, DbgColorDefaultVar
+    elseif ??DbgDataSize eq 8
+      invoke sqword2decA, xdi, ??VarXBX
+      mov edx, DbgColorDefaultVar
+    else
+      mov xdi, $OfsCStrA("invalid argument")
+      mov edx, DbgColorError
+    endif
+    invoke DbgOutTextA, xdi, edx, DbgColorBackground, DBG_EFFECT_NORMAL, ??DbgDstWnd
     add xsp, $$Buffersize                               ;;Restore stack
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
