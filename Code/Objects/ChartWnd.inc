@@ -2338,6 +2338,10 @@ Method ChartWnd.Show, uses xbx xdi xsi, hDC:HDC, pRect:PRECT
 ;  DbgText "ChartWnd.Show"
   SetObject xsi
 
+  ;Reset Tooltip
+  invoke SendMessage, [xsi].hToolTip, TTM_ACTIVATE, FALSE, 0
+  BitClr [xsi].dFlags, CHT_WND_TOOLTIP_ACTIVE
+
   ;Do some initialization if the chart is shown for the first time
   .ifBitClr [xsi].dFlags, CHT_WND_SHOWN_FIRST_TIME
 

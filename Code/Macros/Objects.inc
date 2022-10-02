@@ -1,7 +1,7 @@
 ; ==================================================================================================
 ; Title:      Objects.inc
 ; Author:     G. Friedrich
-; Version:    C.1.4
+; Version:    C.1.5
 ; Purpose:    ObjAsm object support using MASM compatible assembers (UASM, ASMC, JWASM, ML)
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
@@ -11,10 +11,13 @@
 ;             Version C.1.2, December 2020
 ;               - $MethodAddr can handle addresses of embedded objects.
 ;             Version C.1.3, May 2021
-;               - VARARG stack correction bug corrected.
+;               - vararg stack correction bug corrected.
 ;               - dup spacing issue coorected.
 ;             Version C.1.4, August 2022
-;               - Mitigation measures against multiple inclusion of object definition files. 
+;               - Mitigation measures against multiple inclusion of object definition files.
+;             Version C.1.5, September 2022
+;               - $PushMethodArgs renamend to $PushMethodArgs32 => intended for 32 bits.
+;               - Stack correction bug for vararg methods in 32 bit fixed.  
 ; ==================================================================================================
 
 
@@ -2462,12 +2465,12 @@ Embed macro InsName:req, ObjExpr:req
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Macro:      $PushMethodArgs
+; Macro:      $PushMethodArgs32
 ; Purpose:    Helper macro that pushes all method arguments.
 ; Arguments:  Arg1: Argument count.
 ;             Arg2: Method argument list.
 
-$PushMethodArgs macro ArgCount:req, Args:vararg
+$PushMethodArgs32 macro ArgCount:req, Args:vararg
   $$EaxUsed = FALSE
   $$ArgPushed = FALSE
   $$ErrFlag = FALSE
@@ -2485,6 +2488,7 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
   endif
 
   ??ParamCount = 0
+  $$StackCorrection = sizeof(POINTER)                   ;pSelf
   %for $$Arg, <??Params>
     ifnb <$$Arg>
       ??UArg textequ $Upper($$Arg)
@@ -2505,8 +2509,8 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
           endif
         endif
         if $$ErrFlag ne FALSE
-          %echo @CatStr (<$PushMethodArgs - Error on line >, %@Line, < of >, @FileCur)
-          @Err <$PushMethodArgs Error: EAX register already in use.>
+          %echo @CatStr (<$PushMethodArgs32 - Error on line >, %@Line, < of >, @FileCur)
+          @Err <$PushMethodArgs32 Error: EAX register already in use.>
           exitm
         else
           $$ErrFlag InStr 1, ??UArg, <AX>
@@ -2525,7 +2529,7 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
           endif
         endif
         if  $$ErrFlag ne FALSE
-          @Err <$PushMethodArgs Error: AX register already in use.>
+          @Err <$PushMethodArgs32 Error: AX register already in use.>
           exitm
         else
           $$ErrFlag InStr 1, ??UArg, <AL>
@@ -2544,7 +2548,7 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
           endif
         endif
         if  $$ErrFlag ne FALSE
-          @Err <$PushMethodArgs Error: AL register already in use.>
+          @Err <$PushMethodArgs32 Error: AL register already in use.>
           exitm
         endif
       endif
@@ -2566,12 +2570,13 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
           endif
         endif
         ??ParamCount = ??ParamCount + 1
+        $$StackCorrection = $$StackCorrection + @WordSize
       else
         ifidn @SubStr($$Arg, 1, 1), </>                 ;;Don't push this argument
           if $$ArgPushed                                ;;Check if we have yet pushed something
-            @Err <$PushMethodArgs Error: can't use "/" escape before a pushed argument.>
-           $$ErrFlag = TRUE
-            exitm
+            @Err <$PushMethodArgs32 Error: can't use "/" escape before a pushed argument.>
+            $$ErrFlag = TRUE
+            exitm <0>
           endif
           ??Arg1 textequ @SubStr($$Arg, 2)
           $$ArgSize = type(??Arg1)
@@ -2579,6 +2584,7 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
           repeat ($$ArgSize + @WordSize - 1) / @WordSize
             ??Count = ??Count - 4
             ??ParamCount = ??ParamCount + 1
+            $$StackCorrection = $$StackCorrection + @WordSize
           endm
 
         else
@@ -2587,12 +2593,14 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
             db 68h                                      ;;push opcode
             REAL4 $$Arg                                 ;;push argument = REAL4
             ??ParamCount = ??ParamCount + 1
+            $$StackCorrection = $$StackCorrection + @WordSize
           else
             if (opattr $$Arg) and 00010000b             ;;$$Arg is register
               ??RegSize SizeStr <$$Arg>
               if ??RegSize eq 3                         ;;eax, ebx, ecx, edx, esi, esi, esp, esp
                 push $$Arg
                 ??ParamCount = ??ParamCount + 1
+                $$StackCorrection = $$StackCorrection + @WordSize
               elseif ??RegSize eq 2
                 ??Char SubStr <$$Arg>, 2, 1
                 %ifidni <??Char>, <l>                   ;;al, bl, cl, dl
@@ -2601,6 +2609,7 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
                   movzx ax, $$Arg
                   push ax
                   ??ParamCount = ??ParamCount + 1
+                  $$StackCorrection = $$StackCorrection + @WordSize
                 else
                   %ifidni <??Char>, <h>                 ;;ah, bh, ch, dh
                     $$EaxUsed = TRUE
@@ -2608,14 +2617,16 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
                     movzx ax, $$Arg
                     push ax
                     ??ParamCount = ??ParamCount + 1
+                    $$StackCorrection = $$StackCorrection + @WordSize
                   else
                     push WORD ptr 0
                     push $$Arg                          ;;ax, bx, cx, dx, si, di, sp, bp
                     ??ParamCount = ??ParamCount + 1
+                    $$StackCorrection = $$StackCorrection + @WordSize
                   endif
                 endif
               else
-                @Err <$PushMethodArgs Error: register &$$Arg not recognized.>
+                @Err <$PushMethodArgs32 Error: register &$$Arg not recognized.>
                $$ErrFlag = TRUE
                 exitm
               endif
@@ -2625,20 +2636,23 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
                 if $$ArgSize eq 8                       ;;In case that the argument is a QWORD
                   push DWORD ptr ($$Arg and 0FFFFFFFFh)
                   push DWORD ptr ($$Arg shr 32)
+                  $$StackCorrection = $$StackCorrection + 2*@WordSize
                 else
                   push DWORD ptr $$Arg
+                  $$StackCorrection = $$StackCorrection + @WordSize
                 endif
                 ??ParamCount = ??ParamCount + 1
               else
                 $$ArgSize = type($$Arg)
                 ??Count = (($$ArgSize + 3)/4)*4
                 if ??Count eq 0
-                  %echo @CatStr(<$PushMethodArgs - Error on line >, %@Line, < of >, @FileCur)
-                  @Err <$PushMethodArgs Error: undefined symbol ($$Arg).>
+                  %echo @CatStr(<$PushMethodArgs32 - Error on line >, %@Line, < of >, @FileCur)
+                  @Err <$PushMethodArgs32 Error: undefined symbol ($$Arg).>
                 else
                   repeat ($$ArgSize + 3)/4
                     ??Count = ??Count - 4
                     push DWORD ptr [$$Arg + ??Count]
+                    $$StackCorrection = $$StackCorrection + @WordSize
                   endm
                 endif
                 ??ParamCount = ??ParamCount + 1
@@ -2661,20 +2675,22 @@ $PushMethodArgs macro ArgCount:req, Args:vararg
 ;      echo ==============================
 
       if ??ParamCount gt ArgCount
-        %echo @CatStr(<$PushMethodArgs - Error on line >, %@Line, < of >, @FileCur)
-        @Err <$PushMethodArgs Error: too many arguments or argument type mismatch.>
+        %echo @CatStr(<$PushMethodArgs32 - Error on line >, %@Line, < of >, @FileCur)
+        @Err <$PushMethodArgs32 Error: too many arguments or argument type mismatch.>
       elseif ??ParamCount lt ArgCount
-        %echo @CatStr(<$PushMethodArgs - Error on line >, %@Line, < of >, @FileCur)
-        @Err <$PushMethodArgs Error: too few arguments or argument type mismatch.>
+        %echo @CatStr(<$PushMethodArgs32 - Error on line >, %@Line, < of >, @FileCur)
+        @Err <$PushMethodArgs32 Error: too few arguments or argument type mismatch.>
       endif
-      exitm <0>
+      exitm <0>                                         ;;Regular call => stack balance by callee
     else
-      if ??ParamCount lt (-1-ArgCount)
-        @Err <$PushMethodArgs Error: too few arguments or argument type mismatch.>
-        %echo @CatStr(<$PushMethodArgs - Error on line >, %@Line, < of >, @FileCur)
-      endif
-      %exitm <@WordSize*(??ParamCount + ArgCount + 1)>  ;;Return number of bytes to remove
-    endif                                               ;; from stack by the caller
+      if ??ParamCount lt (-1-ArgCount)                  ;;vararg
+        @Err <$PushMethodArgs32 Error: too few arguments or argument type mismatch.>
+        %echo @CatStr(<$PushMethodArgs32 - Error on line >, %@Line, < of >, @FileCur)
+        exitm <0>
+      else
+        %exitm <$$StackCorrection>                      ;;Return number of bytes to remove
+      endif                                             ;; from stack by the caller
+    endif                                               
   endif
 endm
 
@@ -2821,7 +2837,7 @@ MethodInvoke macro UseTPL, InsName:req, MglObjName:req, MglMtdName:req, Args:var
             ;********************************************************************************
             if ??MtdType eq ??MTDTYPE_STATIC
               if TARGET_BITNESS eq 32
-                $$StackCorr = $PushMethodArgs($$DeclaredParamCount, Args)
+                $$StackCorr = $PushMethodArgs32($$DeclaredParamCount, Args)
                 if type(InsName) eq @WordSize
                   push InsName
                 else
@@ -2837,7 +2853,7 @@ MethodInvoke macro UseTPL, InsName:req, MglObjName:req, MglMtdName:req, Args:var
                 SetVarargPassedParams <Args>
                 call @CatStr(%??ImpObj, MglMtdName)
                 if $$StackCorr gt 0
-                  add esp, sizeof(DWORD)*($$PassedParamCount + 1)  ;;Correct the stack in case of vararg
+                  add esp, $$StackCorr                  ;;Correct the stack in case of vararg
                 endif
               else
                 if type(InsName) ne @WordSize
@@ -2866,7 +2882,7 @@ MethodInvoke macro UseTPL, InsName:req, MglObjName:req, MglMtdName:req, Args:var
               if ??MtdType eq ??MTDTYPE_VIRTUAL or ??MtdType eq ??MTDTYPE_INTERFACE
                 $$Txo CatStr <??>, <MglObjName>, <_DMT>
                 if TARGET_BITNESS eq 32
-                  $$StackCorr = $PushMethodArgs($$DeclaredParamCount, Args)
+                  $$StackCorr = $PushMethodArgs32($$DeclaredParamCount, Args)
                   $$IName textequ $GetInstance32(InsName, edx)
                   push $$IName
                   SetVarargPassedParams <Args>
@@ -2878,7 +2894,7 @@ MethodInvoke macro UseTPL, InsName:req, MglObjName:req, MglMtdName:req, Args:var
                     call ($$Txo ptr [$$SName]).&MglMtdName
                   endif
                   if $$StackCorr gt 0
-                    add esp, sizeof(DWORD)*($$PassedParamCount + 1)  ;;Correct the stack in case of vararg
+                  add esp, $$StackCorr                  ;;Correct the stack in case of vararg
                   endif
                 else
                   GetInstance64 InsName
@@ -2903,7 +2919,7 @@ MethodInvoke macro UseTPL, InsName:req, MglObjName:req, MglMtdName:req, Args:var
               elseif ??MtdType eq ??MTDTYPE_DYNAMIC
                 $$Txo textequ <MglObjName>
                 if TARGET_BITNESS eq 32
-                  $$StackCorr = $PushMethodArgs($$DeclaredParamCount, Args)
+                  $$StackCorr = $PushMethodArgs32($$DeclaredParamCount, Args)
                   $$IName textequ $GetInstance32(InsName, edx)
                   push $$IName
                   SetVarargPassedParams <Args>
@@ -2914,7 +2930,7 @@ MethodInvoke macro UseTPL, InsName:req, MglObjName:req, MglMtdName:req, Args:var
                     call ($$Txo ptr [$$SName]).&MglMtdName
                   endif
                   if $$StackCorr gt 0
-                    add esp, sizeof(DWORD)*($$PassedParamCount + 1)  ;;Correct the stack in case of vararg
+                    add esp, $$StackCorr                ;;Correct the stack in case of vararg
                   endif
                 else
                   GetInstance64 InsName
@@ -3328,13 +3344,13 @@ DCall macro Expression:req, Args:vararg
     else
       $$DeclaredParamCount = $GetDeclaredParamCount(%??ImpObj, %??MtdExpr)
       if TARGET_BITNESS eq 32
-        $$StackCorr = $PushMethodArgs($$DeclaredParamCount, Args)
+        $$StackCorr = $PushMethodArgs32($$DeclaredParamCount, Args)
         $$IName textequ $GetInstance32(??InsExpr, edx)
         push $$IName
         SetVarargPassedParams <Args>
         call @CatStr(%??ImpObj, %??MtdExpr)
         if $$StackCorr gt 0
-          add esp, $$StackCorr                          ;;Correct the stack
+          add esp, $$StackCorr                          ;;Correct the stack in case of vararg
         endif
       else
         $$ProcType CatStr <TYPE_>, <&??ImpObj>, <&??MtdExpr>
@@ -3443,7 +3459,7 @@ ICall macro Expression:req, Args:vararg
       $$DeclaredParamCount = $$ArgCount                 ;;Does include the instance pointer
 
       if TARGET_BITNESS eq 32
-        $$StackCorr = $PushMethodArgs(%$$ArgCount - 1, Args)
+        $$StackCorr = $PushMethodArgs32(%$$ArgCount - 1, Args)
         $$IName textequ $GetInstance32(%??InsExpr, edx)
         push $$IName
         mov edx, [$$IName]                              ;;Make indirection

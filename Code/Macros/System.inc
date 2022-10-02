@@ -1134,7 +1134,7 @@ endif
 ;
 ; Example:    WriteF xdi, 'Memory at ¦H8h: ¦F3", rsi, REAL4 ptr [xsi]
 ;
-WriteF macro DstReg:req, Format:req, Args:VARARG
+WriteF macro DstReg:req, Format:req, Args:vararg
   local pPos, pBegin
   
   .data

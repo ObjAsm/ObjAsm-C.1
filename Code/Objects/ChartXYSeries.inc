@@ -377,7 +377,7 @@ MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     ChartXYSeries.Draw
-; Purpose:    Draw the series bar representation.
+; Purpose:    Draw the series representation and create the InfoAreas.
 ; Arguments:  Arg1: hDC.
 ; Return:     Nothing.
 

@@ -101,7 +101,7 @@ MethodEnd
 ; Return:    Nothing.
 
 Method ChartSeries.Scan, uses xbx xdi xsi, dFrom:DWORD, dCount:DWORD
-  local dMaxX:DWORD, dMinX:DWORD, dMaxY:DWORD, dMinY:DWORD
+  local dMaxX:DWORD, dMinX:DWORD, dMaxY:DWORD, dMinY:DWORD      ;They are all indices
 
   SetObject xsi
   .if dCount != 0
