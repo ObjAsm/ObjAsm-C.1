@@ -511,8 +511,8 @@ DbgOutHex macro PreText:=<>, PreColor:=<DbgColorDefaultPre>, Var:req, \
     invoke DbgOutTextA, esi, VarColor, DbgColorBackground, DBG_EFFECT_NORMAL, Dest
     add esp, 28h                                          ;;Restore stack
   else
-    ;;Reserve stack = 2*16 chars + "h" + ZTC + 14 padding bytes + homing space = 58h
-    sub rsp, 58h
+    ;;Reserve stack = 2*16 chars + "h" + ZTC + 14 padding bytes + homing space = 60h
+    sub rsp, 60h
     ifnb <PreText>
       invoke DbgOutTextA, $OfsCStrA($Esc("&PreText&")), PreColor, DbgColorBackground, DBG_EFFECT_NORMAL, Dest
     endif
@@ -540,7 +540,7 @@ DbgOutHex macro PreText:=<>, PreColor:=<DbgColorDefaultPre>, Var:req, \
       endif
     endif
     invoke DbgOutTextA, rsi, VarColor, DbgColorBackground, DBG_EFFECT_NORMAL, Dest
-    add rsp, 58h                                          ;;Restore stack
+    add rsp, 60h                                          ;;Restore stack
   endif
 endm
 

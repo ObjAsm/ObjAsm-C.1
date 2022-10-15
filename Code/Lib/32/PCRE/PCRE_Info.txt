@@ -1,0 +1,3 @@
+Version: 8.44 ANSI & WIDE
+Target: x86, Win32, Release
+Source: https://www.pcre.org/
