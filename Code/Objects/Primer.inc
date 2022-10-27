@@ -1,8 +1,10 @@
 ; ==================================================================================================
 ; Title:      Primer.inc
 ; Author:     G. Friedrich
-; Version:    C.1.0
+; Version:    C.1.1
 ; Purpose:    ObjAsm support of Primer objects.
+; Notes:      Version C.1.1, October 2022
+;               - ErrorSet and ErrorReport return the error value. Bug in ErrorReport corrected. 
 ; Notes:      Version C.1.0, October 2017
 ;               - First release.
 ; ==================================================================================================
@@ -72,10 +74,10 @@ MethodEnd
 
 Method Primer.ErrorReport, uses xsi, pErrorCaller:POINTER, dErrorCode:DWORD
   SetObject xsi
-  OCall xsi.ErrorSet, dErrorCode
-  m2m [xsi].pErrorCaller, pErrorCaller, xax
+  OCall xsi.ErrorSet, dErrorCode                        ;On return, eax = Error code
+  m2m [xsi].pErrorCaller, pErrorCaller, xcx
   .if [xsi].pOwner != NULL
-    OCall [xsi].pOwner::Primer.ErrorReport, xsi, dErrorCode
+    OCall [xsi].pOwner::Primer.ErrorReport, xsi, eax
   .endif
 MethodEnd
 
@@ -83,7 +85,7 @@ MethodEnd
 ; Method:     Primer.ErrorSet
 ; Purpose:    Set the error code and takes no further action.
 ; Arguments:  Arg1: Error code.
-; Return:     Nothing.
+; Return:     eax = Error code.
 ; Note:       If this method is compiled with the DEBUGGING switch enabled it emits error info.
 
 if DEBUGGING
@@ -136,13 +138,14 @@ Method Primer.ErrorSet, uses xbx xdi xsi, dErrorCode:DWORD
   
     invoke DbgOutTextA, offset(bCRLF), DbgColorForeground, DbgColorBackground, DBG_EFFECT_NORMAL, offset(szDbgObjErr)
   endif
+  mov eax, dErrorCode
 MethodEnd
 
 else
 
 Method Primer.ErrorSet,, dErrorCode:DWORD
   SetObject xcx
-  m2m [xcx].dErrorCode, dErrorCode, eax
+  mrm [xcx].dErrorCode, dErrorCode, eax
 MethodEnd
 
 endif

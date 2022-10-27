@@ -1617,8 +1617,8 @@ $ChooseAddr macro dArgs:vararg
 endm
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
-; Macro:      (C/D)Real$$
-; Purpose:    Declare a named floating point variable in the data segment.
+; Macro:      (C/D)Real??
+; Purpose:    Declare a named floating point value in the data/const memory segment.
 ; Arguments:  Arg1: Name of the floating point variable.
 ;             Arg2: Value of the floating point variable. May be ?.
 
