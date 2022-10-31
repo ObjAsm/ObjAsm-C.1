@@ -33,9 +33,3 @@ IDM_WEBCAM_DLG_SOURCE         equ       2006
 
 IDM_HELP_HELP                 equ       5001
 IDM_HELP_ABOUT                equ       5002
-
-;Dialog About Control IDs
-IDC_DAB_ICON                  equ       100
-IDC_DAB_TEXT                  equ       101
-IDC_DAB_MAIL                  equ       102
-IDC_DAB_LINK                  equ       103

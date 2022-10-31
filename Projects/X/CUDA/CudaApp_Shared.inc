@@ -24,9 +24,3 @@ BUILD_MODE                    equ       RLS
 ;Res\MainDlgDlg.rc
 IDD_DLG_MAIN                  equ       1000
 IDC_STC_MESSAGE               equ       1001
-
-;Dialog About Control IDs
-IDC_DAB_ICON                  equ       100
-IDC_DAB_TEXT                  equ       101
-IDC_DAB_MAIL                  equ       102
-IDC_DAB_LINK                  equ       103

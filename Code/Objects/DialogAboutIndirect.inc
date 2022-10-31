@@ -34,15 +34,14 @@ Object DialogAboutIndirect, DialogAboutIndirectID, DialogModalIndirect
   DefineVariable    pText,      POINTER,  NULL
 ObjectEnd
 
+IDC_DAB_ICON    equ     100
+IDC_DAB_TEXT    equ     101
+IDC_DAB_MAIL    equ     102
+IDC_DAB_LINK    equ     103
 
 ; ==================================================================================================
 
 if IMPLEMENT
-
-IDC_DAB_ICON  equ   100
-IDC_DAB_TEXT  equ   101
-IDC_DAB_MAIL  equ   102
-IDC_DAB_LINK  equ   103
 
 
 ; Memory template

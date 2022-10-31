@@ -161,7 +161,7 @@ Method ChartBarTabSeries.CtlsSet, uses xbx xdi xsi
       invoke CheckDlgButton, [xsi].hWnd, IDC_CHT_SER_BAR_Y2_CHK, BST_UNCHECKED
     .endif
   .else
-    invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_XY_Y2_CHK
+    invoke GetDlgItem, [xsi].hWnd, IDC_CHT_SER_BAR_Y2_CHK
     invoke ShowWindow, xax, SW_HIDE
   .endif
 

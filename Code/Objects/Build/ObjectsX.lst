@@ -48,6 +48,7 @@ IDual
 ConnectionPoint
 IConnectionPointContainer
 ISupportErrorInfo
+IDocHostUIHandler
 OcxContainer
 ScriptHost
 ExcelHost
@@ -80,6 +81,10 @@ Statusbar
 SimpleImageList
 MaskedImageList
 Ribbon
+Throbber
+SpinningThrobber
+MovingThrobber
+TextView
 
 Dialog
 DialogAbout
@@ -89,6 +94,7 @@ DialogModalIndirect
 DialogModeless
 DialogModelessIndirect
 DialogPassword
+DialogProgress
 
 WinApp
 DlgApp

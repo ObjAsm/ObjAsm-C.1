@@ -10,11 +10,6 @@
 
 externdef szAboutText:CHR
 
-IDC_DAB_ICON    equ     100
-IDC_DAB_TEXT    equ     101
-IDC_DAB_LINK    equ     102
-IDC_DAB_MAIL    equ     103
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Object:     SkinnedDialogAbout
 ; Purpose:    Implement a skinned about dialog using the ElasticSkin engine.
@@ -35,6 +30,10 @@ Object SkinnedDialogAbout, SkinnedDialogAboutID, DialogModal
   Embed    Skin,    ElasticSkin
 ObjectEnd
 
+IDC_DAB_ICON    equ     100
+IDC_DAB_TEXT    equ     101
+IDC_DAB_MAIL    equ     102
+IDC_DAB_LINK    equ     103
 
 ; ==================================================================================================
 

@@ -28,8 +28,3 @@ IDM_EXIT                      equ       1000
 IDM_HELP                      equ       1001
 IDM_ABOUT                     equ       1999
 
-;Dialog About Control IDs
-IDC_DAB_ICON                  equ       100
-IDC_DAB_TEXT                  equ       101
-IDC_DAB_MAIL                  equ       102
-IDC_DAB_LINK                  equ       103

@@ -61,12 +61,6 @@ IDM_CHECK8                    equ       4107
 IDM_CHECK9                    equ       4108
 IDM_LIST_NDX                  equ       4109
 
-;Dialog About Control IDs
-IDC_DAB_ICON                  equ       100
-IDC_DAB_TEXT                  equ       101
-IDC_DAB_MAIL                  equ       102
-IDC_DAB_LINK                  equ       103
-
 ;Application
 IDC_APP_SBR                   equ       1000
 

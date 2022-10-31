@@ -80,12 +80,6 @@ IDC_TOOLBARFILE               equ       100
 IDC_TOOLBARWINDOW             equ       101
 IDC_STATUSBAR                 equ       102
 
-;Dialog About Control IDs
-IDC_DAB_ICON                  equ       100
-IDC_DAB_TEXT                  equ       101
-IDC_DAB_MAIL                  equ       102
-IDC_DAB_LINK                  equ       103
-
 ;Language IDs
 IDLANG_ENGLISH                equ       000
 IDLANG_GERMAN                 equ       100

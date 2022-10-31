@@ -56,11 +56,6 @@ IDB_HELP_ABOUT                equ       008
 IDC_TEXT_ABOUT                equ       100
 IDC_STATUSBAR                 equ       102
 
-IDC_DAB_ICON                  equ       100
-IDC_DAB_TEXT                  equ       101
-IDC_DAB_MAIL                  equ       102
-IDC_DAB_LINK                  equ       103
-
 ;Language IDs
 IDLANG_ENGLISH                equ       000
 

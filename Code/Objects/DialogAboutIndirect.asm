@@ -17,6 +17,8 @@ LoadObjects Primer
 LoadObjects Stream
 LoadObjects WinPrimer
 LoadObjects Window
+LoadObjects Button
+LoadObjects Hyperlink
 LoadObjects Dialog
 LoadObjects DialogModal
 LoadObjects DialogModalIndirect

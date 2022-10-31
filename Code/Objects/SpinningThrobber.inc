@@ -1,7 +1,7 @@
 ; ==================================================================================================
 ; Title:      SpinningThrobber.inc
 ; Author:     G. Friedrich
-; Version:    C.1.1
+; Version:    C.1.0
 ; Purpose:    ObjAsm implementation of SpinningThrobber objects.
 ; Notes:      Version C.1.0, August 2022
 ;               - First release.
@@ -219,10 +219,12 @@ Method SpinningThrobber.Init, uses xbx xsi, pOwner:POINTER, hParent:HWND, pDefSt
                          [xbx].dStyle, [xbx].sdPosX, [xbx].sdPosY, 1, 1, \
                          hParent, [xbx].xCtlID, hInstance, pSelf
   ACall xsi.Init, pOwner, xax
-  .if [xbx].dImageType == TBR_IMAGE_BMP
-    OCall xsi.LoadBmpFromResList, [xbx].pResName
-  .elseif [xbx].dImageType == TBR_IMAGE_PNG
-    OCall xsi.LoadPngFromResList, [xbx].pResName
+  .if [xbx].pResName != NULL
+    .if [xbx].dImageType == TBR_IMAGE_BMP 
+      OCall xsi.LoadBmpFromRes, [xbx].pResName
+    .elseif [xbx].dImageType == TBR_IMAGE_PNG
+      OCall xsi.LoadPngFromRes, [xbx].pResName
+    .endif
   .endif
   m2m [xsi].dInterval, [xbx].dInterval, xax
 

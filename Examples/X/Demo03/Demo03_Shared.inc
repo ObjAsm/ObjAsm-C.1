@@ -62,8 +62,3 @@ IDC_RADIO2                    equ       201
 IDC_RADIO3                    equ       202
 IDC_CHECK1                    equ       300
 
-;Dialog About Control IDs
-IDC_DAB_ICON                  equ       100
-IDC_DAB_TEXT                  equ       101
-IDC_DAB_MAIL                  equ       102
-IDC_DAB_LINK                  equ       103

@@ -11,20 +11,16 @@
 % include Objects.cop
 
 % include &COMPath&COM.inc
-% include &COMPath&OAIDL.inc
 % include &COMPath&COM_Dispatch.inc
-% include &COMPath&COM_Interfaces.inc
-% include &IncPath&Ole32.inc
-% include &IncPath&OleAut32.inc
-% include &MacPath&Debug.inc
+% include &IncPath&Windows\ocidl.inc
+% include &IncPath&Windows\OleCtl.inc
 
 ;Add here all files that build the inheritance path and referenced objects
-include Primer.inc
-include Streamable.inc
-include Stream.inc
-include Collection.inc
-include DataCollection.inc
-include COMPrimers.inc
+LoadObjects Primer
+LoadObjects Stream
+LoadObjects Collection
+LoadObjects DataCollection
+LoadObjects COM_Primers
 
 ;Add here the file that defines the object(s) to be included in the library
 MakeObjects IDocHostUIHandler

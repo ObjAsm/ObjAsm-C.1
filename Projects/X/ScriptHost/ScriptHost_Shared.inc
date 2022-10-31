@@ -21,12 +21,6 @@ BUILD_DATE_STR                textequ   <2022-09-19>
 BUILD_BITNESS                 equ       64
 BUILD_MODE                    equ       RLS
 
-;Dialog About Control IDs
-IDC_DAB_ICON                  equ       100
-IDC_DAB_TEXT                  equ       101
-IDC_DAB_MAIL                  equ       102
-IDC_DAB_LINK                  equ       103
-
 ;Menu IDs
 IDM_EXIT                      equ       1100
 IDM_HELP                      equ       6000

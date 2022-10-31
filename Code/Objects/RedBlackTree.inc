@@ -885,7 +885,7 @@ Method RedBlackTree.Insert, uses xbx xdi xsi, pObject:POINTER
       jmp @@Exit
     .endif
     mov pNode, xbx
-    .ifBitSet xax, BIT63
+    .ifBitSet xCompResult, BIT31                        ;Negative?
       mov xbx, [xbx].RBT_NODE.pLeftNode
     .else
       mov xbx, [xbx].RBT_NODE.pRightNode

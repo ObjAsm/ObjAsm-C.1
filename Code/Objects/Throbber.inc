@@ -25,6 +25,12 @@ TBR_STATUS_STOPPING   equ 3
 TBR_IMAGE_BMP         equ 0
 TBR_IMAGE_PNG         equ 1
 
+TBR_FLAG_SELF_INST                equ BIT00     ;Creation info
+TBR_FLAG_ANIMATION_THREAD_STOP    equ BIT01     ;Command
+TBR_FLAG_ANIMATION_THREAD_FREEZE  equ BIT02     ;Command
+TBR_FLAG_ANIMATION_THREAD_FROZEN  equ BIT03     ;Feedback to MITBR_FLAG_ANIMATION_THREAD_FREEZE
+
+
 DEF_THROBBER struc
   xCtlID        XWORD     ?         ;Contol ID
   dStyle        DWORD     ?         ;Style
@@ -68,11 +74,6 @@ ObjectEnd
 ; ==================================================================================================
 
 if IMPLEMENT
-
-TBR_FLAG_SELF_INST                equ BIT00     ;Creation info
-TBR_FLAG_ANIMATION_THREAD_STOP    equ BIT01     ;Command
-TBR_FLAG_ANIMATION_THREAD_FREEZE  equ BIT02     ;Command
-TBR_FLAG_ANIMATION_THREAD_FROZEN  equ BIT03     ;Feedback to MITBR_FLAG_ANIMATION_THREAD_FREEZE
 
 TBR_STATUS_STOPPED    equ 0
 TBR_STATUS_STARTING   equ 1

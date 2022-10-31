@@ -98,12 +98,6 @@ IDC_CHOICE2                   equ       811
 IDC_CHOICE3                   equ       812
 IDC_CHOICE4                   equ       813
 
-;Dialog About Control IDs
-IDC_DAB_ICON                  equ       100
-IDC_DAB_TEXT                  equ       101
-IDC_DAB_MAIL                  equ       102
-IDC_DAB_LINK                  equ       103
-
 ;Language IDs
 IDLANG_ENGLISH                equ       000
 IDLANG_GERMAN                 equ       100
