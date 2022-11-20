@@ -1085,7 +1085,7 @@ endif
 ;             Escape sequences are supported to overcome MASM limitations. Escape sequences begin
 ;             with a \ character.
 ; Arguments:  Arg1: Non-volatile register pointing to the beginning of the output buffer.
-;                   It is used internally and its value is modified upon return.
+;                   It is used internally and its value is restored before return.
 ;             Arg2: Single or double Quoted format string. Only ANSI characters are allowed.
 ;                   format specifiers start with the "¦" character, followed by 2 characters
 ;                   specifying the type (and the decimal places for floating-point numbers) of the
@@ -1132,7 +1132,7 @@ endif
 ;
 ;             - Format specifiers and escape sequences are case sensitive.
 ;
-; Example:    WriteF xdi, 'Memory at ¦H8h: ¦F3", rsi, REAL4 ptr [xsi]
+; Example:    WriteF xdi, "Memory at ¦H8h: ¦F3", rsi, REAL4 ptr [xsi]
 ;
 WriteF macro DstReg:req, Format:req, Args:vararg
   local pPos, pBegin

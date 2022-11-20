@@ -457,5 +457,7 @@ QWordVectorID                     equ     0000012574
 
 DictionaryID                      equ     0000012580
 
+WebTextTranslatorID               equ     0000012590
+
 ;Math
 FFTID                             equ     0000012600

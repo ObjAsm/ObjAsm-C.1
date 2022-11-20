@@ -109,6 +109,9 @@ Method Throbber.Done, uses xsi
   invoke WaitForSingleObject, [xsi].hThread, INFINITE
   invoke CloseHandle, [xsi].hThread
   OCall xsi.Dispose
+  .ifBitClr [xsi].dFlags, TBR_FLAG_SELF_INST
+    invoke DestroyWindow, [xsi].hWnd
+  .endif
   ACall xsi.Done
 MethodEnd
 
