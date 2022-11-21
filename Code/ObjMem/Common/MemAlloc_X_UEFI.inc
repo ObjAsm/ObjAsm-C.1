@@ -23,7 +23,8 @@ MemAlloc_UEFI proc uses xbx dAttr:DWORD, dMemSize:DWORD, dType:DWORD
 
   mov xbx, pBootServices
   invoke [xbx].EFI_BOOT_SERVICES.AllocatePool, dType, dMemSize, addr pMemBlock
-  .ifBitSet xax, EFI_ERROR
+  mov xcx, EFI_ERROR
+  .ifBitSet xax, xcx
     xor eax, eax
   .else
     .ifBitSet dAttr, MEM_INIT_ZERO

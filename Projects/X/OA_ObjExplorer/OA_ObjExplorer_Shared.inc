@@ -10,14 +10,14 @@
 APP_TITLE                     textequ   <Object Explorer>
 ABOUT_TEXT                    textequ   <ObjAsm - Object Explorer>
 COPYRIGHT                     textequ   <G. Friedrich   October 2021>
-VER_FILEVERSION               equ       2,0,0,0
+VER_FILEVERSION               equ       2,0,1,0
 VER_FILEVERSION_STR           textequ   <2.0>
-VER_PRODUCTVERSION            equ       2,0,0,0
+VER_PRODUCTVERSION            equ       2,0,1,0
 VER_PRODUCTVERSION_STR        textequ   <2.0>
 
 ;Build information - updated automatically -
-BUILD_NUMBER                  equ       22
-BUILD_DATE_STR                textequ   <2022-09-19>
+BUILD_NUMBER                  equ       25
+BUILD_DATE_STR                textequ   <21.11.2022>
 BUILD_BITNESS                 equ       64
 BUILD_MODE                    equ       RLS
 

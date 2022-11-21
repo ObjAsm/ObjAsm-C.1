@@ -13,7 +13,8 @@ FIF_SCANNED                 equ   BIT01           ;File has been scanned in the 
 
 INF_INTERFACE               equ   BIT31           ;This Info is about a COM interface
 
-CStr  cInfoFileName,        "%OBJASM_PATH%\Code\OA_Info.stm"
+CStr  cInfoFileName,        "InfoFile"
+CStr  cDefaultInfoFileName, "OA_Info.stm"
 CStr  cScanInclude,         "Include"
 CStr  cScanExclude,         "Exclude"
 CStr  cSetup,               "Setup"
@@ -307,8 +308,11 @@ Method OA_ObjDB.Init, uses xbx xdi xsi, pOwner:POINTER, pIniFile:$ObjPtr(IniFile
   %OCall xbx::RegEx.Study, 0
 
   ;Load data from .stm file
+  mov xbx, $OCall(pIniFile::IniFile.GetString, offset cSetup, offset cInfoFileName, offset cDefaultInfoFileName)
   lea xdi, [xsi].cStmFileName
-  invoke ExpandEnvironmentStrings, offset cInfoFileName, xdi, MAX_PATH
+  invoke ExpandEnvironmentStrings, xbx, xdi, MAX_PATH
+  DbgStr xdi
+  invoke StrDispose, xbx
   .if $invoke(FileExist, xdi) != FALSE;;    OCall xsi.Open, xdi
   .endif
 

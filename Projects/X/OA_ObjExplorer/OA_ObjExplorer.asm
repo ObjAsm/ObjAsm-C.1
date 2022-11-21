@@ -1,7 +1,7 @@
 ; ==================================================================================================
 ; Title:      OA_ObjExplorer.asm
 ; Author:     G. Friedrich
-; Version:    2.0.0
+; Version:    2.0.1
 ; Purpose:    ObjAsm Object Explorer Application.
 ; Notes:      Version 1.0.0, December 2017
 ;               - First release.
@@ -9,12 +9,14 @@
 ;               - WebBrowser rendering replaced by TextView.
 ;             Version 2.0.0, October 2021
 ;               - General overhaul.
+;             Version 2.0.1, November 2022
+;               - OA_Info.stm: name and path moved to ini file.
 ;
 ; Todos:      - Namespaces need better handling
 ;             - Interfaces are not recognized --> API convention change! See h2incX project
 ;             - HelpLines are not collected nor displayed
 ;             - Set some information on the StatusBar from resources
-;             - Context menu is not used. Code remains for future use.
+;             - Context menu is not used. Code remains for future use
 ; ==================================================================================================
 
 

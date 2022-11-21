@@ -646,8 +646,9 @@ ProcName proc uses xbx xdi xsi, pStart:POINTER, dSize:DWORD, dRepresentationForm
 
           mov .ecx, ecx
           FillWordA [bAuxBuffer], <0000000000000000000>
-          .ifBitSet rdx, BIT63
-            neg edx
+          mov rcx, BIT63
+          .ifBitSet rdx, rcx
+            neg rdx
             invoke sqword2decA, addr [bAuxBuffer + 19], rdx
             mov BYTE ptr [xdi], '-'
           .else
