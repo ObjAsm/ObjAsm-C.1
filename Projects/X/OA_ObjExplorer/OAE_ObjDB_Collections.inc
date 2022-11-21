@@ -6,7 +6,6 @@
 ; ==================================================================================================
 
 
-
 FILEINFORMATION struct
   pFileName       PSTRING   ?           ;-> File Name
   LastWrite       FILETIME  <>          ;Date of last write to this file

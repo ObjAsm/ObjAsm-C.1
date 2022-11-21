@@ -20,7 +20,6 @@
 ; ==================================================================================================
 
 
-
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc
 SysSetup OOP, WIN64, ANSI_STRING;, DEBUG(WND)           ;MUST be ANSI!!!
 
