@@ -21,7 +21,7 @@
 
 
 % include @Environ(OBJASM_PATH)\Code\Macros\Model.inc
-SysSetup OOP, WIN64, ANSI_STRING;, DEBUG(WND)           ;MUST be ANSI!!!
+SysSetup OOP, WIN32, ANSI_STRING, DEBUG(WND)           ;MUST be ANSI!!!
 
 % includelib &LibPath&Windows\Kernel32.lib
 % includelib &LibPath&Windows\Shell32.lib

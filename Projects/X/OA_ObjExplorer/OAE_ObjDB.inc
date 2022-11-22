@@ -312,10 +312,9 @@ Method OA_ObjDB.Init, uses xbx xdi xsi, pOwner:POINTER, pIniFile:$ObjPtr(IniFile
   mov xbx, $OCall(pIniFile::IniFile.GetString, offset cSetup, offset cInfoFileName, offset cDefaultInfoFileName)
   lea xdi, [xsi].cStmFileName
   invoke ExpandEnvironmentStrings, xbx, xdi, MAX_PATH
-  DbgStr xdi
   invoke StrDispose, xbx
-  .if $invoke(FileExist, xdi) != FALSE;;    OCall xsi.Open, xdi
-  .endif
+;  .if $invoke(FileExist, xdi) != FALSE;;    OCall xsi.Open, xdi
+;  .endif
 
   ;Check if something has changed in the following folders and rebuild if necessary
   mov dHasChanged, FALSE
@@ -458,6 +457,11 @@ FindHelpLines proc uses xbx xdi xsi pTextSrc:$ObjPtr(TextSource), pInfo:PINFORMA
 ;  .endif
 ;
 ;  m2m [xbx].$Obj(TextSource).dLineNumber, dLineNumber, eax  ;Restore line position
+
+; ////////////////////// temprary ////////////////////
+  mov xax, pInfo
+  m2z [xax].INFORMATION.pHelpData
+  m2z [xax].INFORMATION.dHelpLineCount
 
   ret
 FindHelpLines endp

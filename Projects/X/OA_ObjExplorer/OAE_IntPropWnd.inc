@@ -6,7 +6,6 @@
 ; ==================================================================================================
 
 
-
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     IntPropWnd.Done
 ; Purpose:    Finalizes the IntPropWnd object and disposes the MDI child window.
@@ -47,7 +46,7 @@ MethodEnd
 ; Return:     Nothing.
 
 ShowIntMtd proc uses xbx xdi xsi pMemberData:PMEMBERDATA, pSelf:$ObjPtr(IntPropWnd), xDummy:XWORD
-  local dBytesWritten:DWORD, hHtmlFile:HANDLE
+  local dBytesWritten:DWORD;, hHtmlFile:HANDLE
 
   mov xsi, pMemberData
   lea xdi, dBytesWritten
