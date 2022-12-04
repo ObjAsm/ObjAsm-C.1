@@ -9,7 +9,7 @@
 
 
 %include @Environ(OBJASM_PATH)\\Code\\Macros\\Model.inc ;Include & initialize standard modules
-SysSetup OOP, WIN64, WIDE_STRING, DEBUG(WND)
+SysSetup OOP, WIN64, WIDE_STRING;, DEBUG(WND)
 
 % include &MacPath&Strings.inc                          ;Load WIDE string support
 % include &MacPath&DlgTmpl.inc                          ;Load tempate dialog support

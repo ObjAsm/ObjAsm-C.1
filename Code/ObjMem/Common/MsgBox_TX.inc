@@ -18,8 +18,8 @@
 
 
 % include &MacPath&WinHelpers.inc
-% include &IncPath&Windows\CommCtrl.inc
 % include &MacPath&ConstDiv.inc
+% include &IncPath&Windows\CommCtrl.inc
 
 % include &ObjPath&\Primer.inc
 % include &ObjPath&\Stream.inc
@@ -42,7 +42,7 @@ MB_ButtonInfo ends
 
 MsgBoxInfo struc
   hHook       HANDLE    ?     ;System hook
-  hDlg        HWND      ?     ;hDlg
+  hDlg        HWND      ?     ;Dialog HANDLE
   pCaption    PSTRING   ?     ;Dialog caption string
   pText       PSTRING   ?     ;Main text markup string
   dBandHeight DWORD     ?     ;Drawing help, height of grey band at the bottom of the dialog
@@ -66,22 +66,21 @@ MsgBoxCaptionHeaderSize equ 11
 ;             the address of a MsgBoxInfo structure in text form.
 
 ProcName proc uses xbx hParent:HANDLE, pText:POINTER, pCaption:POINTER, dFlags:DWORD
-  local cTransfer[2*sizeof(POINTER) + MsgBoxCaptionHeaderSize + 1]:CHR
+  local cTransferInfo[MsgBoxCaptionHeaderSize + 2*sizeof(POINTER) + 1]:CHR, MBInfo:MsgBoxInfo
 
   ;Set system hook
-  mov xbx, $MemAlloc(sizeof(MsgBoxInfo))
   invoke SetWindowsHookEx, WH_CALLWNDPROC, offset MB_HookProc, 0, $32($invoke(GetCurrentThreadId))
-  mov [xbx].MsgBoxInfo.hHook, xax
 
   ;Prepare information to pass to the MessageBox dialog.
-  m2m [xbx].MsgBoxInfo.pText, pText, xcx
-  m2m [xbx].MsgBoxInfo.pCaption, pCaption, xdx
-  FillWord cTransfer, MsgBoxCaptionHeader
-  invoke xword2hex, addr [cTransfer + MsgBoxCaptionHeaderSize*sizeof(CHR)], xbx
+  mov MBInfo.hHook, xax
+  m2m MBInfo.pText, pText, xcx
+  m2m MBInfo.pCaption, pCaption, xdx
+  FillWord cTransferInfo, MsgBoxCaptionHeader
+  invoke xword2hex, addr [cTransferInfo + MsgBoxCaptionHeaderSize*sizeof(CHR)], addr MBInfo
 
   ;Use the caption to pass the pointer to MsgBoxInfo in form of a string.
   ;MessageBoxIndirect can be used for more options.
-  invoke MessageBox, hParent, NULL, addr cTransfer, dFlags
+  invoke MessageBox, hParent, NULL, addr cTransferInfo, dFlags
   ret
 ProcName endp
 
@@ -266,11 +265,14 @@ MB_WndProc proc private uses xbx xdi xsi hDlg:HWND, uMsg:DWORD, wParam:WPARAM, l
   .elseif uMsg == WM_ERASEBKGND
     ret
 
-  .elseif uMsg == WM_NCDESTROY                          ;Last message recieved
+  .elseif uMsg == WM_DESTROY
     %mov xdi, offset cMsgBoxProp&TARGET_SUFFIX
-    invoke GetProp, hDlg, xdi
-    MemFree xax                                         ;Free MsgBoxInfo memory block
-    invoke RemoveProp, hDlg, xdi
+    invoke GetDlgItem, hDlg, MB_TEXTVIEW_CTLID
+    invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0
+    Destroy xax
+
+  .elseif uMsg == WM_NCDESTROY                          ;Last message recieved
+    %invoke RemoveProp, hDlg, offset cMsgBoxProp&TARGET_SUFFIX
 
   .endif
   invoke DefDlgProc, hDlg, uMsg, wParam, lParam
@@ -287,20 +289,18 @@ MB_WndProc endp
 ; Return:     eax = Zero if handled.
 
 MB_HookProc proc private uses xbx xdi dCode:DWORD, wParam:WPARAM, lParam:LPARAM
-  local cTransfer[2*sizeof(POINTER) + MsgBoxCaptionHeaderSize + 1]:CHR
+  local cTransferInfo[2*sizeof(POINTER) + MsgBoxCaptionHeaderSize + 1]:CHR
 
   .if dCode == HC_ACTION                               ;Ignore the rest
     mov xbx, lParam
     ;The first recieved WM_NCCALCSIZE corresponds to the dialog window.
-    ;It is the first dialog message that has the caption set
+    ;It is the first dialog message where the caption is set
     .if [xbx].CWPSTRUCT.message == WM_NCCALCSIZE
-      invoke GetWindowText, [xbx].CWPSTRUCT.hwnd, addr cTransfer, lengthof(cTransfer)
-      DbgStr cTransfer
-      .if $DoesWordMatch?(cTransfer, MsgBoxCaptionHeader)
-        mov xdi, $invoke(hex2xword, addr [cTransfer + MsgBoxCaptionHeaderSize*sizeof(CHR)])
+      invoke GetWindowText, [xbx].CWPSTRUCT.hwnd, addr cTransferInfo, lengthof(cTransferInfo)
+      .if $DoesWordMatch?(cTransferInfo, MsgBoxCaptionHeader)
+        mov xdi, $invoke(hex2xword, addr [cTransferInfo + MsgBoxCaptionHeaderSize*sizeof(CHR)])
         ;Save a pointer to MsgBoxInfo as a window property
-        %mov xdx, offset cMsgBoxProp&TARGET_SUFFIX
-        invoke SetProp, [xbx].CWPSTRUCT.hwnd, xdx, xdi
+        %invoke SetProp, [xbx].CWPSTRUCT.hwnd, offset cMsgBoxProp&TARGET_SUFFIX, xdi
         ;Release the hook
         invoke UnhookWindowsHookEx, [xdi].MsgBoxInfo.hHook
         ;Set correct caption

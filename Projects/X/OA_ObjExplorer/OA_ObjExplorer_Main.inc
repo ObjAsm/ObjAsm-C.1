@@ -523,8 +523,8 @@ Method Application.Init, uses xbx xdi xsi
   mov [xsi].hMenuContext, $invoke(LoadMenu, hInstance, $OfsCStr("PROPCONTEXT"))
 
   ;Create the MDI Frame window
-  mov dWwd, 1500
-  mov dWht, 1000
+  mov dWwd, 800
+  mov dWht, 600
   mov dWtx, $32($invoke(CenterForm, dWwd, $32($invoke(GetSystemMetrics, SM_CXSCREEN))))
   mov dWty, $32($invoke(CenterForm, dWht, $32($invoke(GetSystemMetrics, SM_CYSCREEN))))
 
@@ -555,7 +555,7 @@ Method Application.Init, uses xbx xdi xsi
 
   OCall [xsi].pObjDB::OA_ObjDB.Init, xsi, addr [xsi].SetupFile
 
-  OCall xsi.Refresh, REFRESH_ALL                        ;Load Object information from .stm file --> other thread
+  OCall xsi.Refresh, REFRESH_ALL                        ;Load Object information from .stm file
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -609,7 +609,7 @@ Method Application.OnClose, uses xbx xsi, wParam:WPARAM, lParam:LPARAM
   mov xbx, [xsi].pClientWnd
   and ax, BIT15
   .if ZERO? || dMsg != WM_CLOSE                         ;If CTRL pressed => close without asking
-    .if [xbx].$Obj(ClientWnd).dChildCount != 0       ;Ask only if a child window is open
+    .if [xbx].$Obj(ClientWnd).dChildCount != 0          ;Ask only if a child window is open
       mov edx, [xsi].dLanguage
       add edx, 140
       invoke LoadString, hInstance, edx, addr cCaption, lengthof cCaption

@@ -626,7 +626,7 @@ GatherObjMtds proc uses xbx xdi xsi pObjMtdInfo:POBJMTDINFORMATION, pObjName:PST
   SetObject xsi, ObjPropWnd
   mov xbx, pObjMtdInfo
   .if $invoke(StrCompA, [xbx].OBJMTDINFORMATION.pObjectName, pObjName) == 0
-    mov xdi, $MemAlloc(MEMBERDATA)
+    mov xdi, $MemAlloc(sizeof(MEMBERDATA))
     mov [xdi].MEMBERDATA.pMemberInfo, xbx
     mov [xdi].MEMBERDATA.dFlags, MDT_FINAL
     m2z [xdi].MEMBERDATA.pDefinition
@@ -656,7 +656,7 @@ Method ObjPropWnd.GatherMethods, uses xsi, pInfo:POBJECTINFORMATION
       OCall xsi.GatherMethods, xax
     .else
       ;Stop recursion
-      MemAlloc MEMBERDATA
+      MemAlloc sizeof(MEMBERDATA)
       OCall [xsi].Methods::DataCollection.Insert, xax
       m2m [xax].MEMBERDATA.pMemberInfo, pInfo, xdx
       mov [xax].MEMBERDATA.dFlags, MDT_UNKNOWN
@@ -683,7 +683,7 @@ GatherObjVars proc uses xbx xdi xsi pObjVarInfo:POBJVARINFORMATION, pObjName:PST
   SetObject xsi, ObjPropWnd
   mov xbx, pObjVarInfo
   .if $invoke(StrCompA, [xbx].OBJVARINFORMATION.pObjectName, pObjName) == 0
-    mov xdi, $MemAlloc(MEMBERDATA)
+    mov xdi, $MemAlloc(sizeof(MEMBERDATA))
     mov [xdi].MEMBERDATA.pMemberInfo, xbx
     mov [xdi].MEMBERDATA.dFlags, MDT_FINAL
     m2z [xdi].MEMBERDATA.pDefinition
@@ -713,7 +713,7 @@ Method ObjPropWnd.GatherVariables, uses xsi, pInfo:POBJECTINFORMATION
       OCall xsi.GatherVariables, xax
     .else
       ;Stop recursion
-      MemAlloc MEMBERDATA
+      MemAlloc sizeof(MEMBERDATA)
       OCall [xsi].Variables::DataCollection.Insert, xax
       m2m [xax].MEMBERDATA.pMemberInfo, pInfo, xdx
       mov [xax].MEMBERDATA.dFlags, MDT_UNKNOWN

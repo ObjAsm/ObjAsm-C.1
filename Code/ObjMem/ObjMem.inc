@@ -830,6 +830,12 @@ if TARGET_BITNESS eq 32
   sxword2decW textequ <sdword2decW>
   uxword2decW textequ <udword2decW>
   xword2decW textequ <udword2decW>
+
+  XWORD2HEX_MAX_CHARS textequ <DWORD2HEX_MAX_CHARS> 
+  XWORD2BIN_MAX_CHARS textequ <DWORD2BIN_MAX_CHARS>
+  XWORD2DEC_MAX_CHARS textequ <DWORD2DEC_MAX_CHARS>
+  SXWORD2DEC_MAX_CHARS textequ <SDWORD2DEC_MAX_CHARS>
+
 elseif TARGET_BITNESS eq 64
   xword2hex textequ <qword2hex>
   hex2xword textequ <hex2qword>
@@ -853,6 +859,11 @@ elseif TARGET_BITNESS eq 64
   sxword2decW textequ <sqword2decW>
   uxword2decW textequ <uqword2decW>
   xword2decW textequ <uqword2decW>
+
+  XWORD2HEX_MAX_CHARS textequ <QWORD2HEX_MAX_CHARS> 
+  XWORD2BIN_MAX_CHARS textequ <QWORD2BIN_MAX_CHARS>
+  XWORD2DEC_MAX_CHARS textequ <QWORD2DEC_MAX_CHARS>
+  SXWORD2DEC_MAX_CHARS textequ <SQWORD2DEC_MAX_CHARS>
 else
   %echo Warning: incompatible Bitness: $ToStr(%TARGET_BITNESS)
 endif

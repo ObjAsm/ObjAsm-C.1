@@ -213,7 +213,7 @@ GatherIntMtds proc uses xbx xdi xsi pIntMtdInfo:PINTMTDINFORMATION, pInterfaceNa
   SetObject xsi, IntPropWnd
   mov xbx, pIntMtdInfo
   .if $invoke(StrCompA, [xbx].INTMTDINFORMATION.pInterfaceName, pInterfaceName) == 0
-    mov xdi, $MemAlloc(MEMBERDATA)
+    mov xdi, $MemAlloc(sizeof(MEMBERDATA))
     mov [xdi].MEMBERDATA.pMemberInfo, xbx
     mov [xdi].MEMBERDATA.dFlags, MDT_FINAL
     m2z [xdi].MEMBERDATA.pDefinition
@@ -243,7 +243,7 @@ Method IntPropWnd.GatherMethods, uses xsi, pInfo:PINTERFACEINFORMATION
       OCall xsi.GatherMethods, xax
     .else
       ;Stop recursion
-      MemAlloc MEMBERDATA
+      MemAlloc sizeof(MEMBERDATA)
       OCall [xsi].Methods::DataCollection.Insert, xax
       m2m [xax].MEMBERDATA.pMemberInfo, pInfo, xdx
       mov [xax].MEMBERDATA.dFlags, MDT_UNKNOWN

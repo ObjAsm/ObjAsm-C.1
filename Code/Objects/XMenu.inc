@@ -1309,7 +1309,7 @@ Method XMenu.FlashMenuBar, uses xbx xsi, BkColor:RGBQUAD, dRepetitions:DWORD
   SetObject xsi
   .ifBitClr [xsi].dFlags, XMF_FLASHING                  ;Don't accept new commands while flashing
     BitSet [xsi].dFlags, XMF_FLASHING
-    MemAlloc sizeof FMB_Params
+    MemAlloc sizeof(FMB_Params)
     mov xbx, xax
     mov [xbx].FMB_Params.pXMenu, xsi
     m2m [xbx].FMB_Params.BkColor1, BkColor, eax

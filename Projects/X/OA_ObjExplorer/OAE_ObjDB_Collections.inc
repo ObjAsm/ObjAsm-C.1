@@ -75,7 +75,7 @@ SCAN_ON_REQUEST   equ     BIT01
 Object FilesCollection, OAE_FilesCollectionID, SortedCollection
   RedefineMethod    Compare,        PSTRING, PSTRING
   RedefineMethod    DestroyItem,    PFILEINFORMATION
-  RedefineMethod    GetItem,        $ObjPtr(Stream)
+  RedefineMethod    GetItem,        $ObjPtr(Stream), PDESER_INFO
   RedefineMethod    KeyOf,          PFILEINFORMATION
   RedefineMethod    PutItem,        $ObjPtr(Stream), PFILEINFORMATION
 ObjectEnd
@@ -87,7 +87,7 @@ ObjectEnd
 Object ObjInfoCollection, OAE_ObjInfoCollectionID, SortedCollection
   RedefineMethod    Compare,        PSTRINGA, PSTRINGA
   RedefineMethod    DestroyItem,    POBJECTINFORMATION
-  RedefineMethod    GetItem,        $ObjPtr(Stream)
+  RedefineMethod    GetItem,        $ObjPtr(Stream), PDESER_INFO
   RedefineMethod    Init,           POINTER, DWORD, DWORD, $ObjPtr(FilesCollection)
   RedefineMethod    KeyOf,          POBJECTINFORMATION
   RedefineMethod    PutItem,        $ObjPtr(Stream), POBJECTINFORMATION
@@ -101,7 +101,7 @@ ObjectEnd
 
 Object ObjMtdInfoCollection, OAE_ObjMtdInfoCollectionID, Collection
   RedefineMethod    DestroyItem,    POBJMTDINFORMATION
-  RedefineMethod    GetItem,        $ObjPtr(Stream)
+  RedefineMethod    GetItem,        $ObjPtr(Stream), PDESER_INFO
   RedefineMethod    Init,           POINTER, DWORD, DWORD, $ObjPtr(FilesCollection)
   RedefineMethod    PutItem,        $ObjPtr(Stream), POBJMTDINFORMATION
 
@@ -114,7 +114,7 @@ ObjectEnd
 
 Object ObjVarInfoCollection, OAE_ObjVarInfoCollectionID, Collection
   RedefineMethod    DestroyItem,    POBJVARINFORMATION
-  RedefineMethod    GetItem,        $ObjPtr(Stream)
+  RedefineMethod    GetItem,        $ObjPtr(Stream), PDESER_INFO
   RedefineMethod    Init,           POINTER, DWORD, DWORD, $ObjPtr(FilesCollection)
   RedefineMethod    PutItem,        $ObjPtr(Stream), POBJVARINFORMATION
 
@@ -128,7 +128,7 @@ ObjectEnd
 Object IntInfoCollection, OAE_IntInfoCollectionID, SortedCollection
   RedefineMethod    Compare,        PSTRINGA, PSTRINGA
   RedefineMethod    DestroyItem,    PINTERFACEINFORMATION
-  RedefineMethod    GetItem,        $ObjPtr(Stream)
+  RedefineMethod    GetItem,        $ObjPtr(Stream), PDESER_INFO
   RedefineMethod    KeyOf,          PINTERFACEINFORMATION
   RedefineMethod    Init,           POINTER, DWORD, DWORD, $ObjPtr(FilesCollection)
   RedefineMethod    PutItem,        $ObjPtr(Stream), PINTERFACEINFORMATION
@@ -142,7 +142,7 @@ ObjectEnd
 
 Object IntMtdInfoCollection, OAE_IntMtdInfoCollectionID, Collection
   RedefineMethod    DestroyItem,    PINTMTDINFORMATION
-  RedefineMethod    GetItem,        $ObjPtr(Stream)
+  RedefineMethod    GetItem,        $ObjPtr(Stream), PDESER_INFO
   RedefineMethod    Init,           POINTER, DWORD, DWORD, $ObjPtr(FilesCollection)
   RedefineMethod    PutItem,        $ObjPtr(Stream), PINTMTDINFORMATION
 
@@ -155,7 +155,7 @@ ObjectEnd
 
 Object ImpMtdInfoCollection, OAE_ImpMtdInfoCollectionID, Collection
   RedefineMethod    DestroyItem,    PIMPMTDINFORMATION
-  RedefineMethod    GetItem,        $ObjPtr(Stream)
+  RedefineMethod    GetItem,        $ObjPtr(Stream), PDESER_INFO
   RedefineMethod    Init,           POINTER, DWORD, DWORD, $ObjPtr(FilesCollection)
   RedefineMethod    PutItem,        $ObjPtr(Stream), PIMPMTDINFORMATION
 
@@ -200,10 +200,11 @@ MethodEnd
 ; Method:     FilesCollection.GetItem
 ; Purpose:    Loads an item from a stream object.
 ; Arguments:  Arg1: -> Stream.
+;             Arg2: -> DESER_INFO.
 ; Return:     xax -> New loaded FILEINFORMATION structure.
 
-Method FilesCollection.GetItem, uses xbx, pStream:$ObjPtr(Stream)
-  mov xbx, $MemAlloc(FILEINFORMATION)
+Method FilesCollection.GetItem, uses xbx, pStream:$ObjPtr(Stream), pDeserInfo:PDESER_INFO
+  mov xbx, $MemAlloc(sizeof(FILEINFORMATION))
   mov [xbx].FILEINFORMATION.pFileName, $OCall(pStream::Stream.StrRead)
   OCall pStream::Stream.BinRead, addr [xbx].FILEINFORMATION.LastWrite, sizeof FILETIME
   m2z [xbx].FILEINFORMATION.dFlags                    ;Reset flags
@@ -262,12 +263,12 @@ Method ObjInfoCollection.DestroyItem, uses xbx xdi, pItem:POBJECTINFORMATION
   mov xbx, pItem                                 ;pItem
   invoke StrDispose, [xbx].OBJECTINFORMATION.pName
   invoke StrDispose, [xbx].OBJECTINFORMATION.pAncestorName
-  mov xdi, [xbx].OBJECTINFORMATION.pHelpData
-  .while xdi != NULL
-    mov xax, xdi
-    mov xdi, [xdi]
-    MemFree xax
-  .endw
+;  mov xdi, [xbx].OBJECTINFORMATION.pHelpData
+;  .while xdi != NULL
+;    mov xax, xdi
+;    mov xdi, [xdi]
+;    MemFree xax
+;  .endw
   MemFree xbx
 MethodEnd
 
@@ -275,24 +276,24 @@ MethodEnd
 ; Method:     ObjInfoCollection.GetItem
 ; Purpose:    Loads an item from a stream object.
 ; Arguments:  Arg1: -> Stream.
+;             Arg2: -> DESER_INFO.
 ; Return:     xax -> New loaded OBJECTINFORMATION structure.
 
-Method ObjInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
+Method ObjInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream), pDeserInfo:PDESER_INFO
   local dSize:DWORD
 
-  mov xbx, $MemAlloc(OBJECTINFORMATION)
+  mov xbx, $MemAlloc(sizeof(OBJECTINFORMATION))
   mov [xbx].OBJECTINFORMATION.dFlags, $32($OCall(pStream::Stream.BinRead32))
   mov [xbx].OBJECTINFORMATION.pName, $OCall(pStream::Stream.StrRead)
   mov [xbx].OBJECTINFORMATION.pAncestorName, $OCall(pStream::Stream.StrRead)
   mov [xbx].OBJECTINFORMATION.dHelpLineCount, $32($OCall(pStream::Stream.BinRead32))
-;  DbgDec eax
   mov edi, eax
-  lea esi, [xbx].OBJECTINFORMATION.pHelpData
+  lea xsi, [xbx].OBJECTINFORMATION.pHelpData
   .while edi != 0
     OCall pStream::Stream.BinRead32
     mov dSize, eax
     add eax, sizeof(POINTER)
-    invoke GlobalAlloc, 0, eax
+    invoke StrAllocA, eax
     mov [xsi], xax
     mov xsi, xax
     add xax, sizeof(POINTER)
@@ -305,7 +306,7 @@ Method ObjInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
   SetObject xcx
   OCall [xcx].pFilesColl::FilesCollection.ItemAt, eax
   mov [xbx].OBJECTINFORMATION.pFileInfo, xax
-  mov eax, ebx
+  mov xax, xbx
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -375,12 +376,12 @@ Method ObjMtdInfoCollection.DestroyItem, uses xbx xdi, pItem:POBJMTDINFORMATION
   invoke StrDispose, [xbx].OBJMTDINFORMATION.pObjectName
   invoke StrDispose, [xbx].OBJMTDINFORMATION.pName
   invoke StrDispose, [xbx].OBJMTDINFORMATION.pArguments
-  mov xdi, [xbx].OBJMTDINFORMATION.pHelpData
-  .while xdi != NULL
-    mov xax, xdi
-    mov xdi, [xdi]
-    MemFree xax
-  .endw
+;  mov xdi, [xbx].OBJMTDINFORMATION.pHelpData
+;  .while xdi != NULL
+;    mov xax, xdi
+;    mov xdi, [xdi]
+;    MemFree xax
+;  .endw
   MemFree xbx
 MethodEnd
 
@@ -388,12 +389,13 @@ MethodEnd
 ; Method:     ObjMtdInfoCollection.GetItem
 ; Purpose:    Loads an item from a stream object.
 ; Arguments:  Arg1: -> Stream.
+;             Arg2: -> DESER_INFO.
 ; Return:     xax -> New loaded OBJMTDINFORMATION structure.
 
-Method ObjMtdInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
+Method ObjMtdInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream), pDeserInfo:PDESER_INFO
   local dSize:DWORD
 
-  mov xbx, $MemAlloc(OBJMTDINFORMATION)
+  mov xbx, $MemAlloc(sizeof(OBJMTDINFORMATION))
   mov [xbx].OBJMTDINFORMATION.dFlags, $32($OCall(pStream::Stream.BinRead32))
   mov [xbx].OBJMTDINFORMATION.pObjectName, $OCall(pStream::Stream.StrRead)
   mov [xbx].OBJMTDINFORMATION.pName, $OCall(pStream::Stream.StrRead)
@@ -404,7 +406,7 @@ Method ObjMtdInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
     OCall pStream::Stream.BinRead32
     mov dSize, eax
     add eax, sizeof(POINTER)
-    invoke GlobalAlloc, 0, eax
+    invoke StrAlloc, eax
     mov [xsi], xax
     mov xsi, xax
     add xax, sizeof(POINTER)
@@ -490,12 +492,13 @@ MethodEnd
 ; Method:     ObjVarInfoCollection.GetItem
 ; Purpose:    Loads an item from a stream object.
 ; Arguments:  Arg1: -> Stream.
+;             Arg2: -> DESER_INFO.
 ; Return:     xax -> New loaded OBJVARINFORMATION structure.
 
-Method ObjVarInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
+Method ObjVarInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream), pDeserInfo:PDESER_INFO
   local dSize:DWORD
 
-  mov xbx, $MemAlloc(OBJVARINFORMATION)
+  mov xbx, $MemAlloc(sizeof(OBJVARINFORMATION))
   mov [xbx].OBJVARINFORMATION.dFlags, $32($OCall(pStream::Stream.BinRead32))
   mov [xbx].OBJVARINFORMATION.pObjectName, $OCall(pStream::Stream.StrRead)
   mov [xbx].OBJVARINFORMATION.pName, $OCall(pStream::Stream.StrRead)
@@ -506,7 +509,7 @@ Method ObjVarInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
     OCall pStream::Stream.BinRead32
     mov dSize, eax
     add eax, sizeof(POINTER)
-    invoke GlobalAlloc, 0, eax
+    invoke StrAlloc, eax
     mov [xsi], xax
     mov xsi, xax
     add xax, sizeof(POINTER)
@@ -591,12 +594,12 @@ Method IntInfoCollection.DestroyItem, uses xbx xdi, pItem:PINTERFACEINFORMATION
   mov xbx, pItem
   invoke StrDispose, [xbx].INTERFACEINFORMATION.pName
   invoke StrDispose, [xbx].INTERFACEINFORMATION.pAncestorName
-  mov xdi, [xbx].INTERFACEINFORMATION.pHelpData
-  .while xdi != NULL
-    mov xax, xdi
-    mov xdi, [xdi]
-    MemFree xax
-  .endw
+;  mov xdi, [xbx].INTERFACEINFORMATION.pHelpData
+;  .while xdi != NULL
+;    mov xax, xdi
+;    mov xdi, [xdi]
+;    MemFree xax
+;  .endw
   MemFree xbx
 MethodEnd
 
@@ -604,12 +607,13 @@ MethodEnd
 ; Method:     IntInfoCollection.GetItem
 ; Purpose:    Loads an item from a stream object.
 ; Arguments:  Arg1: -> Stream object containing an object.
+;             Arg2: -> DESER_INFO.
 ; Return:     xax -> New loaded INTERFACEINFORMATION structure.
 
-Method IntInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
+Method IntInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream), pDeserInfo:PDESER_INFO
   local dSize:DWORD
 
-  mov xbx, $MemAlloc(INTERFACEINFORMATION)
+  mov xbx, $MemAlloc(sizeof(INTERFACEINFORMATION))
   mov [xbx].INTERFACEINFORMATION.dFlags, $32($OCall(pStream::Stream.BinRead32))
   mov [xbx].INTERFACEINFORMATION.pName, $OCall(pStream::Stream.StrRead)
   mov [xbx].INTERFACEINFORMATION.pAncestorName, $OCall(pStream::Stream.StrRead)
@@ -620,7 +624,7 @@ Method IntInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
     OCall pStream::Stream.BinRead32
     mov dSize, eax
     add eax, sizeof(POINTER)
-    invoke GlobalAlloc, 0, eax
+    invoke StrAlloc, eax
     mov [xsi], xax
     mov xsi, xax
     add xax, sizeof(POINTER)
@@ -703,12 +707,12 @@ Method IntMtdInfoCollection.DestroyItem, uses xbx xdi, pItem:PINTMTDINFORMATION
   invoke StrDispose, [xbx].INTMTDINFORMATION.pInterfaceName
   invoke StrDispose, [xbx].INTMTDINFORMATION.pName
   invoke StrDispose, [xbx].INTMTDINFORMATION.pArguments
-  mov xdi, [xbx].INTMTDINFORMATION.pHelpData
-  .while xdi != NULL
-    mov xax, xdi
-    mov xdi, [xdi]
-    MemFree xax
-  .endw
+;  mov xdi, [xbx].INTMTDINFORMATION.pHelpData
+;  .while xdi != NULL
+;    mov xax, xdi
+;    mov xdi, [xdi]
+;    MemFree xax
+;  .endw
   MemFree xbx
 MethodEnd
 
@@ -716,12 +720,13 @@ MethodEnd
 ; Method:     IntMtdInfoCollection.GetItem
 ; Purpose:    Loads an item from a stream object.
 ; Arguments:  Arg1: -> Stream object containing an object.
+;             Arg2: -> DESER_INFO.
 ; Return:     xax -> New loaded INTMTDINFORMATION structure.
 
-Method IntMtdInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
+Method IntMtdInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream), pDeserInfo:PDESER_INFO
   local dSize:DWORD
 
-  mov xbx, $MemAlloc(INTMTDINFORMATION)
+  mov xbx, $MemAlloc(sizeof(INTMTDINFORMATION))
   mov [xbx].INTMTDINFORMATION.dFlags, $32($OCall(pStream::Stream.BinRead32))
   mov [xbx].INTMTDINFORMATION.pInterfaceName, $OCall(pStream::Stream.StrRead)
   mov [xbx].INTMTDINFORMATION.pName, $OCall(pStream::Stream.StrRead)
@@ -732,7 +737,7 @@ Method IntMtdInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
     OCall pStream::Stream.BinRead32
     mov dSize, eax
     add eax, sizeof(POINTER)
-    invoke GlobalAlloc, 0, eax
+    invoke StrAlloc, eax
     mov [xsi], xax
     mov xsi, xax
     add xax, sizeof(POINTER)
@@ -805,12 +810,12 @@ Method ImpMtdInfoCollection.DestroyItem, uses xbx xdi, pItem:PIMPMTDINFORMATION
   invoke StrDispose, [xbx].IMPMTDINFORMATION.pObjectName
   invoke StrDispose, [xbx].IMPMTDINFORMATION.pName
   invoke StrDispose, [xbx].IMPMTDINFORMATION.pArguments
-  mov xdi, [xbx].IMPMTDINFORMATION.pHelpData
-  .while xdi != NULL
-    mov xax, xdi
-    mov xdi, [xdi]
-    MemFree xax
-  .endw
+;  mov xdi, [xbx].IMPMTDINFORMATION.pHelpData
+;  .while xdi != NULL
+;    mov xax, xdi
+;    mov xdi, [xdi]
+;    MemFree xax
+;  .endw
   MemFree xbx
 MethodEnd
 
@@ -818,12 +823,13 @@ MethodEnd
 ; Method:     ImpMtdInfoCollection.GetItem
 ; Purpose:    Loads an item from a stream object.
 ; Arguments:  Arg1: -> Stream object containing an object.
+;             Arg2: -> DESER_INFO.
 ; Return:     xax -> New loaded IMPMTDINFORMATION structure.
 
-Method ImpMtdInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
+Method ImpMtdInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream), pDeserInfo:PDESER_INFO
   local dSize:DWORD
 
-  mov xbx, $MemAlloc(IMPMTDINFORMATION)
+  mov xbx, $MemAlloc(sizeof(IMPMTDINFORMATION))
   mov [xbx].IMPMTDINFORMATION.dFlags, $32($OCall(pStream::Stream.BinRead32))
   mov [xbx].IMPMTDINFORMATION.pObjectName, $OCall(pStream::Stream.StrRead)
   mov [xbx].IMPMTDINFORMATION.pName, $OCall(pStream::Stream.StrRead)
@@ -834,7 +840,7 @@ Method ImpMtdInfoCollection.GetItem, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
     OCall pStream::Stream.BinRead32
     mov dSize, eax
     add eax, sizeof(POINTER)
-    invoke GlobalAlloc, 0, eax
+    invoke StrAlloc, eax
     mov [xsi], xax
     mov xsi, xax
     add xax, sizeof(POINTER)

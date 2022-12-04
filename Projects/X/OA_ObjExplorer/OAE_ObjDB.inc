@@ -6,8 +6,12 @@
 ; ==================================================================================================
 
 
-
-DATABASE_VERSION            equ   1
+BASE_VERSION                equ   2
+if TARGET_BITNESS eq 32
+  DATABASE_VERSION          equ   BASE_VERSION
+else 
+  DATABASE_VERSION          equ   BASE_VERSION + BIT08
+endif
 
 FIF_STANDARD                equ   BIT00           ;It's a file from the standard folders
 FIF_SCANNED                 equ   BIT01           ;File has been scanned in the current session
@@ -313,8 +317,9 @@ Method OA_ObjDB.Init, uses xbx xdi xsi, pOwner:POINTER, pIniFile:$ObjPtr(IniFile
   lea xdi, [xsi].cStmFileName
   invoke ExpandEnvironmentStrings, xbx, xdi, MAX_PATH
   invoke StrDispose, xbx
-;  .if $invoke(FileExist, xdi) != FALSE;;    OCall xsi.Open, xdi
-;  .endif
+  .if $invoke(FileExist, xdi) != FALSE
+    OCall xsi.Open, xdi
+  .endif
 
   ;Check if something has changed in the following folders and rebuild if necessary
   mov dHasChanged, FALSE
@@ -336,6 +341,7 @@ Method OA_ObjDB.Init, uses xbx xdi xsi, pOwner:POINTER, pIniFile:$ObjPtr(IniFile
       .endif
     .endif
   .endif
+;  OCall xsi::OA_ObjDB.ShowFC
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -344,29 +350,37 @@ MethodEnd
 ; Arguments:  Arg1: -> File name.
 ; Return:     Nothing.
 
-Method OA_ObjDB.Open, uses xbx xsi, pFileName:PSTRING
-  local DskStm:$Obj(DiskStream)
+Method OA_ObjDB.Open, uses xbx xdi xsi, pFileName:PSTRING
+  local DskStm:$Obj(DiskStream), DLUT:$Obj(DesLUT), DeserInfo:DESER_INFO
 
   SetObject xsi
   mov xbx, $New(DskStm::DiskStream)
   OCall xbx::DiskStream.Init, xsi, pFileName, 0, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0
   OCall xbx::DiskStream.BinRead32                     ;Read file version
   .if eax == DATABASE_VERSION
+    New DLUT::DesLUT
+    mov DeserInfo.pDesLUT, xax
+    lea xdi, DeserInfo
+    OCall DLUT::DesLUT.Init, xsi, 100, 100, COL_MAX_CAPACITY
     DbgText "Reading Database..."
+    OCall xbx::DiskStream.%BinReadX
+    DbgHex xax
+    OCall DLUT::DesLUT.Insert, xax, xsi               ;Set Collection owner in the LUT
     OCall xbx::DiskStream.BinRead32                   ;eax = Object Class ID
-    OCall [xsi].FilesColl::FilesCollection.Load, xbx, xsi
+    OCall [xsi].FilesColl::FilesCollection.Load, xbx, xdi
     OCall xbx::DiskStream.BinRead32                   ;eax = Object Class ID
-    OCall [xsi].ObjectColl::ObjInfoCollection.Load, xbx, xsi
+    OCall [xsi].ObjectColl::ObjInfoCollection.Load, xbx, xdi
     OCall xbx::DiskStream.BinRead32                   ;eax = Object Class ID
-    OCall [xsi].ObjMethodColl::ObjMtdInfoCollection.Load, xbx, xsi
+    OCall [xsi].ObjMethodColl::ObjMtdInfoCollection.Load, xbx, xdi
     OCall xbx::DiskStream.BinRead32                   ;eax = Object Class ID
-    OCall [xsi].ObjVariableColl::ObjVarInfoCollection.Load, xbx, xsi
+    OCall [xsi].ObjVariableColl::ObjVarInfoCollection.Load, xbx, xdi
     OCall xbx::DiskStream.BinRead32                   ;eax = Object Class ID
-    OCall [xsi].InterfaceColl::IntInfoCollection.Load, xbx, xsi
+    OCall [xsi].InterfaceColl::IntInfoCollection.Load, xbx, xdi
     OCall xbx::DiskStream.BinRead32                   ;eax = Object Class ID
-    OCall [xsi].IntMethodColl::IntMtdInfoCollection.Load, xbx, xsi
+    OCall [xsi].IntMethodColl::IntMtdInfoCollection.Load, xbx, xdi
     OCall xbx::DiskStream.BinRead32                   ;eax = Object Class ID
-    OCall [xsi].ImpMethodColl::ImpMtdInfoCollection.Load, xbx, xsi
+    OCall [xsi].ImpMethodColl::ImpMtdInfoCollection.Load, xbx, xdi
+    OCall DLUT::DesLUT.Done
   .endif
   OCall xbx::DiskStream.Done
 MethodEnd
@@ -385,6 +399,7 @@ Method OA_ObjDB.Save, uses xbx xsi, pFileName:PSTRING
   mov xbx, $New(DskStm::DiskStream)
   OCall xbx::DiskStream.Init, xsi, pFileName, 0, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
   OCall xbx::DiskStream.BinWrite32, DATABASE_VERSION
+  OCall xbx::DiskStream.%BinWriteX, xsi                 ;Store -> OA_ObjDB for later use
   OCall xbx::DiskStream.Put, addr [xsi].FilesColl
   OCall xbx::DiskStream.Put, addr [xsi].ObjectColl
   OCall xbx::DiskStream.Put, addr [xsi].ObjMethodColl
@@ -508,6 +523,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
 
   ;DbgText "OA_ObjDB.ScanFile"
   ;DbgStr pFileName
+  
   SetObject xsi
   m2z pFileInfo
 
@@ -548,14 +564,15 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
 
   ;We create a file entry for EACH file in the directory!
   .if $OCall([xsi].FilesColl::FilesCollection.Search, pFileName) == FALSE
-    mov xdi, $MemAlloc(sizeof FILEINFORMATION)
+    mov xdi, $MemAlloc(sizeof(FILEINFORMATION))
     mov [xdi].FILEINFORMATION.pFileName, $invoke(StrNew, pFileName)
     m2m [xdi].FILEINFORMATION.LastWrite.dwLowDateTime, LastWriteTime.dwLowDateTime, edx
     m2m [xdi].FILEINFORMATION.LastWrite.dwHighDateTime, LastWriteTime.dwHighDateTime, edx
     mov [xdi].FILEINFORMATION.dFlags, FIF_SCANNED
     OCall [xsi].FilesColl::FilesCollection.Insert, xdi  ;xax -> FILEINFORMATION
   .else
-    OCall [xsi].FilesColl::FilesCollection.ItemAt, ecx  ;ecx = index, eax -> FILEINFORMATION
+    mov edx, ecx
+    OCall [xsi].FilesColl::FilesCollection.ItemAt, edx  ;xax -> FILEINFORMATION
   .endif
   mov pFileInfo, xax
 
@@ -580,13 +597,13 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
             mov pWord, xax
             mov dWordLength, ecx
             .if ecx == lengthof bMacro
-              invoke StrCICompA, offset bMacro, pWord, dWordLength  ;Check for Object macro
-              .continue .if eax == 0
+              invoke StrCICompA, offset bMacro, pWord, dWordLength  ;Check for "Object" macro
+              .continue .if eax == 0                    ;Skip
             .endif
 
             ;Object name OK => create a new OBJECTINFORMATION entry in the object collection
             mov pName, $invoke(StrCNewA, pWord, dWordLength)
-            mov xbx, $MemAlloc(sizeof OBJECTINFORMATION)
+            mov xbx, $MemAlloc(sizeof(OBJECTINFORMATION))
             m2m [xbx].OBJECTINFORMATION.pName, pName, edx
             m2m [xbx].OBJECTINFORMATION.dLineNumber, TextSrc.dLineNumber, ecx
             m2m [xbx].OBJECTINFORMATION.dFlags, dInfoFlags, edx
@@ -605,7 +622,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
             .endif
             mov [xbx].OBJECTINFORMATION.pAncestorName, xax  ;Store ancestor name
 
-            invoke FindHelpLines, addr TextSrc, xbx     ;Get the help lines now
+;            invoke FindHelpLines, addr TextSrc, xbx     ;Get the help lines now
 
             ;Scan now for object members
             .repeat
@@ -647,7 +664,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
               .if ecx != 0
                 mov edx, ecx
                 mov xbx, $invoke(StrCNewA, xax, edx)
-                MemAlloc sizeof OBJMTDINFORMATION
+                MemAlloc sizeof(OBJMTDINFORMATION)
                 mov [xax].OBJMTDINFORMATION.pName, xbx
                 mov xbx, xax
                 mov [xbx].OBJMTDINFORMATION.pObjectName, $invoke(StrNewA, pName)
@@ -682,7 +699,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
               .if ecx != 0
                 mov edx, ecx
                 mov xbx, $invoke(StrCNewA, xax, edx)
-                MemAlloc sizeof OBJVARINFORMATION
+                MemAlloc sizeof(OBJVARINFORMATION)
                 mov [xax].OBJVARINFORMATION.pName, xbx
                 mov xbx, xax
                 mov [xbx].OBJVARINFORMATION.pObjectName, $invoke(StrNewA, pName)
@@ -719,7 +736,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
               .continue .if eax == 0
             .endif
             ;Get the interface/object name
-            mov xbx, $MemAlloc(sizeof IMPMTDINFORMATION)
+            mov xbx, $MemAlloc(sizeof(IMPMTDINFORMATION))
             invoke StrCNew, pWord, dWordLength
             mov [xbx].IMPMTDINFORMATION.pObjectName, xax
             m2m [xbx].IMPMTDINFORMATION.pFileInfo, pFileInfo, xdx ;From FilesCollection
@@ -746,7 +763,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
 
             OCall [xsi].ImpMethodColl::ImpMtdInfoCollection.Insert, xbx
 
-            invoke FindHelpLines, addr TextSrc, xbx
+;            invoke FindHelpLines, addr TextSrc, xbx
           .endif
         .endif
 
@@ -754,7 +771,6 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
       .elseif ecx == lengthof bBeginInterface
         invoke StrCCompA, pWord, offset bBeginInterface, dWordLength
         .if eax == 0
-          int 3
           OCall TextSrc::TextSource.GetNextWord         ;Get interface name
           mov pWord, xax
           mov dWordLength, ecx
@@ -766,7 +782,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
             ;Interface name OK => create a new entry in the interface collection
             invoke StrCNewA, pWord, dWordLength
             mov pName, xax
-            mov xbx, $MemAlloc(sizeof INTERFACEINFORMATION)
+            mov xbx, $MemAlloc(sizeof(INTERFACEINFORMATION))
             m2m [xbx].INTERFACEINFORMATION.pName, pName, xdx
             mov edx, dInfoFlags
             or edx, INF_INTERFACE
@@ -818,7 +834,7 @@ Method OA_ObjDB.ScanFile, uses xbx xdi xsi, pFileName:PSTRING, LastWriteTime:FIL
                   .if ecx != 0
                     mov edx, ecx
                     mov xbx, $invoke(StrCNewA, xax, edx)
-                    MemAlloc sizeof INTMTDINFORMATION
+                    MemAlloc sizeof(INTMTDINFORMATION)
                     mov [xax].INTMTDINFORMATION.pName, xbx
                     mov xbx, xax
                     mov [xbx].INTMTDINFORMATION.pInterfaceName, $invoke(StrNewA, pName)
@@ -893,9 +909,8 @@ Method OA_ObjDB.ScanDBFiles, uses xbx xdi xsi
       ;Save FileName on cBuffer
       invoke StrCCopy, addr cBuffer, xdi, lengthof(cBuffer) - 1
       OCall xsi.RemoveFileInfo, xdi
-      OCall xsi.ScanFile, addr cBuffer, QWORD ptr FD.ftLastWriteTime, 0
-
-      .if eax != NULL
+      OCall xsi.ScanFile, addr cBuffer, FD.ftLastWriteTime, 0   ;Ret -> FILEINFORMATION
+      .if xax != NULL
         or dHasChanged, TRUE
       .endif
     .endif
@@ -915,6 +930,8 @@ Method OA_ObjDB.ScanDirFiles, uses xbx xdi xsi, pPath:POINTER
   local FD:WIN32_FIND_DATA, xRemaining:XWORD, dHasChanged:DWORD
   local cBuffer[MAX_PATH]:CHR, pBuffer:POINTER
 
+  ;DbgText "OA_ObjDB.ScanDirFiles"
+  ;DbgStrA pPath
   SetObject xsi
   m2z dHasChanged
   lea xbx, cBuffer
@@ -930,9 +947,12 @@ Method OA_ObjDB.ScanDirFiles, uses xbx xdi xsi, pPath:POINTER
       .if FD.nFileSizeLow != 0 || FD.nFileSizeHigh != 0
         invoke StrCCopy, xdi, addr FD.cFileName, DWORD ptr xRemaining
         .if $OCall([xsi].FilesColl::FilesCollection.Search, pBuffer) != FALSE
-          OCall [xsi].FilesColl::FilesCollection.ItemAt, ecx
+          mov edx, ecx
+          OCall [xsi].FilesColl::FilesCollection.ItemAt, edx  ;xax -> FILEINFORMATION 
+          mov ecx, FD.ftLastWriteTime.dwHighDateTime
           mov ecx, [xax].FILEINFORMATION.LastWrite.dwHighDateTime
           .if ecx == FD.ftLastWriteTime.dwHighDateTime
+            mov ecx, FD.ftLastWriteTime.dwLowDateTime
             mov ecx, [xax].FILEINFORMATION.LastWrite.dwLowDateTime
             .if ecx == FD.ftLastWriteTime.dwLowDateTime
               mov [xax].FILEINFORMATION.dFlags, FIF_STANDARD
@@ -941,8 +961,8 @@ Method OA_ObjDB.ScanDirFiles, uses xbx xdi xsi, pPath:POINTER
           .endif
           OCall xsi.RemoveFileInfo, pBuffer
         .endif
-        OCall xsi.ScanFile, pBuffer, QWORD ptr FD.ftLastWriteTime, 0
-        .if eax != NULL
+        OCall xsi.ScanFile, pBuffer, FD.ftLastWriteTime, 0    ;Ret -> FILEINFORMATION
+        .if xax != NULL
           mov [xax].FILEINFORMATION.dFlags, FIF_STANDARD
           or dHasChanged, TRUE
         .endif

@@ -8,9 +8,19 @@ if exist %ProjectName%.obj (
   if exist !ProjectName!.res set AuxRes=!ProjectName!.res
 
   if [!LogFile!] == [] (
-    call !Linker! @"%OBJASM_PATH%\Build\Options\OPT_LNK_!TARGET_MODE!_!TARGET_BITNESS!.txt" !OptDLL! !ProjectName!.obj !AuxRes!
+    if exist !Linker! (
+      call !Linker! @"%OBJASM_PATH%\Build\Options\OPT_LNK_!TARGET_MODE!_!TARGET_BITNESS!.txt" !OptDLL! !ProjectName!.obj !AuxRes!
+    ) else (
+      echo ERROR: Linker not found
+      exit /b 1
+    )
   ) else (
-    call !Linker! @"%OBJASM_PATH%\Build\Options\OPT_LNK_!TARGET_MODE!_!TARGET_BITNESS!.txt" !OptDLL! !ProjectName!.obj !AuxRes!>> !LogFile!
-    echo.>> !LogFile!
+    if exist !Linker! (
+      call !Linker! @"%OBJASM_PATH%\Build\Options\OPT_LNK_!TARGET_MODE!_!TARGET_BITNESS!.txt" !OptDLL! !ProjectName!.obj !AuxRes!>> !LogFile!
+      echo.>> !LogFile!
+    ) else (
+      echo ERROR: Linker not found>> !LogFile!
+      exit /b 1
+    )
   )
 )

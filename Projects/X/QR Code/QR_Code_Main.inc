@@ -31,17 +31,15 @@ ObjectEnd                                               ;Ends object definition
 
 QrDraw proc uses xbx xdi xsi hDC:HDC, pQrCode:POINTER, sdX:SDWORD, sdY:SDWORD, dSize:DWORD, dBorder:DWORD
   local Rct:RECT, dQrSize:DWORD, hBlackBrush:HBRUSH
-  local qrcode[qrcodegen_BUFFER_LEN_MAX]:BYTE, tempBuffer[qrcodegen_BUFFER_LEN_MAX]:BYTE
 
-  mov eax, sizeof(qrcode)
+  mov esi, dSize
   invoke qrcodegen_getSize, pQrCode
   mov dQrSize, eax
   mov ecx, dBorder
   shl ecx, 1
   add eax, ecx
-  mov ecx, dSize
   xor edx, edx
-  mul ecx
+  mul esi
   mrm Rct.left, sdX, edx
   add edx, eax
   mov Rct.right, edx
@@ -61,23 +59,21 @@ QrDraw proc uses xbx xdi xsi hDC:HDC, pQrCode:POINTER, sdX:SDWORD, sdY:SDWORD, d
       invoke qrcodegen_getModule, pQrCode, ebx, edi
       .if eax != 0
         mov eax, ebx
-        add eax, QR_BORDER
-        mov ecx, QR_CELL_SIZE
+        add eax, dBorder
         xor edx, edx
-        mul ecx
-        add eax, QR_OFFSET_X
+        mul esi
+        add eax, sdX
         mov Rct.left, eax
-        add eax, QR_CELL_SIZE
+        add eax, esi
         mov Rct.right, eax
 
         mov eax, edi
-        add eax, QR_BORDER
-        mov ecx, QR_CELL_SIZE
+        add eax, dBorder
         xor edx, edx
-        mul ecx
-        add eax, QR_OFFSET_Y
+        mul esi
+        add eax, sdY
         mov Rct.top, eax
-        add eax, QR_CELL_SIZE
+        add eax, esi
         mov Rct.bottom, eax
         lea xdx, Rct
         invoke FillRect, hDC, xdx, hBlackBrush
@@ -87,7 +83,8 @@ QrDraw proc uses xbx xdi xsi hDC:HDC, pQrCode:POINTER, sdX:SDWORD, sdY:SDWORD, d
     inc edi
   .endw
   ret
-QrDraw endp 
+QrDraw endp
+
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Method:     Application.Init
 ; Purpose:    Initialize the SDI application object.
@@ -175,7 +172,7 @@ MethodEnd
 
 Method Application.OnPaint, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   local PS:PAINTSTRUCT, hDC:HDC, Rct:RECT
-  local qrcode[qrcodegen_BUFFER_LEN_MAX]:BYTE, tempBuffer[qrcodegen_BUFFER_LEN_MAX]:BYTE
+  local QrCode[qrcodegen_BUFFER_LEN_MAX]:BYTE, tempBuffer[qrcodegen_BUFFER_LEN_MAX]:BYTE
 
   QR_BORDER = 4
   QR_OFFSET_X = 25
@@ -188,10 +185,11 @@ Method Application.OnPaint, uses xbx xdi xsi, wParam:WPARAM, lParam:LPARAM
   invoke GetClientRect, [xsi].hWnd, addr Rct
   invoke DrawEdge, hDC, addr Rct, EDGE_SUNKEN, BF_RECT
 
-  mov eax, sizeof(qrcode)
-  invoke qrcodegen_encodeText, $OfsCStrA("Hello ObjAsm World", 21h), addr tempBuffer, addr qrcode, qrcodegen_Ecc_LOW, qrcodegen_VERSION_MIN, qrcodegen_VERSION_MAX, qrcodegen_Mask_AUTO, TRUE
+  invoke qrcodegen_encodeText, $OfsCStrA("Hello ObjAsm World", 21h), addr tempBuffer, addr QrCode, \
+                               qrcodegen_Ecc_LOW, qrcodegen_VERSION_MIN, qrcodegen_VERSION_MAX, \
+                               qrcodegen_Mask_AUTO, TRUE
   .if eax != FALSE
-    invoke QrDraw, hDC, addr qrcode, QR_OFFSET_X, QR_OFFSET_Y, QR_CELL_SIZE, QR_BORDER
+    invoke QrDraw, hDC, addr QrCode, QR_OFFSET_X, QR_OFFSET_Y, QR_CELL_SIZE, QR_BORDER
   .endif
   invoke EndPaint, [xsi].hWnd, addr PS
   xor eax, eax

@@ -30,7 +30,7 @@ dword2hexA proc pBuffer:POINTER, dValue:DWORD
   lea ecx, [esp + 8]                                    ;ecx -> dValue
   movzx eax, BYTE ptr [ecx]
   mov ax, DCHRA ptr HexCharTableA[sizeof(DCHRA)*eax]
-  m2z DCHRA ptr [edx + 4*sizeof(DCHRA)]                 ;Set ZTC
+  m2z CHRA ptr [edx + 4*sizeof(DCHRA)]                  ;Set ZTC
   mov DCHRA ptr [edx + 3*sizeof(DCHRA)], ax
   movzx eax, BYTE ptr [ecx + 1]
   mov ax, DCHRA ptr HexCharTableA[sizeof(DCHRA)*eax]

@@ -1374,7 +1374,7 @@ Method TextView.Draw, uses xbx xdi xsi
 
     TVCDH_COVER::
 ;      DbgText "FOREDRAW"
-      MemAlloc TVNM_DRAW
+      MemAlloc sizeof(TVNM_DRAW)
       mov [xax].TVNM_DRAW.Header.code, TVNMC_DRAW
       m2m [xax].TVNM_DRAW.Header.hwndFrom, [xsi].hWnd, xdx
       m2m [xax].TVNM_DRAW.Header.idFrom, xCtrlID, xcx

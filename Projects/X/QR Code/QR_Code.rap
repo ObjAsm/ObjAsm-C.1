@@ -37,7 +37,7 @@ Debug=0
 26=..\..\..\Code\Macros\fMath.inc
 27=..\..\..\Code\Macros\ConstDiv.inc
 28=..\..\..\Code\Macros\Memory.inc
-29=qrcodegen.inc
+29=..\..\..\Code\Inc\QRCodeGen\qrcodegen.inc
 
 
 [MakeFiles]
@@ -109,7 +109,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Objects,Macros
 26=7
 27=7
 28=7
-29=1
+29=2
 
 [VerInf]
 FV=1.0.0.0
@@ -140,7 +140,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=22
+MilestoneOnDateDate=3
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=21
@@ -175,7 +175,7 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,0,0,5207
+2=0,0,0,0,5988
 1=0,0,0,0,569
 6=0,0,1456,414,59484
 4=0,0,0,0,464
@@ -203,7 +203,7 @@ ProductVer4Range=0
 22=0,0,0,0,14635
 26=
 27=
-29=0,0,0,0,2060
+29=0,0,0,0,2158
 
 [BookMark]
 0=
@@ -222,16 +222,16 @@ ProductVer4Range=0
 0=
 
 [Find]
-1="qrcodegen_Ecc_LOW"
-2="Rct"
-3="qrcodegen_BUFFER_LEN_FOR_VERSION"
-4="qrcodegen_BUFFER_LEN_MAX"
-5="GUI_Template"
-6="BUILD_DATE_STR"
-7="szDemoApp02"
-8="DemoApp02"
-9="demonstration program 2"
-10="Demo02"
+1="qrcode"
+2="dSize"
+3="QR_BORDER"
+4="qrcodegen_Ecc_LOW"
+5="Rct"
+6="qrcodegen_BUFFER_LEN_FOR_VERSION"
+7="qrcodegen_BUFFER_LEN_MAX"
+8="GUI_Template"
+9="BUILD_DATE_STR"
+10="szDemoApp02"
 [Collapse]
 1=
 2=
@@ -344,9 +344,9 @@ ProductVer4Range=0
 25=
 27=
 [AutoLoad]
-AutoLoad=1,2
+AutoLoad=1,2,29
 [PTimer]
-PTimer=936908479
+PTimer=955111557
 [GroupExpand]
 GroupExpand=1,1,1,0,0,1,1,0
 [RADebugBP]
