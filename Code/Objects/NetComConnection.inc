@@ -340,13 +340,15 @@ MethodEnd                                               ;  disconnect
 ; Purpose:    An error condition was fired. We have to decide what to do next.
 ; Arguments:  Arg1: -> IO_SOCKJOB.
 ;             Arg2: Error.
+;             Arg3: Additional Info Text.
+;             Arg4: Destination Window name.
 ; Return:     Nothing.
 
 DbgOnError macro WarningText:req, Error:req, InfoText, Dest
   if DEBUGGING
     DbgSaveContext FALSE, Error
     DbgSetDestWnd Dest
-    invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, 0, ??DbgDstWnd
+    invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, 0, 0, ??DbgDstWnd
     invoke DbgOutTextA, $OfsCStrA($Esc(<WarningText>)), DbgColorWarning, DbgColorBackground, DBG_EFFECT_NORMAL, \
                         ??DbgDstWnd
     $$Buffersize = 1024
@@ -362,7 +364,7 @@ DbgOnError macro WarningText:req, Error:req, InfoText, Dest
     add xsp, 1024                                       ;Retrieve the string room
     DbgShowTxtInfo InfoText, ??DbgDstWnd
     DbgShowSrcInfo ??DbgDstWnd
-    invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, 0, ??DbgDstWnd
+    invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, 0, 0, ??DbgDstWnd
     DbgLoadContext
   endif
 endm

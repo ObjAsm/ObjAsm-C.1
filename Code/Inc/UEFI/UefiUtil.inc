@@ -339,7 +339,8 @@ Wait4Key proc uses xbx xsi
     invoke [xsi].EFI_BOOT_SERVICES.WaitForEvent, 1, addr [xbx].ConIn.WaitForKey, addr xKeyEvent
     .if xax == EFI_SUCCESS
       invoke [xbx].ConIn.ReadKeyStroke, xbx, addr xKeyEvent
-      .continue .if xax == EFI_NOT_READY
+      mov xcx, EFI_NOT_READY
+      .continue .if xax == xcx
       .break
     .endif
   .endw

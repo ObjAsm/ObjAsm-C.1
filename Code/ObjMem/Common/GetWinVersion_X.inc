@@ -33,5 +33,6 @@ GetWinVersion proc pMajorVersion:POINTER, pMinorVersion:POINTER, pBuildNumber:PO
     push pMajorVersion
   endif
   call xax
+  invoke FreeLibrary, hLib
   ret
 GetWinVersion endp

@@ -20,27 +20,21 @@
 % include &MacPath&WinHelpers.inc
 % include &MacPath&ConstDiv.inc
 % include &IncPath&Windows\CommCtrl.inc
+% include &IncPath&Windows\richedit.inc
 
-% include &ObjPath&\Primer.inc
-% include &ObjPath&\Stream.inc
-% include &ObjPath&\Collection.inc
-% include &ObjPath&\DataCollection.inc
-% include &ObjPath&\SortedCollection.inc
-% include &ObjPath&\SortedDataCollection.inc
-% include &ObjPath&\XWCollection.inc
-% include &ObjPath&\WinPrimer.inc
-% include &ObjPath&\Window.inc
-% include &ObjPath&\TextView.inc
+LoadObjects Primer, Stream
+LoadObjects Collection, DataCollection, SortedCollection, SortedDataCollection, XWCollection
+LoadObjects WinPrimer, Window, TextView
 
 
-MB_BTN_MAX_COUNT  equ 4       ;Max number of buttons shown on the dialog
+MBX_BTN_MAX_COUNT  equ 4      ;Max number of buttons shown on the dialog
 
-MB_ButtonInfo struc           ;Collected information of each button
+MBX_ButtonInfo struc          ;Collected information of each button
   hWnd        HWND  ?
   Rect        RECT  {}
-MB_ButtonInfo ends
+MBX_ButtonInfo ends
 
-MsgBoxInfo struc
+MBX_DlgInfo struc
   hHook       HANDLE    ?     ;System hook
   hDlg        HWND      ?     ;Dialog HANDLE
   pCaption    PSTRING   ?     ;Dialog caption string
@@ -48,11 +42,11 @@ MsgBoxInfo struc
   dBandHeight DWORD     ?     ;Drawing help, height of grey band at the bottom of the dialog
   dBtnCount   DWORD     ?     ;Index into MsgBoxBtns
   dFlags      DWORD     ?
-  Buttons     MB_ButtonInfo MB_BTN_MAX_COUNT DUP({?})       ;Button information
-MsgBoxInfo ends
+  Buttons     MBX_ButtonInfo MBX_BTN_MAX_COUNT DUP({?})       ;Button information
+MBX_DlgInfo ends
 
-MsgBoxCaptionHeader     equ <MsgBoxData@>
-MsgBoxCaptionHeaderSize equ 11
+MBX_CaptionHeader     equ <MsgBoxData@>
+MBX_CaptionHeaderSize equ 11
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  MsgBoxA / MsgBoxW
@@ -66,19 +60,19 @@ MsgBoxCaptionHeaderSize equ 11
 ;             the address of a MsgBoxInfo structure in text form.
 
 ProcName proc uses xbx hParent:HANDLE, pText:POINTER, pCaption:POINTER, dFlags:DWORD
-  local cTransferInfo[MsgBoxCaptionHeaderSize + 2*sizeof(POINTER) + 1]:CHR, MBInfo:MsgBoxInfo
+  local cTransferInfo[MBX_CaptionHeaderSize + 2*sizeof(POINTER) + 1]:CHR, MBX_Info:MBX_DlgInfo
 
   ;Set system hook
-  invoke SetWindowsHookEx, WH_CALLWNDPROC, offset MB_HookProc, 0, $32($invoke(GetCurrentThreadId))
+  invoke SetWindowsHookEx, WH_CALLWNDPROC, offset MBX_HookProc, 0, $32($invoke(GetCurrentThreadId))
 
   ;Prepare information to pass to the MessageBox dialog.
-  mov MBInfo.hHook, xax
-  m2m MBInfo.pText, pText, xcx
-  m2m MBInfo.pCaption, pCaption, xdx
-  FillWord cTransferInfo, MsgBoxCaptionHeader
-  invoke xword2hex, addr [cTransferInfo + MsgBoxCaptionHeaderSize*sizeof(CHR)], addr MBInfo
+  mov MBX_Info.hHook, xax
+  m2m MBX_Info.pText, pText, xcx
+  m2m MBX_Info.pCaption, pCaption, xdx
+  FillWord cTransferInfo, MBX_CaptionHeader
+  invoke xword2hex, addr [cTransferInfo + MBX_CaptionHeaderSize*sizeof(CHR)], addr MBX_Info
 
-  ;Use the caption to pass the pointer to MsgBoxInfo in form of a string.
+  ;Use the caption to pass the pointer to MBX_DlgInfo in form of a string.
   ;MessageBoxIndirect can be used for more options.
   invoke MessageBox, hParent, NULL, addr cTransferInfo, dFlags
   ret
@@ -93,53 +87,51 @@ ProcName endp
 ;             Arg4: lParam.
 ; Return:     eax = Depends on the message ID.
 
-%CStr cMsgBoxProp&TARGET_SUFFIX, "MsgBoxInfo&TARGET_SUFFIX"
+%CStr cMBX_Prop_&TARGET_SUFFIX, "MBX_DlgInfo&TARGET_SUFFIX"
 
+MBX_TEXTVIEW_CTLID  equ 0FFFFh                          ;Reuse the ID of the static text control
 
-MB_TEXTVIEW_CTLID   equ   0FFFFh                        ;Reuse the ID of the static text control
+MBXF_JUST_DRAWN     equ BIT00
 
-MBF_JUST_DRAWN  equ   BIT00
-
-MB_EnumDlgItems proc private uses xbx xdi hItem:HWND, lParam:LPARAM
+MBX_EnumDlgItems proc private uses xbx xdi hItem:HWND, lParam:LPARAM
   mov xbx, lParam
-  .if [xbx].MsgBoxInfo.dBtnCount < MB_BTN_MAX_COUNT
+  .if [xbx].MBX_DlgInfo.dBtnCount < MBX_BTN_MAX_COUNT
     invoke GetMenu, hItem                               ;Get the control ID stored as hMenu
     .if eax <= IDCONTINUE                               ;Last known button ID
-      imul eax, [xbx].MsgBoxInfo.dBtnCount, sizeof(MB_ButtonInfo)
-      lea xdi, [xbx + xax].MsgBoxInfo.Buttons
-      mrm [xdi].MB_ButtonInfo.hWnd, hItem, xcx
-      invoke GetWindowRect, xcx, addr [xdi].MB_ButtonInfo.Rect
+      imul eax, [xbx].MBX_DlgInfo.dBtnCount, sizeof(MBX_ButtonInfo)
+      lea xdi, [xbx + xax].MBX_DlgInfo.Buttons
+      mrm [xdi].MBX_ButtonInfo.hWnd, hItem, xcx
+      invoke GetWindowRect, xcx, addr [xdi].MBX_ButtonInfo.Rect
 
       ;Calculate with, height and client position of each button
-      mov ecx, [xdi].MB_ButtonInfo.Rect.bottom
-      sub ecx, [xdi].MB_ButtonInfo.Rect.top
-      mov [xdi].MB_ButtonInfo.Rect.bottom, ecx
+      mov ecx, [xdi].MBX_ButtonInfo.Rect.bottom
+      sub ecx, [xdi].MBX_ButtonInfo.Rect.top
+      mov [xdi].MBX_ButtonInfo.Rect.bottom, ecx
 
-      mov edx, [xdi].MB_ButtonInfo.Rect.right
-      sub edx, [xdi].MB_ButtonInfo.Rect.left
-      mov [xdi].MB_ButtonInfo.Rect.right, edx
-      invoke ScreenToClient, [xbx].MsgBoxInfo.hDlg, addr [xdi].MB_ButtonInfo.Rect.left
+      mov edx, [xdi].MBX_ButtonInfo.Rect.right
+      sub edx, [xdi].MBX_ButtonInfo.Rect.left
+      mov [xdi].MBX_ButtonInfo.Rect.right, edx
+      invoke ScreenToClient, [xbx].MBX_DlgInfo.hDlg, addr [xdi].MBX_ButtonInfo.Rect.left
 
-      add [xbx].MsgBoxInfo.dBtnCount, 1                 ;Move index to next MB_ButtonInfo
+      add [xbx].MBX_DlgInfo.dBtnCount, 1                ;Move index to next MBX_ButtonInfo
     .endif
     mov eax, TRUE                                       ;Continue enumeration
   .else
     xor eax, eax                                        ;Stop enumeration
   .endif
   ret
-MB_EnumDlgItems endp
+MBX_EnumDlgItems endp
 
 
-MB_WndProc proc private uses xbx xdi xsi hDlg:HWND, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
-  local TVDef:DEF_TEXTVIEW
-  local CRect:RECT, WRect:RECT, WndSize:POINT, CtlOfs:POINT
+MBX_WndProc proc private uses xbx xdi xsi hDlg:HWND, uMsg:DWORD, wParam:WPARAM, lParam:LPARAM
+  local TVDef:DEF_TEXTVIEW, CRect:RECT, WRect:RECT, WndSize:POINT, CtlOfs:POINT
 
 ;  DbgMessage uMsg, "MsgBoxBlgProc.WndProc"
   .if uMsg == WM_INITDIALOG
 
-    %mov xdx, offset cMsgBoxProp&TARGET_SUFFIX
+    %mov xdx, offset cMBX_Prop_&TARGET_SUFFIX
     mov xdi, $invoke(GetProp, hDlg, xdx)
-    mov [xdi].MsgBoxInfo.dFlags, 0
+    mov [xdi].MBX_DlgInfo.dFlags, 0
 
     ;Destroy the original static control were the messagebox text is usually displayed,
     ;we don't need it anymore
@@ -147,32 +139,32 @@ MB_WndProc proc private uses xbx xdi xsi hDlg:HWND, uMsg:DWORD, wParam:WPARAM, l
     invoke DestroyWindow, xax
 
     ;Get button information
-    m2m [xdi].MsgBoxInfo.hDlg, hDlg, xax
-    mov [xdi].MsgBoxInfo.dBtnCount, 0                   ;Start with the first button
-    invoke EnumChildWindows, hDlg, offset MB_EnumDlgItems, xdi
+    m2m [xdi].MBX_DlgInfo.hDlg, hDlg, xax
+    mov [xdi].MBX_DlgInfo.dBtnCount, 0                  ;Start with the first button
+    invoke EnumChildWindows, hDlg, offset MBX_EnumDlgItems, xdi
 
     ;Calculate the height of the grey band at the bottom
     invoke GetClientRect, hDlg, addr CRect              ;Get the original client rect
     mov ecx, CRect.bottom
-    sub ecx, [xdi].MsgBoxInfo.Buttons.Rect.top
+    sub ecx, [xdi].MBX_DlgInfo.Buttons.Rect.top
     shl ecx, 1
-    sub ecx, [xdi].MsgBoxInfo.Buttons.Rect.bottom
-    mov [xdi].MsgBoxInfo.dBandHeight, ecx
+    sub ecx, [xdi].MBX_DlgInfo.Buttons.Rect.bottom
+    mov [xdi].MBX_DlgInfo.dBandHeight, ecx
 
     ;Setup TextView
-    mov TVDef.xCtlID, MB_TEXTVIEW_CTLID
+    mov TVDef.xCtlID, MBX_TEXTVIEW_CTLID
     mov TVDef.dStyle, 0
     mov TVDef.dExStyle, 0
     mov TVDef.sdPosX, 0
     mov TVDef.sdPosY, 0
     mov TVDef.dWidth, 200                               ;Min TextView width
     mov TVDef.dHeight, 100                              ;Min TextView height
-    m2m TVDef.pText, [xdi].MsgBoxInfo.pText, xax
+    m2m TVDef.pText, [xdi].MBX_DlgInfo.pText, xax
 
     ;Adjust dialog size according to the TextView size
     mov TVDef.dWidth, $uMax(TVDef.dWidth, CRect.right)
     mov eax, CRect.bottom
-    sub eax, [xdi].MsgBoxInfo.dBandHeight
+    sub eax, [xdi].MBX_DlgInfo.dBandHeight
     mov TVDef.dHeight, $uMax(eax, TVDef.dHeight)
 
     mov xbx, $New(TextView)
@@ -202,7 +194,7 @@ MB_WndProc proc private uses xbx xdi xsi hDlg:HWND, uMsg:DWORD, wParam:WPARAM, l
     sub ecx, WRect.top
     mov eax, [xbx].$Obj(TextView).Extent.y
     sub eax, CRect.bottom
-    add eax, [xdi].MsgBoxInfo.dBandHeight
+    add eax, [xdi].MBX_DlgInfo.dBandHeight
     add ecx, eax
     mov WndSize.y, ecx
     mov CtlOfs.y, eax
@@ -213,28 +205,28 @@ MB_WndProc proc private uses xbx xdi xsi hDlg:HWND, uMsg:DWORD, wParam:WPARAM, l
 
     ;Update TextView size
     invoke GetClientRect, hDlg, addr CRect              ;Get the updated client rect
-    mov ecx, [xdi].MsgBoxInfo.dBandHeight
+    mov ecx, [xdi].MBX_DlgInfo.dBandHeight
     sub CRect.bottom, ecx
     invoke MoveWindow, [xbx].$Obj(TextView).hWnd, 0, 0, CRect.right, CRect.bottom, FALSE
 
     ;Modify button positions
     xor ebx, ebx
-    .while ebx < [xdi].MsgBoxInfo.dBtnCount
-      imul eax, ebx, sizeof(MB_ButtonInfo)
-      lea xsi, [[xdi].MsgBoxInfo.Buttons + xax]
+    .while ebx < [xdi].MBX_DlgInfo.dBtnCount
+      imul eax, ebx, sizeof(MBX_ButtonInfo)
+      lea xsi, [[xdi].MBX_DlgInfo.Buttons + xax]
       mov eax, CtlOfs.x
       mov ecx, CtlOfs.y
-      add [xsi].MB_ButtonInfo.Rect.left, eax
-      add [xsi].MB_ButtonInfo.Rect.top,  ecx
-      invoke MoveWindow, [xsi].MB_ButtonInfo.hWnd, \
-                         [xsi].MB_ButtonInfo.Rect.left, [xsi].MB_ButtonInfo.Rect.top, \
-                         [xsi].MB_ButtonInfo.Rect.right, [xsi].MB_ButtonInfo.Rect.bottom, \
+      add [xsi].MBX_ButtonInfo.Rect.left, eax
+      add [xsi].MBX_ButtonInfo.Rect.top,  ecx
+      invoke MoveWindow, [xsi].MBX_ButtonInfo.hWnd, \
+                         [xsi].MBX_ButtonInfo.Rect.left, [xsi].MBX_ButtonInfo.Rect.top, \
+                         [xsi].MBX_ButtonInfo.Rect.right, [xsi].MBX_ButtonInfo.Rect.bottom, \
                          FALSE
       add ebx, 1
     .endw
 
   .elseif uMsg == WM_NOTIFY                             ;Forward the message to the parent window
-    .if wParam == MB_TEXTVIEW_CTLID
+    .if wParam == MBX_TEXTVIEW_CTLID
       invoke GetParent, hDlg
       invoke SendMessage, xax, WM_NOTIFY, wParam, lParam
     .endif
@@ -246,13 +238,13 @@ MB_WndProc proc private uses xbx xdi xsi hDlg:HWND, uMsg:DWORD, wParam:WPARAM, l
 
   .elseif uMsg == WM_PAINT
     ;Draw a grey band at the bottom like is is done in the latest OS versions
-    %mov xdx, offset cMsgBoxProp&TARGET_SUFFIX
+    %mov xdx, offset cMBX_Prop_&TARGET_SUFFIX
     mov xdi, $invoke(GetProp, hDlg, xdx)
-    .ifBitClr [xdi].MsgBoxInfo.dFlags, MBF_JUST_DRAWN
-      BitSet [xdi].MsgBoxInfo.dFlags, MBF_JUST_DRAWN
+    .ifBitClr [xdi].MBX_DlgInfo.dFlags, MBXF_JUST_DRAWN
+      BitSet [xdi].MBX_DlgInfo.dFlags, MBXF_JUST_DRAWN
       invoke GetClientRect, hDlg, addr CRect
       mov ecx, CRect.bottom
-      sub ecx, [xdi].MsgBoxInfo.dBandHeight
+      sub ecx, [xdi].MBX_DlgInfo.dBandHeight
       mov CRect.top, ecx
       invoke GetSysColor, COLOR_BTNFACE
       mov xsi, $invoke(CreateSolidBrush, eax)
@@ -266,19 +258,21 @@ MB_WndProc proc private uses xbx xdi xsi hDlg:HWND, uMsg:DWORD, wParam:WPARAM, l
     ret
 
   .elseif uMsg == WM_DESTROY
-    %mov xdi, offset cMsgBoxProp&TARGET_SUFFIX
-    invoke GetDlgItem, hDlg, MB_TEXTVIEW_CTLID
+    %mov xdi, offset cMBX_Prop_&TARGET_SUFFIX
+    invoke GetDlgItem, hDlg, MBX_TEXTVIEW_CTLID
     invoke SendMessage, xax, WM_GETOBJECTINSTANCE, 0, 0
-    Destroy xax
+    .if xax != NULL
+      Destroy xax
+    .endif
 
   .elseif uMsg == WM_NCDESTROY                          ;Last message recieved
-    %invoke RemoveProp, hDlg, offset cMsgBoxProp&TARGET_SUFFIX
+    %invoke RemoveProp, hDlg, offset cMBX_Prop_&TARGET_SUFFIX
 
   .endif
   invoke DefDlgProc, hDlg, uMsg, wParam, lParam
 
   ret
-MB_WndProc endp
+MBX_WndProc endp
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Procedure:  MB_HookProc
@@ -288,8 +282,8 @@ MB_WndProc endp
 ;             Arg3: -> CWPSTRUCT.
 ; Return:     eax = Zero if handled.
 
-MB_HookProc proc private uses xbx xdi dCode:DWORD, wParam:WPARAM, lParam:LPARAM
-  local cTransferInfo[2*sizeof(POINTER) + MsgBoxCaptionHeaderSize + 1]:CHR
+MBX_HookProc proc private uses xbx xdi dCode:DWORD, wParam:WPARAM, lParam:LPARAM
+  local cTransferInfo[MBX_CaptionHeaderSize + 2*sizeof(POINTER) + 1]:CHR
 
   .if dCode == HC_ACTION                               ;Ignore the rest
     mov xbx, lParam
@@ -297,19 +291,19 @@ MB_HookProc proc private uses xbx xdi dCode:DWORD, wParam:WPARAM, lParam:LPARAM
     ;It is the first dialog message where the caption is set
     .if [xbx].CWPSTRUCT.message == WM_NCCALCSIZE
       invoke GetWindowText, [xbx].CWPSTRUCT.hwnd, addr cTransferInfo, lengthof(cTransferInfo)
-      .if $DoesWordMatch?(cTransferInfo, MsgBoxCaptionHeader)
-        mov xdi, $invoke(hex2xword, addr [cTransferInfo + MsgBoxCaptionHeaderSize*sizeof(CHR)])
-        ;Save a pointer to MsgBoxInfo as a window property
-        %invoke SetProp, [xbx].CWPSTRUCT.hwnd, offset cMsgBoxProp&TARGET_SUFFIX, xdi
+      .if $DoesWordMatch?(cTransferInfo, MBX_CaptionHeader)
+        mov xdi, $invoke(hex2xword, addr [cTransferInfo + MBX_CaptionHeaderSize*sizeof(CHR)])
+        ;Save a pointer to MBX_DlgInfo as a window property
+        %invoke SetProp, [xbx].CWPSTRUCT.hwnd, offset cMBX_Prop_&TARGET_SUFFIX, xdi
         ;Release the hook
-        invoke UnhookWindowsHookEx, [xdi].MsgBoxInfo.hHook
+        invoke UnhookWindowsHookEx, [xdi].MBX_DlgInfo.hHook
         ;Set correct caption
-        invoke SetWindowText, [xbx].CWPSTRUCT.hwnd, [xdi].MsgBoxInfo.pCaption
+        invoke SetWindowText, [xbx].CWPSTRUCT.hwnd, [xdi].MBX_DlgInfo.pCaption
         ;Set the new WndProc
-        invoke SetWindowLongPtr, [xbx].CWPSTRUCT.hwnd, GWLP_WNDPROC, offset MB_WndProc
+        invoke SetWindowLongPtr, [xbx].CWPSTRUCT.hwnd, GWLP_WNDPROC, offset MBX_WndProc
       .endif
     .endif
   .endif
   mov eax, 1
   ret
-MB_HookProc endp
+MBX_HookProc endp

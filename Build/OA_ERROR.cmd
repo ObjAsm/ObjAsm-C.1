@@ -17,3 +17,4 @@ if not [!LogFile!] == [] (
 )
 
 if not [%1] == [NOPAUSE] pause
+exit /b 1

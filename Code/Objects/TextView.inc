@@ -154,6 +154,9 @@ TVO_RTLREADING      equ   BIT02           ;Not implemented
 TVO_PATH_ELLIPSIS   equ   BIT03           ;Not implemented
 TVP_WORD_ELLIPSIS   equ   BIT04           ;Not implemented
 
+TVDEFAULT_FONT_SIZE equ   10
+TVZOOM_BASE         equ   72
+
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
 ; Object:     TextView
 ; Purpose:    Provide a control that displays formatted text using styles like font, color,
@@ -399,10 +402,7 @@ if IMPLEMENT
 
 %CStr cTextViewClass&TARGET_STR_AFFIX, "TextView"
 
-TVDEFAULT_FONT_SIZE equ   10
-
 ;Zoom parameter
-TVZOOM_BASE         equ   72
 TVZOOM_MIN          equ   TVZOOM_BASE/2
 TVZOOM_MAX          equ   5*TVZOOM_BASE
 TVZOOM_STEP         equ   TVZOOM_BASE/16

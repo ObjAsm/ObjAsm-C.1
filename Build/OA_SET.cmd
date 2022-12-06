@@ -19,10 +19,10 @@ if "%COMPUTERNAME%"=="LWP-JKHC2Z2" (
 )
 set BldInf="%OBJASM_PATH%\Build\Tools\BuildInfo.cmd"
 set Inc2RC="%OBJASM_PATH%\Build\Tools\Inc2RC.cmd"
+set ResourceCompiler="%ToolPath:"=%\Windows Kits\10\bin\10.0.18362.0\x64\rc.exe"
 set MidlCompiler="%ToolPath:"=%\Windows Kits\10\bin\10.0.18362.0\x64\midl.exe"
 set UICCompiler="%WINKIT_PATH%\x86\UICC.exe"
-set ResourceCompiler="%ToolPath:"=%\Windows Kits\10\bin\10.0.18362.0\x64\rc.exe"
-set EfiImageConverter="%EFI_TOOLKIT_PATH%\build\tools\bin\fwimage"
+set EfiImageConverter="%EFI_TOOLKIT_PATH%\build\tools\bin\fwimage.exe"
 set Debugger="%ToolPath:"=%\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.exe"
 if %SYSTEM_BITNESS%==32 (
   set Assembler="!OBJASM_PATH!\Build\Tools\UASM32.exe"

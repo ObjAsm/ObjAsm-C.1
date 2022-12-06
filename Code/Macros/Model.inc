@@ -317,10 +317,12 @@ SysSetup macro Arguments:vararg
       % includelib &LibPath&Windows\\Advapi32.lib
     endif
   endif
-  if TARGET_BITNESS eq 32
-    % includelib &LibPath&ObjAsm\\ObjMem32.lib
-  else
-    % includelib &LibPath&ObjAsm\\ObjMem64.lib
+  if TARGET_BIN_FORMAT ne BIN_FORMAT_LIB
+    if TARGET_BITNESS eq 32
+      % includelib &LibPath&ObjAsm\\ObjMem32.lib
+    else
+      % includelib &LibPath&ObjAsm\\ObjMem64.lib
+    endif
   endif
 
   .list
@@ -639,24 +641,24 @@ SysInit macro Arg1, Arg2
         mov DbgColorGreen, DBG_COLOR_GREEN_CON
         mov DbgColorBlue, DBG_COLOR_BLUE_CON
       elseifidn DBG_DEVICE, <LOG>
-        mov DbgColorForeground, DBG_COLOR_FOREGROUND_WND
-        mov DbgColorBackground, DBG_COLOR_BACKGROUND_WND
-        mov DbgColorComment, DBG_COLOR_COMMENT_WND
-        mov DbgColorWarning, DBG_COLOR_WARNING_WND
-        mov DbgColorError, DBG_COLOR_ERROR_WND
-        mov DbgColorString, DBG_COLOR_STRING_WND
-        mov DbgColorMessage, DBG_COLOR_MESSAGE_WND
-        mov DbgColorObject, DBG_COLOR_OBJECT_WND
-        mov DbgColorInterface, DBG_COLOR_INTERFACE_WND
-        mov DbgColorVMT, DBG_COLOR_VMT_WND
-        mov DbgColorFPU, DBG_COLOR_FPU_WND
-        mov DbgColorMemory, DBG_COLOR_MEMORY_WND
-        mov DbgColorDefaultPre, DBG_COLOR_DEFAULT_PRE_WND
-        mov DbgColorDefaultVar, DBG_COLOR_DEFAULT_VAR_WND
-        mov DbgColorLine, DBG_COLOR_LINE_WND
-        mov DbgColorRed, DBG_COLOR_RED_WND
-        mov DbgColorGreen, DBG_COLOR_GREEN_WND
-        mov DbgColorBlue, DBG_COLOR_BLUE_WND
+        mov DbgColorForeground, DBG_COLOR_FOREGROUND_WND_LIGHT
+        mov DbgColorBackground, DBG_COLOR_BACKGROUND_WND_LIGHT
+        mov DbgColorComment, DBG_COLOR_COMMENT_WND_LIGHT
+        mov DbgColorWarning, DBG_COLOR_WARNING_WND_LIGHT
+        mov DbgColorError, DBG_COLOR_ERROR_WND_LIGHT
+        mov DbgColorString, DBG_COLOR_STRING_WND_LIGHT
+        mov DbgColorMessage, DBG_COLOR_MESSAGE_WND_LIGHT
+        mov DbgColorObject, DBG_COLOR_OBJECT_WND_LIGHT
+        mov DbgColorInterface, DBG_COLOR_INTERFACE_WND_LIGHT
+        mov DbgColorVMT, DBG_COLOR_VMT_WND_LIGHT
+        mov DbgColorFPU, DBG_COLOR_FPU_WND_LIGHT
+        mov DbgColorMemory, DBG_COLOR_MEMORY_WND_LIGHT
+        mov DbgColorDefaultPre, DBG_COLOR_DEFAULT_PRE_WND_LIGHT
+        mov DbgColorDefaultVar, DBG_COLOR_DEFAULT_VAR_WND_LIGHT
+        mov DbgColorLine, DBG_COLOR_LINE_WND_LIGHT
+        mov DbgColorRed, DBG_COLOR_RED_WND_LIGHT
+        mov DbgColorGreen, DBG_COLOR_GREEN_WND_LIGHT
+        mov DbgColorBlue, DBG_COLOR_BLUE_WND_LIGHT
       else
         mov DbgHighContrast.cbSize, sizeof(HIGHCONTRAST)
         mov DbgHighContrast.dwFlags, 0                  ;;Just in case the API fails
@@ -681,24 +683,46 @@ SysInit macro Arg1, Arg2
           mov DbgColorGreen, DBG_COLOR_GREEN_HC
           mov DbgColorBlue, DBG_COLOR_BLUE_HC
         .else
-          mov DbgColorForeground, DBG_COLOR_FOREGROUND_WND
-          mov DbgColorBackground, DBG_COLOR_BACKGROUND_WND
-          mov DbgColorComment, DBG_COLOR_COMMENT_WND
-          mov DbgColorWarning, DBG_COLOR_WARNING_WND
-          mov DbgColorError, DBG_COLOR_ERROR_WND
-          mov DbgColorString, DBG_COLOR_STRING_WND
-          mov DbgColorMessage, DBG_COLOR_MESSAGE_WND
-          mov DbgColorObject, DBG_COLOR_OBJECT_WND
-          mov DbgColorInterface, DBG_COLOR_INTERFACE_WND
-          mov DbgColorVMT, DBG_COLOR_VMT_WND
-          mov DbgColorFPU, DBG_COLOR_FPU_WND
-          mov DbgColorMemory, DBG_COLOR_MEMORY_WND
-          mov DbgColorDefaultPre, DBG_COLOR_DEFAULT_PRE_WND
-          mov DbgColorDefaultVar, DBG_COLOR_DEFAULT_VAR_WND
-          mov DbgColorLine, DBG_COLOR_LINE_WND
-          mov DbgColorRed, DBG_COLOR_RED_WND
-          mov DbgColorGreen, DBG_COLOR_GREEN_WND
-          mov DbgColorBlue, DBG_COLOR_BLUE_WND
+;          invoke ShouldAppsUseDarkMode
+;          .if eax != FALSE
+            mov DbgColorForeground, DBG_COLOR_FOREGROUND_WND_LIGHT
+            mov DbgColorBackground, DBG_COLOR_BACKGROUND_WND_LIGHT
+            mov DbgColorComment, DBG_COLOR_COMMENT_WND_LIGHT
+            mov DbgColorWarning, DBG_COLOR_WARNING_WND_LIGHT
+            mov DbgColorError, DBG_COLOR_ERROR_WND_LIGHT
+            mov DbgColorString, DBG_COLOR_STRING_WND_LIGHT
+            mov DbgColorMessage, DBG_COLOR_MESSAGE_WND_LIGHT
+            mov DbgColorObject, DBG_COLOR_OBJECT_WND_LIGHT
+            mov DbgColorInterface, DBG_COLOR_INTERFACE_WND_LIGHT
+            mov DbgColorVMT, DBG_COLOR_VMT_WND_LIGHT
+            mov DbgColorFPU, DBG_COLOR_FPU_WND_LIGHT
+            mov DbgColorMemory, DBG_COLOR_MEMORY_WND_LIGHT
+            mov DbgColorDefaultPre, DBG_COLOR_DEFAULT_PRE_WND_LIGHT
+            mov DbgColorDefaultVar, DBG_COLOR_DEFAULT_VAR_WND_LIGHT
+            mov DbgColorLine, DBG_COLOR_LINE_WND_LIGHT
+            mov DbgColorRed, DBG_COLOR_RED_WND_LIGHT
+            mov DbgColorGreen, DBG_COLOR_GREEN_WND_LIGHT
+            mov DbgColorBlue, DBG_COLOR_BLUE_WND_LIGHT
+;          .else
+;            mov DbgColorForeground, DBG_COLOR_FOREGROUND_WND_DARK
+;            mov DbgColorBackground, DBG_COLOR_BACKGROUND_WND_DARK
+;            mov DbgColorComment, DBG_COLOR_COMMENT_WND_DARK
+;            mov DbgColorWarning, DBG_COLOR_WARNING_WND_DARK
+;            mov DbgColorError, DBG_COLOR_ERROR_WND_DARK
+;            mov DbgColorString, DBG_COLOR_STRING_WND_DARK
+;            mov DbgColorMessage, DBG_COLOR_MESSAGE_WND_DARK
+;            mov DbgColorObject, DBG_COLOR_OBJECT_WND_DARK
+;            mov DbgColorInterface, DBG_COLOR_INTERFACE_WND_DARK
+;            mov DbgColorVMT, DBG_COLOR_VMT_WND_DARK
+;            mov DbgColorFPU, DBG_COLOR_FPU_WND_DARK
+;            mov DbgColorMemory, DBG_COLOR_MEMORY_WND_DARK
+;            mov DbgColorDefaultPre, DBG_COLOR_DEFAULT_PRE_WND_DARK
+;            mov DbgColorDefaultVar, DBG_COLOR_DEFAULT_VAR_WND_DARK
+;            mov DbgColorLine, DBG_COLOR_LINE_WND_DARK
+;            mov DbgColorRed, DBG_COLOR_RED_WND_DARK
+;            mov DbgColorGreen, DBG_COLOR_GREEN_WND_DARK
+;            mov DbgColorBlue, DBG_COLOR_BLUE_WND_DARK
+;          .endif
         .endif
       endif
     endif

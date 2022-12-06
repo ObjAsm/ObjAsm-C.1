@@ -4,7 +4,7 @@ REM Change the targets according the intended check
 @echo off
 set TARGET_BITNESS=64
 set TARGET_MODE=RLS
-set FileName=GetComErrStrA.asm
+set FileName=MsgBoxA.asm
 
 setlocal ENABLEEXTENSIONS ENABLEDELAYEDEXPANSION
 

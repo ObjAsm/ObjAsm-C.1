@@ -159,7 +159,7 @@ Method NetComServerProtocol.OnAccept, uses xbx xsi, pConnection:$ObjPtr(NetComCo
   SetObject xsi
   mov xbx, pConnection
   if DEBUGGING
-    invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, 0, ??DbgDstWnd
+    invoke DbgOutCmd, DBG_CMD_SINGLE_LINE, 0, 0, ??DbgDstWnd
     invoke GetNameInfo, addr [xbx].$Obj(NetComConnection).RemoteHostAddr, sizeof NETCOMADDR, \
                         addr cAddrStr, lengthof cAddrStr, \
                         NULL, 0, \
@@ -258,7 +258,7 @@ Method NetComServerProtocol.ProcessData, uses xbx xdi xsi, pConnection:$ObjPtr(N
   invoke ReleaseDC, 0, hScreenDC
   invoke StrECopyW, addr wCaptionDC, $OfsCStrW("Desktop image from connection ")
   invoke xword2hexW, xax, pConnection
-  invoke DbgOutBitmap, hNewBmp, addr wCaptionDC
+  invoke DbgOutBitmap, hNewBmp, $RGB(0,0,0), addr wCaptionDC
   invoke DeleteObject, hNewBmp
 
   MemFree pBuffer                                       ;Dispose assembled payload

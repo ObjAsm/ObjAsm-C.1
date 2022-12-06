@@ -7,9 +7,8 @@
 ; ==================================================================================================
 
 
-% include @Environ(OBJASM_PATH)\\Code\\Objects\\Lib\\32W\\Objects.cop
-TARGET_STR_TYPE = STR_TYPE_WIDE
-% include &ObjMemPath&ObjMemWin.cop
+% include @Environ(OBJASM_PATH)\Code\Macros\Model.inc
+SysSetup OOP, Lib32, WIDE_STRING
 
 ProcName equ <MsgBoxW>
 

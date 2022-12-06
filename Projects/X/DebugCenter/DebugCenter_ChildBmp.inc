@@ -38,7 +38,7 @@ Object DbgMdiChildBmp, DBG_MDI_CHILD_BMP_ID, DbgMdiChild
   DefineVariable    pBmp,             POINTER,        NULL
   DefineVariable    dHorzOffset,      DWORD,          0
   DefineVariable    dVertOffset,      DWORD,          0
-  DefineVariable    dBackColor,  dword,          DBG_COLOR_BACKGROUND_WND
+  DefineVariable    dBackColor,       DWORD,          DBG_COLOR_BACKGROUND_WND_LIGHT
 ObjectEnd
 
 

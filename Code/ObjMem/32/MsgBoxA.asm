@@ -7,9 +7,8 @@
 ; ==================================================================================================
 
 
-% include @Environ(OBJASM_PATH)\\Code\\Objects\\Lib\\32A\\Objects.cop
-TARGET_STR_TYPE = STR_TYPE_ANSI
-% include &ObjMemPath&ObjMemWin.cop
+% include @Environ(OBJASM_PATH)\Code\Macros\Model.inc
+SysSetup OOP, Lib32, ANSI_STRING
 
 ProcName equ <MsgBoxA>
 
