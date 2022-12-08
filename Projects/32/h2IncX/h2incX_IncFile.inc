@@ -649,8 +649,8 @@ Method IncFile.ParseHeaderFile, uses ebx edi esi
         .endw
       .endif
 
-      movzx ecx, ah
-      OCall ebx::IncFile.ParseHeaderLine, edx, ecx
+      movzx eax, ah
+      OCall ebx::IncFile.ParseHeaderLine, edx, eax
 
       mov eax, esi
       sub eax, [ebx].pStmInpPos

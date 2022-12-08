@@ -363,8 +363,8 @@ MethodEnd
 ; Return:     eax = OBJ_OK or an error code if failed.
 
 Method DataPool.LoadItem,, pStream:$ObjPtr(Stream), pItem:POINTER
-  SetObject xcx
-  OCall pStream::Stream.BinRead, pItem, [xcx].dItemSize
+  SetObject xax
+  OCall pStream::Stream.BinRead, pItem, [xax].dItemSize
   mov xdx, pStream
   mov eax, [xdx].$Obj(Stream).dErrorCode
 MethodEnd
@@ -475,16 +475,16 @@ Method DataPool.Store, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
 
     ;Count the number of allocated blobs
     lea xax, [xsi].Blobs
-    mov xdx, xax
-    xor ecx, ecx
+    mov xcx, xax
+    xor edx, edx
     .repeat
-      mov xdx, [xdx].SDLL_ITEM.pNextItem
-      .break .if xdx == xax
-      inc ecx
+      mov xcx, [xcx].SDLL_ITEM.pNextItem
+      .break .if xcx == xax
+      inc edx
     .until FALSE
-    mov dBlobCount, ecx
+    mov dBlobCount, edx
 
-    OCall pStream::Stream.BinWrite32, ecx               ;Write down the number of allocated blobs
+    OCall pStream::Stream.BinWrite32, edx               ;Write down the number of allocated blobs
 
     mov xbx, [xsi].Blobs.pFirstItem
 
@@ -553,8 +553,8 @@ MethodEnd
 ; Return:     eax = OBJ_OK or an error code if failed.
 
 Method DataPool.StoreItem,, pStream:$ObjPtr(Stream), pItem:POINTER
-  SetObject xcx
-  OCall pStream::Stream.BinWrite, pItem, [xcx].dItemSize
+  SetObject xax
+  OCall pStream::Stream.BinWrite, pItem, [xax].dItemSize
   mov xdx, pStream
   mov eax, [xdx].$Obj(Stream).dErrorCode
 MethodEnd

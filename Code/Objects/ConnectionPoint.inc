@@ -254,8 +254,8 @@ MethodEnd
 Method ConnectionPoint.FireEvent, uses xsi, dParameter:DWORD
   DbgText "ConnectionPoint.FireEvent", "ConnectionPoint"
   SetObject xsi
-  mov xcx, $MethodAddr(xsi::ConnectionPoint.FireNow)
-  OCall [xsi].ConnectedInterfaces::DataCollection.ForEach, xcx, XWORD ptr dParameter, NULL
+  MethodAddr xsi::ConnectionPoint.FireNow
+  OCall [xsi].ConnectedInterfaces::DataCollection.ForEach, xax, XWORD ptr dParameter, NULL
 MethodEnd
 
 
@@ -290,9 +290,9 @@ Method IEnumConnections.Next, uses xbx xdi xsi, dReqCount:DWORD, pBuffer:POINTER
     .while ebx < dReqCount
       mov xdx, [xsi].pOwner                             ;xcx -> EnumConnections
       mov xax, [xdx].$Obj(EnumConnections).pConnections
-      mov ecx, dIndex
+      mov edx, dIndex
       .break .if ecx >= [xax].$Obj(Collection).dCount   ;break if no more Connections
-      OCall xax::Collection.ItemAt, ecx
+      OCall xax::Collection.ItemAt, edx
       inc dIndex
       inc ebx
       lea xcx, [xdi]

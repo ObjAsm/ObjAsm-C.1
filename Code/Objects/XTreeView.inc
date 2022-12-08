@@ -88,7 +88,7 @@ PXTVN_DISP_INFO typedef ptr XTVN_DISP_INFO
 ; Purpose:    Implement node of the XTreeView.
 ;
 ; Node layout:
-; ———————————
+; ——————————E
 ;
 ;
 ;  |<------ Node indent ----->|<----- Node width ----->|
@@ -96,7 +96,7 @@ PXTVN_DISP_INFO typedef ptr XTVN_DISP_INFO
 ;  |                          |                        |
 ;
 ;
-;   ——————————————————————————————————————————————————————————————     ——————————— sdNodeTop
+;   ——————————————————————————————————————————————————————————————     ——————————EsdNodeTop
 ;  |       ¦      ¦      ¦     ————————————————————————           |     /¦\
 ;  |       ¦      ¦      ¦    |  Con-   ————————————   |          |      ¦
 ;  |       ¦      ¦     [-]---|  tent  |  TextRect  |  |          |      Node height
@@ -117,7 +117,7 @@ PXTVN_DISP_INFO typedef ptr XTVN_DISP_INFO
 ;  |       ¦      ¦              ----|      Last Child      |     |      ¦
 ;  |       ¦      ¦                  |                      |     |      ¦
 ;  |       ¦      ¦                   ——————————————————————      |     \¦/
-;   ——————————————————————————————————————————————————————————————     —————
+;   ——————————————————————————————————————————————————————————————     ————E
 ;
 ;
 ;  |                                 |                          | |
@@ -1512,7 +1512,7 @@ MethodEnd
 ;                                                        ¦   ebx              ¦
 ;                                                        ¦                    ¦
 ;        ¦                                              \¦/                   ¦ Total Offset
-;        ¦     ————————————————————————   —————————————————                   ¦
+;        ¦     ————————————————————————   ————————————————E                  ¦
 ;        ¦    |                        |                /¦\  First Offset     ¦
 ;       [-]---|   First Visible Node   |                 ¦                   \¦/
 ;   ——————————————————————————————————————————————   ————————————————————————————
@@ -1532,7 +1532,7 @@ MethodEnd
 ;  |             ----|                      |     |      ¦          XTreeView window
 ;  |                 |                      |     |      ¦
 ;  |                  ——————————————————————      |     \¦/
-;   ——————————————————————————————————————————————    ———————
+;   ——————————————————————————————————————————————    ——————E
 
 
 Method XTreeView.Find1stVisibleNode, uses xbx xsi, dNewTotalOffset:DWORD
@@ -2042,9 +2042,10 @@ Method XTreeView.OnButtonDblClk, uses xsi, dButton:DWORD, wParam:WPARAM, lParam:
   SetObject xsi
   PntS2Pnt CursorPos, lParam
   OCall [xsi].DispInfoColl::XWCollection.FirstThat, addr XTV_IsPointInNode, CursorPos.y, NULL
+  ReleaseObject
   .if xax != NULL
-    lea xcx, CursorPos
-    OCall [xax].XTVN_DISP_INFO.pNode::XTreeViewNode.MouseHitDbl, dButton, xcx, xax, DWORD ptr wParam
+    lea xsi, CursorPos
+    OCall [xax].XTVN_DISP_INFO.pNode::XTreeViewNode.MouseHitDbl, dButton, xsi, xax, DWORD ptr wParam
   .endif
 MethodEnd
 

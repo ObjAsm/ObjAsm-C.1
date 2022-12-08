@@ -101,9 +101,11 @@ ParseEqu proc uses edi esi pName:PSTRINGA
         invoke IsMacro?, edi                            ;If it is a macro, check if it has params
         .if eax != 0
           .if eax == 1
-            OCall g_pMacros::List.ItemAt, ecx
+            mov edx, ecx
+            OCall g_pMacros::List.ItemAt, edx
           .else
-            OCall g_pKnownMacros::List.ItemAt, ecx
+            mov edx, ecx
+            OCall g_pKnownMacros::List.ItemAt, edx
           .endif
           mov edx, [eax - sizeof DWORD]
           mov ecx, DWORD ptr [eax + edx]

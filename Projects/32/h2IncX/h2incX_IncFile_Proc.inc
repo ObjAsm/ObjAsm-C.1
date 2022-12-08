@@ -51,7 +51,8 @@ InsertStrg proc pList:POINTER, pStr:PSTRINGA, dSize:DWORD
       mov g_bTerminate, TRUE
       xor eax, eax
     .else
-      OCall pList::List.ItemAt, ecx
+      mov edx, ecx
+      OCall pList::List.ItemAt, edx
     .endif
     ret
 InsertStrg endp
@@ -74,7 +75,8 @@ InsertAttr proc pList:POINTER, pStr:PSTRINGA, dSize:DWORD, dAttr:DWORD
       mov g_bTerminate, TRUE
       xor eax, eax
     .else
-      OCall pList::List.ItemAt, ecx
+      mov edx, ecx
+      OCall pList::List.ItemAt, edx
     .endif
     ret
 InsertAttr endp

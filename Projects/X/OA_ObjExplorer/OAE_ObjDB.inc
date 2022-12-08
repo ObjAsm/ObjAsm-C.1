@@ -180,7 +180,7 @@ Method OA_ObjDB.RemoveFileInfo, uses xbx xdi xsi, pFileName:PSTRING
   OCall [xsi].FilesColl::FilesCollection.Search, pFileName
   .if eax != FALSE
     mov edi, ecx
-    mov xbx, $OCall([xsi].FilesColl::FilesCollection.ItemAt, ecx)
+    mov xbx, $OCall([xsi].FilesColl::FilesCollection.ItemAt, edi)
     lea xax, [xsi].ObjVariableColl
     OCall xax::ObjVarInfoCollection.ForEachRev, offset DelMatchingObjVariable, xbx, xax
     lea xax, [xsi].ObjMethodColl
@@ -228,7 +228,7 @@ MethodEnd
 ;             Arg3: Dummy.
 ; Return:     Nothing.
 
-RemoveUnusedInfo proc pFileInfo:POINTER, pSelf:POINTER, xDummy:XWORD
+RemoveUnusedInfo proc pFileInfo:PFILEINFORMATION, pSelf:POINTER, xDummy:XWORD
   ;Remove untagged files and related info from collections
   mov xax, pFileInfo
   .if [xax].FILEINFORMATION.dFlags == 0
@@ -341,7 +341,6 @@ Method OA_ObjDB.Init, uses xbx xdi xsi, pOwner:POINTER, pIniFile:$ObjPtr(IniFile
       .endif
     .endif
   .endif
-;  OCall xsi::OA_ObjDB.ShowFC
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————

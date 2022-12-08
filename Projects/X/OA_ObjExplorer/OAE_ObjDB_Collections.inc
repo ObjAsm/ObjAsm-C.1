@@ -207,7 +207,7 @@ Method FilesCollection.GetItem, uses xbx, pStream:$ObjPtr(Stream), pDeserInfo:PD
   mov xbx, $MemAlloc(sizeof(FILEINFORMATION))
   mov [xbx].FILEINFORMATION.pFileName, $OCall(pStream::Stream.StrRead)
   OCall pStream::Stream.BinRead, addr [xbx].FILEINFORMATION.LastWrite, sizeof FILETIME
-  m2z [xbx].FILEINFORMATION.dFlags                    ;Reset flags
+  m2z [xbx].FILEINFORMATION.dFlags                    ;Reset flags when loaded from stream
   mov xax, xbx
 MethodEnd
 
@@ -351,8 +351,8 @@ Method ObjInfoCollection.PutItem, uses xbx xdi, pStream:$ObjPtr(Stream), pItem:P
   OCall pStream::Stream.BinWrite32, [xbx].OBJECTINFORMATION.dHelpLineCount
   mov xdi, [xbx].OBJECTINFORMATION.pHelpData
   .while xdi != NULL
-    lea xcx, [xdi + sizeof(POINTER)]
-    OCall pStream::Stream.StrWriteA, xcx
+    lea xdx, [xdi + sizeof(POINTER)]
+    OCall pStream::Stream.StrWriteA, xdx
     mov xdi, [xdi]
   .endw
   SetObject xcx
@@ -453,8 +453,8 @@ Method ObjMtdInfoCollection.PutItem, uses xbx xdi, pStream:$ObjPtr(Stream), pIte
   OCall pStream::Stream.BinWrite32, [xbx].OBJMTDINFORMATION.dHelpLineCount
   mov xdi, [xbx].OBJMTDINFORMATION.pHelpData
   .while xdi != NULL
-    lea xcx, [xdi + sizeof(POINTER)]
-    OCall pStream::Stream.StrWriteA, xcx
+    lea xdx, [xdi + sizeof(POINTER)]
+    OCall pStream::Stream.StrWriteA, xdx
     mov xdi, [xdi]
   .endw
   SetObject xcx
@@ -556,8 +556,8 @@ Method ObjVarInfoCollection.PutItem, uses xbx xdi, pStream:$ObjPtr(Stream), pIte
   OCall pStream::Stream.BinWrite32, [xbx].OBJVARINFORMATION.dHelpLineCount
   mov xdi, [xbx].OBJVARINFORMATION.pHelpData
   .while xdi != NULL
-    lea xcx, [xdi + sizeof(POINTER)]
-    OCall pStream::Stream.StrWriteA, xcx
+    lea xdx, [xdi + sizeof(POINTER)]
+    OCall pStream::Stream.StrWriteA, xdx
     mov xdi, [xdi]
   .endw
   SetObject xcx
@@ -682,8 +682,8 @@ Method IntInfoCollection.PutItem, uses xbx xdi, pStream:$ObjPtr(Stream), pItem:P
   OCall pStream::Stream.BinWrite32, [xbx].INTERFACEINFORMATION.dHelpLineCount
   mov xdi, [xbx].INTERFACEINFORMATION.pHelpData
   .while xdi != NULL
-    lea xcx, [xdi + sizeof(POINTER)]
-    OCall pStream::Stream.StrWriteA, xcx
+    lea xdx, [xdi + sizeof(POINTER)]
+    OCall pStream::Stream.StrWriteA, xdx
     mov xdi, [xdi]
   .endw
   SetObject xcx
@@ -784,8 +784,7 @@ Method IntMtdInfoCollection.PutItem, uses xbx xdi, pStream:$ObjPtr(Stream), pIte
   OCall pStream::Stream.BinWrite32, [xbx].INTMTDINFORMATION.dHelpLineCount
   mov xdi, [xbx].INTMTDINFORMATION.pHelpData
   .while xdi != NULL
-    lea xcx, [xdi + sizeof(POINTER)]
-    OCall pStream::Stream.StrWriteA, xcx
+    OCall pStream::Stream.StrWriteA, addr [xdi + sizeof(POINTER)]
     mov xdi, [xdi]
   .endw
   SetObject xcx
@@ -887,8 +886,7 @@ Method ImpMtdInfoCollection.PutItem, uses xbx xdi, pStream:$ObjPtr(Stream), pIte
   OCall pStream::Stream.BinWrite32, [xbx].IMPMTDINFORMATION.dHelpLineCount
   mov xdi, [xbx].IMPMTDINFORMATION.pHelpData
   .while xdi != NULL
-    lea xcx, [xdi + sizeof(POINTER)]
-    OCall pStream::Stream.StrWriteA, xcx
+    OCall pStream::Stream.StrWriteA, addr [xdi + sizeof(POINTER)]
     mov xdi, [xdi]
   .endw
   SetObject xcx

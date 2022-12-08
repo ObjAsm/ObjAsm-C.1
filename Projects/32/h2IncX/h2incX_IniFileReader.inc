@@ -206,7 +206,8 @@ Method IniFileReader.LoadList, uses ebx edi esi, pConTabEntry:PCONV_TAB_ENTRY
           .continue
         .endif
         
-        OCall g_pMemPool::MemPool.AddBStrA, edx, ecx
+        mov eax, ecx
+        OCall g_pMemPool::MemPool.AddBStrA, edx, eax
         .if eax != NULL
           .ifBitSet [edi].CONV_TAB_ENTRY.dFlags, CF_CASE
             invoke StrLowerA, eax
@@ -225,7 +226,8 @@ Method IniFileReader.LoadList, uses ebx edi esi, pConTabEntry:PCONV_TAB_ENTRY
                 invoke dec2dwordA, ebx
                 OCall g_pMemPool::MemPool.AddDword, eax
               .elseIfBitSet [edi].CONV_TAB_ENTRY.dFlags, CF_EQUI
-                OCall g_pMemPool::MemPool.AddBStrA, ebx, ecx
+                mov eax, ecx
+                OCall g_pMemPool::MemPool.AddBStrA, ebx, eax
               .endif
             .endif
             inc esi
