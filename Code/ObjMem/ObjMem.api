@@ -508,6 +508,8 @@ _alloca_probe_8
 _alloca_probe_16
 _alloca_8
 _alloca_16
+AppsUseLightTheme
+SystemUsesLightTheme
 
 EHandler, pExceptionRecord, pEstablisherFrame, pContextRecord, pDispatcherContext
 

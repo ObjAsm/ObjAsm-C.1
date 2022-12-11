@@ -37,6 +37,8 @@ pApp equ offset $ObjTmpl(DC_Test)
 start proc
   SysInit
   DbgCloseAll
+  invoke AppsUseLightTheme
+  DbgDec eax, "AppsUseLightTheme"
   DbgFlashWnd FLASHW_CAPTION, 3
   DbgPinWnd TRUE
   xor eax, eax

@@ -683,8 +683,8 @@ SysInit macro Arg1, Arg2
           mov DbgColorGreen, DBG_COLOR_GREEN_HC
           mov DbgColorBlue, DBG_COLOR_BLUE_HC
         .else
-;          invoke ShouldAppsUseDarkMode
-;          .if eax != FALSE
+          invoke AppsUseLightTheme
+          .if eax != FALSE
             mov DbgColorForeground, DBG_COLOR_FOREGROUND_WND_LIGHT
             mov DbgColorBackground, DBG_COLOR_BACKGROUND_WND_LIGHT
             mov DbgColorComment, DBG_COLOR_COMMENT_WND_LIGHT
@@ -703,26 +703,26 @@ SysInit macro Arg1, Arg2
             mov DbgColorRed, DBG_COLOR_RED_WND_LIGHT
             mov DbgColorGreen, DBG_COLOR_GREEN_WND_LIGHT
             mov DbgColorBlue, DBG_COLOR_BLUE_WND_LIGHT
-;          .else
-;            mov DbgColorForeground, DBG_COLOR_FOREGROUND_WND_DARK
-;            mov DbgColorBackground, DBG_COLOR_BACKGROUND_WND_DARK
-;            mov DbgColorComment, DBG_COLOR_COMMENT_WND_DARK
-;            mov DbgColorWarning, DBG_COLOR_WARNING_WND_DARK
-;            mov DbgColorError, DBG_COLOR_ERROR_WND_DARK
-;            mov DbgColorString, DBG_COLOR_STRING_WND_DARK
-;            mov DbgColorMessage, DBG_COLOR_MESSAGE_WND_DARK
-;            mov DbgColorObject, DBG_COLOR_OBJECT_WND_DARK
-;            mov DbgColorInterface, DBG_COLOR_INTERFACE_WND_DARK
-;            mov DbgColorVMT, DBG_COLOR_VMT_WND_DARK
-;            mov DbgColorFPU, DBG_COLOR_FPU_WND_DARK
-;            mov DbgColorMemory, DBG_COLOR_MEMORY_WND_DARK
-;            mov DbgColorDefaultPre, DBG_COLOR_DEFAULT_PRE_WND_DARK
-;            mov DbgColorDefaultVar, DBG_COLOR_DEFAULT_VAR_WND_DARK
-;            mov DbgColorLine, DBG_COLOR_LINE_WND_DARK
-;            mov DbgColorRed, DBG_COLOR_RED_WND_DARK
-;            mov DbgColorGreen, DBG_COLOR_GREEN_WND_DARK
-;            mov DbgColorBlue, DBG_COLOR_BLUE_WND_DARK
-;          .endif
+          .else
+            mov DbgColorForeground, DBG_COLOR_FOREGROUND_WND_DARK
+            mov DbgColorBackground, DBG_COLOR_BACKGROUND_WND_DARK
+            mov DbgColorComment, DBG_COLOR_COMMENT_WND_DARK
+            mov DbgColorWarning, DBG_COLOR_WARNING_WND_DARK
+            mov DbgColorError, DBG_COLOR_ERROR_WND_DARK
+            mov DbgColorString, DBG_COLOR_STRING_WND_DARK
+            mov DbgColorMessage, DBG_COLOR_MESSAGE_WND_DARK
+            mov DbgColorObject, DBG_COLOR_OBJECT_WND_DARK
+            mov DbgColorInterface, DBG_COLOR_INTERFACE_WND_DARK
+            mov DbgColorVMT, DBG_COLOR_VMT_WND_DARK
+            mov DbgColorFPU, DBG_COLOR_FPU_WND_DARK
+            mov DbgColorMemory, DBG_COLOR_MEMORY_WND_DARK
+            mov DbgColorDefaultPre, DBG_COLOR_DEFAULT_PRE_WND_DARK
+            mov DbgColorDefaultVar, DBG_COLOR_DEFAULT_VAR_WND_DARK
+            mov DbgColorLine, DBG_COLOR_LINE_WND_DARK
+            mov DbgColorRed, DBG_COLOR_RED_WND_DARK
+            mov DbgColorGreen, DBG_COLOR_GREEN_WND_DARK
+            mov DbgColorBlue, DBG_COLOR_BLUE_WND_DARK
+          .endif
         .endif
       endif
     endif

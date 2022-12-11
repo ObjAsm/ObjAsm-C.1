@@ -1,9 +1,10 @@
 ; ==================================================================================================
 ; Title:      Json.inc
 ; Author:     G. Friedrich
-; Version:    C.1.1
+; Version:    C.1.2
 ; Purpose:    ObjAsm support of JSON (JavaScript Object Notation) objects.
 ; Links:      https://www.json.org/json-en.html
+;             https://www.rfc-editor.org/rfc/rfc8259
 ;             https://www.ietf.org/rfc/rfc4627.txt
 ;             https://tools.ietf.org/html/rfc8259
 ;             https://www.w3schools.com/js/js_json.asp
@@ -14,6 +15,10 @@
 ;             Version C.1.1, June 2021.
 ;               - Booleans were saved now in double quotes.
 ;               - Comments added.
+;             Version C.1.2, December 2022.
+;               - BOM reading added.
+;               - Empty Arrays/Objects are written in one line.
+;               - Description corrected.  
 ; ==================================================================================================
 
 
@@ -49,9 +54,9 @@ JSON_PROPERTY ends
 ; Notes:      - Numeric and Boolean values are recognized when reading, but not translated into
 ;               a value. It is up to the host to interpret the string value and convert it to the
 ;               desired format, e.g. BYTE, WORD, DWORD, QWORD, REAL4, REAL8 etc.
-;             - JSON may be represented using UTF-8/16/32. The default encoding is UTF-8.
-;               This implementation uses WIDE strings internally, regardless of the target string
-;               type.
+;             - JSON is encoded using UTF-8 => https://www.rfc-editor.org/rfc/rfc8259#section-8.1
+;               It is strongly recommended to compile this object using WIDE strings. Using ANSI
+;               strings may lead to data loss when converting to ANSI.
 ;             - In this implementation, a propety is a Key/Value pair. 
 ;             - The root property is always unnamed.
 
@@ -391,7 +396,6 @@ Method Json.AddArray, uses xbx xdi, pParent:PJSON_PROPERTY, pName:PSTRING
     mov [xbx].JSON_PROPERTY.dType, JSON_TYPE_ARRAY
     mov xax, xbx
   .endif
-;  DbgHex xax, "AddArray"
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -422,7 +426,6 @@ Method Json.AddData, uses xbx xdi,pParent:PJSON_PROPERTY, pName:PSTRING, dType:D
     .endif
     mov xax, xbx
   .endif
-;  DbgHex xax, "AddData"
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -446,7 +449,6 @@ Method Json.AddObject, uses xbx xdi, pParent:PJSON_PROPERTY, pName:PSTRING
     mov [xbx].JSON_PROPERTY.dType, JSON_TYPE_OBJECT
     mov xax, xbx
   .endif
-;  DbgHex xax, "AddObject"
 MethodEnd
 
 ; ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -807,7 +809,7 @@ JsonGetNumberEnd proc                                   ;On entry, xsi -> first 
 JsonGetNumberEnd endp
 
 JsonGetValue proc pParent:PJSON_PROPERTY, pName:PSTRING
-  ANNOTATION prv:xbx xdi xsi
+  ANNOTATION prv:xbx xdi xsi                            ;xbx -> last byte, xsi -> cur. byte in Buff
   local pBegin:POINTER, pValue:POINTER, dSize:DWORD
 
   invoke JsonSkipBlanks
@@ -952,13 +954,16 @@ Method Json.Read, uses xbx xdi xsi, pStream:$ObjPtr(Stream)
       mov pMemBlockUTF8, xax
       OCall pStream::Stream.BinRead, pMemBlockUTF8, ebx
       .if eax != 0
-        shl ebx, 1                                      ;Conservative guess
-        MemAlloc ebx, MEM_INIT_ZERO
+        lea ebx, [sizeof(CHRW)*ebx + sizeof(CHRW)]      ;Conservative guess + space for ZTC
+        MemAlloc ebx                                    ;ebx is always >= 2
         .if xax != NULL
           mov pMemBlockWide, xax
-          invoke UTF8ToWide, pMemBlockWide, pMemBlockUTF8, ebx
-          mov xsi, pMemBlockWide
-          add xbx, xsi
+          invoke UTF8ToWide, xax, pMemBlockUTF8, ebx    ;Adds always a ZTC
+          mov xsi, pMemBlockWide                        ;xsi -> first CHRW in Buffer
+          lea xbx, [xsi + xax - sizeof(CHRW)]           ;xbx -> last CHRW in Buffer = ZTC
+          .if CHRW ptr [xsi] == 0FEFFh                  ;Skip the UTF-8 BOM
+            add xsi, sizeof(DCHRW)
+          .endif
 
           mov [xdi].RootProperty.JSON_PROPERTY.Siblings.pLinkFwrd, NULL
           mov [xdi].RootProperty.JSON_PROPERTY.Siblings.pLinkBack, NULL
@@ -1033,39 +1038,47 @@ Method Json.WriteProperty, uses xbx xdi xsi, pStream:$ObjPtr(Stream), pProperty:
   .endif
 
   .if [xbx].JSON_PROPERTY.dType == JSON_TYPE_OBJECT
-    OCall pStream::Stream.BinWrite, $OfsCStrA("{", 13, 10), ??StrLength
-    ;Write all children recursively
     mov xsi, [xbx].JSON_PROPERTY.Children.pFirstMember
-    add DWORD ptr [xdi], INDENTATION_STEP               ;Increment indentation
-    .while xsi != NULL
-      lea xax, [xsi - offset JSON_PROPERTY.Siblings]    ;xax -> JSON_PROPERTY
-      OCall pSelf::Json.WriteProperty, pStream, xax, xdi
-      mov xsi, [xsi].LDLL_MEMBER.pLinkFwrd
-      .if xsi != 0
-        OCall pStream::Stream.BinWrite, $OfsCStrA(",", 13, 10), ??StrLength
-      .endif
-    .endw
-    sub DWORD ptr [xdi], INDENTATION_STEP               ;Decrement indentation
-    OCall pStream::Stream.BinWrite, $OfsCStrA(13, 10), ??StrLength
-    IndentNow
-    OCall pStream::Stream.BinWrite8, "}"
+    .if xsi == NULL
+      OCall pStream::Stream.BinWrite, $OfsCStrA("{}"), ??StrLength
+    .else
+      ;Write all children recursively
+      OCall pStream::Stream.BinWrite, $OfsCStrA("{", 13, 10), ??StrLength
+      add DWORD ptr [xdi], INDENTATION_STEP               ;Increment indentation
+      .while xsi != NULL
+        lea xax, [xsi - offset JSON_PROPERTY.Siblings]    ;xax -> JSON_PROPERTY
+        OCall pSelf::Json.WriteProperty, pStream, xax, xdi
+        mov xsi, [xsi].LDLL_MEMBER.pLinkFwrd
+        .if xsi != 0
+          OCall pStream::Stream.BinWrite, $OfsCStrA(",", 13, 10), ??StrLength
+        .endif
+      .endw
+      sub DWORD ptr [xdi], INDENTATION_STEP               ;Decrement indentation
+      OCall pStream::Stream.BinWrite, $OfsCStrA(13, 10), ??StrLength
+      IndentNow
+      OCall pStream::Stream.BinWrite8, "}"
+    .endif
 
   .elseif [xbx].JSON_PROPERTY.dType == JSON_TYPE_ARRAY
-    OCall pStream::Stream.BinWrite, $OfsCStrA("[", 13, 10), ??StrLength
     mov xsi, [xbx].JSON_PROPERTY.Children.pFirstMember
-    add DWORD ptr [xdi], INDENTATION_STEP               ;Increment indentation
-    .while xsi != NULL
-      lea xax, [xsi - offset JSON_PROPERTY.Siblings]    ;xax -> JSON_PROPERTY
-      OCall pSelf::Json.WriteProperty, pStream, xax, xdi
-      mov xsi, [xsi].LDLL_MEMBER.pLinkFwrd
-      .if xsi != 0
-        OCall pStream::Stream.BinWrite, $OfsCStrA(",", 13, 10), ??StrLength
-      .endif
-    .endw
-    sub DWORD ptr [xdi], INDENTATION_STEP               ;Decrement indentation
-    OCall pStream::Stream.BinWrite, $OfsCStrA(13, 10), ??StrLength
-    IndentNow
-    OCall pStream::Stream.BinWrite8, "]"
+    .if xsi == NULL
+      OCall pStream::Stream.BinWrite, $OfsCStrA("[]"), ??StrLength
+    .else
+      OCall pStream::Stream.BinWrite, $OfsCStrA("[", 13, 10), ??StrLength
+      add DWORD ptr [xdi], INDENTATION_STEP               ;Increment indentation
+      .while xsi != NULL
+        lea xax, [xsi - offset JSON_PROPERTY.Siblings]    ;xax -> JSON_PROPERTY
+        OCall pSelf::Json.WriteProperty, pStream, xax, xdi
+        mov xsi, [xsi].LDLL_MEMBER.pLinkFwrd
+        .if xsi != 0
+          OCall pStream::Stream.BinWrite, $OfsCStrA(",", 13, 10), ??StrLength
+        .endif
+      .endw
+      sub DWORD ptr [xdi], INDENTATION_STEP               ;Decrement indentation
+      OCall pStream::Stream.BinWrite, $OfsCStrA(13, 10), ??StrLength
+      IndentNow
+      OCall pStream::Stream.BinWrite8, "]"
+    .endif
 
   .elseif [xbx].JSON_PROPERTY.dType == JSON_TYPE_STRING || [xbx].JSON_PROPERTY.dType == JSON_TYPE_BOOLEAN
     OCall pStream::Stream.BinWrite8, '"'

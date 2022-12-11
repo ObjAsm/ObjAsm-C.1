@@ -4,7 +4,7 @@ REM Change the targets according the intended check
 @echo off
 set TARGET_BITNESS=64
 set TARGET_MODE=RLS
-set FileName=MsgBoxA.asm
+set FileName=AppsUseLightTheme.asm
 
 setlocal ENABLEEXTENSIONS ENABLEDELAYEDEXPANSION
 
